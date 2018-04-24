@@ -1,0 +1,6 @@
+*.env
+docs/api/site
+.DS_Store
+tools/*.png
+dist/*
+example/
