@@ -17,12 +17,12 @@ var (
 	SIGNED_DATE_HEADER   = "SignedDate"
 	DEFAULT_PREFIX_64    = "REhQV1M="
 	ALGORITHM_NAME       = "HmacSHA256"
-	errSignatureExpired  = errors.New("Signture expired")
-	errInvalidSignature  = errors.New("Invalid signature")
-	errInvalidAlgorithm  = errors.New("Invalid algorithm")
-	errInvalidHeaderList = errors.New("Invalid header list")
-	errInvalidCredential = errors.New("Invalid credential")
-	errNotSupportedYet   = errors.New("Missing implementation. Please contact the author(s)")
+	errSignatureExpired  = errors.New("signture expired")
+	errInvalidSignature  = errors.New("invalid signature")
+	errInvalidAlgorithm  = errors.New("invalid algorithm")
+	errInvalidHeaderList = errors.New("invalid header list")
+	errInvalidCredential = errors.New("invalid credential")
+	errNotSupportedYet   = errors.New("missing implementation, please contact the author(s)")
 )
 
 type Signer struct {

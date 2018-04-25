@@ -29,7 +29,7 @@ import (
 	"strings"
 
 	"github.com/google/go-querystring/query"
-	hsdpsigner "github.com/hsdp/go-hsdp-iam/signer"
+	hsdpsigner "github.com/hsdp/go-signer"
 )
 
 const (
@@ -112,7 +112,6 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 	c.signer = signer
-
 	c.Organizations = &OrganizationsService{client: c}
 	c.Groups = &GroupsService{client: c}
 	c.Permissions = &PermissionsService{client: c}
