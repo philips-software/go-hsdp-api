@@ -1,3 +1,5 @@
+//Package signer provides an implementation of the HSDP API signing
+//algorithm. It can sign standard Go http.Request
 package signer
 
 import (
@@ -25,6 +27,7 @@ var (
 	errNotSupportedYet   = errors.New("missing implementation, please contact the author(s)")
 )
 
+// Signer holds the configuration of a signer instance
 type Signer struct {
 	sharedKey    string
 	sharedSecret string
@@ -34,7 +37,13 @@ type Signer struct {
 
 type NowFunc func() time.Time
 
-func New(sharedKey, sharedSecret, prefix string, nowFunc NowFunc) (*Signer, error) {
+// New creates an instance of Signer
+func New(sharedKey, sharedSecret string) (*Signer, error) {
+	return NewWithPrefixAndNowFunc(sharedKey, sharedSecret, "", nil)
+}
+
+// NewWithPrefixAndNowFunc create na instace of Signer, taking prefix and nowFunc as additional parameters
+func NewWithPrefixAndNowFunc(sharedKey, sharedSecret, prefix string, nowFunc NowFunc) (*Signer, error) {
 	signer := &Signer{
 		sharedKey:    sharedKey,
 		sharedSecret: sharedSecret,
@@ -55,6 +64,8 @@ func New(sharedKey, sharedSecret, prefix string, nowFunc NowFunc) (*Signer, erro
 	return signer, nil
 }
 
+// SignsRequest signs a http.Request by
+// adding an Authorization and SignedDate header
 func (s *Signer) SignRequest(request *http.Request) error {
 	signTime := s.nowFunc().UTC().Format(TIME_FORMAT)
 
@@ -74,6 +85,7 @@ func (s *Signer) SignRequest(request *http.Request) error {
 	return nil
 }
 
+// ValidateRequests validates a previously signed request
 func (s *Signer) ValidateRequest(request *http.Request) (bool, error) {
 	signature := request.Header.Get(AUTHORIZATION_HEADER)
 	signedDate := request.Header.Get(SIGNED_DATE_HEADER)

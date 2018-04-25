@@ -107,7 +107,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if err := c.SetBaseIDMURL(defaultIDMBaseURL); err != nil {
 		panic(err)
 	}
-	signer, err := hsdpsigner.New(c.config.SharedKey, c.config.SecretKey, "", nil)
+	signer, err := hsdpsigner.New(c.config.SharedKey, c.config.SecretKey)
 	if err != nil {
 		return nil, err
 	}
