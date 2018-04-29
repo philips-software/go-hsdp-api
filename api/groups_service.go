@@ -83,19 +83,19 @@ func (g *GroupsService) UpdateGroup(group iam.Group) (*iam.Group, *Response, err
 
 }
 
-func (g *GroupsService) DeleteGroup(group iam.Group) (*iam.Group, *Response, error) {
+func (g *GroupsService) DeleteGroup(group iam.Group) (bool, *Response, error) {
 	req, err := g.client.NewIDMRequest("DELETE", "authorize/identity/Group/"+group.ID, nil, nil)
 	if err != nil {
-		return nil, nil, err
+		return false, nil, err
 	}
 	req.Header.Set("api-version", GroupAPIVersion)
 
 	var deleteResponse interface{}
 
 	resp, err := g.client.Do(req, &deleteResponse)
-	if resp != nil && resp.StatusCode == http.StatusNoContent {
-		return nil, resp, nil
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return false, resp, nil
 	}
-	return nil, resp, err
+	return true, resp, err
 
 }
