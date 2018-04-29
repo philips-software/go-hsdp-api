@@ -11,6 +11,8 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [x] Organization management
 - [x] Permission management
 - [x] Role managemnet
+- [x] User management
+- [x] Password management
 - [ ] Device management
 - [ ] Policy management
 
