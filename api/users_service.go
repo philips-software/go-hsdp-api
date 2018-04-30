@@ -62,7 +62,7 @@ func (u *UsersService) CreateUser(firstName, lastName, emailID, phoneNumber, org
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", UserAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -90,7 +90,7 @@ func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) 
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", UserAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -108,7 +108,7 @@ func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error)
 		ResourceType: "Parameters",
 		Parameter: []Param{
 			{
-				Name: "ResendOTP",
+				Name: "resendOTP",
 				Resource: Resource{
 					LoginID: loginID,
 				},
@@ -119,7 +119,7 @@ func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error)
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", UserAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -150,7 +150,7 @@ func (u *UsersService) SetPassword(loginID, confirmationCode, newPassword, conte
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", UserAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -180,7 +180,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", UserAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -204,7 +204,7 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", UserAPIVersion)
 
 	var bundleResponse interface{}
 
