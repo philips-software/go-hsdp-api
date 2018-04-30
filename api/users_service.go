@@ -241,9 +241,11 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 	ok := resp != nil && (resp.StatusCode == http.StatusAccepted)
 	return ok, resp, nil
 }
+
+func (u *UsersService) SetMFAByLoginID(loginID string, activate bool) (bool, *Response, error) {
+	userUUID, _, err := u.GetUserIDByLoginID(loginID)
 	if err != nil {
-		return false, resp, err
+		return false, nil, err
 	}
-	ok := resp != nil && (resp.StatusCode == http.StatusAccepted)
-	return ok, resp, err
+	return u.SetMFA(userUUID, activate)
 }
