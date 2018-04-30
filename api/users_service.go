@@ -237,7 +237,10 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 
 	var bundleResponse interface{}
 
-	resp, err := u.client.Do(req, &bundleResponse)
+	resp, _ := u.client.Do(req, &bundleResponse)
+	ok := resp != nil && (resp.StatusCode == http.StatusAccepted)
+	return ok, resp, nil
+}
 	if err != nil {
 		return false, resp, err
 	}
