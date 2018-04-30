@@ -1,9 +1,12 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/hsdp/go-hsdp-iam/iam"
+	"github.com/jeffail/gabs"
 )
 
 const (
@@ -192,12 +195,38 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 	return ok, resp, err
 }
 
+func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, error) {
+	req, err := u.client.NewIDMRequest("GET", "security/users?loginId="+loginID, nil, nil)
+	var d interface{}
+
+	resp, err := u.client.Do(req, &d)
+	if err != nil {
+		return "", resp, err
+	}
+	m, err := json.Marshal(d)
+	if err != nil {
+		return "", resp, fmt.Errorf("error parsing json response")
+	}
+	jsonParsed, err := gabs.ParseJSON(m)
+	if statusCode, ok := jsonParsed.Path("responseCode").Data().(string); !ok || statusCode != "200" {
+		return "", resp, fmt.Errorf("responseCode: %s", statusCode)
+	}
+
+	r := jsonParsed.Path("exchange.users").Index(0)
+	userUUID, ok := r.Path("userUUID").Data().(string)
+	if !ok {
+		return "", resp, fmt.Errorf("lookup failed")
+	}
+	return userUUID, resp, nil
+
+}
+
 func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, error) {
 	activateString := "true"
 	if !activate {
 		activateString = "false"
 	}
-	body := struct {
+	body := &struct {
 		Activate string `json:"activate"`
 	}{activateString}
 	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User/"+userID+"/$mfa", body, nil)
