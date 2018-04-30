@@ -176,7 +176,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 			},
 		},
 	}
-	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User/$set-password", body, nil)
+	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User/$change-password", body, nil)
 	if err != nil {
 		return false, nil, err
 	}
