@@ -134,7 +134,8 @@ func (l *Client) Post(msgs []Resource, count int) (err error, sent int, invalid 
 
 	if l.debug {
 		if resp != nil {
-			fmt.Fprintf(os.Stderr, "Response status: HTTP %d\n", resp.StatusCode)
+			dumped, _ := httputil.DumpResponse(resp, true)
+			fmt.Printf("RESPONSE: %s\n", string(dumped))
 		} else {
 			fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
 		}
