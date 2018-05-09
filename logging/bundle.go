@@ -24,10 +24,17 @@ type Resource struct {
 	ApplicationInstance string  `json:"applicationInstance"` // INST-00002
 	ApplicationVersion  string  `json:"applicationVersion"`  // 1.0.0
 	OriginatingUser     string  `json:"originatingUser"`     // SomeUser
-	ServerName          string  `json:"serverName"`          // ops-dev.cloud.pcftest.com
+	ServerName          string  `json:"serverName"`          // app.example.com
 	LogTime             string  `json:"logTime"`             // 2017-01-31T08:00:00Z
 	Severity            string  `json:"severity"`            // INFO
 	LogData             LogData `json:"logData"`
+}
+
+func (r *Resource) Valid() bool {
+	if r.EventID != "" && r.TransactionID != "" && r.LogTime != "" && r.LogData.Message != "" {
+		return true
+	}
+	return false
 }
 
 type LogData struct {

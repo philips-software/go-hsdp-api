@@ -13,7 +13,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/m4rw3r/uuid"
+	"github.com/hsdp/go-signer"
 )
 
 var (
@@ -34,6 +34,7 @@ type Logger struct {
 	config     Config
 	url        *url.URL
 	httpClient *http.Client
+	httpSigner *signer.Signer
 	debug      bool
 }
 
@@ -42,10 +43,17 @@ func NewClient(httpClient *http.Client, config Config) (*Logger, error) {
 
 	logger.config = config
 	logger.httpClient = httpClient
+
 	url, err := url.Parse(config.BaseURL + "/core/log/LogEvent")
 	if err != nil {
 		return nil, err
 	}
+
+	logger.httpSigner, err = signer.New(logger.config.SharedKey, logger.config.SharedSecret)
+	if err != nil {
+		return nil, err
+	}
+
 	logger.url = url
 	if os.Getenv("DEBUG") == "true" {
 		logger.debug = true
@@ -53,60 +61,34 @@ func NewClient(httpClient *http.Client, config Config) (*Logger, error) {
 	return &logger, nil
 }
 
-func (l *Logger) Post(msgs []DHPLogMessage, count int) error {
+func (l *Logger) Post(msgs []Resource, count int) (err error, sent int, invalid []Resource) {
 	var b Bundle
 
-	// Bundle
 	b.ResourceType = "Bundle"
 	b.ProductKey = l.config.ProductKey
-	b.Type = "transaction"
-	b.Total = count
 	b.Entry = make([]Element, count, count)
+	b.Type = "transaction"
 
+	j := 0
 	for i := 0; i < count; i++ {
+		msg := msgs[i]
+		if !msg.Valid() {
+			if invalid == nil {
+				invalid = make([]Resource, count, count)
+			}
+			invalid = append(invalid, msg)
+			continue
+		}
 		// Element
 		var e Element
-		msg := msgs[i]
-		e.Resource.ApplicationInstance = msg.ApplicationInstance
-		e.Resource.ApplicationName = msg.ApplicationName
-		e.Resource.Category = msg.Category
-		e.Resource.ApplicationVersion = msg.ApplicationVersion
-		if e.Resource.ApplicationVersion == "" {
-			e.Resource.ApplicationVersion = "0.0.0"
-		}
-		e.Resource.Component = "PHS"
-		if msg.Component != "" && !(msg.Component == "DHP" || msg.Component == "CPH") {
-			e.Resource.Component = msg.Component
-		}
-		if msg.EventID == "" {
-			msg.EventID = "1"
-		}
-		e.Resource.EventID = msg.EventID
-		e.Resource.LogTime = msg.LogTime
-		id, _ := uuid.V4()
-		e.Resource.ID = id.String()
-		e.Resource.OriginatingUser = msg.OriginatingUser
-		e.Resource.ServerName = msg.ServerName
-		if e.Resource.ServerName == "" {
-			e.Resource.ServerName = "not-set"
-		}
-		e.Resource.ServiceName = msg.ServiceName
-		e.Resource.Severity = msg.Severity
-		e.Resource.OriginatingUser = msg.OriginatingUser
-		if e.Resource.OriginatingUser == "" {
-			e.Resource.OriginatingUser = "not-specified"
-		}
-		if uuidRegex.MatchString(msg.TransactionID) {
-			e.Resource.TransactionID = msg.TransactionID
-		} else {
-			trns, _ := uuid.V4()
-			e.Resource.TransactionID = trns.String()
-		}
+		e.Resource = msg
+		// Base64 encode here
 		e.Resource.LogData.Message = base64.StdEncoding.EncodeToString([]byte(msg.LogData.Message))
 		e.Resource.ResourceType = "LogEvent"
-
-		b.Entry[i] = e
+		b.Entry[j] = e
+		j++
 	}
+	b.Total = j
 
 	req := &http.Request{
 		Method:     http.MethodPost,
@@ -120,12 +102,14 @@ func (l *Logger) Post(msgs []DHPLogMessage, count int) error {
 
 	bodyBytes, err := json.Marshal(b)
 	if err != nil {
-		return err
+		return err, 0, invalid
 	}
 	bodyReader := bytes.NewReader(bodyBytes)
 	req.Body = ioutil.NopCloser(bodyReader)
 	req.ContentLength = int64(bodyReader.Len())
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Api-Version", "1")
+	l.httpSigner.SignRequest(req)
 
 	if l.debug {
 		dumped, _ := httputil.DumpRequest(req, true)
@@ -141,7 +125,7 @@ func (l *Logger) Post(msgs []DHPLogMessage, count int) error {
 		}
 	}
 	if err != nil {
-		return err
+		return err, 0, invalid
 	}
-	return nil
+	return nil, b.Total, invalid
 }
