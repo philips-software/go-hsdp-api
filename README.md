@@ -1,4 +1,4 @@
-# go-hsdp-iam
+# go-hsdp-api
 
 A HSDP API client enabling Go programs to interact with various HSDP APIs in a simple and uniform way
 
@@ -25,7 +25,7 @@ package main
 import (
         "fmt"
 
-        "github.com/hsdp/go-hsdp-iam/api"
+        "github.com/hsdp/go-hsdp-api/iam"
 )
 
 func main() {
@@ -54,7 +54,7 @@ func main() {
 
 ## Issues
 
-- If you have an issue: report it on the [issue tracker](https://github.com/hsdp/go-hsdp-iam/issues)
+- If you have an issue: report it on the [issue tracker](https://github.com/hsdp/go-hsdp-api/issues)
 
 ## Author
 

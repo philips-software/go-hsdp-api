@@ -36,7 +36,7 @@ const (
 	libraryVersion    = "0.1.0"
 	defaultIAMBaseURL = "https://iam-integration.us-east.philips-healthsuite.com/"
 	defaultIDMBaseURL = "https://idm-integration.us-east.philips-healthsuite.com/"
-	userAgent         = "go-hsdp-iam/" + libraryVersion
+	userAgent         = "go-hsdp-api/iam/" + libraryVersion
 )
 
 type tokenType int
