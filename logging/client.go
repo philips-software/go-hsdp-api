@@ -17,6 +17,11 @@ import (
 	"github.com/hsdp/go-signer"
 )
 
+const (
+	libraryVersion = "0.1.0"
+	userAgent      = "go-hsdp-api/logging/" + libraryVersion
+)
+
 var (
 	LOG_TIME_FORMAT  = "2006-01-02T15:04:05.000Z07:00"
 	TIME_FORMAT      = time.RFC3339
@@ -124,6 +129,7 @@ func (l *Client) Post(msgs []Resource, count int) (err error, sent int, invalid 
 	req.ContentLength = int64(bodyReader.Len())
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Api-Version", "1")
+	req.Header.Set("User-Agent", userAgent)
 	l.httpSigner.SignRequest(req)
 
 	if l.debug {
