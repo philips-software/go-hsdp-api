@@ -1,8 +1,4 @@
-package api
-
-import (
-	"github.com/hsdp/go-hsdp-iam/iam"
-)
+package iam
 
 const (
 	OrganizationAPIVersion = "1"
@@ -18,11 +14,11 @@ type GetOrganizationOptions struct {
 	Name        *string `url:"name,omitempty"`
 }
 
-func (o *OrganizationsService) GetOrganizationByID(id string) (*iam.Organization, *Response, error) {
+func (o *OrganizationsService) GetOrganizationByID(id string) (*Organization, *Response, error) {
 	return o.GetOrganization(&GetOrganizationOptions{ID: &id}, nil)
 }
 
-func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, options ...OptionFunc) (*iam.Organization, *Response, error) {
+func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, options ...OptionFunc) (*Organization, *Response, error) {
 	req, err := o.client.NewIDMRequest("GET", "authorize/identity/Organization", opt, options)
 	if err != nil {
 		return nil, nil, err
@@ -35,7 +31,7 @@ func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, opti
 	if err != nil {
 		return nil, resp, err
 	}
-	var org iam.Organization
+	var org Organization
 	org.ParseFromBundle(bundleResponse)
 	return &org, resp, err
 }

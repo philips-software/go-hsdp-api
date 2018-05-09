@@ -1,11 +1,10 @@
-package api
+package iam
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/hsdp/go-hsdp-iam/iam"
 	"github.com/jeffail/gabs"
 )
 
@@ -42,13 +41,13 @@ type Resource struct {
 }
 
 func (u *UsersService) CreateUser(firstName, lastName, emailID, phoneNumber, organizationID string) (bool, *Response, error) {
-	person := &iam.User{
+	person := &User{
 		ResourceType: "Person",
-		Name: iam.Name{
+		Name: Name{
 			Family: lastName,
 			Given:  firstName,
 		},
-		Telecom: []iam.TelecomEntry{
+		Telecom: []TelecomEntry{
 			{
 				System: "mobile",
 				Value:  phoneNumber,

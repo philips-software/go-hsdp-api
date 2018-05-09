@@ -1,9 +1,7 @@
-package api
+package iam
 
 import (
 	"net/http"
-
-	"github.com/hsdp/go-hsdp-iam/iam"
 )
 
 const (
@@ -20,11 +18,11 @@ type GroupsService struct {
 	client *Client
 }
 
-func (g *GroupsService) GetGroupByID(id string) (*iam.Group, *Response, error) {
+func (g *GroupsService) GetGroupByID(id string) (*Group, *Response, error) {
 	return g.GetGroup(&GetGroupOptions{ID: &id}, nil)
 }
 
-func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*iam.Group, *Response, error) {
+func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*Group, *Response, error) {
 	req, err := g.client.NewIDMRequest("GET", "authorize/identity/Group", opt, options)
 	if err != nil {
 		return nil, nil, err
@@ -37,12 +35,12 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 	if err != nil {
 		return nil, resp, err
 	}
-	var group iam.Group
+	var group Group
 	group.ParseFromBundle(bundleResponse)
 	return &group, resp, err
 }
 
-func (g *GroupsService) CreateGroup(group iam.Group) (*iam.Group, *Response, error) {
+func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
 	if err := group.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -52,7 +50,7 @@ func (g *GroupsService) CreateGroup(group iam.Group) (*iam.Group, *Response, err
 	}
 	req.Header.Set("api-version", GroupAPIVersion)
 
-	var createdGroup iam.Group
+	var createdGroup Group
 
 	resp, err := g.client.Do(req, &createdGroup)
 	if err != nil {
@@ -62,7 +60,7 @@ func (g *GroupsService) CreateGroup(group iam.Group) (*iam.Group, *Response, err
 
 }
 
-func (g *GroupsService) UpdateGroup(group iam.Group) (*iam.Group, *Response, error) {
+func (g *GroupsService) UpdateGroup(group Group) (*Group, *Response, error) {
 	var updateRequest struct {
 		Description string `json:"description"`
 	}
@@ -73,7 +71,7 @@ func (g *GroupsService) UpdateGroup(group iam.Group) (*iam.Group, *Response, err
 	}
 	req.Header.Set("api-version", GroupAPIVersion)
 
-	var updatedGroup iam.Group
+	var updatedGroup Group
 
 	resp, err := g.client.Do(req, &updatedGroup)
 	if err != nil {
@@ -83,7 +81,7 @@ func (g *GroupsService) UpdateGroup(group iam.Group) (*iam.Group, *Response, err
 
 }
 
-func (g *GroupsService) DeleteGroup(group iam.Group) (bool, *Response, error) {
+func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
 	req, err := g.client.NewIDMRequest("DELETE", "authorize/identity/Group/"+group.ID, nil, nil)
 	if err != nil {
 		return false, nil, err

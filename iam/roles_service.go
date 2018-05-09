@@ -1,8 +1,4 @@
-package api
-
-import (
-	"github.com/hsdp/go-hsdp-iam/iam"
-)
+package iam
 
 type RolesService struct {
 	client *Client
@@ -15,7 +11,7 @@ type GetRolesOptions struct {
 	RoleID         *string `url:"roleId,omitempty"`
 }
 
-func (p *RolesService) GetRolesByGroupID(groupID string) (*[]iam.Role, *Response, error) {
+func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, error) {
 	opt := &GetRolesOptions{
 		GroupID: &groupID,
 	}
@@ -27,8 +23,8 @@ func (p *RolesService) GetRolesByGroupID(groupID string) (*[]iam.Role, *Response
 	req.Header.Set("Content-Type", "application/json")
 
 	var responseStruct struct {
-		Total int        `json:"total"`
-		Entry []iam.Role `json:"entry"`
+		Total int    `json:"total"`
+		Entry []Role `json:"entry"`
 	}
 
 	resp, err := p.client.Do(req, &responseStruct)
@@ -39,7 +35,7 @@ func (p *RolesService) GetRolesByGroupID(groupID string) (*[]iam.Role, *Response
 
 }
 
-func (p *RolesService) GetRoleByID(roleID string) (*iam.Role, *Response, error) {
+func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
 	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Role/"+roleID, nil, nil)
 	if err != nil {
 		return nil, nil, err
@@ -47,7 +43,7 @@ func (p *RolesService) GetRoleByID(roleID string) (*iam.Role, *Response, error) 
 	req.Header.Set("api-version", "1")
 	req.Header.Set("Content-Type", "application/json")
 
-	var role iam.Role
+	var role Role
 
 	resp, err := p.client.Do(req, &role)
 	if err != nil {
@@ -57,7 +53,7 @@ func (p *RolesService) GetRoleByID(roleID string) (*iam.Role, *Response, error) 
 }
 
 // TODO: below method actually is not yet implemented on the HSDP side
-func (p *RolesService) UpdateRole(role *iam.Role) (*iam.Role, *Response, error) {
+func (p *RolesService) UpdateRole(role *Role) (*Role, *Response, error) {
 	var updateRoleRequestBody struct {
 		Description string `json:"description"`
 	}
@@ -65,7 +61,7 @@ func (p *RolesService) UpdateRole(role *iam.Role) (*iam.Role, *Response, error) 
 	req, err := p.client.NewIDMRequest("PUT", "authorize/identity/Role", &updateRoleRequestBody, nil)
 	req.Header.Set("api-version", "1")
 
-	var updatedRole iam.Role
+	var updatedRole Role
 	resp, err := p.client.Do(req, &updatedRole)
 
 	if err != nil {
@@ -75,8 +71,8 @@ func (p *RolesService) UpdateRole(role *iam.Role) (*iam.Role, *Response, error) 
 
 }
 
-func (p *RolesService) CreateRole(name, description, managingOrganization string) (*iam.Role, *Response, error) {
-	role := &iam.Role{
+func (p *RolesService) CreateRole(name, description, managingOrganization string) (*Role, *Response, error) {
+	role := &Role{
 		Name:                 name,
 		Description:          description,
 		ManagingOrganization: managingOrganization,
@@ -84,7 +80,7 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 	req, err := p.client.NewIDMRequest("POST", "authorize/identity/Role", role, nil)
 	req.Header.Set("api-version", "1")
 
-	var createdRole iam.Role
+	var createdRole Role
 
 	resp, err := p.client.Do(req, &createdRole)
 	if err != nil {
@@ -93,7 +89,7 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 	return &createdRole, resp, err
 }
 
-func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*iam.Role, *Response, error) {
+func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*Role, *Response, error) {
 	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Role", opt, options)
 	if err != nil {
 		return nil, nil, err
@@ -106,12 +102,12 @@ func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*ia
 	if err != nil {
 		return nil, resp, err
 	}
-	var role iam.Role
+	var role Role
 	err = role.ParseFromBundle(bundleResponse)
 	return &role, resp, err
 }
 
-func (p *RolesService) GetRolePermissions(role iam.Role) (*[]string, error) {
+func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
 	opt := &GetRolesOptions{RoleID: &role.ID}
 
 	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Permission", opt, nil)
@@ -121,8 +117,8 @@ func (p *RolesService) GetRolePermissions(role iam.Role) (*[]string, error) {
 	req.Header.Set("api-version", "1")
 
 	var permissionResponse struct {
-		Total int        `json:"total"`
-		Entry []iam.Role `json:"entry"`
+		Total int    `json:"total"`
+		Entry []Role `json:"entry"`
 	}
 
 	_, err = p.client.Do(req, &permissionResponse)
@@ -137,7 +133,7 @@ func (p *RolesService) GetRolePermissions(role iam.Role) (*[]string, error) {
 
 }
 
-func (p *RolesService) AddRolePermission(role iam.Role, permission string) (*iam.Role, *Response, error) {
+func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *Response, error) {
 	var permissionRequest struct {
 		Permissions []string `json:"permissions"`
 	}
@@ -159,7 +155,7 @@ func (p *RolesService) AddRolePermission(role iam.Role, permission string) (*iam
 
 }
 
-func (p *RolesService) RemoveRolePermission(role iam.Role, permission string) (*iam.Role, *Response, error) {
+func (p *RolesService) RemoveRolePermission(role Role, permission string) (*Role, *Response, error) {
 	var permissionRequest struct {
 		Permissions []string `json:"permissions"`
 	}
