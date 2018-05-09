@@ -33,7 +33,7 @@ type Config struct {
 }
 
 func (c *Config) Valid() bool {
-	if c.SharedKey != "" && c.SharedSecret != "" && c.BaseURL != "" {
+	if c.SharedKey != "" && c.SharedSecret != "" && c.BaseURL != "" && c.ProductKey != "" {
 		return true
 	}
 	return false
