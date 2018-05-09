@@ -116,7 +116,7 @@ func (l *Client) Post(msgs []Resource, count int) (err error, sent int, invalid 
 
 	if l.debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		fmt.Printf("REQUEST: %v\n", dumped)
+		fmt.Printf("REQUEST: %s\n", string(dumped))
 	}
 	resp, err := l.httpClient.Do(req)
 
