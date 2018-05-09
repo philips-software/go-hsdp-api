@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -17,10 +18,11 @@ import (
 )
 
 var (
-	LOG_TIME_FORMAT = "2006-01-02T15:04:05.000Z07:00"
-	TIME_FORMAT     = time.RFC3339
-	uuidRegex       = regexp.MustCompile(`[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+`)
-	versionRegex    = regexp.MustCompile(`^(\d+\.)?(\d+){1}$`)
+	LOG_TIME_FORMAT  = "2006-01-02T15:04:05.000Z07:00"
+	TIME_FORMAT      = time.RFC3339
+	uuidRegex        = regexp.MustCompile(`[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+`)
+	versionRegex     = regexp.MustCompile(`^(\d+\.)?(\d+){1}$`)
+	errInvalidConfig = errors.New("invalid configuration")
 )
 
 type Config struct {
@@ -28,6 +30,13 @@ type Config struct {
 	SharedSecret string
 	BaseURL      string
 	ProductKey   string
+}
+
+func (c *Config) Valid() bool {
+	if c.SharedKey != "" && c.SharedSecret != "" && c.BaseURL != "" {
+		return true
+	}
+	return false
 }
 
 type Client struct {
@@ -41,6 +50,9 @@ type Client struct {
 func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
+	}
+	if !config.Valid() {
+		return nil, errInvalidConfig
 	}
 	var logger Client
 
