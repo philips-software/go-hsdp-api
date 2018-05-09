@@ -30,7 +30,7 @@ type Config struct {
 	ProductKey   string
 }
 
-type Logger struct {
+type Client struct {
 	config     Config
 	url        *url.URL
 	httpClient *http.Client
@@ -38,8 +38,11 @@ type Logger struct {
 	debug      bool
 }
 
-func NewClient(httpClient *http.Client, config Config) (*Logger, error) {
-	var logger Logger
+func NewClient(httpClient *http.Client, config Config) (*Client, error) {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+	var logger Client
 
 	logger.config = config
 	logger.httpClient = httpClient
@@ -61,7 +64,7 @@ func NewClient(httpClient *http.Client, config Config) (*Logger, error) {
 	return &logger, nil
 }
 
-func (l *Logger) Post(msgs []Resource, count int) (err error, sent int, invalid []Resource) {
+func (l *Client) Post(msgs []Resource, count int) (err error, sent int, invalid []Resource) {
 	var b Bundle
 
 	b.ResourceType = "Bundle"
