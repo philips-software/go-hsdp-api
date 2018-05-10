@@ -6,12 +6,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
 	"regexp"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/hsdp/go-signer"
@@ -52,6 +55,18 @@ type Client struct {
 	debug      bool
 }
 
+type Response struct {
+	*http.Response
+	Message string
+	Failed  []Resource
+}
+
+// newResponse creates a new Response for the provided http.Response.
+func newResponse(r *http.Response) *Response {
+	response := &Response{Response: r}
+	return response
+}
+
 func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -81,11 +96,115 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	return &logger, nil
 }
 
-func (l *Client) Post(msgs []Resource, count int) (err error, sent int, invalid []Resource) {
+// Do sends an API request and returns the API response. The API response is
+// JSON decoded and stored in the value pointed to by v, or returned as an
+// error if an API error has occurred. If v implements the io.Writer
+// interface, the raw response body will be written to v, without attempting to
+// first decode it.
+func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+	if c.debug {
+		dumped, _ := httputil.DumpRequest(req, true)
+		fmt.Printf("REQUEST: %s\n", string(dumped))
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	response := newResponse(resp)
+
+	if c.debug {
+		if resp != nil {
+			dumped, _ := httputil.DumpResponse(resp, true)
+			fmt.Printf("RESPONSE: %s\n", string(dumped))
+		} else {
+			fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
+		}
+	}
+
+	err = CheckResponse(resp)
+	if err != nil {
+		// even though there was an error, we still return the response
+		// in case the caller wants to inspect it further
+		return response, err
+	}
+
+	if v != nil {
+		if w, ok := v.(io.Writer); ok {
+			_, err = io.Copy(w, resp.Body)
+		} else {
+			err = json.NewDecoder(resp.Body).Decode(v)
+		}
+	}
+
+	return response, err
+}
+
+type ErrorResponse struct {
+	Response *http.Response
+	Message  string
+}
+
+func (e *ErrorResponse) Error() string {
+	path, _ := url.QueryUnescape(e.Response.Request.URL.Opaque)
+	u := fmt.Sprintf("%s://%s%s", e.Response.Request.URL.Scheme, e.Response.Request.URL.Host, path)
+	return fmt.Sprintf("%s %s: %d %s", e.Response.Request.Method, u, e.Response.StatusCode, e.Message)
+}
+
+// CheckResponse checks the API response for errors, and returns them if present.
+func CheckResponse(r *http.Response) error {
+	switch r.StatusCode {
+	case 200, 201, 202, 204, 304:
+		return nil
+	}
+
+	errorResponse := &ErrorResponse{Response: r}
+	data, err := ioutil.ReadAll(r.Body)
+	if err == nil && data != nil {
+		var raw interface{}
+		if err := json.Unmarshal(data, &raw); err != nil {
+			errorResponse.Message = "failed to parse unknown error format"
+		}
+
+		errorResponse.Message = parseError(raw)
+	}
+
+	return errorResponse
+}
+
+func parseError(raw interface{}) string {
+	switch raw := raw.(type) {
+	case string:
+		return raw
+
+	case []interface{}:
+		var errs []string
+		for _, v := range raw {
+			errs = append(errs, parseError(v))
+		}
+		return fmt.Sprintf("[%s]", strings.Join(errs, ", "))
+
+	case map[string]interface{}:
+		var errs []string
+		for k, v := range raw {
+			errs = append(errs, fmt.Sprintf("{%s: %s}", k, parseError(v)))
+		}
+		sort.Strings(errs)
+		return strings.Join(errs, ", ")
+
+	default:
+		return fmt.Sprintf("failed to parse unexpected error type: %T", raw)
+	}
+}
+
+func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	var b Bundle
+	var invalid []Resource
 
 	b.ResourceType = "Bundle"
-	b.ProductKey = l.config.ProductKey
+	b.ProductKey = c.config.ProductKey
 	b.Entry = make([]Element, count, count)
 	b.Type = "transaction"
 
@@ -93,9 +212,6 @@ func (l *Client) Post(msgs []Resource, count int) (err error, sent int, invalid 
 	for i := 0; i < count; i++ {
 		msg := msgs[i]
 		if !msg.Valid() {
-			if invalid == nil {
-				invalid = make([]Resource, count, count)
-			}
 			invalid = append(invalid, msg)
 			continue
 		}
@@ -112,17 +228,17 @@ func (l *Client) Post(msgs []Resource, count int) (err error, sent int, invalid 
 
 	req := &http.Request{
 		Method:     http.MethodPost,
-		URL:        l.url,
+		URL:        c.url,
 		Proto:      "HTTP/1.1",
 		ProtoMajor: 1,
 		ProtoMinor: 1,
 		Header:     make(http.Header),
-		Host:       l.url.Host,
+		Host:       c.url.Host,
 	}
 
 	bodyBytes, err := json.Marshal(b)
 	if err != nil {
-		return err, 0, invalid
+		return nil, err
 	}
 	bodyReader := bytes.NewReader(bodyBytes)
 	req.Body = ioutil.NopCloser(bodyReader)
@@ -130,24 +246,12 @@ func (l *Client) Post(msgs []Resource, count int) (err error, sent int, invalid 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Api-Version", "1")
 	req.Header.Set("User-Agent", userAgent)
-	l.httpSigner.SignRequest(req)
+	c.httpSigner.SignRequest(req)
 
-	if l.debug {
-		dumped, _ := httputil.DumpRequest(req, true)
-		fmt.Printf("REQUEST: %s\n", string(dumped))
+	resp, err := c.Do(req, nil)
+	if len(invalid) > 0 {
+		resp.Failed = invalid
 	}
-	resp, err := l.httpClient.Do(req)
 
-	if l.debug {
-		if resp != nil {
-			dumped, _ := httputil.DumpResponse(resp, true)
-			fmt.Printf("RESPONSE: %s\n", string(dumped))
-		} else {
-			fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
-		}
-	}
-	if err != nil {
-		return err, 0, invalid
-	}
-	return nil, b.Total, invalid
+	return resp, err
 }
