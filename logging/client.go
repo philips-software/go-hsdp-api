@@ -30,7 +30,7 @@ var (
 	TIME_FORMAT      = time.RFC3339
 	uuidRegex        = regexp.MustCompile(`[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+`)
 	versionRegex     = regexp.MustCompile(`^(\d+\.)?(\d+){1}$`)
-	errInvalidConfig = errors.New("invalid configuration")
+	errInvalidConfig = errors.New("invalid configuration: missing SharedKey, SharedSecret, BaseURL or ProductKey")
 )
 
 type Config struct {
