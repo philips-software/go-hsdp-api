@@ -33,10 +33,8 @@ import (
 )
 
 const (
-	libraryVersion    = "0.1.0"
-	defaultIAMBaseURL = "https://iam-integration.us-east.philips-healthsuite.com/"
-	defaultIDMBaseURL = "https://idm-integration.us-east.philips-healthsuite.com/"
-	userAgent         = "go-hsdp-api/iam/" + libraryVersion
+	libraryVersion = "0.1.0"
+	userAgent      = "go-hsdp-api/iam/" + libraryVersion
 )
 
 type tokenType int
@@ -100,13 +98,12 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
-
 	c := &Client{client: httpClient, config: config, UserAgent: userAgent}
-	if err := c.SetBaseIAMURL(defaultIAMBaseURL); err != nil {
-		panic(err)
+	if err := c.SetBaseIAMURL(c.config.IAMURL); err != nil {
+		return nil, err
 	}
-	if err := c.SetBaseIDMURL(defaultIDMBaseURL); err != nil {
-		panic(err)
+	if err := c.SetBaseIDMURL(c.config.IDMURL); err != nil {
+		return nil, err
 	}
 	signer, err := hsdpsigner.New(c.config.SharedKey, c.config.SecretKey)
 	if err != nil {
