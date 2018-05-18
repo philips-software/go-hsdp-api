@@ -86,6 +86,7 @@ type Client struct {
 	Roles         *RolesService
 	Users         *UsersService
 	Applictions   *ApplicationsService
+	Proposition   *PropositionsService
 }
 
 // NewClient returns a new HSDP IAM API client. If a nil httpClient is
@@ -117,6 +118,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Roles = &RolesService{client: c}
 	c.Users = &UsersService{client: c}
 	c.Applictions = &ApplicationsService{client: c}
+	c.Proposition = &PropositionsService{client: c}
 	return c, nil
 }
 
