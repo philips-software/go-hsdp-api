@@ -5,29 +5,33 @@ import (
 )
 
 const (
-	GroupAPIVersion = "1"
+	groupAPIVersion = "1"
 )
 
+// GetGroupOptions describes the fileds on which you can search for Groups
 type GetGroupOptions struct {
 	ID             *string `url:"_id,omitempty"`
 	OrganizationID *string `url:"Id,omitempty"`
 	Name           *string `url:"name,omitempty"`
 }
 
+// GroupsService implements actions on Group entities
 type GroupsService struct {
 	client *Client
 }
 
+// GetGroupByID retrieves a Group based on the ID
 func (g *GroupsService) GetGroupByID(id string) (*Group, *Response, error) {
 	return g.GetGroup(&GetGroupOptions{ID: &id}, nil)
 }
 
+// GetGroup retrieves a Group entity based on the values passed in GetGroupOptions
 func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*Group, *Response, error) {
 	req, err := g.client.NewIDMRequest("GET", "authorize/identity/Group", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", groupAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -40,6 +44,7 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 	return &group, resp, err
 }
 
+// CreateGroup creates a Group
 func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
 	if err := group.Validate(); err != nil {
 		return nil, nil, err
@@ -48,7 +53,7 @@ func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", groupAPIVersion)
 
 	var createdGroup Group
 
@@ -60,6 +65,7 @@ func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
 
 }
 
+// UpdateGroup updates the Group
 func (g *GroupsService) UpdateGroup(group Group) (*Group, *Response, error) {
 	var updateRequest struct {
 		Description string `json:"description"`
@@ -69,7 +75,7 @@ func (g *GroupsService) UpdateGroup(group Group) (*Group, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", groupAPIVersion)
 
 	var updatedGroup Group
 
@@ -81,12 +87,13 @@ func (g *GroupsService) UpdateGroup(group Group) (*Group, *Response, error) {
 
 }
 
+// DeleteGroup deletes the given Group
 func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
 	req, err := g.client.NewIDMRequest("DELETE", "authorize/identity/Group/"+group.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", GroupAPIVersion)
+	req.Header.Set("api-version", groupAPIVersion)
 
 	var deleteResponse interface{}
 
