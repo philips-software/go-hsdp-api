@@ -15,6 +15,16 @@ type Proposition struct {
 	GlobalReferenceID string `json:"globalReferenceId"`
 }
 
+func (p *Proposition) Validate() error {
+	if p.Name == "" {
+		return errMissingName
+	}
+	if p.OrganizationID == "" {
+		return errMissingOrganization
+	}
+	return nil
+}
+
 func (a *Proposition) parseFromBundle(v interface{}) error {
 	m, _ := json.Marshal(v)
 	jsonParsed, err := gabs.ParseJSON(m)
