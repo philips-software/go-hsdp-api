@@ -13,7 +13,7 @@ type Role struct {
 	ManagingOrganization string `json:"managingOrganization"`
 }
 
-func (p *Role) ParseFromBundle(v interface{}) error {
+func (p *Role) parseFromBundle(v interface{}) error {
 	m, err := json.Marshal(v)
 	if err != nil {
 		return err

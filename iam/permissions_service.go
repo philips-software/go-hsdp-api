@@ -56,6 +56,6 @@ func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ..
 		return nil, resp, err
 	}
 	var permission Permission
-	permission.ParseFromBundle(bundleResponse)
+	err = permission.parseFromBundle(bundleResponse)
 	return &permission, resp, err
 }

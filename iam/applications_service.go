@@ -38,6 +38,6 @@ func (o *ApplicationsService) GetApplication(opt *GetApplicationsOptions, option
 		return nil, resp, err
 	}
 	var app Application
-	app.parseFromBundle(bundleResponse)
+	err = app.parseFromBundle(bundleResponse)
 	return &app, resp, err
 }

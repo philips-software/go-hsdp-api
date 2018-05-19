@@ -103,7 +103,7 @@ func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*Ro
 		return nil, resp, err
 	}
 	var role Role
-	err = role.ParseFromBundle(bundleResponse)
+	err = role.parseFromBundle(bundleResponse)
 	return &role, resp, err
 }
 
@@ -174,5 +174,4 @@ func (p *RolesService) RemoveRolePermission(role Role, permission string) (*Role
 		return nil, resp, err
 	}
 	return nil, resp, err
-
 }

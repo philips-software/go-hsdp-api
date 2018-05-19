@@ -23,7 +23,7 @@ func (g *Group) Validate() error {
 	return nil
 }
 
-func (g *Group) ParseFromBundle(v interface{}) error {
+func (g *Group) parseFromBundle(v interface{}) error {
 	m, _ := json.Marshal(v)
 	jsonParsed, err := gabs.ParseJSON(m)
 	if err != nil {

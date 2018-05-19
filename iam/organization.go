@@ -13,7 +13,7 @@ type Organization struct {
 	OrganizationID string `json:"organizationId"`
 }
 
-func (o *Organization) ParseFromBundle(v interface{}) error {
+func (o *Organization) parseFromBundle(v interface{}) error {
 	m, _ := json.Marshal(v)
 	jsonParsed, err := gabs.ParseJSON(m)
 	if err != nil {

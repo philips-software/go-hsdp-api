@@ -32,6 +32,6 @@ func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, opti
 		return nil, resp, err
 	}
 	var org Organization
-	org.ParseFromBundle(bundleResponse)
+	err = org.parseFromBundle(bundleResponse)
 	return &org, resp, err
 }

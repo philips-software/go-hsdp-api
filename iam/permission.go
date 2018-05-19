@@ -14,7 +14,7 @@ type Permission struct {
 	Type        string `json:"type"`
 }
 
-func (p *Permission) ParseFromBundle(v interface{}) error {
+func (p *Permission) parseFromBundle(v interface{}) error {
 	m, _ := json.Marshal(v)
 	jsonParsed, err := gabs.ParseJSON(m)
 	if err != nil {

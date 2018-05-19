@@ -40,7 +40,7 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 		return nil, resp, err
 	}
 	var group Group
-	group.ParseFromBundle(bundleResponse)
+	err = group.parseFromBundle(bundleResponse)
 	return &group, resp, err
 }
 

@@ -38,6 +38,6 @@ func (o *PropositionsService) GetProposition(opt *GetPropositionsOptions, option
 		return nil, resp, err
 	}
 	var prop Proposition
-	prop.parseFromBundle(bundleResponse)
+	err = prop.parseFromBundle(bundleResponse)
 	return &prop, resp, err
 }
