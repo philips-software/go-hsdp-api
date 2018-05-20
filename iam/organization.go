@@ -6,6 +6,7 @@ import (
 	"github.com/jeffail/gabs"
 )
 
+// Organization represents a IAM Organization resource
 type Organization struct {
 	Name           string `json:"name"`
 	Description    string `json:"description"`

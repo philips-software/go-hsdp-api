@@ -1,6 +1,6 @@
 package iam
 
-const PermissionAPIVersion = "1"
+const permissionAPIVersion = "1"
 
 type PermissionsService struct {
 	client *Client
@@ -28,7 +28,7 @@ func (p *PermissionsService) GetPermissionsByRoleID(roleID string) (*[]Permissio
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", PermissionAPIVersion)
+	req.Header.Set("api-version", permissionAPIVersion)
 
 	var responseStruct struct {
 		Total int          `json:"total"`
@@ -47,7 +47,7 @@ func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ..
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", PermissionAPIVersion)
+	req.Header.Set("api-version", permissionAPIVersion)
 
 	var bundleResponse interface{}
 

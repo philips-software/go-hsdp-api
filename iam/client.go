@@ -45,6 +45,7 @@ const (
 
 type OptionFunc func(*http.Request) error
 
+// Config contains the configuration of a client
 type Config struct {
 	OAuth2ClientID   string
 	OAuth2Secret     string

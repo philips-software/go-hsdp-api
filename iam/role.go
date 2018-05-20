@@ -6,6 +6,7 @@ import (
 	"github.com/jeffail/gabs"
 )
 
+// Role represents an IAM resource
 type Role struct {
 	ID                   string `json:"id,omitempty"`
 	Name                 string `json:"name"`
