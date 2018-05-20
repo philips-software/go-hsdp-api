@@ -9,6 +9,7 @@ var (
 	errMissingDescription             = fmt.Errorf("missing description value")
 	errMalformedInputValue            = fmt.Errorf("malformed input value")
 	errMissingOrganization            = fmt.Errorf("missing organization")
+	errMissingProposition             = fmt.Errorf("missing proposition")
 	errMissingGlobalReference         = fmt.Errorf("missing global reference")
 	errNotImplementedByHSDP           = fmt.Errorf("method not implemented by HSDP")
 	errCouldNoReadResourceAfterCreate = fmt.Errorf("could not read resource after create")

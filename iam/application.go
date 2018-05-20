@@ -11,9 +11,21 @@ type Application struct {
 	ID                string `json:"id,omitempty"`
 	Name              string `json:"name"`
 	Description       string `json:"description"`
-	DistinctName      string `json:"distinctName"`
 	PropositionID     string `json:"propositionId"`
 	GlobalReferenceID string `json:"globalReferenceId"`
+}
+
+func (a *Application) Validate() error {
+	if a.Name == "" {
+		return errMissingName
+	}
+	if a.PropositionID == "" {
+		return errMissingProposition
+	}
+	if a.GlobalReferenceID == "" {
+		return errMissingGlobalReference
+	}
+	return nil
 }
 
 func (a *Application) parseFromBundle(v interface{}) error {
