@@ -22,6 +22,9 @@ func (p *Proposition) Validate() error {
 	if p.OrganizationID == "" {
 		return errMissingOrganization
 	}
+	if p.GlobalReferenceID == "" {
+		return errMissingGlobalReference
+	}
 	return nil
 }
 

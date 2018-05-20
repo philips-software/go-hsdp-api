@@ -1,5 +1,10 @@
 package iam
 
+import (
+	"fmt"
+	"net/http"
+)
+
 const (
 	propositionAPIVersion = "1"
 )
@@ -25,15 +30,16 @@ func (p *PropositionsService) GetPropositionByID(id string) (*Proposition, *Resp
 
 // GetProposition search for an Proposition entity based on the GetPropositions values
 func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, options ...OptionFunc) (*Proposition, *Response, error) {
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Application", opt, options)
+	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Proposition", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", applicationAPIVersion)
+	req.Header.Set("api-version", propositionAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
 
 	var bundleResponse interface{}
 
-	resp, err := p.client.DoSigned(req, &bundleResponse)
+	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -52,15 +58,22 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 		return nil, nil, err
 	}
 	req.Header.Set("api-version", "1")
+	req.Header.Set("Content-Type", "application/json")
 
-	var createdProp Proposition
+	var bundleResponse interface{}
 
-	resp, err := p.client.Do(req, &createdProp)
-	if err != nil {
+	resp, err := p.client.Do(req, &bundleResponse)
+
+	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
+	if !ok {
 		return nil, resp, err
 	}
-	return &createdProp, resp, err
-
+	var id string
+	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Proposition/%s", &id)
+	if count == 0 {
+		return nil, resp, errCouldNoReadResourceAfterCreate
+	}
+	return p.GetPropositionByID(id)
 }
 
 // UpdateProposition updates the Proposition
@@ -78,6 +91,7 @@ func (p *PropositionsService) UpdateProposition(prop Proposition) (*Proposition,
 		return nil, nil, err
 	}
 	req.Header.Set("api-version", "1")
+	req.Header.Set("Content-Type", "application/json")
 
 	var updatedProp Proposition
 
