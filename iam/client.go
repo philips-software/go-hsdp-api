@@ -86,7 +86,7 @@ type Client struct {
 	Permissions   *PermissionsService
 	Roles         *RolesService
 	Users         *UsersService
-	Applictions   *ApplicationsService
+	Applications  *ApplicationsService
 	Propositions  *PropositionsService
 }
 
@@ -118,7 +118,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Permissions = &PermissionsService{client: c}
 	c.Roles = &RolesService{client: c}
 	c.Users = &UsersService{client: c}
-	c.Applictions = &ApplicationsService{client: c}
+	c.Applications = &ApplicationsService{client: c}
 	c.Propositions = &PropositionsService{client: c}
 	return c, nil
 }

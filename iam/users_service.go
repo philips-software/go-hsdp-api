@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	UserAPIVersion = "1"
+	userAPIVersion = "1"
 )
 
 type GetUserOptions struct {
@@ -64,7 +64,7 @@ func (u *UsersService) CreateUser(firstName, lastName, emailID, phoneNumber, org
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", UserAPIVersion)
+	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -92,7 +92,7 @@ func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) 
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", UserAPIVersion)
+	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -121,7 +121,7 @@ func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error)
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", UserAPIVersion)
+	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -152,7 +152,7 @@ func (u *UsersService) SetPassword(loginID, confirmationCode, newPassword, conte
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", UserAPIVersion)
+	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -182,7 +182,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", UserAPIVersion)
+	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
 
@@ -232,7 +232,7 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", UserAPIVersion)
+	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
 
