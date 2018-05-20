@@ -35,6 +35,7 @@ func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, option
 		return nil, nil, err
 	}
 	req.Header.Set("api-version", applicationAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
 
 	var bundleResponse interface{}
 
