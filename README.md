@@ -2,7 +2,7 @@
 
 A HSDP API client enabling Go programs to interact with various HSDP APIs in a simple and uniform way
 
-## Coverage
+## Supported APIs
 
 The current implement covers only a subset of HSDP APIs. Basically we implement functonality as needed.
 
