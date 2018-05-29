@@ -174,6 +174,9 @@ func (c *Client) BaseIDMURL() *url.URL {
 // SetBaseIAMURL sets the base URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseIAMURL(urlStr string) error {
+	if urlStr == "" {
+		return errBaseIAMCannotBeEmpty
+	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
@@ -187,6 +190,9 @@ func (c *Client) SetBaseIAMURL(urlStr string) error {
 // SetBaseIDMURL sets the base URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseIDMURL(urlStr string) error {
+	if urlStr == "" {
+		return errBaseIDMCannotBeEmpty
+	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"

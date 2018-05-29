@@ -13,4 +13,6 @@ var (
 	errMissingGlobalReference         = fmt.Errorf("missing global reference")
 	errNotImplementedByHSDP           = fmt.Errorf("method not implemented by HSDP")
 	errCouldNoReadResourceAfterCreate = fmt.Errorf("could not read resource after create")
+	errBaseIDMCannotBeEmpty           = fmt.Errorf("base IDM URL cannot be empty")
+	errBaseIAMCannotBeEmpty           = fmt.Errorf("base IDM URL cannot be empty")
 )
