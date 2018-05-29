@@ -1,5 +1,12 @@
 package iam
 
+import (
+	"bytes"
+	"errors"
+
+	"github.com/jeffail/gabs"
+)
+
 type RolesService struct {
 	client *Client
 }
@@ -96,15 +103,17 @@ func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*Ro
 	}
 	req.Header.Set("api-version", "1")
 
-	var bundleResponse interface{}
+	var bundleResponse bytes.Buffer
 
 	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	var role Role
-	err = role.parseFromBundle(bundleResponse)
-	return &role, resp, err
+	roles, err := p.parseFromBundle(bundleResponse.Bytes())
+	if err != nil {
+		return nil, resp, err
+	}
+	return &(*roles)[0], resp, err
 }
 
 func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
@@ -145,7 +154,7 @@ func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *
 	}
 	req.Header.Set("api-version", "1")
 
-	var bundleResponse interface{}
+	var bundleResponse bytes.Buffer
 
 	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
@@ -167,11 +176,34 @@ func (p *RolesService) RemoveRolePermission(role Role, permission string) (*Role
 	}
 	req.Header.Set("api-version", "1")
 
-	var bundleResponse interface{}
+	var bundleResponse bytes.Buffer
 
 	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
 	return nil, resp, err
+}
+
+func (p *RolesService) parseFromBundle(bundle []byte) (*[]Role, error) {
+	jsonParsed, err := gabs.ParseJSON(bundle)
+	if err != nil {
+		return nil, err
+	}
+	count, ok := jsonParsed.S("total").Data().(float64)
+	if !ok || count == 0 {
+		return nil, errors.New("empty result")
+	}
+	roles := make([]Role, int64(count))
+
+	children, _ := jsonParsed.S("entry").Children()
+	for i, r := range children {
+		var p Role
+		p.ID = r.Path("id").Data().(string)
+		p.ManagingOrganization, _ = r.Path("managingOrganization").Data().(string)
+		p.Name, _ = r.Path("name").Data().(string)
+		p.Description, _ = r.Path("description").Data().(string)
+		roles[i] = p
+	}
+	return &roles, nil
 }
