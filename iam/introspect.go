@@ -21,6 +21,7 @@ type IntrospectResponse struct {
 	} `json:"organizations"`
 	ClientID     string `json:"client_id"`
 	IdentityType string `json:"identity_type"`
+	TokenType    string `json:"token_type"`
 }
 
 func (c *Client) Introspect() (*IntrospectResponse, *Response, error) {
