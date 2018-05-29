@@ -1,7 +1,7 @@
 package iam
 
 import (
-	"encoding/json"
+	"bytes"
 	"errors"
 
 	"github.com/jeffail/gabs"
@@ -56,13 +56,13 @@ func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ..
 	}
 	req.Header.Set("api-version", permissionAPIVersion)
 
-	var bundleResponse interface{}
+	var bundleResponse bytes.Buffer
 
 	resp, err := p.client.DoSigned(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	permissions, err := p.parseFromBundle(bundleResponse)
+	permissions, err := p.parseFromBundle(bundleResponse.Bytes())
 	if err != nil {
 		return nil, resp, err
 	}
@@ -76,19 +76,18 @@ func (p *PermissionsService) GetPermissions(opt GetPermissionOptions, options ..
 	}
 	req.Header.Set("api-version", permissionAPIVersion)
 
-	var bundleResponse interface{}
+	var bundleResponse bytes.Buffer
 
 	resp, err := p.client.DoSigned(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	permissions, err := p.parseFromBundle(bundleResponse)
+	permissions, err := p.parseFromBundle(bundleResponse.Bytes())
 	return permissions, resp, err
 }
 
-func (p *PermissionsService) parseFromBundle(bundleResponse interface{}) (*[]Permission, error) {
-	m, _ := json.Marshal(bundleResponse)
-	jsonParsed, err := gabs.ParseJSON(m)
+func (p *PermissionsService) parseFromBundle(bundle []byte) (*[]Permission, error) {
+	jsonParsed, err := gabs.ParseJSON(bundle)
 	if err != nil {
 		return nil, err
 	}
