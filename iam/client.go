@@ -159,6 +159,15 @@ func (c *Client) Token() string {
 	return c.token
 }
 
+func (c *Client) SetToken(token string) {
+	c.token = token
+	c.tokenType = oAuthToken
+}
+
+func (c *Client) RefreshToken() error {
+	return nil
+}
+
 // BaseURL return a copy of the baseIAMURL.
 func (c *Client) BaseIAMURL() *url.URL {
 	u := *c.baseIAMURL
