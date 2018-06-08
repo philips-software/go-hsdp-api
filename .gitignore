@@ -4,3 +4,4 @@ docs/api/site
 tools/*.png
 dist/*
 example/
+*.swp
