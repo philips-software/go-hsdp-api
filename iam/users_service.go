@@ -40,6 +40,7 @@ type Resource struct {
 	Context          string `json:"context,omitempty"`
 }
 
+// CreateUser creates a new IAM user.
 func (u *UsersService) CreateUser(firstName, lastName, emailID, phoneNumber, organizationID string) (bool, *Response, error) {
 	person := &User{
 		ResourceType: "Person",
@@ -76,6 +77,7 @@ func (u *UsersService) CreateUser(firstName, lastName, emailID, phoneNumber, org
 	return ok, resp, err
 }
 
+// RecoverPassword triggers the recovery flow for the given user
 func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) {
 	body := &Parameters{
 		ResourceType: "Parameters",
@@ -105,6 +107,7 @@ func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) 
 	return ok, resp, err
 }
 
+// ResendActivation resends an activation email to the given user
 func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error) {
 	body := &Parameters{
 		ResourceType: "Parameters",
@@ -133,6 +136,7 @@ func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error)
 	return ok, resp, err
 }
 
+// SetPassword sets the password of a user given a correct confirmation code
 func (u *UsersService) SetPassword(loginID, confirmationCode, newPassword, context string) (bool, *Response, error) {
 	body := &Parameters{
 		ResourceType: "Parameters",
@@ -164,6 +168,7 @@ func (u *UsersService) SetPassword(loginID, confirmationCode, newPassword, conte
 	return ok, resp, err
 }
 
+// ChangePassword changes the password. The current pasword must be provided as well.
 func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) (bool, *Response, error) {
 	body := &Parameters{
 		ResourceType: "Parameters",
@@ -194,6 +199,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 	return ok, resp, err
 }
 
+// GetUserIDByLoginID looks up the UUID of a user by LoginID (email address)
 func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, error) {
 	req, err := u.client.NewIDMRequest("GET", "security/users?loginId="+loginID, nil, nil)
 	var d interface{}
@@ -220,6 +226,7 @@ func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, er
 
 }
 
+// SetMFA activate Multi-Factor-Authentication for the given UUID. See also SetMFAByLoginID.
 func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, error) {
 	activateString := "true"
 	if !activate {
@@ -241,6 +248,7 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 	return ok, resp, nil
 }
 
+// SetMFAByLoginID enabled Multi-Factor-Authentication for the given user. Only OrgAdmins can do this.
 func (u *UsersService) SetMFAByLoginID(loginID string, activate bool) (bool, *Response, error) {
 	userUUID, _, err := u.GetUserIDByLoginID(loginID)
 	if err != nil {
