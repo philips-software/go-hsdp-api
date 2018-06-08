@@ -6,6 +6,43 @@ import (
 	"testing"
 )
 
+func TestGetUserIDByLoginID(t *testing.T) {
+	teardown := setup()
+	defer teardown()
+
+	userUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	muxIDM.HandleFunc("/security/users", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, `{
+			"exchange": {
+				"users": [
+					{
+						"userUUID": "`+userUUID+`"
+					}
+				]
+			},
+			"responseCode": "200",
+			"responseMessage": "Success"
+		}`)
+	})
+
+	uuid, resp, err := client.Users.GetUserIDByLoginID(userUUID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP success")
+	}
+	if uuid != userUUID {
+		t.Errorf("Expected UUID: %s, Got: %s", userUUID, uuid)
+	}
+}
+
 func TestGetUserByID(t *testing.T) {
 	teardown := setup()
 	defer teardown()
