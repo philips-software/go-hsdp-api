@@ -15,4 +15,5 @@ var (
 	errCouldNoReadResourceAfterCreate = fmt.Errorf("could not read resource after create")
 	errBaseIDMCannotBeEmpty           = fmt.Errorf("base IDM URL cannot be empty")
 	errBaseIAMCannotBeEmpty           = fmt.Errorf("base IDM URL cannot be empty")
+	errEmptyResults                   = fmt.Errorf("empty results")
 )
