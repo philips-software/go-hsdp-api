@@ -199,6 +199,40 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 	return ok, resp, err
 }
 
+// GetUserByID looks up a user by UUID
+func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
+	req, err := u.client.NewIDMRequest("GET", "security/users/"+uuid, nil, nil)
+	var user interface{}
+
+	resp, err := u.client.Do(req, &user)
+	if err != nil {
+		return nil, resp, err
+	}
+	m, err := json.Marshal(user)
+	if err != nil {
+		return nil, resp, fmt.Errorf("error parsing json response")
+	}
+	jsonParsed, err := gabs.ParseJSON(m)
+	if statusCode, ok := jsonParsed.Path("responseCode").Data().(string); !ok || statusCode != "200" {
+		return nil, resp, fmt.Errorf("responseCode: %s", statusCode)
+	}
+	email, ok := jsonParsed.Path("exchange.loginId").Data().(string)
+	if !ok {
+		return nil, resp, fmt.Errorf("Invalid response")
+	}
+	r := jsonParsed.Path("exchange.profile")
+	first := r.Path("givenName").Data().(string)
+	last := r.Path("familyName").Data().(string)
+	var foundUser User
+	foundUser.Name.Family = last
+	foundUser.Name.Given = first
+	foundUser.Telecom = append(foundUser.Telecom, TelecomEntry{
+		System: "email",
+		Value:  email,
+	})
+	return &foundUser, resp, nil
+}
+
 // GetUserIDByLoginID looks up the UUID of a user by LoginID (email address)
 func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, error) {
 	req, err := u.client.NewIDMRequest("GET", "security/users?loginId="+loginID, nil, nil)
