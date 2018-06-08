@@ -104,3 +104,43 @@ func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
 	return true, resp, err
 
 }
+
+func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, error) {
+	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$assign-role", nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", groupAPIVersion)
+	var assignRequest struct {
+		roles []string `json:"roles"`
+	}
+	assignRequest.roles = []string{role.ID}
+
+	var assignResponse interface{}
+
+	resp, err := g.client.Do(req, &assignResponse)
+	if resp == nil || resp.StatusCode != http.StatusOK {
+		return false, resp, nil
+	}
+	return true, resp, err
+}
+
+func (g *GroupsService) RemoveRole(group Group, role Role) (bool, *Response, error) {
+	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$remove-role", nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", groupAPIVersion)
+	var removeRequest struct {
+		roles []string `json:"roles"`
+	}
+	removeRequest.roles = []string{role.ID}
+
+	var removeResponse interface{}
+
+	resp, err := g.client.Do(req, &removeResponse)
+	if resp == nil || resp.StatusCode != http.StatusOK {
+		return false, resp, nil
+	}
+	return true, resp, err
+}
