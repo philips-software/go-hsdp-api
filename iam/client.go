@@ -150,6 +150,9 @@ func (c *Client) Login(username, password string) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("Login failed: %d", resp.StatusCode)
 	}
+	if tokenResponse.AccessToken == "" {
+		return fmt.Errorf("Login failed: invalid credentials")
+	}
 	c.tokenType = oAuthToken
 	c.token = tokenResponse.AccessToken
 	return nil
