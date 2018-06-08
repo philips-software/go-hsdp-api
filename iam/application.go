@@ -15,6 +15,7 @@ type Application struct {
 	GlobalReferenceID string `json:"globalReferenceId"`
 }
 
+// Validate method
 func (a *Application) Validate() error {
 	if a.Name == "" {
 		return errMissingName

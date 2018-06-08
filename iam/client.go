@@ -345,7 +345,30 @@ func (c *Client) NewIAMRequest(method, path string, opt interface{}, options []O
 // returned from HSDP IAM and provides convenient access to things like errors
 type Response struct {
 	*http.Response
-	Message string
+}
+
+// ErrorResponse represents an IAM errors response
+// containing a code and a human readable message
+type ErrorResponse struct {
+	Response *http.Response `json:"-"`
+	Code     string         `json:"responseCode"`
+	Message  string         `json:"responseMessage"`
+}
+
+// GetErrorResponse returns a parsed IAM error response
+// It returns nil if the request was not an error response
+func (r *Response) GetErrorResponse() (response *ErrorResponse) {
+	var resp ErrorResponse
+	data, err := ioutil.ReadAll(r.Body)
+	if err == nil && data != nil {
+		if err := json.Unmarshal(data, &resp); err != nil {
+			return nil
+		}
+	}
+	if resp.Code == "" {
+		return nil
+	}
+	return &resp
 }
 
 // newResponse creates a new Response for the provided http.Response.
@@ -389,11 +412,6 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
-}
-
-type ErrorResponse struct {
-	Response *http.Response
-	Message  string
 }
 
 func (e *ErrorResponse) Error() string {
