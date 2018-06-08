@@ -5,3 +5,5 @@ tools/*.png
 dist/*
 example/
 *.swp
+debug.test
+launch.json
