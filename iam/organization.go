@@ -4,6 +4,6 @@ package iam
 type Organization struct {
 	Name           string `json:"name"`
 	Description    string `json:"description"`
-	DistinctName   string `json:"distinctName"`
-	OrganizationID string `json:"organizationId"`
+	DistinctName   string `json:"distinctName,omitempty"`
+	OrganizationID string `json:"organizationId,omitempty"`
 }

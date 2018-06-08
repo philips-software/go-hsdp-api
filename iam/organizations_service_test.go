@@ -6,6 +6,48 @@ import (
 	"testing"
 )
 
+func TestCreateOrganization(t *testing.T) {
+	teardown := setup()
+	defer teardown()
+
+	parentOrgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	orgName := "TestDevOrg"
+	orgDescription := "Some description"
+	orgID := "af5eee7c-0203-4d5a-a021-414531d0f451"
+	muxIDM.HandleFunc("/security/organizations/"+parentOrgID+"/childorganizations", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Errorf("Expected POST request, got ‘%s’", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, `{
+			"exchange": {
+				"name": "`+orgName+`",
+				"description": "`+orgDescription+`",
+				"distinctName": "ou=`+orgName+`,ou=ToplevelORG,dc=foo-bar,dc=com",
+				"organizationId": "`+orgID+`"
+			},
+			"responseCode": "200",
+			"responseMessage": "Success"
+		}`)
+	})
+
+	org, resp, err := client.Organizations.CreateOrganization(parentOrgID, orgName, orgDescription)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP success")
+	}
+	if org.Name != orgName {
+		t.Errorf("Expected Org name: %s, Got: %s", orgName, org.Name)
+	}
+	if org.OrganizationID != orgID {
+		t.Errorf("Expected Org UUID: %s, Got: %s", orgID, org.OrganizationID)
+	}
+}
+
 func TestGetOrganizationByID(t *testing.T) {
 	teardown := setup()
 	defer teardown()

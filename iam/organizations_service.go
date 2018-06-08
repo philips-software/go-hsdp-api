@@ -2,6 +2,9 @@ package iam
 
 import (
 	"bytes"
+	"fmt"
+
+	"net/http"
 
 	"github.com/jeffail/gabs"
 )
@@ -18,6 +21,37 @@ type GetOrganizationOptions struct {
 	ID          *string `url:"_id,omitempty"`
 	ParentOrgID *string `url:"parentOrgId,omitempty"`
 	Name        *string `url:"name,omitempty"`
+}
+
+func (o *OrganizationsService) CreateOrganization(parentOrgID, name, description string) (*Organization, *Response, error) {
+	var newOrg Organization
+
+	newOrg.Name = name
+	newOrg.Description = description
+
+	req, err := o.client.NewIDMRequest("POST", "security/organizations/"+parentOrgID+"/childorganizations", &newOrg, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", "1")
+
+	var bundleResponse bytes.Buffer
+
+	resp, err := o.client.Do(req, &bundleResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, resp, fmt.Errorf("error creating org: %d", resp.StatusCode)
+	}
+	j, err := gabs.ParseJSON(bundleResponse.Bytes())
+	if err != nil {
+		return nil, resp, err
+	}
+	newOrg.Name = j.Path("exchange.name").Data().(string)
+	newOrg.Description = j.Path("exchange.description").Data().(string)
+	newOrg.OrganizationID = j.Path("exchange.organizationId").Data().(string)
+	return &newOrg, resp, err
 }
 
 func (o *OrganizationsService) GetOrganizationByID(id string) (*Organization, *Response, error) {
