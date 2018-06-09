@@ -32,7 +32,7 @@ import (
 )
 
 func main() {
-        client, _ := api.NewClient(nil, &api.Config{
+        client, _ := iam.NewClient(nil, &api.Config{
                 OAuth2ClientID: "ClientID",
                 OAuth2Secret:   "ClientPWD",
                 SharedKey:      "KeyHere",
