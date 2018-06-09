@@ -10,6 +10,7 @@ type User struct {
 	ManagingOrganization string         `json:"managingOrganization,omitempty"`
 	PreferredLanguage    string         `json:"preferredLanguage,omitempty"`
 	IsAgeValidated       string         `json:"isAgeValidated,omitempty"`
+	Disabled             bool           `json:"disabled"`
 }
 
 type Name struct {

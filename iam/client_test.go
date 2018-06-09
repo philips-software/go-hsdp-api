@@ -16,7 +16,7 @@ var (
 	client *Client
 )
 
-func setup() func() {
+func setup(t *testing.T) func() {
 	muxIAM = http.NewServeMux()
 	serverIAM = httptest.NewServer(muxIAM)
 	muxIDM = http.NewServeMux()
@@ -31,21 +31,11 @@ func setup() func() {
 		IDMURL:         serverIDM.URL,
 	})
 
-	return func() {
-		serverIAM.Close()
-		serverIDM.Close()
-	}
-}
-
-func TestLogin(t *testing.T) {
-	teardown := setup()
-	defer teardown()
-
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
 
 	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
-			t.Errorf("Expected ‘POST’ request, got ‘%s’", r.Method)
+			t.Errorf("Expected ‘POST’ request")
 		}
 
 		w.Header().Set("Content-Type", "application/json")
@@ -58,6 +48,18 @@ func TestLogin(t *testing.T) {
     "token_type": "Bearer"
 }`)
 	})
+
+	return func() {
+		serverIAM.Close()
+		serverIDM.Close()
+	}
+}
+
+func TestLogin(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
 
 	err := client.Login("username", "password")
 	if err != nil {

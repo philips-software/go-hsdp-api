@@ -68,8 +68,15 @@ func (u *UsersService) CreateUser(firstName, lastName, emailID, phoneNumber, org
 	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
+	var doFunc func(*http.Request, interface{}) (*Response, error)
 
-	resp, err := u.client.DoSigned(req, &bundleResponse)
+	if organizationID == "" { // Self registration
+		doFunc = u.client.DoSigned
+	} else { // Admin registration
+		doFunc = u.client.Do
+	}
+	resp, err := doFunc(req, &bundleResponse)
+
 	if err != nil {
 		return false, resp, err
 	}
@@ -223,9 +230,11 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 	r := jsonParsed.Path("exchange.profile")
 	first := r.Path("givenName").Data().(string)
 	last := r.Path("familyName").Data().(string)
+	disabled := r.Path("disabled").Data().(bool)
 	var foundUser User
 	foundUser.Name.Family = last
 	foundUser.Name.Given = first
+	foundUser.Disabled = disabled
 	foundUser.Telecom = append(foundUser.Telecom, TelecomEntry{
 		System: "email",
 		Value:  email,

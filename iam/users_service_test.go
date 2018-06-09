@@ -2,12 +2,63 @@ package iam
 
 import (
 	"io"
+	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/jeffail/gabs"
 )
 
+func TestCreateUserSelfRegistration(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	muxIDM.HandleFunc("/authorize/identity/User", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Errorf("Expected ‘POST’ request, got ‘%s’", r.Method)
+		}
+		if auth := r.Header.Get("Authorization"); auth != "" {
+			t.Errorf("No Authorization header expected, Got: %s", auth)
+		}
+		body, _ := ioutil.ReadAll(r.Body)
+		j, _ := gabs.ParseJSON(body)
+		ageValidated, ok := j.Path("isAgeValidated").Data().(string)
+		if !ok {
+			t.Errorf("Missing isAgeValidated field")
+		}
+		if ageValidated != "true" {
+			t.Errorf("ageValidated should be true")
+		}
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusCreated)
+		io.WriteString(w, `{
+			"resourceType": "OperationOutcome",
+			"issue": [
+				{
+					"severity": "information",
+					"code": "informational",
+					"details": {
+						"text": "User Created Successfully. Verification Email has been sent."
+					}
+				}
+			]
+		}`)
+	})
+	ok, resp, err := client.Users.CreateUser("First", "Last", "andy@foo.com", "31612345678", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("Unexpected failure, Got !ok")
+	}
+	if resp.StatusCode != http.StatusCreated {
+		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	}
+}
+
 func TestGetUserIDByLoginID(t *testing.T) {
-	teardown := setup()
+	teardown := setup(t)
 	defer teardown()
 
 	userUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
@@ -44,7 +95,7 @@ func TestGetUserIDByLoginID(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
-	teardown := setup()
+	teardown := setup(t)
 	defer teardown()
 
 	userUUID := "44d20214-7879-4e35-923d-f9d4e01c9746"

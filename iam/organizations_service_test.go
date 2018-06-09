@@ -7,7 +7,7 @@ import (
 )
 
 func TestCreateOrganization(t *testing.T) {
-	teardown := setup()
+	teardown := setup(t)
 	defer teardown()
 
 	parentOrgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
@@ -49,7 +49,7 @@ func TestCreateOrganization(t *testing.T) {
 }
 
 func TestGetOrganizationByID(t *testing.T) {
-	teardown := setup()
+	teardown := setup(t)
 	defer teardown()
 
 	orgUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"

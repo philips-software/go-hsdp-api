@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetPermissions(t *testing.T) {
-	teardown := setup()
+	teardown := setup(t)
 	defer teardown()
 
 	roleID := "168cdeae-2539-45b0-b18c-89ae32f1ea15"
@@ -61,7 +61,7 @@ func TestGetPermissions(t *testing.T) {
 }
 
 func TestGetPermissionByID(t *testing.T) {
-	teardown := setup()
+	teardown := setup(t)
 	defer teardown()
 
 	uuid := "f1c8b67a-e652-4a91-abb1-0b5d032948dd"

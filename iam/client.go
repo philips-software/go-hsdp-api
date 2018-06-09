@@ -270,7 +270,9 @@ func (c *Client) NewIDMRequest(method, path string, opt interface{}, options []O
 
 	switch c.tokenType {
 	case oAuthToken:
-		req.Header.Set("Authorization", "Bearer "+c.token)
+		if c.token != "" {
+			req.Header.Set("Authorization", "Bearer "+c.token)
+		}
 	}
 
 	if c.UserAgent != "" {
@@ -334,7 +336,9 @@ func (c *Client) NewIAMRequest(method, path string, opt interface{}, options []O
 
 	switch c.tokenType {
 	case oAuthToken:
-		req.Header.Set("Authorization", "Bearer "+c.token)
+		if c.token != "" {
+			req.Header.Set("Authorization", "Bearer "+c.token)
+		}
 	}
 
 	if c.UserAgent != "" {
