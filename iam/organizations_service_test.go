@@ -93,3 +93,41 @@ func TestGetOrganizationByID(t *testing.T) {
 		t.Errorf("Expected Org UUID: %s, Got: %s", orgUUID, org.OrganizationID)
 	}
 }
+
+func TestUpdateOrganization(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	orgUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	orgName := "TestDevOrg"
+	description := "New description"
+	muxIDM.HandleFunc("/security/organizations/"+orgUUID, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "PUT" {
+			t.Errorf("Expected PUT request, got ‘%s’", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, `{
+			"exchange": {
+				"name": "TEST2",
+				"description": "`+description+`",
+				"organizationId": "`+orgUUID+`"
+			},
+			"responseCode": "200",
+			"responseMessage": "Success"
+		}`)
+	})
+	var org Organization
+	org.OrganizationID = orgUUID
+	org.Description = description
+	org.Name = orgName
+
+	_, resp, err := client.Organizations.UpdateOrganization(org)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP success")
+	}
+}
