@@ -32,7 +32,7 @@ import (
 )
 
 func main() {
-        client, _ := iam.NewClient(nil, &api.Config{
+        client, _ := iam.NewClient(nil, &iam.Config{
                 OAuth2ClientID: "ClientID",
                 OAuth2Secret:   "ClientPWD",
                 SharedKey:      "KeyHere",
@@ -45,8 +45,8 @@ func main() {
                 fmt.Printf("Error logging in: %v\n", err)
                 return
         }
-        introspect, resp, _ := client.Introspect()
-        if val != nil {
+        introspect, _, _ := client.Introspect()
+        if introspect != nil {
                 fmt.Printf("Introspect response: %v\n", introspect)
         }
 }
