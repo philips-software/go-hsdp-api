@@ -37,6 +37,8 @@ func main() {
                 OAuth2Secret:   "ClientPWD",
                 SharedKey:      "KeyHere",
                 SecretKey:      "SecretHere",
+                IAMURL:         "https://iam-stage.foo-bar.com",
+                IDMURL:         "https://idm-stage.foo-bar.com",
         })
         err := client.Login("iam.login@aemian.com", "Password!@#")
         if err != nil {
