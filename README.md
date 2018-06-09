@@ -52,10 +52,10 @@ func main() {
 }
 ```
 
-## Todo
+## TODO
 
 - Increase API coverage
-- Write tests
+- Increase code coverage
 
 ## Issues
 
