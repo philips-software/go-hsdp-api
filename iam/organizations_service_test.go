@@ -73,7 +73,7 @@ func TestGetOrganizationByID(t *testing.T) {
 						"text": "TestDev",
 						"name": "`+orgName+`"
 					},
-					"fullUrl": "https%3A%2F%2Fidm-staging.us-east.philips-healthsuite.com%2Fauthorize%2Fidentity%2FOrganization%3F_id%3D`+orgUUID+`"
+					"fullUrl": "https%3A%2F%2Fidm-something.foo-bar.com%2Fauthorize%2Fidentity%2FOrganization%3F_id%3D`+orgUUID+`"
 				}
 			]
 		}`)
