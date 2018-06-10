@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// IntrospectResponse contains details of the introspect on a profile
 type IntrospectResponse struct {
 	Active        bool   `json:"active"`
 	Scope         string `json:"scope"`
@@ -24,6 +25,7 @@ type IntrospectResponse struct {
 	TokenType    string `json:"token_type"`
 }
 
+// Introspect introspects the current logged in user
 func (c *Client) Introspect() (*IntrospectResponse, *Response, error) {
 	var val IntrospectResponse
 

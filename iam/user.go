@@ -1,5 +1,6 @@
 package iam
 
+// User represents an IAM user resource
 type User struct {
 	ID                   string         `json:"id,omitempty"`
 	ResourceType         string         `json:"resourceType,omityempty"`
@@ -13,6 +14,7 @@ type User struct {
 	Disabled             bool           `json:"disabled"`
 }
 
+// Name entity
 type Name struct {
 	Text   string `json:"text"`
 	Family string `json:"family"`
@@ -20,11 +22,13 @@ type Name struct {
 	Prefix string `json:"prefix"`
 }
 
+// TelecomEntry entity
 type TelecomEntry struct {
 	System string `json:"system"`
 	Value  string `json:"value"`
 }
 
+// AddressEntry entity
 type AddressEntry struct {
 	Use        string `json:"use"`
 	City       string `json:"city"`
@@ -33,6 +37,6 @@ type AddressEntry struct {
 	Postalcode string `json:"postalcode"`
 }
 
-func (u *User) Validate() error {
+func (u *User) validate() error {
 	return nil
 }

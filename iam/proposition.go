@@ -15,7 +15,7 @@ type Proposition struct {
 	GlobalReferenceID string `json:"globalReferenceId"`
 }
 
-func (p *Proposition) Validate() error {
+func (p *Proposition) validate() error {
 	if p.Name == "" {
 		return errMissingName
 	}

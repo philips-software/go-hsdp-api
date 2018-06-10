@@ -50,7 +50,7 @@ func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, option
 
 // CreateProposition creates a Proposition
 func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition, *Response, error) {
-	if err := prop.Validate(); err != nil {
+	if err := prop.validate(); err != nil {
 		return nil, nil, err
 	}
 	req, err := p.client.NewIDMRequest("POST", "authorize/identity/Proposition", &prop, nil)

@@ -13,6 +13,7 @@ const (
 	organizationAPIVersion = "1"
 )
 
+// OrganizationsService implements operations on Organization entities
 type OrganizationsService struct {
 	client *Client
 }

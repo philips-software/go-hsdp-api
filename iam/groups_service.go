@@ -46,7 +46,7 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 
 // CreateGroup creates a Group
 func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
-	if err := group.Validate(); err != nil {
+	if err := group.validate(); err != nil {
 		return nil, nil, err
 	}
 	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group", &group, nil)
@@ -105,6 +105,7 @@ func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
 
 }
 
+// AssignRole adds a role to a group
 func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, error) {
 	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$assign-role", nil, nil)
 	if err != nil {
@@ -112,7 +113,7 @@ func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, err
 	}
 	req.Header.Set("api-version", groupAPIVersion)
 	var assignRequest struct {
-		roles []string `json:"roles"`
+		roles []string
 	}
 	assignRequest.roles = []string{role.ID}
 
@@ -125,6 +126,7 @@ func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, err
 	return true, resp, err
 }
 
+// RemoveRole removes a role from a group
 func (g *GroupsService) RemoveRole(group Group, role Role) (bool, *Response, error) {
 	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$remove-role", nil, nil)
 	if err != nil {
@@ -132,7 +134,7 @@ func (g *GroupsService) RemoveRole(group Group, role Role) (bool, *Response, err
 	}
 	req.Header.Set("api-version", groupAPIVersion)
 	var removeRequest struct {
-		roles []string `json:"roles"`
+		roles []string
 	}
 	removeRequest.roles = []string{role.ID}
 

@@ -43,6 +43,7 @@ const (
 	oAuthToken tokenType = iota
 )
 
+// OptionFunc is the function signature function for options
 type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
@@ -123,6 +124,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	return c, nil
 }
 
+// Login logs in a user with `username` and `password`
 func (c *Client) Login(username, password string) error {
 	req, err := c.NewIAMRequest("POST", "authorize/oauth2/token", nil, nil)
 	if err != nil {
@@ -158,26 +160,29 @@ func (c *Client) Login(username, password string) error {
 	return nil
 }
 
+// Token returns the current token
 func (c *Client) Token() string {
 	return c.token
 }
 
+// SetToken sets the token
 func (c *Client) SetToken(token string) {
 	c.token = token
 	c.tokenType = oAuthToken
 }
 
+// RefreshToken returns the refresh token
 func (c *Client) RefreshToken() error {
 	return nil
 }
 
-// BaseURL return a copy of the baseIAMURL.
+// BaseIAMURL return a copy of the baseIAMURL.
 func (c *Client) BaseIAMURL() *url.URL {
 	u := *c.baseIAMURL
 	return &u
 }
 
-// BaseURL return a copy of the baseIAMURL.
+// BaseIDMURL return a copy of the baseIAMURL.
 func (c *Client) BaseIDMURL() *url.URL {
 	u := *c.baseIDMURL
 	return &u
@@ -384,6 +389,7 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
+// DoSigned performs a signed API request
 func (c *Client) DoSigned(req *http.Request, v interface{}) (*Response, error) {
 	c.signer.SignRequest(req)
 	return c.Do(req, v)

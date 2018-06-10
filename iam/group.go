@@ -6,6 +6,7 @@ import (
 	"github.com/jeffail/gabs"
 )
 
+// Group represents an IAM group resource
 type Group struct {
 	ID                   string `json:"id,omitempty"`
 	Name                 string `json:"name,omitempty"`
@@ -13,7 +14,7 @@ type Group struct {
 	ManagingOrganization string `json:"managingOrganization,omitempty"`
 }
 
-func (g *Group) Validate() error {
+func (g *Group) validate() error {
 	if g.ManagingOrganization == "" {
 		return errMissingManagingOrganization
 	}
