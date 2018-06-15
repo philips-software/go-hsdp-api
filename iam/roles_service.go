@@ -3,6 +3,7 @@ package iam
 import (
 	"bytes"
 	"errors"
+	"net/http"
 
 	"github.com/jeffail/gabs"
 )
@@ -18,6 +19,7 @@ type GetRolesOptions struct {
 	RoleID         *string `url:"roleId,omitempty"`
 }
 
+// GetRolesByGroupID retrieves Roles based on group ID
 func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, error) {
 	opt := &GetRolesOptions{
 		GroupID: &groupID,
@@ -42,6 +44,7 @@ func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, er
 
 }
 
+// GetRoleByID retrieves a role by ID
 func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
 	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Role/"+roleID, nil, nil)
 	if err != nil {
@@ -55,6 +58,9 @@ func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
 	resp, err := p.client.Do(req, &role)
 	if err != nil {
 		return nil, resp, err
+	}
+	if role.ID != roleID {
+		return nil, resp, errNotFound
 	}
 	return &role, resp, err
 }
@@ -78,6 +84,7 @@ func (p *RolesService) UpdateRole(role *Role) (*Role, *Response, error) {
 
 }
 
+// CreateRole creates a Role
 func (p *RolesService) CreateRole(name, description, managingOrganization string) (*Role, *Response, error) {
 	role := &Role{
 		Name:                 name,
@@ -96,6 +103,24 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 	return &createdRole, resp, err
 }
 
+// DeleteRole deletes the given Role
+func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
+	req, err := p.client.NewIDMRequest("DELETE", "authorize/identity/Role/"+role.ID, nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", "1")
+
+	var deleteResponse interface{}
+
+	resp, err := p.client.Do(req, &deleteResponse)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return false, resp, nil
+	}
+	return true, resp, err
+}
+
+// GetRole retrieve a Role resource based on GetRoleOptions parameters
 func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*Role, *Response, error) {
 	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Role", opt, options)
 	if err != nil {
@@ -116,6 +141,7 @@ func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*Ro
 	return &(*roles)[0], resp, err
 }
 
+// GetRolePermissions retrieves the permissions assosciates with the Role
 func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
 	opt := &GetRolesOptions{RoleID: &role.ID}
 
@@ -142,6 +168,7 @@ func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
 
 }
 
+// AddRolePermission adds a given permission to the Role
 func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *Response, error) {
 	var permissionRequest struct {
 		Permissions []string `json:"permissions"`
@@ -164,6 +191,7 @@ func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *
 
 }
 
+// RemoveRolePermission removes the permission from the Role
 func (p *RolesService) RemoveRolePermission(role Role, permission string) (*Role, *Response, error) {
 	var permissionRequest struct {
 		Permissions []string `json:"permissions"`
