@@ -12,6 +12,7 @@ type User struct {
 	PreferredLanguage    string         `json:"preferredLanguage,omitempty"`
 	IsAgeValidated       string         `json:"isAgeValidated,omitempty"`
 	Disabled             bool           `json:"disabled"`
+	Loaded               bool           `json:"-"`
 }
 
 // Name entity

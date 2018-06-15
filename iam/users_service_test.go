@@ -57,6 +57,84 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 	}
 }
 
+func TestGetUsers(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	groupID := "1eec7b01-1417-4546-9c5e-088dea0a9e8b"
+
+	muxIDM.HandleFunc("/security/users", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		if r.Method != "GET" {
+			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
+			return
+		}
+		qp := r.URL.Query()
+		if ps := qp.Get("pageSize"); ps != "5" {
+			t.Errorf("Expected pageSize to be 5, Got: %s", ps)
+			return
+		}
+		if pn := qp.Get("pageNumber"); pn != "1" {
+			t.Errorf("Expected pageNumber to be 1, Got: %s", pn)
+			return
+		}
+		io.WriteString(w, `{
+			"exchange": {
+				"users": [
+					{
+						"userUUID": "7dbfe5fc-1320-4bc6-92a7-2be5d7f07cac"
+					},
+					{
+						"userUUID": "5620b687-7f67-4222-b7c2-91ff312b3066"
+					},
+					{
+						"userUUID": "41c79d7f-c078-4288-8f6d-459292858f00"
+					},
+					{
+						"userUUID": "beba9f50-22ad-4637-ac00-404d8eae4f9d"
+					},
+					{
+						"userUUID": "461ce8d0-7aab-4982-9e1f-cfafb69e51f0"
+					}
+				],
+				"nextPageExists": true
+			},
+			"responseCode": "200",
+			"responseMessage": "Success"
+		}`)
+	})
+
+	pageNumber := "1"
+	pageSize := "5"
+	list, resp, err := client.Users.GetUsers(&GetUserOptions{
+		GroupID:    &groupID,
+		PageNumber: &pageNumber,
+		PageSize:   &pageSize,
+	})
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+		return
+	}
+	if list == nil {
+		t.Errorf("Expected non nil list")
+		return
+	}
+	if len(list.Users) != 5 {
+		t.Errorf("Expected 5 users, Got: %d", len(list.Users))
+	}
+	if !list.HasNextPage {
+		t.Errorf("Expected to be a next page")
+	}
+	if resp == nil {
+		t.Errorf("Expected non nil response")
+		return
+	}
+	if resp.StatusCode != 200 {
+		t.Errorf("Expected HTTP OK, Got: %d", resp.StatusCode)
+	}
+}
 func TestGetUserIDByLoginID(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()

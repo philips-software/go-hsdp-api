@@ -16,6 +16,10 @@ type GetUserOptions struct {
 	ID             *string `url:"_id,omitempty"`
 	OrganizationID *string `url:"Id,omitempty"`
 	Name           *string `url:"name,omitempty"`
+	LoginID        *string `url:"loginId,omitempty"`
+	GroupID        *string `url:"groupId,omitempty"`
+	PageSize       *string `url:"pageSize,omitempty"`
+	PageNumber     *string `url:"pageNumber,omitempty"`
 }
 
 type UsersService struct {
@@ -38,6 +42,13 @@ type Resource struct {
 	OldPassword      string `json:"oldPassword,omitempty"`
 	NewPassword      string `json:"newPassword,omitempty"`
 	Context          string `json:"context,omitempty"`
+}
+
+type UserList struct {
+	Users       []User
+	PageNumber  int
+	PageSize    int
+	HasNextPage bool
 }
 
 // CreateUser creates a new IAM user.
@@ -204,6 +215,39 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 	}
 	ok := resp != nil && resp.StatusCode == http.StatusOK
 	return ok, resp, err
+}
+
+// GetUsers looks up users by search criteria specified in GetUserOptions
+func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*UserList, *Response, error) {
+	req, err := u.client.NewIDMRequest("GET", "security/users", opts, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", userAPIVersion)
+	var bundleResponse struct {
+		Exchange struct {
+			Users []struct {
+				UserUUID string `json:"userUUID"`
+			}
+			NextPageExists bool `json:"nextPageExists"`
+		}
+		ResponseCode    string `json:"responseCode"`
+		ResponseMessage string `json:"responseMessage"`
+	}
+
+	resp, err := u.client.DoSigned(req, &bundleResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	var list UserList
+
+	list.HasNextPage = bundleResponse.Exchange.NextPageExists
+	list.Users = make([]User, len(bundleResponse.Exchange.Users))
+	for i, u := range bundleResponse.Exchange.Users {
+		list.Users[i] = User{ID: u.UserUUID}
+	}
+
+	return &list, resp, err
 }
 
 // GetUserByID looks up a user by UUID
