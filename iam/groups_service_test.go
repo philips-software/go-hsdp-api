@@ -181,3 +181,58 @@ func TestRemoveRole(t *testing.T) {
 		t.Errorf("Expected AssignRole to succeed")
 	}
 }
+
+func TestGetRoles(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	roleID := "c6f4f40d-6585-4dbf-b4bb-cd78bc83e73b"
+
+	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	muxIDM.HandleFunc("/authorize/identity/Role", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "GET":
+			if r.URL.Query().Get("groupId") != groupID {
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			io.WriteString(w, `{
+				"total": 1,
+				"entry": [
+					{
+						"name": "TDRALL",
+						"managingOrganization": "0d1c477c-46be-4c5c-a53e-51ad86eda38d",
+						"id": "`+roleID+`"
+					}
+				]
+			}`)
+		}
+	})
+	var group Group
+	var role Role
+	group.ID = groupID
+	role.ID = roleID
+	roles, resp, err := client.Groups.GetRoles(group)
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
+	}
+	if err != nil {
+		t.Errorf("Did not expect error, Got: %v", err)
+	}
+	if roles == nil {
+		t.Errorf("Expected to find roles")
+		return
+	}
+	if len(*roles) != 1 {
+		t.Errorf("Expected to find 1 role, got: %d", len(*roles))
+		return
+	}
+	if (*roles)[0].ID != roleID {
+		t.Errorf("Unexpected role ID")
+	}
+	if (*roles)[0].Name != "TDRALL" {
+		t.Errorf("Unexpected role name")
+	}
+}

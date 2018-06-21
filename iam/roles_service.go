@@ -8,6 +8,10 @@ import (
 	"github.com/jeffail/gabs"
 )
 
+var (
+	roleAPIVersion = "1"
+)
+
 type RolesService struct {
 	client *Client
 }

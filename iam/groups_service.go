@@ -105,6 +105,28 @@ func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
 
 }
 
+// GetRoles returns the roles assigned to this group
+func (g *GroupsService) GetRoles(group Group) (*[]Role, *Response, error) {
+	opt := &GetRolesOptions{
+		GroupID: &group.ID,
+	}
+	req, err := g.client.NewIDMRequest("GET", "authorize/identity/Role", opt, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", roleAPIVersion)
+	var responseStruct struct {
+		Total int    `json:"total"`
+		Entry []Role `json:"entry"`
+	}
+
+	resp, err := g.client.Do(req, &responseStruct)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &responseStruct.Entry, resp, err
+}
+
 // AssignRole adds a role to a group
 func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, error) {
 	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$assign-role", nil, nil)
@@ -112,6 +134,7 @@ func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, err
 		return false, nil, err
 	}
 	req.Header.Set("api-version", groupAPIVersion)
+	// TODO: check if this actually works
 	var assignRequest struct {
 		roles []string
 	}
