@@ -99,9 +99,9 @@ func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
 
 	resp, err := g.client.Do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, resp, nil
+		return false, resp, err
 	}
-	return true, resp, err
+	return true, resp, nil
 
 }
 
