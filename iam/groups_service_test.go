@@ -1,7 +1,9 @@
 package iam
 
 import (
+	"encoding/json"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"testing"
 )
@@ -110,6 +112,31 @@ func TestAssignRole(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				t.Errorf("Unexpected EOF from reading request")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			var assignRequest struct {
+				Roles []string `json:"roles"`
+			}
+			err = json.Unmarshal(body, &assignRequest)
+			if err != nil {
+				t.Errorf("Error parsing request: %v", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if len(assignRequest.Roles) != 1 {
+				t.Errorf("Expected 1 role, got: %d", len(assignRequest.Roles))
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if assignRequest.Roles[0] != roleID {
+				t.Errorf("Unexpected role: %s", assignRequest.Roles[0])
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
 			w.WriteHeader(http.StatusOK)
 			io.WriteString(w, `{
 				"resourceType": "OperationOutcome",
@@ -151,6 +178,31 @@ func TestRemoveRole(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				t.Errorf("Unexpected EOF from reading request")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			var removeRequest struct {
+				Roles []string `json:"roles"`
+			}
+			err = json.Unmarshal(body, &removeRequest)
+			if err != nil {
+				t.Errorf("Error parsing request: %v", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if len(removeRequest.Roles) != 1 {
+				t.Errorf("Expected 1 role, got: %d", len(removeRequest.Roles))
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if removeRequest.Roles[0] != roleID {
+				t.Errorf("Unexpected role: %s", removeRequest.Roles[0])
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
 			w.WriteHeader(http.StatusOK)
 			io.WriteString(w, `{
 				"resourceType": "OperationOutcome",

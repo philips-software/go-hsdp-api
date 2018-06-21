@@ -115,6 +115,8 @@ func (g *GroupsService) GetRoles(group Group) (*[]Role, *Response, error) {
 		return nil, nil, err
 	}
 	req.Header.Set("api-version", roleAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
 	var responseStruct struct {
 		Total int    `json:"total"`
 		Entry []Role `json:"entry"`
@@ -129,20 +131,23 @@ func (g *GroupsService) GetRoles(group Group) (*[]Role, *Response, error) {
 
 // AssignRole adds a role to a group
 func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, error) {
-	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$assign-role", nil, nil)
+	var assignRequest struct {
+		Roles []string `json:"roles"`
+	}
+	assignRequest.Roles = []string{role.ID}
+	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$assign-role", assignRequest, nil)
 	if err != nil {
 		return false, nil, err
 	}
 	req.Header.Set("api-version", groupAPIVersion)
-	// TODO: check if this actually works
-	var assignRequest struct {
-		roles []string
-	}
-	assignRequest.roles = []string{role.ID}
+	req.Header.Set("Content-Type", "application/json")
 
 	var assignResponse interface{}
 
 	resp, err := g.client.Do(req, &assignResponse)
+	if err != nil {
+		return false, resp, err
+	}
 	if resp == nil || resp.StatusCode != http.StatusOK {
 		return false, resp, nil
 	}
@@ -151,19 +156,23 @@ func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, err
 
 // RemoveRole removes a role from a group
 func (g *GroupsService) RemoveRole(group Group, role Role) (bool, *Response, error) {
-	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$remove-role", nil, nil)
+	var removeRequest struct {
+		Roles []string `json:"roles"`
+	}
+	removeRequest.Roles = []string{role.ID}
+	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$remove-role", removeRequest, nil)
 	if err != nil {
 		return false, nil, err
 	}
 	req.Header.Set("api-version", groupAPIVersion)
-	var removeRequest struct {
-		roles []string
-	}
-	removeRequest.roles = []string{role.ID}
+	req.Header.Set("Content-Type", "application/json")
 
 	var removeResponse interface{}
 
 	resp, err := g.client.Do(req, &removeResponse)
+	if err != nil {
+		return false, resp, err
+	}
 	if resp == nil || resp.StatusCode != http.StatusOK {
 		return false, resp, nil
 	}
