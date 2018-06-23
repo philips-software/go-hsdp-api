@@ -26,13 +26,15 @@ const (
 )
 
 var (
-	LOG_TIME_FORMAT  = "2006-01-02T15:04:05.000Z07:00"
-	TIME_FORMAT      = time.RFC3339
+	logTimeFormat    = "2006-01-02T15:04:05.000Z07:00"
+	timeFormat       = time.RFC3339
 	uuidRegex        = regexp.MustCompile(`[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+`)
 	versionRegex     = regexp.MustCompile(`^(\d+\.)?(\d+){1}$`)
 	errInvalidConfig = errors.New("invalid configuration: missing SharedKey, SharedSecret, BaseURL or ProductKey")
+	errNothingToPost = errors.New("nothing to post")
 )
 
+// Config the client
 type Config struct {
 	SharedKey    string
 	SharedSecret string
@@ -40,6 +42,7 @@ type Config struct {
 	ProductKey   string
 }
 
+// Valid returns if all required config fields are present, false otherwise
 func (c *Config) Valid() bool {
 	if c.SharedKey != "" && c.SharedSecret != "" && c.BaseURL != "" && c.ProductKey != "" {
 		return true
@@ -47,6 +50,7 @@ func (c *Config) Valid() bool {
 	return false
 }
 
+// Client holds the client state
 type Client struct {
 	config     Config
 	url        *url.URL
@@ -55,6 +59,7 @@ type Client struct {
 	debug      bool
 }
 
+// Response holds a logevent response
 type Response struct {
 	*http.Response
 	Message string
@@ -67,6 +72,7 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
+// NewClient returns an instance of the logger client with the given Config
 func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -142,6 +148,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	return response, err
 }
 
+// ErrorResponse holds an error response from the server
 type ErrorResponse struct {
 	Response *http.Response
 	Message  string
@@ -199,14 +206,15 @@ func parseError(raw interface{}) string {
 	}
 }
 
+// StoreResources posts one or more log messages
 func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	var b Bundle
 	var invalid []Resource
 
 	b.ResourceType = "Bundle"
-	b.ProductKey = c.config.ProductKey
 	b.Entry = make([]Element, count, count)
 	b.Type = "transaction"
+	b.ProductKey = c.config.ProductKey
 
 	j := 0
 	for i := 0; i < count; i++ {
@@ -224,6 +232,10 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 		b.Entry[j] = e
 		j++
 	}
+	if j == 0 { // No payload
+		return nil, errNothingToPost
+	}
+
 	b.Total = j
 
 	req := &http.Request{
@@ -248,7 +260,10 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	req.Header.Set("User-Agent", userAgent)
 	c.httpSigner.SignRequest(req)
 
-	resp, err := c.Do(req, nil)
+	var serverResponse bytes.Buffer
+
+	resp, err := c.Do(req, &serverResponse)
+
 	if len(invalid) > 0 {
 		resp.Failed = invalid
 	}
