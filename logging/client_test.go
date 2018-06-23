@@ -49,8 +49,12 @@ func setup(t *testing.T, config Config) func() {
 
 	config.BaseURL = serverLogger.URL
 
-	client, _ = NewClient(nil, config)
+	var err error
 
+	client, err = NewClient(nil, config)
+	if err != nil {
+		t.Fatal(err)
+	}
 	muxLogger.HandleFunc("/core/log/LogEvent", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			w.WriteHeader(http.StatusMethodNotAllowed)
