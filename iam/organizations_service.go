@@ -13,6 +13,14 @@ const (
 	organizationAPIVersion = "1"
 )
 
+// Organization represents a IAM Organization resource
+type Organization struct {
+	Name           string `json:"name"`
+	Description    string `json:"description"`
+	DistinctName   string `json:"distinctName,omitempty"`
+	OrganizationID string `json:"organizationId,omitempty"`
+}
+
 // OrganizationsService implements operations on Organization entities
 type OrganizationsService struct {
 	client *Client
