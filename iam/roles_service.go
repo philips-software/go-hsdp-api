@@ -20,10 +20,12 @@ type Role struct {
 	ManagingOrganization string `json:"managingOrganization"`
 }
 
+// RolesService provides operations on IAM roles resources
 type RolesService struct {
 	client *Client
 }
 
+// GetRolesOptions describes search criteria for looking up roles
 type GetRolesOptions struct {
 	Name           *string `url:"name,omitempty"`
 	GroupID        *string `url:"groupId,omitempty"`
@@ -77,6 +79,7 @@ func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
 	return &role, resp, err
 }
 
+// UpdateRole updates a role
 // TODO: below method actually is not yet implemented on the HSDP side
 func (p *RolesService) UpdateRole(role *Role) (*Role, *Response, error) {
 	var updateRoleRequestBody struct {

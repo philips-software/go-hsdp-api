@@ -18,24 +18,29 @@ type Permission struct {
 	Type        string `json:"type"`
 }
 
+// PermissionsService provides operations on IAM Permissions resources
 type PermissionsService struct {
 	client *Client
 }
 
+// GetPermissionOptions describes search criteria for looking up permissions
 type GetPermissionOptions struct {
 	ID     *string `url:"_id,omitempty"`
 	Name   *string `url:"name,omitempty"`
 	RoleID *string `url:"roleId,omitempty"`
 }
 
+// GetPermissionByID looks up a permission by ID
 func (p *PermissionsService) GetPermissionByID(id string) (*Permission, *Response, error) {
 	return p.GetPermission(&GetPermissionOptions{ID: &id}, nil)
 }
 
+// GetPermissionByName looks up a permission by name
 func (p *PermissionsService) GetPermissionByName(name string) (*Permission, *Response, error) {
 	return p.GetPermission(&GetPermissionOptions{Name: &name}, nil)
 }
 
+// GetPermissionsByRoleID finds all permission which belong to the roleID
 func (p *PermissionsService) GetPermissionsByRoleID(roleID string) (*[]Permission, *Response, error) {
 	opt := &GetPermissionOptions{
 		RoleID: &roleID,
@@ -58,6 +63,7 @@ func (p *PermissionsService) GetPermissionsByRoleID(roleID string) (*[]Permissio
 	return &responseStruct.Entry, resp, err
 }
 
+// GetPermission looks up a permission based on GetPermissionOptions
 func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ...OptionFunc) (*Permission, *Response, error) {
 	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Permission", opt, options)
 	if err != nil {
@@ -78,6 +84,7 @@ func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ..
 	return &(*permissions)[0], resp, nil
 }
 
+// GetPermissions looks up permissions based on GetPermissionOptions
 func (p *PermissionsService) GetPermissions(opt GetPermissionOptions, options ...OptionFunc) (*[]Permission, *Response, error) {
 	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Permission", opt, options)
 	if err != nil {

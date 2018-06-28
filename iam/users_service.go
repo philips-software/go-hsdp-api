@@ -12,6 +12,7 @@ const (
 	userAPIVersion = "1"
 )
 
+// GetUserOptions describes search criteria for looking up users
 type GetUserOptions struct {
 	ID             *string `url:"_id,omitempty"`
 	OrganizationID *string `url:"Id,omitempty"`
@@ -22,20 +23,24 @@ type GetUserOptions struct {
 	PageNumber     *string `url:"pageNumber,omitempty"`
 }
 
+// UsersService provides operations on IAM User resources
 type UsersService struct {
 	client *Client
 }
 
+// Parameters holds parameters
 type Parameters struct {
 	ResourceType string  `json:"resourceType"`
 	Parameter    []Param `json:"parameter"`
 }
 
+// Param describes a resource
 type Param struct {
 	Name     string   `json:"name"`
 	Resource Resource `json:"resource"`
 }
 
+// Resource holds a resource
 type Resource struct {
 	LoginID          string `json:"loginId,omitempty"`
 	ConfirmationCode string `json:"confirmationCode,omitempty"`
@@ -44,6 +49,7 @@ type Resource struct {
 	Context          string `json:"context,omitempty"`
 }
 
+// UserList holds a paginated lists of users
 type UserList struct {
 	Users       []User
 	PageNumber  int
