@@ -24,7 +24,9 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
+	"os"
 	"sort"
 	"strings"
 
@@ -59,6 +61,8 @@ type Config struct {
 	IAMURL           string
 	IDMURL           string
 	RootOrgID        string
+	Debug            bool
+	DebugLog         string
 }
 
 // A Client manages communication with HSDP IAM API
@@ -81,6 +85,8 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
+
+	debugFile *os.File
 
 	Organizations *OrganizationsService
 	Groups        *GroupsService
@@ -114,6 +120,13 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	if config.DebugLog != "" {
+		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_WRONLY, 0600)
+		if err != nil {
+			c.debugFile = nil
+		}
+	}
+
 	c.signer = signer
 	c.Organizations = &OrganizationsService{client: c}
 	c.Groups = &GroupsService{client: c}
@@ -124,6 +137,14 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Propositions = &PropositionsService{client: c}
 	c.Clients = &ClientsService{client: c}
 	return c, nil
+}
+
+// Close releases allocated resources of clients
+func (c *Client) Close() {
+	if c.debugFile != nil {
+		c.debugFile.Close()
+		c.debugFile = nil
+	}
 }
 
 // Login logs in a user with `username` and `password`
@@ -148,6 +169,7 @@ func (c *Client) Login(username, password string) error {
 		TokenType    string `json:"token_type"`
 	}
 	resp, err := c.Do(req, &tokenResponse)
+
 	if err != nil {
 		return err
 	}
@@ -403,7 +425,25 @@ func (c *Client) DoSigned(req *http.Request, v interface{}) (*Response, error) {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+	if c.config.Debug {
+		dumped, _ := httputil.DumpRequest(req, true)
+		out := fmt.Sprintf("---REQUEST START---\n%s\n---REQUEST END---\n", string(dumped))
+		if c.debugFile != nil {
+			c.debugFile.WriteString(out)
+		} else {
+			fmt.Printf(out)
+		}
+	}
 	resp, err := c.client.Do(req)
+	if c.config.Debug && resp != nil {
+		dumped, _ := httputil.DumpResponse(resp, true)
+		out := fmt.Sprintf("---RESPONSE START---\n%s\n--RESPONSE END---\n", string(dumped))
+		if c.debugFile != nil {
+			c.debugFile.WriteString(out)
+		} else {
+			fmt.Printf(out)
+		}
+	}
 	if err != nil {
 		return nil, err
 	}
