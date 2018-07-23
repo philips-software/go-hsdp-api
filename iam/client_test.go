@@ -41,7 +41,7 @@ func setup(t *testing.T) func() {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		io.WriteString(w, `{
-    "scope": "mail",
+    "scope": "auth_iam_introspect mail tdr.contract tdr.dataitem",
     "access_token": "`+token+`",
     "refresh_token": "31f1a449-ef8e-4bfc-a227-4f2353fde547",
     "expires_in": "1799",
@@ -67,5 +67,24 @@ func TestLogin(t *testing.T) {
 	}
 	if client.Token() != token {
 		t.Errorf("Unexpected token found: %s, expected: %s", client.Token(), token)
+	}
+}
+
+func TestHasScopes(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	err := client.Login("username", "password")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !client.HasScopes("mail") {
+		t.Errorf("Expected mail scope to be there")
+	}
+	if !client.HasScopes("tdr.contract", "tdr.dataitem") {
+		t.Errorf("Expected tdr scopes to be there")
+	}
+	if client.HasScopes("missing") {
+		t.Errorf("Unexpected scope confirmation")
 	}
 }

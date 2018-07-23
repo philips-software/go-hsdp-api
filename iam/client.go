@@ -83,6 +83,9 @@ type Client struct {
 	// token used to make authenticated API calls.
 	token string
 
+	// scope holds the client scope
+	scopes []string
+
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
 
@@ -163,6 +166,7 @@ func (c *Client) Login(username, password string) error {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	var tokenResponse struct {
+		Scope        string `json:"scope"`
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 		ExpiresIn    string `json:"expires_in"`
@@ -181,12 +185,30 @@ func (c *Client) Login(username, password string) error {
 	}
 	c.tokenType = oAuthToken
 	c.token = tokenResponse.AccessToken
+	c.scopes = strings.Split(tokenResponse.Scope, " ")
 	return nil
 }
 
 // Token returns the current token
 func (c *Client) Token() string {
 	return c.token
+}
+
+// HasScopes returns true of all scopes are there for the client
+func (c *Client) HasScopes(scopes ...string) bool {
+	for _, s := range scopes {
+		found := false
+		for _, t := range c.scopes {
+			if t == s {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
 }
 
 // SetToken sets the token
