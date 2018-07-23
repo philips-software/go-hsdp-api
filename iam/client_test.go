@@ -87,4 +87,7 @@ func TestHasScopes(t *testing.T) {
 	if client.HasScopes("missing") {
 		t.Errorf("Unexpected scope confirmation")
 	}
+	if client.HasScopes("mail", "bogus") {
+		t.Errorf("Unexpected scope confirmation")
+	}
 }
