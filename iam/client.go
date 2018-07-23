@@ -211,6 +211,36 @@ func (c *Client) HasScopes(scopes ...string) bool {
 	return true
 }
 
+// HasPermissions returns true if all permissions are there for the client
+func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
+	intr, _, err := c.Introspect()
+	if err != nil {
+		return false
+	}
+	foundOrg := false
+	for _, org := range intr.Organizations.OrganizationList {
+		if org.OrganizationID != orgID {
+			continue
+		}
+		foundOrg = true
+		// Search in the organization permission list
+		for _, p := range permissions {
+			found := false
+			for _, q := range org.Permissions {
+				if p == q {
+					found = true
+					continue
+				}
+			}
+			if !found {
+				// Permission is missing to return false
+				return false
+			}
+		}
+	}
+	return foundOrg
+}
+
 // SetToken sets the token
 func (c *Client) SetToken(token string) {
 	c.token = token
