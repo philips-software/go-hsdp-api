@@ -73,9 +73,9 @@ type Client struct {
 	Contracts *ContractsService
 }
 
-// NewClient returns a new HSDP IAM API client. If a nil httpClient is
-// provided, http.DefaultClient will be used. To use API methods which require
-// authentication, provide a valid oAuth bearer token.
+// NewClient returns a new HSDP TDR API client. If a nil httpClient is
+// provided, http.DefaultClient will be used. A configured IAM client must be provided
+// as well
 func NewClient(httpClient *http.Client, iamClient *iam.Client, config *Config) (*Client, error) {
 	return newClient(httpClient, iamClient, config)
 }
@@ -87,6 +87,9 @@ func newClient(httpClient *http.Client, iamClient *iam.Client, config *Config) (
 	c := &Client{client: httpClient, iamClient: iamClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseTDRURL(c.config.TDRURL); err != nil {
 		return nil, err
+	}
+	if !iamClient.HasScopes("tdr.contract", "tdr.dataitem") {
+		return nil, errMissingTDRScopes
 	}
 	if config.DebugLog != "" {
 		var err error
@@ -124,7 +127,7 @@ func (c *Client) SetBaseTDRURL(urlStr string) error {
 	return err
 }
 
-// NewIDMRequest creates an API request. A relative URL path can be provided in
+// NewTDRRequest creates an new TDR API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
@@ -220,7 +223,7 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
-// error if an API error has occurred. If v implements the io.Writer
+// Do executes a http request. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
