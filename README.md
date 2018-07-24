@@ -63,8 +63,8 @@ func main() {
 
 ## Author
 
-Andy Lo-A-Foe (<andy.loafoe@aemian.com>)
+Andy Lo-A-Foe (<andy.lo-a-foe@philips.com>)
 
 ## License
 
-Licensed under the Apache License, Version 2.0 (the "License")
+License is MIT. See [LICENSE file](LICENSE.md)
