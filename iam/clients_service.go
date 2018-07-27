@@ -2,7 +2,7 @@ package iam
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/jeffail/gabs"
@@ -21,10 +21,12 @@ type ApplicationClient struct {
 	Password          string   `json:"password,omitempty"`
 	RedirectionURIs   []string `json:"redirectionURIs"`
 	ResponseTypes     []string `json:"responseTypes"`
+	Scopes            []string `json:"scopes,omitempty"`
+	DefaultScopes     []string `json:"defaultScopes,omitempty"`
+	Disabled          bool     `json:"disabled,omitempty"`
 	Description       string   `json:"description"`
 	ApplicationID     string   `json:"applicationId"`
 	GlobalReferenceID string   `json:"globalReferenceId"`
-	IsConsentImplied  bool     `json:"isConsentImplied"`
 }
 
 // ClientsService provides operations on IAM roles resources
@@ -34,28 +36,35 @@ type ClientsService struct {
 
 // GetClientsOptions describes search criteria for looking up roles
 type GetClientsOptions struct {
-	Name           *string `url:"name,omitempty"`
-	GroupID        *string `url:"groupId,omitempty"`
-	OrganizationID *string `url:"organizationId,omitempty"`
-	RoleID         *string `url:"roleId,omitempty"`
+	ID                *string `url:"_id,omitempty"`
+	Name              *string `url:"name,omitempty"`
+	GlobalReferenceID *string `url:"globalReferenceId,omitempty"`
+	ApplicationID     *string `url:"applicationId,omitempty"`
 }
 
 // CreateClient creates a Client
 func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient, *Response, error) {
 	req, err := c.client.NewIDMRequest("POST", "authorize/identity/Client", ac, nil)
-	req.Header.Set("API-version", clientAPIVersion)
+	req.Header.Set("api-version", clientAPIVersion)
 
 	var createdClient ApplicationClient
 
 	resp, err := c.client.Do(req, &createdClient)
-	if err != nil {
+
+	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
+	if !ok {
 		return nil, resp, err
 	}
-	return &createdClient, resp, err
+	var id string
+	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Client/%s", &id)
+	if count == 0 {
+		return nil, resp, errCouldNoReadResourceAfterCreate
+	}
+	return c.GetClientByID(id)
 }
 
 // DeleteClient deletes the given Client
-func (c *RolesService) DeleteClient(ac ApplicationClient) (bool, *Response, error) {
+func (c *ClientsService) DeleteClient(ac ApplicationClient) (bool, *Response, error) {
 	req, err := c.client.NewIDMRequest("DELETE", "authorize/identity/Client/"+ac.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
@@ -71,13 +80,32 @@ func (c *RolesService) DeleteClient(ac ApplicationClient) (bool, *Response, erro
 	return true, resp, err
 }
 
+// GetClientByID finds a client by its ID
+func (c *ClientsService) GetClientByID(id string) (*ApplicationClient, *Response, error) {
+	clients, resp, err := c.GetClients(&GetClientsOptions{ID: &id}, nil)
+
+	if err != nil {
+		return nil, resp, err
+	}
+	if clients == nil {
+		return nil, resp, errOperationFailed
+	}
+	if len(*clients) == 0 {
+		return nil, resp, errEmptyResults
+	}
+	foundClient := (*clients)[0]
+
+	return &foundClient, resp, nil
+}
+
 // GetClients looks up clients based on GetClientsOptions
-func (c *ClientsService) GetClients(opt GetClientsOptions, options ...OptionFunc) (*[]ApplicationClient, *Response, error) {
+func (c *ClientsService) GetClients(opt *GetClientsOptions, options ...OptionFunc) (*[]ApplicationClient, *Response, error) {
 	req, err := c.client.NewIDMRequest("GET", "authorize/identity/Client", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("api-version", clientAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
 
 	var bundleResponse bytes.Buffer
 
@@ -123,19 +151,38 @@ func (c *ClientsService) parseFromBundle(bundle []byte) (*[]ApplicationClient, e
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errors.New("empty result")
+		return nil, errEmptyResults
 	}
 	clients := make([]ApplicationClient, int64(count))
 
 	children, _ := jsonParsed.S("entry").Children()
 	for i, r := range children {
 		var cl ApplicationClient
+		cl.ID, _ = r.Path("id").Data().(string)
 		cl.ClientID, _ = r.Path("clientId").Data().(string)
 		cl.Name, _ = r.Path("name").Data().(string)
 		cl.Description, _ = r.Path("description").Data().(string)
 		cl.Type, _ = r.Path("type").Data().(string)
 		cl.GlobalReferenceID, _ = r.Path("globalReferenceId").Data().(string)
 		cl.ApplicationID, _ = r.Path("applicationId").Data().(string)
+		children, _ = r.Path("redirectionURIs").Children()
+		for _, child := range children {
+			cl.RedirectionURIs = append(cl.RedirectionURIs, child.Data().(string))
+		}
+		children, _ = r.Path("responseTypes").Children()
+		for _, child := range children {
+			cl.ResponseTypes = append(cl.ResponseTypes, child.Data().(string))
+		}
+		children, _ = r.Path("scopes").Children()
+		for _, child := range children {
+			cl.Scopes = append(cl.Scopes, child.Data().(string))
+		}
+		children, _ = r.Path("defaultScopes").Children()
+		for _, child := range children {
+			cl.DefaultScopes = append(cl.DefaultScopes, child.Data().(string))
+		}
+		cl.Disabled, _ = r.Path("disabled").Data().(bool)
+		// TODO finish parsing complete resource
 		clients[i] = cl
 	}
 	return &clients, nil
