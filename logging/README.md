@@ -1,4 +1,4 @@
-## Logging usage
+## Using the logging client
 
 ```go
 package main
@@ -36,14 +36,10 @@ func main() {
 }
 ```
 
-## TODO
-
-- Increase API coverage
-- Increase code coverage
 
 ## Issues
 
-- If you have an issue: report it on the [issue tracker](https://github.com/hsdp/go-hsdp-api/issues)
+- If you have an issue: report it on the [issue tracker](https://github.com/philips-software/go-hsdp-api/issues)
 
 ## Author
 

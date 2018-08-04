@@ -28,7 +28,7 @@ package main
 import (
         "fmt"
 
-        "github.com/hsdp/go-hsdp-api/iam"
+        "github.com/philips-software/go-hsdp-api/iam"
 )
 
 func main() {
@@ -59,7 +59,7 @@ func main() {
 
 ## Issues
 
-- If you have an issue: report it on the [issue tracker](https://github.com/hsdp/go-hsdp-api/issues)
+- If you have an issue: report it on the [issue tracker](https://github.com/philips-software/go-hsdp-api/issues)
 
 ## Author
 
