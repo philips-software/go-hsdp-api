@@ -124,7 +124,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 	if config.DebugLog != "" {
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_WRONLY, 0600)
+		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 		if err != nil {
 			c.debugFile = nil
 		}

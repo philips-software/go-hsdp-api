@@ -93,7 +93,7 @@ func newClient(httpClient *http.Client, iamClient *iam.Client, config *Config) (
 	}
 	if config.DebugLog != "" {
 		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_WRONLY, 0600)
+		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 		if err != nil {
 			c.debugFile = nil
 		}
