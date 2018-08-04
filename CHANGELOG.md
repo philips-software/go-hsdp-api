@@ -9,5 +9,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - IAM support
 - Logging support
 
-[Unreleased]: https://github.com/hsdp/terraform-provider-hsdp/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/philips-software/go-hsdp-api/compare/1.0.0...HEAD
 

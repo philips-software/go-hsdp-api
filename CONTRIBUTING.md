@@ -13,6 +13,7 @@ We'd love for you to contribute to our source code and to make the go-hsdp-api e
 
 If you have questions about how to use the go-hsdp-api, please direct these to the [Slack group / hsdp-go-api][slack].
 
+[![Slack](https://philips-software-slackin.now.sh/badge.svg)](https://philips-software-slackin.now.sh)
 
 ## <a name="issue"></a> Found an Issue?
 
@@ -77,7 +78,7 @@ Before you submit your merge request consider the following guidelines:
     git push origin my-fix-branch
     ```
 
-In Github, send a pull request to original master branch: f.e. `terraform-provider-hsdp:master`.
+In Github, send a pull request to original master branch: f.e. `go-hsdp-api:master`.
 If we suggest changes, then:
 
 * Make the required updates.
@@ -130,5 +131,5 @@ from the main (upstream) repository:
 For more info, please reach out to the team on [Slack group / go-hsdp-api][slack] in the #forest channel.
 
 [contribute]: CONTRIBUTING.md
-[github]: https://github.com/hsdp/terraform-provider-hsdp/issues 
-[slack]: https://hsdp.slack.com/messages/CBUSF4ZB3/details
+[github]: https://github.com/philips-software/go-hsdp-api/issues 
+[slack]: https://philips-software-slackin.now.sh/
