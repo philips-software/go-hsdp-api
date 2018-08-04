@@ -14,16 +14,16 @@
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
 
 [[projects]]
-  name = "github.com/hsdp/go-signer"
-  packages = ["."]
-  revision = "15c11c1fe5256a0f96558a6afe5197b0a4800b2f"
-  version = "v0.1.0"
-
-[[projects]]
   name = "github.com/jeffail/gabs"
   packages = ["."]
-  revision = "2a3aa15961d5fee6047b8151b67ac2f08ba2c48c"
-  version = "1.0"
+  revision = "7a0fed31069aba77993a518cc2f37b28ee7aa883"
+  version = "1.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/philips-software/go-hsdp-signer"
+  packages = ["."]
+  revision = "9a4e02791d5e4611f4c347da8cb1813012f36dc2"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -34,12 +34,12 @@
 [[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
-  version = "v1.2.1"
+  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
+  version = "v1.2.2"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d407ef50b761bae5fce69bef25becfabe33e345955099a0b65bfda8326781162"
+  inputs-digest = "4c165b1632309be051e41eb0a7d9a50c1f0f0553f49ae4ab2cbac9226b73a6b5"
   solver-name = "gps-cdcl"
   solver-version = 1

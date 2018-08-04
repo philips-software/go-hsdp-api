@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hsdp/go-signer"
 	"github.com/jeffail/gabs"
+	"github.com/philips-software/go-hsdp-signer"
 )
 
 var (

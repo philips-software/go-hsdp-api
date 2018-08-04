@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hsdp/go-signer"
+	"github.com/philips-software/go-hsdp-signer"
 )
 
 const (

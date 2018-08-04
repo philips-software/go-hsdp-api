@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hsdp/go-hsdp-api/iam"
+	"github.com/philips-software/go-hsdp-api/iam"
 )
 
 var (

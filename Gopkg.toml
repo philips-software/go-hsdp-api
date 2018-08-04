@@ -30,10 +30,6 @@
   name = "github.com/google/go-querystring"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/hsdp/go-signer"
-
-[[constraint]]
   name = "github.com/jeffail/gabs"
   version = "1.0.0"
 

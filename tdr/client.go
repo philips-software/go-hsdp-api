@@ -31,7 +31,7 @@ import (
 	"strings"
 
 	"github.com/google/go-querystring/query"
-	"github.com/hsdp/go-hsdp-api/iam"
+	"github.com/philips-software/go-hsdp-api/iam"
 )
 
 const (

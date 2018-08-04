@@ -31,7 +31,7 @@ import (
 	"strings"
 
 	"github.com/google/go-querystring/query"
-	hsdpsigner "github.com/hsdp/go-signer"
+	hsdpsigner "github.com/philips-software/go-hsdp-signer"
 )
 
 const (
