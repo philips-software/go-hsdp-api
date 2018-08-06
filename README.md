@@ -1,3 +1,5 @@
+[![Slack](https://philips-software-slackin.now.sh/badge.svg)](https://philips-software-slackin.now.sh)
+
 # go-hsdp-api
 
 A HSDP API client enabling Go programs to interact with various HSDP APIs in a simple and uniform way
