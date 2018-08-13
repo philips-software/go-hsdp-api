@@ -26,7 +26,8 @@ const (
 )
 
 var (
-	logTimeFormat    = "2006-01-02T15:04:05.000Z07:00"
+	// LogTimeFormat is the log time format to use
+	LogTimeFormat    = "2006-01-02T15:04:05.000Z07:00"
 	timeFormat       = time.RFC3339
 	uuidRegex        = regexp.MustCompile(`[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+`)
 	versionRegex     = regexp.MustCompile(`^(\d+\.)?(\d+){1}$`)
