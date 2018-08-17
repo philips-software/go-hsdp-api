@@ -58,6 +58,9 @@ func TestGetOrganizationByID(t *testing.T) {
 		if r.Method != "GET" {
 			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
 		}
+		if ok, err := signerHSDP.ValidateRequest(r); !ok {
+			t.Fatalf("Expected valid HSDP signature. Error: %v", err)
+		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

@@ -103,7 +103,7 @@ func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, opti
 
 	var bundleResponse bytes.Buffer
 
-	resp, err := o.client.Do(req, &bundleResponse)
+	resp, err := o.client.DoSigned(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
