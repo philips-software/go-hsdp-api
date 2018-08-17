@@ -5,13 +5,16 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	signer "github.com/philips-software/go-hsdp-signer"
 )
 
 var (
-	muxIAM    *http.ServeMux
-	serverIAM *httptest.Server
-	muxIDM    *http.ServeMux
-	serverIDM *httptest.Server
+	muxIAM     *http.ServeMux
+	serverIAM  *httptest.Server
+	muxIDM     *http.ServeMux
+	serverIDM  *httptest.Server
+	signerHSDP *signer.Signer
 
 	client *Client
 )
@@ -21,12 +24,16 @@ func setup(t *testing.T) func() {
 	serverIAM = httptest.NewServer(muxIAM)
 	muxIDM = http.NewServeMux()
 	serverIDM = httptest.NewServer(muxIDM)
+	sharedKey := "SharedKey"
+	secretKey := "SecretKey"
+
+	signerHSDP, _ = signer.New(sharedKey, secretKey)
 
 	client, _ = NewClient(nil, &Config{
 		OAuth2ClientID: "TestClient",
 		OAuth2Secret:   "Secret",
-		SharedKey:      "SharedKey",
-		SecretKey:      "SecretKey",
+		SharedKey:      sharedKey,
+		SecretKey:      secretKey,
 		IAMURL:         serverIAM.URL,
 		IDMURL:         serverIDM.URL,
 	})
