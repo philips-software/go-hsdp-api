@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -96,5 +97,68 @@ func TestHasScopes(t *testing.T) {
 	}
 	if client.HasScopes("mail", "bogus") {
 		t.Errorf("Unexpected scope confirmation")
+	}
+}
+
+func TestIAMRequest(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	req, err := client.NewIAMRequest("GET", "/foo", nil, nil)
+	if err != nil {
+		t.Errorf("Expected no no errors, got: %v", err)
+	}
+	if req == nil {
+		t.Errorf("Expected valid request")
+	}
+	req, _ = client.NewIAMRequest("POST", "/foo", nil, []OptionFunc{
+		func(r *http.Request) error {
+			r.Header.Set("Foo", "Bar")
+			return nil
+		},
+	})
+	if req.Header.Get("Foo") != "Bar" {
+		t.Errorf("Expected OptionFuncs to be processed")
+	}
+	testErr := errors.New("test error")
+	req, err = client.NewIDMRequest("POST", "/foo", nil, []OptionFunc{
+		func(r *http.Request) error {
+			return testErr
+		},
+	})
+	if err == nil {
+		t.Errorf("Request IAM request to fail")
+	}
+}
+
+func TestIDMRequest(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	client.SetToken("xxx")
+	req, err := client.NewIDMRequest("GET", "/foo", nil, nil)
+	if err != nil {
+		t.Errorf("Expected no no errors, got: %v", err)
+	}
+	if req == nil {
+		t.Errorf("Expected valid request")
+	}
+	req, _ = client.NewIDMRequest("POST", "/foo", nil, []OptionFunc{
+		func(r *http.Request) error {
+			r.Header.Set("Foo", "Bar")
+			return nil
+		},
+	})
+	if req.Header.Get("Foo") != "Bar" {
+		t.Errorf("Expected OptionFuncs to be processed")
+	}
+	testErr := errors.New("test error")
+	req, err = client.NewIDMRequest("POST", "/foo", nil, []OptionFunc{
+		func(r *http.Request) error {
+			return testErr
+		},
+	})
+	if err == nil {
+		t.Errorf("Request IDM request to fail")
 	}
 }
