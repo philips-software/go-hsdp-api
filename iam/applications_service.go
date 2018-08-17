@@ -39,7 +39,7 @@ func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, option
 
 	var bundleResponse interface{}
 
-	resp, err := a.client.DoSigned(req, &bundleResponse)
+	resp, err := a.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}

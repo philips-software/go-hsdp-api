@@ -70,7 +70,7 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 
 	var bundleResponse interface{}
 
-	resp, err := g.client.DoSigned(req, &bundleResponse)
+	resp, err := g.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}

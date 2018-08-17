@@ -56,7 +56,7 @@ func (p *PermissionsService) GetPermissionsByRoleID(roleID string) (*[]Permissio
 		Entry []Permission `json:"entry"`
 	}
 
-	resp, err := p.client.DoSigned(req, &responseStruct)
+	resp, err := p.client.Do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -73,7 +73,7 @@ func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ..
 
 	var bundleResponse bytes.Buffer
 
-	resp, err := p.client.DoSigned(req, &bundleResponse)
+	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -94,7 +94,7 @@ func (p *PermissionsService) GetPermissions(opt GetPermissionOptions, options ..
 
 	var bundleResponse bytes.Buffer
 
-	resp, err := p.client.DoSigned(req, &bundleResponse)
+	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}

@@ -109,7 +109,7 @@ func (c *ClientsService) GetClients(opt *GetClientsOptions, options ...OptionFun
 
 	var bundleResponse bytes.Buffer
 
-	resp, err := c.client.DoSigned(req, &bundleResponse)
+	resp, err := c.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -134,7 +134,7 @@ func (c *ClientsService) UpdateScope(ac ApplicationClient, scopes []string, defa
 
 	var putResponse bytes.Buffer
 
-	resp, err := c.client.DoSigned(req, &putResponse)
+	resp, err := c.client.Do(req, &putResponse)
 	if err != nil {
 		return false, resp, err
 	}
