@@ -2,6 +2,7 @@ package iam
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/jeffail/gabs"
@@ -212,4 +213,52 @@ func (g *GroupsService) RemoveRole(group Group, role Role) (bool, *Response, err
 		return false, resp, nil
 	}
 	return true, resp, err
+}
+
+// Reference holds a reference
+type Reference struct {
+	Reference string `json:"reference"`
+}
+
+// Parameter holds named references
+type Parameter struct {
+	Name       string      `json:"name"`
+	References []Reference `json:"references"`
+}
+
+// AddUser adds a user to the given Group
+func (g *GroupsService) AddUser(group Group, userID string) (bool, *Response, error) {
+
+	var addRequest = struct {
+		ResourceType string      `json:"resourceType"`
+		Parameter    []Parameter `json:"parameter"`
+	}{
+		ResourceType: "Parameters",
+		Parameter: []Parameter{
+			{
+				Name: "UserIDCollection",
+				References: []Reference{
+					{Reference: userID},
+				},
+			},
+		},
+	}
+	req, err := g.client.NewIDMRequest("POST", "authorize/identity/Group/"+group.ID+"/$add-members", addRequest, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", groupAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var addResponse interface{}
+
+	resp, err := g.client.Do(req, &addResponse)
+
+	if err != nil && err != io.EOF { // EOF is valid
+		return false, resp, err
+	}
+	if resp == nil || resp.StatusCode != http.StatusOK {
+		return false, resp, err
+	}
+	return true, resp, nil
 }
