@@ -121,7 +121,7 @@ func TestIAMRequest(t *testing.T) {
 		t.Errorf("Expected OptionFuncs to be processed")
 	}
 	testErr := errors.New("test error")
-	req, err = client.NewIDMRequest("POST", "/foo", nil, []OptionFunc{
+	req, err = client.NewIAMRequest("POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			return testErr
 		},
