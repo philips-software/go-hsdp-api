@@ -104,14 +104,14 @@ func TestIAMRequest(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	req, err := client.NewIAMRequest("GET", "/foo", nil, nil)
+	req, err := client.NewRequest(IAM, "GET", "/foo", nil, nil)
 	if err != nil {
 		t.Errorf("Expected no no errors, got: %v", err)
 	}
 	if req == nil {
 		t.Errorf("Expected valid request")
 	}
-	req, _ = client.NewIAMRequest("POST", "/foo", nil, []OptionFunc{
+	req, _ = client.NewRequest(IAM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			r.Header.Set("Foo", "Bar")
 			return nil
@@ -121,7 +121,7 @@ func TestIAMRequest(t *testing.T) {
 		t.Errorf("Expected OptionFuncs to be processed")
 	}
 	testErr := errors.New("test error")
-	req, err = client.NewIAMRequest("POST", "/foo", nil, []OptionFunc{
+	req, err = client.NewRequest(IAM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			return testErr
 		},
@@ -136,14 +136,14 @@ func TestIDMRequest(t *testing.T) {
 	defer teardown()
 
 	client.SetToken("xxx")
-	req, err := client.NewIDMRequest("GET", "/foo", nil, nil)
+	req, err := client.NewRequest(IDM, "GET", "/foo", nil, nil)
 	if err != nil {
 		t.Errorf("Expected no no errors, got: %v", err)
 	}
 	if req == nil {
 		t.Errorf("Expected valid request")
 	}
-	req, _ = client.NewIDMRequest("POST", "/foo", nil, []OptionFunc{
+	req, _ = client.NewRequest(IDM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			r.Header.Set("Foo", "Bar")
 			return nil
@@ -153,7 +153,7 @@ func TestIDMRequest(t *testing.T) {
 		t.Errorf("Expected OptionFuncs to be processed")
 	}
 	testErr := errors.New("test error")
-	req, err = client.NewIDMRequest("POST", "/foo", nil, []OptionFunc{
+	req, err = client.NewRequest(IDM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			return testErr
 		},

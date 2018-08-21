@@ -152,7 +152,7 @@ func (c *Client) Close() {
 
 // Login logs in a user with `username` and `password`
 func (c *Client) Login(username, password string) error {
-	req, err := c.NewIAMRequest("POST", "authorize/oauth2/token", nil, nil)
+	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
 	if err != nil {
 		return err
 	}
@@ -296,15 +296,30 @@ func (c *Client) SetBaseIDMURL(urlStr string) error {
 	return err
 }
 
-// NewIDMRequest creates an API request. A relative URL path can be provided in
+type Endpoint string
+
+const (
+	IAM = "IAM"
+	IDM = "IDM"
+)
+
+// NewRequest creates an API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewIDMRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
-	u := *c.baseIDMURL
-	// Set the encoded opaque data
-	u.Opaque = c.baseIDMURL.Path + path
+func (c *Client) NewRequest(endpoint, method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+	var u url.URL
+	switch endpoint {
+	case IDM:
+		u = *c.baseIDMURL
+		u.Opaque = c.baseIDMURL.Path + path
+	case IAM:
+		u = *c.baseIAMURL
+		u.Opaque = c.baseIAMURL.Path + path
+	default:
+		return nil, fmt.Errorf("Unknown endpoint: `%s`", endpoint)
+	}
 
 	if opt != nil {
 		q, err := query.Values(opt)
@@ -359,73 +374,6 @@ func (c *Client) NewIDMRequest(method, path string, opt interface{}, options []O
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
 	}
-	return req, nil
-}
-
-// NewIAMRequest creates an API request. A relative URL path can be provided in
-// urlStr, in which case it is resolved relative to the base URL of the Client.
-// Relative URL paths should always be specified without a preceding slash. If
-// specified, the value pointed to by body is JSON encoded and included as the
-// request body.
-func (c *Client) NewIAMRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
-	u := *c.baseIAMURL
-	// Set the encoded opaque data
-	u.Opaque = c.baseIAMURL.Path + path
-
-	if opt != nil {
-		q, err := query.Values(opt)
-		if err != nil {
-			return nil, err
-		}
-		u.RawQuery = q.Encode()
-	}
-
-	req := &http.Request{
-		Method:     method,
-		URL:        &u,
-		Proto:      "HTTP/1.1",
-		ProtoMajor: 1,
-		ProtoMinor: 1,
-		Header:     make(http.Header),
-		Host:       u.Host,
-	}
-
-	for _, fn := range options {
-		if fn == nil {
-			continue
-		}
-
-		if err := fn(req); err != nil {
-			return nil, err
-		}
-	}
-
-	if method == "POST" || method == "PUT" {
-		bodyBytes, err := json.Marshal(opt)
-		if err != nil {
-			return nil, err
-		}
-		bodyReader := bytes.NewReader(bodyBytes)
-
-		u.RawQuery = ""
-		req.Body = ioutil.NopCloser(bodyReader)
-		req.ContentLength = int64(bodyReader.Len())
-		req.Header.Set("Content-Type", "application/json")
-	}
-
-	req.Header.Set("Accept", "application/json")
-
-	switch c.tokenType {
-	case oAuthToken:
-		if c.token != "" {
-			req.Header.Set("Authorization", "Bearer "+c.token)
-		}
-	}
-
-	if c.UserAgent != "" {
-		req.Header.Set("User-Agent", c.UserAgent)
-	}
-
 	return req, nil
 }
 
@@ -479,7 +427,7 @@ func (c *Client) DoSigned(req *http.Request, v interface{}) (*Response, error) {
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("---REQUEST START---\n%s\n---REQUEST END---\n", string(dumped))
+		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] --- Request end ---\n", string(dumped))
 		if c.debugFile != nil {
 			c.debugFile.WriteString(out)
 		} else {
@@ -489,7 +437,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	resp, err := c.client.Do(req)
 	if c.config.Debug && resp != nil {
 		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("---RESPONSE START---\n%s\n--RESPONSE END---\n", string(dumped))
+		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
 		if c.debugFile != nil {
 			c.debugFile.WriteString(out)
 		} else {

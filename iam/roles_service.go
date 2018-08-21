@@ -38,7 +38,7 @@ func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, er
 	opt := &GetRolesOptions{
 		GroupID: &groupID,
 	}
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Role", opt, nil)
+	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Role", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -60,7 +60,7 @@ func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, er
 
 // GetRoleByID retrieves a role by ID
 func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Role/"+roleID, nil, nil)
+	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Role/"+roleID, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -86,7 +86,7 @@ func (p *RolesService) UpdateRole(role *Role) (*Role, *Response, error) {
 		Description string `json:"description"`
 	}
 	updateRoleRequestBody.Description = role.Description
-	req, err := p.client.NewIDMRequest("PUT", "authorize/identity/Role", &updateRoleRequestBody, nil)
+	req, err := p.client.NewRequest(IDM, "PUT", "authorize/identity/Role", &updateRoleRequestBody, nil)
 	req.Header.Set("api-version", "1")
 
 	var updatedRole Role
@@ -106,7 +106,7 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 		Description:          description,
 		ManagingOrganization: managingOrganization,
 	}
-	req, err := p.client.NewIDMRequest("POST", "authorize/identity/Role", role, nil)
+	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role", role, nil)
 	req.Header.Set("api-version", "1")
 
 	var createdRole Role
@@ -120,7 +120,7 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 
 // DeleteRole deletes the given Role
 func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
-	req, err := p.client.NewIDMRequest("DELETE", "authorize/identity/Role/"+role.ID, nil, nil)
+	req, err := p.client.NewRequest(IDM, "DELETE", "authorize/identity/Role/"+role.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -137,7 +137,7 @@ func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
 
 // GetRole retrieve a Role resource based on GetRoleOptions parameters
 func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*Role, *Response, error) {
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Role", opt, options)
+	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Role", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -160,7 +160,7 @@ func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*Ro
 func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
 	opt := &GetRolesOptions{RoleID: &role.ID}
 
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Permission", opt, nil)
+	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Permission", opt, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +190,7 @@ func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *
 	}
 	permissionRequest.Permissions = []string{permission}
 
-	req, err := p.client.NewIDMRequest("POST", "authorize/identity/Role/"+role.ID+"/$assign-permission", &permissionRequest, nil)
+	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/$assign-permission", &permissionRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -213,7 +213,7 @@ func (p *RolesService) RemoveRolePermission(role Role, permission string) (*Role
 	}
 	permissionRequest.Permissions = []string{permission}
 
-	req, err := p.client.NewIDMRequest("POST", "authorize/identity/Role/"+role.ID+"/$remove-permission", &permissionRequest, nil)
+	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/$remove-permission", &permissionRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}

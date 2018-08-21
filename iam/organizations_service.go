@@ -40,7 +40,7 @@ func (o *OrganizationsService) CreateOrganization(parentOrgID, name, description
 	newOrg.Name = name
 	newOrg.Description = description
 
-	req, err := o.client.NewIDMRequest("POST", "security/organizations/"+parentOrgID+"/childorganizations", &newOrg, nil)
+	req, err := o.client.NewRequest(IDM, "POST", "security/organizations/"+parentOrgID+"/childorganizations", &newOrg, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -71,7 +71,7 @@ func (o *OrganizationsService) UpdateOrganization(org Organization) (*Organizati
 		Description string `json:"description"`
 	}
 	updateRequest.Description = org.Description
-	req, err := o.client.NewIDMRequest("PUT", "security/organizations/"+org.OrganizationID, &updateRequest, nil)
+	req, err := o.client.NewRequest(IDM, "PUT", "security/organizations/"+org.OrganizationID, &updateRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -95,7 +95,7 @@ func (o *OrganizationsService) GetOrganizationByID(id string) (*Organization, *R
 
 // GetOrganization retrieves an organization based on the GetOrganizationOptions parameters.
 func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, options ...OptionFunc) (*Organization, *Response, error) {
-	req, err := o.client.NewIDMRequest("GET", "authorize/identity/Organization", opt, options)
+	req, err := o.client.NewRequest(IDM, "GET", "authorize/identity/Organization", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}

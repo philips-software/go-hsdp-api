@@ -71,7 +71,7 @@ func (p *PropositionsService) GetPropositionByID(id string) (*Proposition, *Resp
 
 // GetProposition search for an Proposition entity based on the GetPropositions values
 func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, options ...OptionFunc) (*Proposition, *Response, error) {
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Proposition", opt, options)
+	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Proposition", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -94,7 +94,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	if err := prop.validate(); err != nil {
 		return nil, nil, err
 	}
-	req, err := p.client.NewIDMRequest("POST", "authorize/identity/Proposition", &prop, nil)
+	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Proposition", &prop, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -127,7 +127,7 @@ func (p *PropositionsService) UpdateProposition(prop Proposition) (*Proposition,
 		Description string `json:"description"`
 	}
 	updateRequest.Description = prop.Description
-	req, err := p.client.NewIDMRequest("PUT", "authorize/identity/Proposition/"+prop.ID, &updateRequest, nil)
+	req, err := p.client.NewRequest(IDM, "PUT", "authorize/identity/Proposition/"+prop.ID, &updateRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}

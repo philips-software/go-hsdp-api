@@ -44,7 +44,7 @@ type GetClientsOptions struct {
 
 // CreateClient creates a Client
 func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient, *Response, error) {
-	req, err := c.client.NewIDMRequest("POST", "authorize/identity/Client", ac, nil)
+	req, err := c.client.NewRequest(IDM, "POST", "authorize/identity/Client", ac, nil)
 	req.Header.Set("api-version", clientAPIVersion)
 
 	var createdClient ApplicationClient
@@ -65,7 +65,7 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 
 // DeleteClient deletes the given Client
 func (c *ClientsService) DeleteClient(ac ApplicationClient) (bool, *Response, error) {
-	req, err := c.client.NewIDMRequest("DELETE", "authorize/identity/Client/"+ac.ID, nil, nil)
+	req, err := c.client.NewRequest(IDM, "DELETE", "authorize/identity/Client/"+ac.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -100,7 +100,7 @@ func (c *ClientsService) GetClientByID(id string) (*ApplicationClient, *Response
 
 // GetClients looks up clients based on GetClientsOptions
 func (c *ClientsService) GetClients(opt *GetClientsOptions, options ...OptionFunc) (*[]ApplicationClient, *Response, error) {
-	req, err := c.client.NewIDMRequest("GET", "authorize/identity/Client", opt, options)
+	req, err := c.client.NewRequest(IDM, "GET", "authorize/identity/Client", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -126,7 +126,7 @@ func (c *ClientsService) UpdateScope(ac ApplicationClient, scopes []string, defa
 		scopes,
 		defaultScope,
 	}
-	req, err := c.client.NewIDMRequest("PUT", "authorize/identity/Client/"+ac.ClientID, requestBody, nil)
+	req, err := c.client.NewRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ClientID, requestBody, nil)
 	if err != nil {
 		return false, nil, err
 	}

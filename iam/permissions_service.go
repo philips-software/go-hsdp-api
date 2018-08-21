@@ -45,7 +45,7 @@ func (p *PermissionsService) GetPermissionsByRoleID(roleID string) (*[]Permissio
 	opt := &GetPermissionOptions{
 		RoleID: &roleID,
 	}
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Permission", opt, nil)
+	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Permission", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -65,7 +65,7 @@ func (p *PermissionsService) GetPermissionsByRoleID(roleID string) (*[]Permissio
 
 // GetPermission looks up a permission based on GetPermissionOptions
 func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ...OptionFunc) (*Permission, *Response, error) {
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Permission", opt, options)
+	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Permission", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -86,7 +86,7 @@ func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ..
 
 // GetPermissions looks up permissions based on GetPermissionOptions
 func (p *PermissionsService) GetPermissions(opt GetPermissionOptions, options ...OptionFunc) (*[]Permission, *Response, error) {
-	req, err := p.client.NewIDMRequest("GET", "authorize/identity/Permission", opt, options)
+	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Permission", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}

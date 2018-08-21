@@ -78,7 +78,7 @@ func (u *UsersService) CreateUser(firstName, lastName, emailID, phoneNumber, org
 		ManagingOrganization: organizationID,
 		IsAgeValidated:       "true",
 	}
-	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User", person, nil)
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User", person, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -114,7 +114,7 @@ func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) 
 			},
 		},
 	}
-	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User/$recover-password", body, nil)
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/$recover-password", body, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -144,7 +144,7 @@ func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error)
 			},
 		},
 	}
-	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User/$resend-activation", body, nil)
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/$resend-activation", body, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -176,7 +176,7 @@ func (u *UsersService) SetPassword(loginID, confirmationCode, newPassword, conte
 			},
 		},
 	}
-	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User/$set-password", body, nil)
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/$set-password", body, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -207,7 +207,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 			},
 		},
 	}
-	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User/$change-password", body, nil)
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/$change-password", body, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -225,7 +225,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 
 // GetUsers looks up users by search criteria specified in GetUserOptions
 func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*UserList, *Response, error) {
-	req, err := u.client.NewIDMRequest("GET", "security/users", opts, options)
+	req, err := u.client.NewRequest(IDM, "GET", "security/users", opts, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -258,7 +258,7 @@ func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*U
 
 // GetUserByID looks up a user by UUID
 func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
-	req, _ := u.client.NewIDMRequest("GET", "security/users/"+uuid, nil, nil)
+	req, _ := u.client.NewRequest(IDM, "GET", "security/users/"+uuid, nil, nil)
 	var user interface{}
 
 	resp, err := u.client.Do(req, &user)
@@ -294,7 +294,7 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 
 // GetUserIDByLoginID looks up the UUID of a user by LoginID (email address)
 func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, error) {
-	req, err := u.client.NewIDMRequest("GET", "security/users?loginId="+loginID, nil, nil)
+	req, err := u.client.NewRequest(IDM, "GET", "security/users?loginId="+loginID, nil, nil)
 	var d interface{}
 
 	resp, err := u.client.Do(req, &d)
@@ -328,7 +328,7 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 	body := &struct {
 		Activate string `json:"activate"`
 	}{activateString}
-	req, err := u.client.NewIDMRequest("POST", "authorize/identity/User/"+userID+"/$mfa", body, nil)
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+userID+"/$mfa", body, nil)
 	if err != nil {
 		return false, nil, err
 	}
