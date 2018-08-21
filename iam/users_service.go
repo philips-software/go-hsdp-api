@@ -258,7 +258,7 @@ func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*U
 
 // GetUserByID looks up a user by UUID
 func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
-	req, err := u.client.NewIDMRequest("GET", "security/users/"+uuid, nil, nil)
+	req, _ := u.client.NewIDMRequest("GET", "security/users/"+uuid, nil, nil)
 	var user interface{}
 
 	resp, err := u.client.Do(req, &user)
