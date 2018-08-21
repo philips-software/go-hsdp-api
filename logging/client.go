@@ -13,10 +13,9 @@ import (
 	"net/url"
 	"os"
 	"regexp"
-	"sort"
-	"strings"
 	"time"
 
+	"github.com/philips-software/go-hsdp-api/fhir"
 	"github.com/philips-software/go-hsdp-signer"
 )
 
@@ -176,35 +175,10 @@ func CheckResponse(r *http.Response) error {
 			errorResponse.Message = "failed to parse unknown error format"
 		}
 
-		errorResponse.Message = parseError(raw)
+		errorResponse.Message = fhir.ParseError(raw)
 	}
 
 	return errorResponse
-}
-
-func parseError(raw interface{}) string {
-	switch raw := raw.(type) {
-	case string:
-		return raw
-
-	case []interface{}:
-		var errs []string
-		for _, v := range raw {
-			errs = append(errs, parseError(v))
-		}
-		return fmt.Sprintf("[%s]", strings.Join(errs, ", "))
-
-	case map[string]interface{}:
-		var errs []string
-		for k, v := range raw {
-			errs = append(errs, fmt.Sprintf("{%s: %s}", k, parseError(v)))
-		}
-		sort.Strings(errs)
-		return strings.Join(errs, ", ")
-
-	default:
-		return fmt.Sprintf("failed to parse unexpected error type: %T", raw)
-	}
 }
 
 // StoreResources posts one or more log messages

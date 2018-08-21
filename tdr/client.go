@@ -27,10 +27,10 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"sort"
 	"strings"
 
 	"github.com/google/go-querystring/query"
+	"github.com/philips-software/go-hsdp-api/fhir"
 	"github.com/philips-software/go-hsdp-api/iam"
 )
 
@@ -229,7 +229,7 @@ func newResponse(r *http.Response) *Response {
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("---REQUEST START---\n%s\n---REQUEST END---\n", string(dumped))
+		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
 		if c.debugFile != nil {
 			c.debugFile.WriteString(out)
 		} else {
@@ -239,7 +239,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	resp, err := c.client.Do(req)
 	if c.config.Debug && resp != nil {
 		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("---RESPONSE START---\n%s\n--RESPONSE END---\n", string(dumped))
+		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
 		if c.debugFile != nil {
 			c.debugFile.WriteString(out)
 		} else {
@@ -292,35 +292,10 @@ func CheckResponse(r *http.Response) error {
 			errorResponse.Message = "failed to parse unknown error format"
 		}
 
-		errorResponse.Message = parseError(raw)
+		errorResponse.Message = fhir.ParseError(raw)
 	}
 
 	return errorResponse
-}
-
-func parseError(raw interface{}) string {
-	switch raw := raw.(type) {
-	case string:
-		return raw
-
-	case []interface{}:
-		var errs []string
-		for _, v := range raw {
-			errs = append(errs, parseError(v))
-		}
-		return fmt.Sprintf("[%s]", strings.Join(errs, ", "))
-
-	case map[string]interface{}:
-		var errs []string
-		for k, v := range raw {
-			errs = append(errs, fmt.Sprintf("{%s: %s}", k, parseError(v)))
-		}
-		sort.Strings(errs)
-		return strings.Join(errs, ", ")
-
-	default:
-		return fmt.Sprintf("failed to parse unexpected error type: %T", raw)
-	}
 }
 
 // WithContext runs the request with the provided context
