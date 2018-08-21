@@ -226,8 +226,8 @@ type Parameter struct {
 	References []Reference `json:"references"`
 }
 
-// AddUser adds a user to the given Group
-func (g *GroupsService) AddUser(group Group, userID string) (bool, *Response, error) {
+// AddMembers adds a user to the given Group
+func (g *GroupsService) AddMembers(group Group, users ...string) (bool, *Response, error) {
 
 	var addRequest = struct {
 		ResourceType string      `json:"resourceType"`
@@ -237,12 +237,13 @@ func (g *GroupsService) AddUser(group Group, userID string) (bool, *Response, er
 		Parameter: []Parameter{
 			{
 				Name: "UserIDCollection",
-				References: []Reference{
-					{Reference: userID},
-				},
 			},
 		},
 	}
+	for _, user := range users {
+		addRequest.Parameter[0].References = append(addRequest.Parameter[0].References, Reference{Reference: user})
+	}
+
 	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/$add-members", addRequest, nil)
 	if err != nil {
 		return false, nil, err
@@ -257,7 +258,8 @@ func (g *GroupsService) AddUser(group Group, userID string) (bool, *Response, er
 	if err != nil && err != io.EOF { // EOF is valid
 		return false, resp, err
 	}
-	if resp == nil || resp.StatusCode != http.StatusOK {
+	if resp == nil || !(resp.StatusCode == http.StatusOK ||
+		resp.StatusCode == http.StatusMultiStatus) {
 		return false, resp, err
 	}
 	return true, resp, nil

@@ -168,7 +168,7 @@ func TestAssignRole(t *testing.T) {
 	}
 }
 
-func TestAddUser(t *testing.T) {
+func TestAddMembers(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
@@ -237,7 +237,7 @@ func TestAddUser(t *testing.T) {
 	})
 	var group Group
 	group.ID = groupID
-	ok, resp, err := client.Groups.AddUser(group, userID)
+	ok, resp, err := client.Groups.AddMembers(group, userID)
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
 	}
@@ -247,12 +247,12 @@ func TestAddUser(t *testing.T) {
 	if err != nil {
 		t.Errorf("Did not expect error, Got: %v", err)
 	}
-	ok, resp, err = client.Groups.AddUser(group, "foo")
+	ok, resp, err = client.Groups.AddMembers(group, "foo")
 	if ok {
-		t.Errorf("Expected AddUser to fail")
+		t.Errorf("Expected AddMembers to fail")
 	}
 	if err == nil {
-		t.Errorf("Expected error from AddUser")
+		t.Errorf("Expected error from AddMembers")
 	}
 }
 
