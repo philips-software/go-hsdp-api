@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.com/philips-software/go-hsdp-api.svg?branch=master)](https://travis-ci.com/philips-software/go-hsdp-api) [![Slack](https://philips-software-slackin.now.sh/badge.svg)](https://philips-software-slackin.now.sh)
+[![Build Status](https://travis-ci.com/philips-software/go-hsdp-api.svg?branch=master)](https://travis-ci.com/philips-software/go-hsdp-api)
+[![Maintainability](https://api.codeclimate.com/v1/badges/02a5d27730d212ee3068/maintainability)](https://codeclimate.com/github/JeroenKnoops/go-hsdp-api/maintainability)
+[![Slack](https://philips-software-slackin.now.sh/badge.svg)](https://philips-software-slackin.now.sh)
 
 # go-hsdp-api
 
