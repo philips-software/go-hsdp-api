@@ -69,6 +69,13 @@ func TestClientCRUD(t *testing.T) {
 			w.WriteHeader(http.StatusNoContent)
 		}
 	})
+	muxIDM.HandleFunc("/authorize/identity/Client/"+clientID+"/$scopes", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "PUT":
+			w.WriteHeader(http.StatusNoContent)
+		}
+	})
 
 	var c ApplicationClient
 	c.Name = clientName
@@ -92,7 +99,12 @@ func TestClientCRUD(t *testing.T) {
 	if createdClient.ID != clientID {
 		t.Errorf("Expected to find client with ID: %s, Got: %s", clientID, createdClient.ID)
 	}
-	ok, resp, err := client.Clients.DeleteClient(*createdClient)
+	ok, resp, err := client.Clients.UpdateScope(*createdClient, []string{"cn", "introspect"}, "cn")
+	if resp.StatusCode != http.StatusNoContent {
+		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
+	}
+
+	ok, resp, err = client.Clients.DeleteClient(*createdClient)
 	if resp.StatusCode != http.StatusNoContent {
 		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
 	}

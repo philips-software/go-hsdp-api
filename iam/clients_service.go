@@ -126,7 +126,7 @@ func (c *ClientsService) UpdateScope(ac ApplicationClient, scopes []string, defa
 		scopes,
 		defaultScope,
 	}
-	req, err := c.client.NewRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ClientID, requestBody, nil)
+	req, err := c.client.NewRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ID+"/$scopes", requestBody, nil)
 	if err != nil {
 		return false, nil, err
 	}
