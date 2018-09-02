@@ -60,6 +60,7 @@ type Config struct {
 	OrgAdminPassword string
 	IAMURL           string
 	IDMURL           string
+	Scopes           []string
 	RootOrgID        string
 	Debug            bool
 	DebugLog         string
@@ -162,6 +163,10 @@ func (c *Client) Login(username, password string) error {
 	form.Add("username", username)
 	form.Add("password", password)
 	form.Add("grant_type", "password")
+	if len(c.config.Scopes) > 0 {
+		scopes := strings.Join(c.config.Scopes, " ")
+		form.Add("scope", scopes)
+	}
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
 	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
