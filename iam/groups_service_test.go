@@ -242,7 +242,7 @@ func TestAddMembers(t *testing.T) {
 		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
 	}
 	if !ok {
-		t.Errorf("Expected AddUser to succeed")
+		t.Errorf("Expected AddMembers to succeed")
 	}
 	if err != nil {
 		t.Errorf("Did not expect error, Got: %v", err)
@@ -253,6 +253,94 @@ func TestAddMembers(t *testing.T) {
 	}
 	if err == nil {
 		t.Errorf("Expected error from AddMembers")
+	}
+}
+
+func TestRemoveMembers(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	userID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID+"/$remove-members", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				t.Errorf("Unexpected EOF from reading request")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			var addRequest struct {
+				ResourceType string      `json:"resourceType"`
+				Parameter    []Parameter `json:"parameter"`
+			}
+			err = json.Unmarshal(body, &addRequest)
+			if err != nil {
+				t.Errorf("Error parsing request: %v", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if addRequest.ResourceType != "Parameters" {
+				t.Errorf("Expected Parameters resourceType, got: %s", addRequest.ResourceType)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if l := len(addRequest.Parameter); l != 1 {
+				t.Errorf("Expected 1 parameter, got: %d", l)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if n := addRequest.Parameter[0].Name; n != "UserIDCollection" {
+				t.Errorf("Unexpected parameters: %s", n)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if l := len(addRequest.Parameter[0].References); l == 0 {
+				t.Errorf("Expected at least 1 reference, got: %d", l)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if r := addRequest.Parameter[0].References[0].Reference; r != userID {
+				w.WriteHeader(http.StatusBadRequest)
+				io.WriteString(w, `{
+					"resourceType": "OperationOutcome",
+					"issues": [
+						{
+							"diagnostic": "failed Operations",
+							"code": "not-found",
+							"severity": "error",
+							"location": [
+								"users/`+r+`"
+							]
+						}
+					]
+				}
+				`)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+		}
+	})
+	var group Group
+	group.ID = groupID
+	ok, resp, err := client.Groups.RemoveMembers(group, userID)
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
+	}
+	if !ok {
+		t.Errorf("Expected RemoveMembers to succeed")
+	}
+	if err != nil {
+		t.Errorf("Did not expect error, Got: %v", err)
+	}
+	ok, resp, err = client.Groups.AddMembers(group, "foo")
+	if ok {
+		t.Errorf("Expected RemoveMembers to fail")
+	}
+	if err == nil {
+		t.Errorf("Expected error from RemoveMembers")
 	}
 }
 

@@ -264,3 +264,42 @@ func (g *GroupsService) AddMembers(group Group, users ...string) (bool, *Respons
 	}
 	return true, resp, nil
 }
+
+// RemoveMembers adds a user to the given Group
+func (g *GroupsService) RemoveMembers(group Group, users ...string) (bool, *Response, error) {
+
+	var removeRequest = struct {
+		ResourceType string      `json:"resourceType"`
+		Parameter    []Parameter `json:"parameter"`
+	}{
+		ResourceType: "Parameters",
+		Parameter: []Parameter{
+			{
+				Name: "UserIDCollection",
+			},
+		},
+	}
+	for _, user := range users {
+		removeRequest.Parameter[0].References = append(removeRequest.Parameter[0].References, Reference{Reference: user})
+	}
+
+	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/$remove-members", removeRequest, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", groupAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var removeResponse interface{}
+
+	resp, err := g.client.Do(req, &removeResponse)
+
+	if err != nil && err != io.EOF { // EOF is valid
+		return false, resp, err
+	}
+	if resp == nil || !(resp.StatusCode == http.StatusOK ||
+		resp.StatusCode == http.StatusMultiStatus) {
+		return false, resp, err
+	}
+	return true, resp, nil
+}
