@@ -99,7 +99,7 @@ func TestClientCRUD(t *testing.T) {
 	if createdClient.ID != clientID {
 		t.Errorf("Expected to find client with ID: %s, Got: %s", clientID, createdClient.ID)
 	}
-	ok, resp, err := client.Clients.UpdateScope(*createdClient, []string{"cn", "introspect"}, "cn")
+	ok, resp, err := client.Clients.UpdateScopes(*createdClient, []string{"cn", "introspect"}, []string{"cn"})
 	if resp.StatusCode != http.StatusNoContent {
 		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
 	}

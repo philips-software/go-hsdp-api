@@ -118,13 +118,13 @@ func (c *ClientsService) GetClients(opt *GetClientsOptions, options ...OptionFun
 }
 
 // UpdateScope updates a clients scope
-func (c *ClientsService) UpdateScope(ac ApplicationClient, scopes []string, defaultScope string) (bool, *Response, error) {
+func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, defaultScopes []string) (bool, *Response, error) {
 	var requestBody = struct {
-		Scopes       []string `json:"scopes"`
-		DefaultScope string   `json:"defaultScope"`
+		Scopes        []string `json:"scopes"`
+		DefaultScopes []string `json:"defaultScopes"`
 	}{
 		scopes,
-		defaultScope,
+		defaultScopes,
 	}
 	req, err := c.client.NewRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ID+"/$scopes", requestBody, nil)
 	if err != nil {
