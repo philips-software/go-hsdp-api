@@ -128,7 +128,7 @@ from the main (upstream) repository:
 
 ## <a name="info"></a> Info
 
-For more info, please reach out to the team on [Slack group / go-hsdp-api][slack] in the #forest channel.
+For more info, please reach out to the team on [Slack group / go-hsdp-api][slack] in the #hsdp-utilities channel.
 
 [contribute]: CONTRIBUTING.md
 [github]: https://github.com/philips-software/go-hsdp-api/issues 
