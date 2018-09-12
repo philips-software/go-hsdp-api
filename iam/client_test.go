@@ -221,3 +221,13 @@ func TestIDMRequest(t *testing.T) {
 		t.Errorf("Request IDM request to fail")
 	}
 }
+
+func TestWithToken(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	if client.WithToken("fooz").Token() != "fooz" {
+		t.Errorf("Unexpected token")
+	}
+
+}
