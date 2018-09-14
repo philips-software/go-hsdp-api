@@ -20,6 +20,10 @@ func main() {
             return
         } 
         ok, resp, err := tpns.Messages.Push(&tpns.Message{
+            Content:       "YAY! It is working!",
+            PropositionID: "XYZ",
+            MessageType:   "Push",
+            Targets:       []string{"5b78e5f8-d73f-4712-aae0-355f6fa91752"},
         })
         if err != nil {
             fmt.Printf("Error pushing: %v\n", err)
