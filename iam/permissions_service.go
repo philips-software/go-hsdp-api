@@ -65,27 +65,18 @@ func (p *PermissionsService) GetPermissionsByRoleID(roleID string) (*[]Permissio
 
 // GetPermission looks up a permission based on GetPermissionOptions
 func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ...OptionFunc) (*Permission, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Permission", opt, options)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("api-version", permissionAPIVersion)
-
-	var bundleResponse bytes.Buffer
-
-	resp, err := p.client.Do(req, &bundleResponse)
+	permissions, resp, err := p.GetPermissions(opt, options...)
 	if err != nil {
 		return nil, resp, err
 	}
-	permissions, err := p.parseFromBundle(bundleResponse.Bytes())
-	if err != nil {
-		return nil, resp, err
+	if len(*permissions) == 0 {
+		return nil, resp, errEmptyResults
 	}
 	return &(*permissions)[0], resp, nil
 }
 
 // GetPermissions looks up permissions based on GetPermissionOptions
-func (p *PermissionsService) GetPermissions(opt GetPermissionOptions, options ...OptionFunc) (*[]Permission, *Response, error) {
+func (p *PermissionsService) GetPermissions(opt *GetPermissionOptions, options ...OptionFunc) (*[]Permission, *Response, error) {
 	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Permission", opt, options)
 	if err != nil {
 		return nil, nil, err

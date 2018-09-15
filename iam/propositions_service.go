@@ -1,7 +1,8 @@
 package iam
 
 import (
-	"encoding/json"
+	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -34,22 +35,6 @@ func (p *Proposition) validate() error {
 	return nil
 }
 
-func (p *Proposition) parseFromBundle(v interface{}) error {
-	m, _ := json.Marshal(v)
-	jsonParsed, err := gabs.ParseJSON(m)
-	if err != nil {
-		return err
-	}
-	r := jsonParsed.Path("entry").Index(0)
-	p.ID, _ = r.Path("id").Data().(string)
-	p.Name, _ = r.Path("name").Data().(string)
-	p.Description, _ = r.Path("description").Data().(string)
-	p.OrganizationID, _ = r.Path("organizationId").Data().(string)
-	p.GlobalReferenceID, _ = r.Path("globalReferenceId").Data().(string)
-	// TODO: Add new "meta" info as well
-	return nil
-}
-
 // PropositionsService implements actions on IAM Proposition entities
 type PropositionsService struct {
 	client *Client
@@ -69,8 +54,20 @@ func (p *PropositionsService) GetPropositionByID(id string) (*Proposition, *Resp
 	return p.GetProposition(&GetPropositionsOptions{ID: &id}, nil)
 }
 
-// GetProposition search for an Proposition entity based on the GetPropositions values
+// GetProposition find a Proposition based on the GetPropisitions values
 func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, options ...OptionFunc) (*Proposition, *Response, error) {
+	props, resp, err := p.GetPropositions(opt, options...)
+	if err != nil {
+		return nil, resp, err
+	}
+	if len(*props) == 0 {
+		return nil, resp, errEmptyResults
+	}
+	return &(*props)[0], resp, nil
+}
+
+// GetPropositions search for an Proposition entity based on the GetPropositions values
+func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, options ...OptionFunc) (*[]Proposition, *Response, error) {
 	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Proposition", opt, options)
 	if err != nil {
 		return nil, nil, err
@@ -78,15 +75,14 @@ func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, option
 	req.Header.Set("api-version", propositionAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse interface{}
+	var bundleResponse bytes.Buffer
 
 	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	var prop Proposition
-	err = prop.parseFromBundle(bundleResponse)
-	return &prop, resp, err
+	props, err := p.parseFromBundle(bundleResponse.Bytes())
+	return props, resp, err
 }
 
 // CreateProposition creates a Proposition
@@ -142,4 +138,29 @@ func (p *PropositionsService) UpdateProposition(prop Proposition) (*Proposition,
 	}
 	return &prop, resp, err
 
+}
+
+func (p *PropositionsService) parseFromBundle(bundle []byte) (*[]Proposition, error) {
+	jsonParsed, err := gabs.ParseJSON(bundle)
+	if err != nil {
+		return nil, err
+	}
+	count, ok := jsonParsed.S("total").Data().(float64)
+	if !ok || count == 0 {
+		return nil, errors.New("empty result")
+	}
+	propositions := make([]Proposition, int64(count))
+
+	children, _ := jsonParsed.S("entry").Children()
+	for i, r := range children {
+		var p Proposition
+		p.ID, _ = r.Path("id").Data().(string)
+		p.Name, _ = r.Path("name").Data().(string)
+		p.Description, _ = r.Path("description").Data().(string)
+		p.OrganizationID, _ = r.Path("organizationId").Data().(string)
+		p.GlobalReferenceID, _ = r.Path("globalReferenceId").Data().(string)
+		// TODO: add meta part
+		propositions[i] = p
+	}
+	return &propositions, nil
 }

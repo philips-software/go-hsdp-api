@@ -44,7 +44,7 @@ func TestGetPermissions(t *testing.T) {
 		}`)
 	})
 
-	permissions, resp, err := client.Permissions.GetPermissions(GetPermissionOptions{}, nil)
+	permissions, resp, err := client.Permissions.GetPermissions(&GetPermissionOptions{}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
