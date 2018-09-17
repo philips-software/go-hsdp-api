@@ -1,5 +1,7 @@
 package tpns
 
+import "github.com/philips-software/go-hsdp-api/fhir"
+
 // MessagesService provides operations on TPNS messages
 type MessagesService struct {
 	client *Client
@@ -15,23 +17,6 @@ type Message struct {
 	Targets          []string          `json:"Targets"`
 }
 
-type code struct {
-	Coding []coding `json:"coding"`
-}
-type coding struct {
-	System string `json:"system"`
-	Code   string `json:"code"`
-}
-type issue struct {
-	Severity string `json:"Severity"`
-	Details  string `json:"Details"`
-	Code     code   `json:"Code"`
-}
-
-type tpnsResponse struct {
-	Issues []issue `json:"issue"`
-}
-
 // Push pushes a message to a mobile client
 func (m *MessagesService) Push(msg *Message) (bool, *Response, error) {
 	req, err := m.client.NewTPNSRequest("POST", "tpns/PushMessage", msg, nil)
@@ -39,7 +24,7 @@ func (m *MessagesService) Push(msg *Message) (bool, *Response, error) {
 		return false, nil, err
 	}
 
-	var responseStruct tpnsResponse
+	var responseStruct fhir.IssueResponse
 
 	resp, err := m.client.Do(req, &responseStruct)
 	if err != nil {
