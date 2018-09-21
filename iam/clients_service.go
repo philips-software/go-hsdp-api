@@ -49,6 +49,12 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 
 	var createdClient ApplicationClient
 
+	// Remove scopes before calling create
+	scopes := ac.Scopes
+	defaultScopes := ac.DefaultScopes // Defaults to ["cn"]
+	ac.Scopes = []string{}            // Defaults to ["mail", "sn"]
+	ac.DefaultScopes = []string{}
+
 	resp, err := c.client.Do(req, &createdClient)
 
 	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
@@ -59,6 +65,10 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Client/%s", &id)
 	if count == 0 {
 		return nil, resp, errCouldNoReadResourceAfterCreate
+	}
+	ac.ID = id
+	if len(scopes) > 0 {
+		c.UpdateScopes(ac, scopes, defaultScopes)
 	}
 	return c.GetClientByID(id)
 }
