@@ -44,16 +44,16 @@ type GetClientsOptions struct {
 
 // CreateClient creates a Client
 func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient, *Response, error) {
-	req, err := c.client.NewRequest(IDM, "POST", "authorize/identity/Client", ac, nil)
-	req.Header.Set("api-version", clientAPIVersion)
-
-	var createdClient ApplicationClient
-
 	// Remove scopes before calling create
 	scopes := ac.Scopes
 	defaultScopes := ac.DefaultScopes // Defaults to ["cn"]
 	ac.Scopes = []string{}            // Defaults to ["mail", "sn"]
 	ac.DefaultScopes = []string{}
+
+	req, err := c.client.NewRequest(IDM, "POST", "authorize/identity/Client", ac, nil)
+	req.Header.Set("api-version", clientAPIVersion)
+
+	var createdClient ApplicationClient
 
 	resp, err := c.client.Do(req, &createdClient)
 
