@@ -72,13 +72,8 @@ func (p *ServicesService) GetServicesByApplicationID(applicationID string) (*[]S
 }
 
 // CreateService creates a Service
-func (p *ServicesService) CreateService(name, description, applicationID string) (*Service, *Response, error) {
-	role := &Service{
-		Name:          name,
-		Description:   description,
-		ApplicationID: applicationID,
-	}
-	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Service", role, nil)
+func (p *ServicesService) CreateService(service Service) (*Service, *Response, error) {
+	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Service", &service, nil)
 	req.Header.Set("api-version", servicesAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 

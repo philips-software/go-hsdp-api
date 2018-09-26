@@ -73,7 +73,7 @@ func TestServicesCRUD(t *testing.T) {
 	r.Description = serviceDescription
 	r.ApplicationID = applicationID
 
-	service, resp, err := client.Services.CreateService(serviceName, serviceDescription, applicationID)
+	service, resp, err := client.Services.CreateService(r)
 	if err != nil {
 		t.Fatal(err)
 	}
