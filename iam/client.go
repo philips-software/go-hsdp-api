@@ -19,11 +19,21 @@ import (
 )
 
 const (
-	libraryVersion = "0.1.0"
-	userAgent      = "go-hsdp-api/iam/" + libraryVersion
+	libraryVersion  = "0.1.0"
+	userAgent       = "go-hsdp-api/iam/" + libraryVersion
+	loginAPIVersion = "2"
 )
 
 type tokenType int
+
+type tokenResponse struct {
+	Scope        string `json:"scope"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    int64  `json:"expires_in"`
+	TokenType    string `json:"token_type"`
+	IDToken      string `json:"id_token"`
+}
 
 const (
 	oAuthToken tokenType = iota
@@ -144,6 +154,47 @@ func (c *Client) WithToken(token string) *Client {
 	return client
 }
 
+func (c *Client) accessTokenEndpoint() string {
+	return c.baseIAMURL.String() + "oauth2/access_token"
+}
+
+func fixHSDPPEM(pemString string) string {
+	pre := strings.Replace(pemString,
+		"-----BEGIN RSA PRIVATE KEY-----",
+		"-----BEGIN RSA PRIVATE KEY-----\n", -1)
+	return strings.Replace(pre,
+		"-----END RSA PRIVATE KEY-----",
+		"\n-----END RSA PRIVATE KEY-----", -1)
+}
+
+// ServiceLogin logs a service in using a JWT signed with the service private key
+func (c *Client) ServiceLogin(service Service) error {
+	token, err := service.GetToken(c.accessTokenEndpoint())
+	if err != nil {
+		return err
+	}
+	// Authorize
+	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
+	if err != nil {
+		return err
+	}
+	form := url.Values{}
+	if len(c.config.Scopes) > 0 {
+		scopes := strings.Join(c.config.Scopes, " ")
+		form.Add("scope", scopes)
+	}
+	// HSDP IAM croakes on URL encoded grant_type value :-(
+	body := "assertion=" + token
+	body += "&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer"
+	body += "&"
+	body += form.Encode()
+
+	req.Body = ioutil.NopCloser(strings.NewReader(body))
+	req.ContentLength = int64(len(body))
+
+	return c.doLogin(req)
+}
+
 // Login logs in a user with `username` and `password`
 func (c *Client) Login(username, password string) error {
 	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
@@ -161,15 +212,16 @@ func (c *Client) Login(username, password string) error {
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
 	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	var tokenResponse struct {
-		Scope        string `json:"scope"`
-		AccessToken  string `json:"access_token"`
-		RefreshToken string `json:"refresh_token"`
-		ExpiresIn    string `json:"expires_in"`
-		TokenType    string `json:"token_type"`
-	}
+	return c.doLogin(req)
+}
+
+func (c *Client) doLogin(req *http.Request) error {
+	var tokenResponse tokenResponse
+
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Api-Version", loginAPIVersion)
 	resp, err := c.Do(req, &tokenResponse)
 
 	if err != nil {

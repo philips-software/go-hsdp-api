@@ -2,9 +2,14 @@ package iam
 
 import (
 	"bytes"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
+	"fmt"
 	"net/http"
+	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/jeffail/gabs"
 )
 
@@ -14,7 +19,7 @@ const servicesAPIVersion = "1"
 type Service struct {
 	ID             string   `json:"id,omitempty"`
 	Name           string   `json:"name"`
-	Description    string   `json:"description"`
+	Description    string   `json:"description"` // RITM0021326
 	ApplicationID  string   `json:"applicationId"`
 	ServiceID      string   `json:"serviceId,omitempty"`
 	OrganizationID string   `json:"organizationId,omitempty"`
@@ -36,6 +41,31 @@ type GetServiceOptions struct {
 	ApplicationID  *string `url:"applicationId,omitempty"`
 	OrganizationID *string `url:"organizationId,omitempty"`
 	ServiceID      *string `url:"serviceId,omitempty"`
+}
+
+// GetToken returns a JWT which can be exchanged for an access token
+func (s *Service) GetToken(accessTokenEndpoint string) (string, error) {
+	// Decode private key
+	block, _ := pem.Decode([]byte(fixHSDPPEM(s.PrivateKey)))
+	if block == nil {
+		return "", fmt.Errorf("failed to parse privateKey")
+	}
+	key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return "", err
+	}
+	// Generate JWT token
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+		"aud": accessTokenEndpoint,
+		"iss": s.ServiceID,
+		"sub": s.ServiceID,
+		"exp": time.Now().Add(time.Minute * 60).Unix(),
+	})
+	signedString, err := token.SignedString(key)
+	if err != nil {
+		return "", err
+	}
+	return signedString, nil
 }
 
 // GetServiceByID looks up a service by ID

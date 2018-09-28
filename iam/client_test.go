@@ -53,7 +53,7 @@ func setup(t *testing.T) func() {
     		"scope": "auth_iam_introspect mail tdr.contract tdr.dataitem",
     		"access_token": "`+token+`",
     		"refresh_token": "31f1a449-ef8e-4bfc-a227-4f2353fde547",
-    		"expires_in": "1799",
+    		"expires_in": 1799,
     		"token_type": "Bearer"
 		}`)
 	})
@@ -123,7 +123,7 @@ func TestLoginWithScopes(t *testing.T) {
     		"scope": "`+strings.Join(cfg.Scopes, " ")+`",
     		"access_token": "`+token+`",
     		"refresh_token": "31f1a449-ef8e-4bfc-a227-4f2353fde547",
-    		"expires_in": "1799",
+    		"expires_in": 1799,
     		"token_type": "Bearer"
 		}`)
 	})
@@ -133,6 +133,67 @@ func TestLoginWithScopes(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !client.HasScopes("introspect", "cn") {
+		t.Errorf("Expected `introspect` and `cn` scope to be there")
+	}
+}
+
+func TestServiceLogin(t *testing.T) {
+	muxIAM = http.NewServeMux()
+	serverIAM = httptest.NewServer(muxIAM)
+	muxIDM = http.NewServeMux()
+	serverIDM = httptest.NewServer(muxIDM)
+
+	defer serverIAM.Close()
+	defer serverIDM.Close()
+
+	sharedKey := "SharedKey"
+	secretKey := "SecretKey"
+
+	cfg := &Config{
+		OAuth2ClientID: "TestClient",
+		OAuth2Secret:   "Secret",
+		SharedKey:      sharedKey,
+		SecretKey:      secretKey,
+		IAMURL:         serverIAM.URL,
+		IDMURL:         serverIDM.URL,
+		Scopes:         []string{"introspect", "cn"},
+	}
+	service := &Service{
+		PrivateKey: "-----BEGIN RSA PRIVATE KEY-----MIIEpAIBAAKCAQEAwM8LhQS4OB6e0xrMHE20NI/vWAwdgG3eoa50mlhlDwKQg0/sMYUKZBHkcit4rEQvgpXb36WtBhLAGC5gxLCBioRMfFG6c+DS9xyKXCexTTQZC1qBZlh1M7kq6oywnqfozBJ/9nAneOIkqA4NT9sy7jSMDuGFursL7p0iB1LrqEptBxm1zZKOw9GXUzqGTa+jdVj4DoviBtm6DCnQ61ucOEkl6DGvll5QBI693XIomqIbBICRHeMcTNoJ2GmKPYRITazKyk7FJc7Sn7E5T+ZB9StkX4BgiZjjZwnUKYpYGX65tipy3nrTzzZHfM83Rl91Gn1fbWIGxipxhp544XcjpwIDAQABAoIBAQC81YrYumiaPhMbenFRfyDxIc8uEp+KOxEClNQKnmxLqR1UHiCb10r3+zYcQ0sqnJVTdeYkQiUVf6O3iySnPp+AxFYMpBbSiuzTrJYt74oMrOuiXP/C9vvCrqXDlgsdOCIeTDgbanieQg3YsfqDrZFSDxDlOic5XRwwlKDRP3siFBuLrZZ/PtzNO4uMeBSKxGveghdQJiQ07XZoZ7bBsRU5lIV7tI+bpryA+xLu6C/LSRgtnwvHxnrppdvVOB4ZMc1IcigmCvMKCdUG1AQuxFH/v8ACuMuDubYRCJECtKlvQHNryA/uF8FYINjWDFiyoUmg2uu+Xtk13dY2uJoEycshAoGBAP1C1xs/9gaji6kwMP449IPH0pS24Nm0Rv3nxN6BPp0N+WpqCs9OAIFeNUZzScI6rMUtOBxEbddLGCkXCWnpvaPUoApx0192aW7mZ3mfhYQsaHohQHjkrzOCuRULaEbyET//w+7FvmxRHrjrEkuu8Tg06Uxt9394f5qVCrx6Eo2ZAoGBAMLk10htsuHx1KwYw7r6SLGaHhV60viUfKhiVXWUZiYCfgBtcr8Q/XBNFy/7e6Sm5o5xDBknFFcraMFKXpr9UMyOLLZLRqh8rxdRtoI3bGR1pNnx1BjkF6JmbDn8zqcibTet8nRXf7HoozolpbqL0QF8IXPzZpLd7o/+4RF4mYM/AoGBAOxtgpxoyIeIE/A9Ee+yQenoGFlGpH/4QTH1NR827rn1erryBedjfStIRFnhdKEC35kvTqts4lHTQ9nQLLSYRbZ033cArf/3bhPeugibeCxcvKgO9L4nVruytI/F13IrtxjU7xevuMYrsI+Wu7y1s3DyTD1Sh3OTjSRFMQGkwD85AoGANrfJOayS7JzY+Ph6+6QJhNOgXqd9VA1ccmopVDm19DX+6l/QN5StkzoRqIcSz8eMM7HJk8ZFD7RAVQRsS1eTt9qy8vtvex6GiiWG+EhXRl1BS295/QMNH6th92XjH0mrIFbWG5P1Zh3KtiibvyRCKgiP294ajmGA+Sy2RBF4CEECgYAKlx5gd2/1iCjOtnWRMjzSfhPUKe6W7FE3QwgoT7ZTA2xM4gLsSfC148G2EZMjDdKrHUdLC+hAQ4tRAqLMLjfyIhU/SKMM4NnVZlcZqdbWJP2BviXUz1rGKlwyt8fhvzbeiRbqTQxDdl0cjpE4Zi8aFSyczOGBsxQ0X57n5ARAtA==-----END RSA PRIVATE KEY-----",
+		ServiceID:  "testservice.vhtestapp.vhprop@vhdev.h2hdevorg.philips-healthsuite.com",
+	}
+
+	client, _ = NewClient(nil, cfg)
+
+	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Errorf("Expected ‘POST’ request")
+		}
+		r.ParseForm()
+		if strings.Join(r.Form["grant_type"], " ") != "urn:ietf:params:oauth:grant-type:jwt-bearer" {
+			t.Fatalf("Exepcted grant_type to be `urn:ietf:params:oauth:grant-type:jwt-bearer` in test")
+			return
+		}
+		if r.Form.Get("assertion") == "" {
+			t.Fatalf("Expected assertion to contain a JWT")
+		}
+		// TODO: validate JWT
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, `{
+			"scope": "openid",
+			"access_token": "5301cd36-4361-4b61-98aa-0f5c3acacd21",
+			"expires_in": 1799,
+			"token_type": "Bearer",
+			"id_token": "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEreStXZ3JINVVpOVdUaW9MdDA9IiwiYWxnIjoiUlMyNTYifQ.eyJhdF9oYXNoIjoibVdETWRWRjVFNWYyRm5oYnVtT3ktQSIsInN1YiI6InRlc3RzZXJ2aWNlLnZodGVzdGFwcC52aHByb3BAdmhkZXYuaDJoZGV2b3JnLnBoaWxpcHMtaGVhbHRoc3VpdGUuY29tIiwiYXVkaXRUcmFja2luZ0lkIjoiZWViOWIyZGItZDI0OS00NTE2LWE4NmEtMWUyMjUxYzg5Yjc0LTk3NTM3NyIsImlzcyI6Imh0dHBzOi8vZnJhdXRoYjRhNWFtLmlhbS51cy1lYXN0LnBoaWxpcHMtaGVhbHRoc3VpdGUuY29tL29wZW5hbS9vYXV0aDIiLCJ0b2tlbk5hbWUiOiJpZF90b2tlbiIsImF1ZCI6InRlc3RzZXJ2aWNlLnZodGVzdGFwcC52aHByb3BAdmhkZXYuaDJoZGV2b3JnLnBoaWxpcHMtaGVhbHRoc3VpdGUuY29tIiwiYXpwIjoidGVzdHNlcnZpY2Uudmh0ZXN0YXBwLnZocHJvcEB2aGRldi5oMmhkZXZvcmcucGhpbGlwcy1oZWFsdGhzdWl0ZS5jb20iLCJhdXRoX3RpbWUiOjE1MzgxMzUwMjAsInJlYWxtIjoiLyIsImV4cCI6MTUzODEzODYyMCwidG9rZW5UeXBlIjoiSldUVG9rZW4iLCJpYXQiOjE1MzgxMzUwMjB9.Jdr14sKkiOMUQRnDoceShkrE6cRLGwaSFse6lAbIEfKHp1wzDDCYu0QgL69oG_J_LbCU8ygdLmSKtww1DVt43eFdXpbKJr_n1-OarGh1aVK0lJZvx4dA2Jy_uaLpeAlt6r0ogXAO6KUTKaz_u6qZjj_DGjOO3f2WNOHqRBgfu8rqhzhViQytjPcrpFlH9YPBrZXt6j2tDfM6Ja6D8ty0E8-Qu1XUAjlO6rnvGgyjIBvAdcpVnYoeXtsG_MwAzc-oHZNANCsjmn5gpNVsU633PNpXllzPOgUEeR7z8-kT1MfZptMcRlh_L_G4FZujUTCMlSJRd4qVThWMZxR8qgtYhw"
+		  }`)
+	})
+
+	err := client.ServiceLogin(*service)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !client.HasScopes("openid") {
 		t.Errorf("Expected `introspect` and `cn` scope to be there")
 	}
 }

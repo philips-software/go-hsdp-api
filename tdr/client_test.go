@@ -51,7 +51,7 @@ func setup(t *testing.T) func() {
     "scope": "mail",
     "access_token": "`+token+`",
     "refresh_token": "31f1a449-ef8e-4bfc-a227-4f2353fde547",
-    "expires_in": "1799",
+    "expires_in": 1799,
     "token_type": "Bearer"
 }`)
 	})
