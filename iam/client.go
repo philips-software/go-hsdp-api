@@ -158,15 +158,6 @@ func (c *Client) accessTokenEndpoint() string {
 	return c.baseIAMURL.String() + "oauth2/access_token"
 }
 
-func fixHSDPPEM(pemString string) string {
-	pre := strings.Replace(pemString,
-		"-----BEGIN RSA PRIVATE KEY-----",
-		"-----BEGIN RSA PRIVATE KEY-----\n", -1)
-	return strings.Replace(pre,
-		"-----END RSA PRIVATE KEY-----",
-		"\n-----END RSA PRIVATE KEY-----", -1)
-}
-
 // ServiceLogin logs a service in using a JWT signed with the service private key
 func (c *Client) ServiceLogin(service Service) error {
 	token, err := service.GetToken(c.accessTokenEndpoint())

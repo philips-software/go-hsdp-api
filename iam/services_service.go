@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -41,6 +42,15 @@ type GetServiceOptions struct {
 	ApplicationID  *string `url:"applicationId,omitempty"`
 	OrganizationID *string `url:"organizationId,omitempty"`
 	ServiceID      *string `url:"serviceId,omitempty"`
+}
+
+func fixHSDPPEM(pemString string) string {
+	pre := strings.Replace(pemString,
+		"-----BEGIN RSA PRIVATE KEY-----",
+		"-----BEGIN RSA PRIVATE KEY-----\n", -1)
+	return strings.Replace(pre,
+		"-----END RSA PRIVATE KEY-----",
+		"\n-----END RSA PRIVATE KEY-----", -1)
 }
 
 // GetToken returns a JWT which can be exchanged for an access token
