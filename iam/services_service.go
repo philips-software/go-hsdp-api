@@ -22,6 +22,7 @@ type Service struct {
 	Name           string   `json:"name"`
 	Description    string   `json:"description"` // RITM0021326
 	ApplicationID  string   `json:"applicationId"`
+	Validity       int      `json:"validity,omitempty"`
 	ServiceID      string   `json:"serviceId,omitempty"`
 	OrganizationID string   `json:"organizationId,omitempty"`
 	ExpiresOn      string   `json:"expiresOn,omitempty"`
