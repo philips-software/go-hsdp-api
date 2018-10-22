@@ -173,15 +173,23 @@ func (p *ServicesService) DeleteService(service Service) (bool, *Response, error
 	return true, resp, err
 }
 
-// UpdateScopes updates a service scope
-func (p *ServicesService) UpdateScopes(service Service, scopes []string, defaultScopes []string) (bool, *Response, error) {
-	// TODO: simulate update using ["add", "remove"] action. Currently we only "add"
+// AddScopes add scopes to the service
+func (p *ServicesService) AddScopes(service Service, scopes []string, defaultScopes []string) (bool, *Response, error) {
+	return p.updateScopes(service, "add", scopes, defaultScopes)
+}
+
+// RemoveScopes add scopes to the service
+func (p *ServicesService) RemoveScopes(service Service, scopes []string, defaultScopes []string) (bool, *Response, error) {
+	return p.updateScopes(service, "remove", scopes, defaultScopes)
+}
+
+func (p *ServicesService) updateScopes(service Service, action string, scopes []string, defaultScopes []string) (bool, *Response, error) {
 	var requestBody = struct {
 		Action        string   `json:"action"`
-		Scopes        []string `json:"scopes"`
-		DefaultScopes []string `json:"defaultScopes"`
+		Scopes        []string `json:"scopes,omitempty"`
+		DefaultScopes []string `json:"defaultScopes,omitempty"`
 	}{
-		"add",
+		action,
 		scopes,
 		defaultScopes,
 	}
