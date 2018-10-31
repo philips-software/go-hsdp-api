@@ -1,8 +1,16 @@
 language: go
-
 go:
-  - "1.x"
-  - "1.8"
-  - "1.10.x"
-  - "1.11"
-  - master
+- '1.11'
+- master
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- "./cc-test-reporter before-build"
+script:
+- go test -coverprofile c.out ./...
+after_script:
+- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
+env:
+  global:
+    secure: qFrvMfmnXGJOUyHAFL5hNYsO/DmuNzE8d1IbRCFdtnLIci8dEtQJsRz8rOwBrSqcM+nTtUFQeUlMr2em2cDY7NF8ffBOO5O9vA0FB0w8TX0FuW3U9je8g0cfXcXOYcIRf+7fD8u+QHhpiEwcD5muCbujKIVOQlhQPF3r1okBrFIfsCMB2kRKJpJdqSed6L3V/MguE6wE5OXeJD691Ec7wcNRHx2rVn9NKTa7ULDPs8qnNQ029eWDXrByCdq7NfBZffmIjlM8U4avzwIwd9L/uEReoD++GHQzOceyJ/s2uuZPI+o4Hmo2osv+t8uCwPSxks0zqfVsxXtUtl7+sifMVq1apEYFHxnXUSdaw+a21qX10nV7XrJVQ2OWw9zvwdgqxV3JNctzexO4+DQtyljXVU+n/hw/3zVkTDYI3qN64IXRV5mAjaItcUc4774kRvilIBrUTLFvzmG6J/gSs4VXCTKXeMl6aE39Mf9EE18SifSzXVaREfDq/2Kvab3ByOFKCSIzY4RQPqy4WTEOVYVuWLdWvjt5e6sDjTkUUg2Aii4PAnHDzr9WzAu3VQamvrNR+1Nr/Hrj3huztqc/aGxB1fiMTBnQp2KbL8ERhOeHIsI+wHV/qWNpc89Dpoz7Ut4/JpvKs+3mVIddiqpWaPDh6c/kVEr4pXHfzId1LxtCqbc=
