@@ -51,7 +51,7 @@ type Resource struct {
 
 // UserList holds a paginated lists of users
 type UserList struct {
-	Users       []User
+	Users       []Person
 	PageNumber  int
 	PageSize    int
 	HasNextPage bool
@@ -59,7 +59,7 @@ type UserList struct {
 
 // CreateUser creates a new IAM user.
 func (u *UsersService) CreateUser(firstName, lastName, emailID, phoneNumber, organizationID string) (bool, *Response, error) {
-	person := &User{
+	person := &Person{
 		ResourceType: "Person",
 		Name: Name{
 			Family: lastName,
@@ -248,16 +248,16 @@ func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*U
 	var list UserList
 
 	list.HasNextPage = bundleResponse.Exchange.NextPageExists
-	list.Users = make([]User, len(bundleResponse.Exchange.Users))
+	list.Users = make([]Person, len(bundleResponse.Exchange.Users))
 	for i, u := range bundleResponse.Exchange.Users {
-		list.Users[i] = User{ID: u.UserUUID}
+		list.Users[i] = Person{ID: u.UserUUID}
 	}
 
 	return &list, resp, err
 }
 
 // GetUserByID looks up a user by UUID
-func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
+func (u *UsersService) GetUserByID(uuid string) (*Person, *Response, error) {
 	req, _ := u.client.NewRequest(IDM, "GET", "security/users/"+uuid, nil, nil)
 	var user interface{}
 
@@ -281,7 +281,8 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 	first := r.Path("givenName").Data().(string)
 	last := r.Path("familyName").Data().(string)
 	disabled := r.Path("disabled").Data().(bool)
-	var foundUser User
+	// TODO use Profile here
+	var foundUser Person
 	foundUser.Name.Family = last
 	foundUser.Name.Given = first
 	foundUser.Disabled = disabled
