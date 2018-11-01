@@ -113,33 +113,6 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	return p.GetPropositionByID(id)
 }
 
-// UpdateProposition updates the Proposition
-func (p *PropositionsService) UpdateProposition(prop Proposition) (*Proposition, *Response, error) {
-	// TODO: not implemented in v1 as of 2018/05/20
-	if true {
-		return nil, nil, errNotImplementedByHSDP
-	}
-	var updateRequest struct {
-		Description string `json:"description"`
-	}
-	updateRequest.Description = prop.Description
-	req, err := p.client.NewRequest(IDM, "PUT", "authorize/identity/Proposition/"+prop.ID, &updateRequest, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("api-version", "1")
-	req.Header.Set("Content-Type", "application/json")
-
-	var updatedProp Proposition
-
-	resp, err := p.client.Do(req, &updatedProp)
-	if err != nil {
-		return nil, resp, err
-	}
-	return &prop, resp, err
-
-}
-
 func (p *PropositionsService) parseFromBundle(bundle []byte) (*[]Proposition, error) {
 	jsonParsed, err := gabs.ParseJSON(bundle)
 	if err != nil {
