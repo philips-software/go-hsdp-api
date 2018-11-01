@@ -29,7 +29,8 @@ func setup(t *testing.T) func() {
 	muxTDR = http.NewServeMux()
 	serverTDR = httptest.NewServer(muxTDR)
 
-	iamClient, _ = iam.NewClient(nil, &iam.Config{
+	var err error
+	iamClient, err = iam.NewClient(nil, &iam.Config{
 		OAuth2ClientID: "TestClient",
 		OAuth2Secret:   "Secret",
 		SharedKey:      "SharedKey",
@@ -37,11 +38,9 @@ func setup(t *testing.T) func() {
 		IAMURL:         serverIAM.URL,
 		IDMURL:         serverIDM.URL,
 	})
-
-	tdrClient, _ = NewClient(nil, iamClient, &Config{
-		TDRURL: serverTDR.URL,
-	})
-
+	if err != nil {
+		t.Fatalf("Failed to create iamCleitn: %v", err)
+	}
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
 
 	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
@@ -59,6 +58,16 @@ func setup(t *testing.T) func() {
     "token_type": "Bearer"
 }`)
 	})
+
+	// Login immediately so we can create tdrClient
+	iamClient.Login("username", "password")
+
+	tdrClient, err = NewClient(nil, iamClient, &Config{
+		TDRURL: serverTDR.URL,
+	})
+	if err != nil {
+		t.Fatalf("Failed to create tdrClient: %v", err)
+	}
 
 	return func() {
 		serverIAM.Close()
