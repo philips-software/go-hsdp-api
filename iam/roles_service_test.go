@@ -94,3 +94,41 @@ func TestRoleCRUD(t *testing.T) {
 		t.Errorf("Expected role to be deleted")
 	}
 }
+
+func TestGetRolesByGroupID(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	roleName := "TESTROLE"
+	roleDescription := "Role description"
+	managingOrgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	roleID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	groupID := "3c7a0274-169e-4ea9-ad91-252cc4022605"
+	muxIDM.HandleFunc("/authorize/identity/Role", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("groupId") != groupID {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, `{
+		    "total": 1,
+		    "entry": [{
+				"name": "`+roleName+`",
+				"description": "`+roleDescription+`",
+				"managingOrganization": "`+managingOrgID+`",
+				"id": "`+roleID+`"
+			}]
+		    }`)
+	})
+	roles, resp, err := client.Roles.GetRolesByGroupID(groupID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
+	}
+	if len(*roles) != 1 {
+		t.Errorf("Expected 1 role")
+	}
+}

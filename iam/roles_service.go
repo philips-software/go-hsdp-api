@@ -2,10 +2,7 @@ package iam
 
 import (
 	"bytes"
-	"errors"
 	"net/http"
-
-	"github.com/jeffail/gabs"
 )
 
 var (
@@ -135,27 +132,6 @@ func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
 	return true, resp, err
 }
 
-// GetRole retrieve a Role resource based on GetRoleOptions parameters
-func (p *RolesService) GetRole(opt *GetRolesOptions, options ...OptionFunc) (*Role, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Role", opt, options)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("api-version", "1")
-
-	var bundleResponse bytes.Buffer
-
-	resp, err := p.client.Do(req, &bundleResponse)
-	if err != nil {
-		return nil, resp, err
-	}
-	roles, err := p.parseFromBundle(bundleResponse.Bytes())
-	if err != nil {
-		return nil, resp, err
-	}
-	return &(*roles)[0], resp, err
-}
-
 // GetRolePermissions retrieves the permissions assosciates with the Role
 func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
 	opt := &GetRolesOptions{RoleID: &role.ID}
@@ -226,27 +202,4 @@ func (p *RolesService) RemoveRolePermission(role Role, permission string) (*Role
 		return nil, resp, err
 	}
 	return nil, resp, err
-}
-
-func (p *RolesService) parseFromBundle(bundle []byte) (*[]Role, error) {
-	jsonParsed, err := gabs.ParseJSON(bundle)
-	if err != nil {
-		return nil, err
-	}
-	count, ok := jsonParsed.S("total").Data().(float64)
-	if !ok || count == 0 {
-		return nil, errors.New("empty result")
-	}
-	roles := make([]Role, int64(count))
-
-	children, _ := jsonParsed.S("entry").Children()
-	for i, r := range children {
-		var p Role
-		p.ID = r.Path("id").Data().(string)
-		p.ManagingOrganization, _ = r.Path("managingOrganization").Data().(string)
-		p.Name, _ = r.Path("name").Data().(string)
-		p.Description, _ = r.Path("description").Data().(string)
-		roles[i] = p
-	}
-	return &roles, nil
 }
