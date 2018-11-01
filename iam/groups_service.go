@@ -167,10 +167,9 @@ func (g *GroupsService) GetRoles(group Group) (*[]Role, *Response, error) {
 
 // AssignRole adds a role to a group
 func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, error) {
-	var assignRequest struct {
-		Roles []string `json:"roles"`
+	var assignRequest = groupRequest{
+		Roles: []string{role.ID},
 	}
-	assignRequest.Roles = []string{role.ID}
 	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/$assign-role", assignRequest, nil)
 	if err != nil {
 		return false, nil, err
@@ -192,10 +191,9 @@ func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, err
 
 // RemoveRole removes a role from a group
 func (g *GroupsService) RemoveRole(group Group, role Role) (bool, *Response, error) {
-	var removeRequest struct {
-		Roles []string `json:"roles"`
+	var removeRequest = groupRequest{
+		Roles: []string{role.ID},
 	}
-	removeRequest.Roles = []string{role.ID}
 	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/$remove-role", removeRequest, nil)
 	if err != nil {
 		return false, nil, err
@@ -226,13 +224,16 @@ type Parameter struct {
 	References []Reference `json:"references"`
 }
 
+type groupRequest struct {
+	ResourceType string      `json:"resourceType,omitempty"`
+	Parameter    []Parameter `json:"parameter,omitempty"`
+	Roles        []string    `json:"roles,omitempty"`
+}
+
 // AddMembers adds a user to the given Group
 func (g *GroupsService) AddMembers(group Group, users ...string) (bool, *Response, error) {
 
-	var addRequest = struct {
-		ResourceType string      `json:"resourceType"`
-		Parameter    []Parameter `json:"parameter"`
-	}{
+	var addRequest = groupRequest{
 		ResourceType: "Parameters",
 		Parameter: []Parameter{
 			{
@@ -268,10 +269,7 @@ func (g *GroupsService) AddMembers(group Group, users ...string) (bool, *Respons
 // RemoveMembers adds a user to the given Group
 func (g *GroupsService) RemoveMembers(group Group, users ...string) (bool, *Response, error) {
 
-	var removeRequest = struct {
-		ResourceType string      `json:"resourceType"`
-		Parameter    []Parameter `json:"parameter"`
-	}{
+	var removeRequest = groupRequest{
 		ResourceType: "Parameters",
 		Parameter: []Parameter{
 			{
