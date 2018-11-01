@@ -38,6 +38,10 @@ func setup(t *testing.T) func() {
 		IDMURL:         serverIDM.URL,
 	})
 
+	tdrClient, _ = NewClient(nil, iamClient, &Config{
+		TDRURL: serverTDR.URL,
+	})
+
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
 
 	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +52,7 @@ func setup(t *testing.T) func() {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		io.WriteString(w, `{
-    "scope": "mail",
+    "scope": "mail tdr.contract tdr.dataitem",
     "access_token": "`+token+`",
     "refresh_token": "31f1a449-ef8e-4bfc-a227-4f2353fde547",
     "expires_in": 1799,
@@ -74,5 +78,8 @@ func TestLogin(t *testing.T) {
 	}
 	if iamClient.Token() != token {
 		t.Errorf("Unexpected token found: %s, expected: %s", iamClient.Token(), token)
+	}
+	if !iamClient.HasScopes("tdr.contract", "tdr.dataitem") {
+		t.Errorf("Client should have tdr.contract and tdr.dataitem scopes")
 	}
 }
