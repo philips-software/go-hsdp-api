@@ -123,7 +123,7 @@ func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
 	}
 	req.Header.Set("api-version", "1")
 
-	var deleteResponse interface{}
+	var deleteResponse bytes.Buffer
 
 	resp, err := p.client.Do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
@@ -160,7 +160,7 @@ func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
 }
 
 // AddRolePermission adds a given permission to the Role
-func (p *RolesService) rolePermissionAction(role Role, permission string, action string) (*Role, *Response, error) {
+func (p *RolesService) rolePermissionAction(role Role, permission string, action string) (bool, *Response, error) {
 	var permissionRequest struct {
 		Permissions []string `json:"permissions"`
 	}
@@ -168,7 +168,7 @@ func (p *RolesService) rolePermissionAction(role Role, permission string, action
 
 	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/"+action, &permissionRequest, nil)
 	if err != nil {
-		return nil, nil, err
+		return false, nil, err
 	}
 	req.Header.Set("api-version", "1")
 
@@ -176,17 +176,17 @@ func (p *RolesService) rolePermissionAction(role Role, permission string, action
 
 	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
-		return nil, resp, err
+		return false, resp, err
 	}
-	return nil, resp, err
+	return true, resp, err
 
 }
 
-func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *Response, error) {
+func (p *RolesService) AddRolePermission(role Role, permission string) (bool, *Response, error) {
 	return p.rolePermissionAction(role, permission, "$assign-permission")
 }
 
 // RemoveRolePermission removes the permission from the Role
-func (p *RolesService) RemoveRolePermission(role Role, permission string) (*Role, *Response, error) {
+func (p *RolesService) RemoveRolePermission(role Role, permission string) (bool, *Response, error) {
 	return p.rolePermissionAction(role, permission, "$remove-permission")
 }

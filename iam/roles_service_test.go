@@ -95,6 +95,64 @@ func TestRoleCRUD(t *testing.T) {
 	}
 }
 
+func roleActionSuccessHandler(message string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, `{
+                      "resourceType": "OperationOutcome",
+                      "issue": [
+                        {
+                          "severity": "information",
+                          "code": "informational",
+                          "details": {
+                            "coding": {},
+                            "text": "`+message+`"
+                          },
+                          "diagnostics": "`+message+`"
+                        }
+                      ]
+                    }`)
+	}
+}
+
+func TestRolePermissionActions(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	roleID := "678abffc-dea1-11e8-9e14-6a0002b8cb70"
+	assignMessage := "Permission(s) assigned successfully"
+	removeMessage := "Permission(s) removed successfully"
+
+	muxIDM.HandleFunc("/authorize/identity/Role/"+roleID+"/$assign-permission", roleActionSuccessHandler(assignMessage))
+	muxIDM.HandleFunc("/authorize/identity/Role/"+roleID+"/$remove-permission", roleActionSuccessHandler(removeMessage))
+	var role Role
+	role.ID = roleID
+
+	ok, resp, err := client.Roles.AddRolePermission(role, "GROUP.READ")
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
+	}
+	if !ok {
+		t.Errorf("Expected permission to be added")
+	}
+
+	ok, resp, err = client.Roles.RemoveRolePermission(role, "GROUP.READ")
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
+	}
+	if !ok {
+		t.Errorf("Expected permission to be removed")
+	}
+
+}
+
 func TestGetRolesByGroupID(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
