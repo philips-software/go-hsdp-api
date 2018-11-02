@@ -76,30 +76,3 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 	}
 	return a.GetApplicationByID(id)
 }
-
-// UpdateApplication updates the Application
-func (a *ApplicationsService) UpdateApplication(app Application) (*Application, *Response, error) {
-	// TODO: not implemented in v1 as of 2018/05/20
-	if true {
-		return nil, nil, errNotImplementedByHSDP
-	}
-	var updateRequest struct {
-		Description string `json:"description"`
-	}
-	updateRequest.Description = app.Description
-	req, err := a.client.NewRequest(IDM, "PUT", "authorize/identity/Application/"+app.ID, &updateRequest, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("api-version", "1")
-	req.Header.Set("Content-Type", "application/json")
-
-	var updatedApp Application
-
-	resp, err := a.client.Do(req, &updatedApp)
-	if err != nil {
-		return nil, resp, err
-	}
-	return &app, resp, err
-
-}
