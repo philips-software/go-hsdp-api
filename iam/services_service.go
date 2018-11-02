@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/x509"
 	"encoding/pem"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -219,7 +218,7 @@ func (p *ServicesService) parseFromBundle(bundle []byte) (*[]Service, error) {
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errors.New("empty result")
+		return nil, errEmptyResults
 	}
 	services := make([]Service, int64(count))
 

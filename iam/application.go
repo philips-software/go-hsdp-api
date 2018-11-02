@@ -1,8 +1,6 @@
 package iam
 
 import (
-	"encoding/json"
-
 	"github.com/jeffail/gabs"
 )
 
@@ -29,9 +27,8 @@ func (a *Application) Validate() error {
 	return nil
 }
 
-func (a *Application) parseFromBundle(v interface{}) error {
-	m, _ := json.Marshal(v)
-	jsonParsed, err := gabs.ParseJSON(m)
+func (a *Application) parseFromBundle(bundle []byte) error {
+	jsonParsed, err := gabs.ParseJSON(bundle)
 	if err != nil {
 		return err
 	}

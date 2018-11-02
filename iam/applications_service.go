@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 )
@@ -37,14 +38,14 @@ func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, option
 	req.Header.Set("api-version", applicationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse interface{}
+	var bundleResponse bytes.Buffer
 
 	resp, err := a.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
 	var app Application
-	err = app.parseFromBundle(bundleResponse)
+	err = app.parseFromBundle(bundleResponse.Bytes())
 	return &app, resp, err
 }
 
