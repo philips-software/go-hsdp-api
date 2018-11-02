@@ -160,13 +160,13 @@ func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
 }
 
 // AddRolePermission adds a given permission to the Role
-func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *Response, error) {
+func (p *RolesService) rolePermissionAction(role Role, permission string, action string) (*Role, *Response, error) {
 	var permissionRequest struct {
 		Permissions []string `json:"permissions"`
 	}
 	permissionRequest.Permissions = []string{permission}
 
-	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/$assign-permission", &permissionRequest, nil)
+	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/"+action, &permissionRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -182,24 +182,11 @@ func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *
 
 }
 
+func (p *RolesService) AddRolePermission(role Role, permission string) (*Role, *Response, error) {
+	return p.rolePermissionAction(role, permission, "$assign-permission")
+}
+
 // RemoveRolePermission removes the permission from the Role
 func (p *RolesService) RemoveRolePermission(role Role, permission string) (*Role, *Response, error) {
-	var permissionRequest struct {
-		Permissions []string `json:"permissions"`
-	}
-	permissionRequest.Permissions = []string{permission}
-
-	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/$remove-permission", &permissionRequest, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("api-version", "1")
-
-	var bundleResponse bytes.Buffer
-
-	resp, err := p.client.Do(req, &bundleResponse)
-	if err != nil {
-		return nil, resp, err
-	}
-	return nil, resp, err
+	return p.rolePermissionAction(role, permission, "$remove-permission")
 }
