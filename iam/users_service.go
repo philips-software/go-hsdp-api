@@ -114,21 +114,7 @@ func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) 
 			},
 		},
 	}
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/$recover-password", body, nil)
-	if err != nil {
-		return false, nil, err
-	}
-	req.Header.Set("api-version", userAPIVersion)
-
-	var bundleResponse interface{}
-
-	resp, err := u.client.DoSigned(req, &bundleResponse)
-
-	if err != nil {
-		return false, resp, err
-	}
-	ok := resp != nil && resp.StatusCode == http.StatusOK
-	return ok, resp, err
+	return u.userAction(body, "$recover-password")
 }
 
 // ResendActivation resends an activation email to the given user
@@ -144,7 +130,11 @@ func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error)
 			},
 		},
 	}
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/$resend-activation", body, nil)
+	return u.userAction(body, "$resend-activation")
+}
+
+func (u *UsersService) userAction(body *Parameters, action string) (bool, *Response, error) {
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+action, body, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -176,20 +166,7 @@ func (u *UsersService) SetPassword(loginID, confirmationCode, newPassword, conte
 			},
 		},
 	}
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/$set-password", body, nil)
-	if err != nil {
-		return false, nil, err
-	}
-	req.Header.Set("api-version", userAPIVersion)
-
-	var bundleResponse interface{}
-
-	resp, err := u.client.DoSigned(req, &bundleResponse)
-	if err != nil {
-		return false, resp, err
-	}
-	ok := resp != nil && resp.StatusCode == http.StatusOK
-	return ok, resp, err
+	return u.userAction(body, "$set-password")
 }
 
 // ChangePassword changes the password. The current pasword must be provided as well.
@@ -207,20 +184,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 			},
 		},
 	}
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/$change-password", body, nil)
-	if err != nil {
-		return false, nil, err
-	}
-	req.Header.Set("api-version", userAPIVersion)
-
-	var bundleResponse interface{}
-
-	resp, err := u.client.DoSigned(req, &bundleResponse)
-	if err != nil {
-		return false, resp, err
-	}
-	ok := resp != nil && resp.StatusCode == http.StatusOK
-	return ok, resp, err
+	return u.userAction(body, "$change-password")
 }
 
 // GetUsers looks up users by search criteria specified in GetUserOptions

@@ -220,3 +220,88 @@ func TestGetUserByID(t *testing.T) {
 		t.Errorf("Expected family name: %s, got: %s", "Doe", foundUser.Name.Family)
 	}
 }
+
+func TestUserActions(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	muxIDM.HandleFunc("/authorize/identity/User/$resend-activation",
+		actionRequestHandler(t, "resendOTP", "Password reset send"))
+	muxIDM.HandleFunc("/authorize/identity/User/$set-password",
+		actionRequestHandler(t, "setPassword", "TODO: fix"))
+	muxIDM.HandleFunc("/authorize/identity/User/$change-password",
+		actionRequestHandler(t, "changePassword", "TODO: fix"))
+	muxIDM.HandleFunc("/authorize/identity/User/$recover-password",
+		actionRequestHandler(t, "recoverPassword", "TODO: fix"))
+
+	ok, resp, err := client.Users.ResendActivation("foo@bar.co")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("Unexpected failure, Got !ok")
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	}
+
+	ok, resp, err = client.Users.RecoverPassword("foo@bar.co")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("Unexpected failure, Got !ok")
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	}
+
+	ok, resp, err = client.Users.ChangePassword("foo@bar.co", "0ld", "N3w")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("Unexpected failure, Got !ok")
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	}
+
+	ok, resp, err = client.Users.SetPassword("foo@bar.com", "1234", "newp@ss", "context")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("Unexpected failure, Got !ok")
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	}
+}
+
+func actionRequestHandler(t *testing.T, paramName, informationalMessage string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Errorf("Expected ‘POST’ request, got ‘%s’", r.Method)
+		}
+		if auth := r.Header.Get("Authorization"); auth != "" {
+			t.Errorf("No Authorization header expected, Got: %s", auth)
+		}
+		//body, _ := ioutil.ReadAll(r.Body)
+		//j, _ := gabs.ParseJSON(body)
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, `{
+			"resourceType": "OperationOutcome",
+			"issue": [
+				{
+					"severity": "information",
+					"code": "informational",
+					"details": {
+						"text": "`+informationalMessage+`"
+					}
+				}
+			]
+		}`)
+	}
+}
