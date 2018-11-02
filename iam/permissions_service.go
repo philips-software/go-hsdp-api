@@ -2,7 +2,6 @@ package iam
 
 import (
 	"bytes"
-	"errors"
 
 	"github.com/jeffail/gabs"
 )
@@ -100,7 +99,7 @@ func (p *PermissionsService) parseFromBundle(bundle []byte) (*[]Permission, erro
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errors.New("empty result")
+		return nil, errEmptyResults
 	}
 	permissions := make([]Permission, int64(count))
 

@@ -2,7 +2,6 @@ package iam
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -120,7 +119,7 @@ func (p *PropositionsService) parseFromBundle(bundle []byte) (*[]Proposition, er
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errors.New("empty result")
+		return nil, errEmptyResults
 	}
 	propositions := make([]Proposition, int64(count))
 
