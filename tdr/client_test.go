@@ -2,8 +2,10 @@ package tdr
 
 import (
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/philips-software/go-hsdp-api/iam"
@@ -91,4 +93,39 @@ func TestLogin(t *testing.T) {
 	if !iamClient.HasScopes("tdr.contract", "tdr.dataitem") {
 		t.Errorf("Client should have tdr.contract and tdr.dataitem scopes")
 	}
+}
+
+func TestDebug(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	tmpfile, err := ioutil.TempFile("", "example")
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+
+	tdrClient, err = NewClient(nil, iamClient, &Config{
+		TDRURL:   serverTDR.URL,
+		Debug:    true,
+		DebugLog: tmpfile.Name(),
+	})
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+	defer tdrClient.Close()
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	iamClient.Login("username", "password")
+	tdrClient.Contracts.GetContract(&GetContractOptions{
+		Datatype: String("TestGo|TestGoContract"),
+	}, nil)
+
+	fi, err := tmpfile.Stat()
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+	if fi.Size() == 0 {
+		t.Errorf("Expected something to be written to DebugLog")
+	}
+
 }

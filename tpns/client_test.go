@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -75,6 +76,39 @@ func setup(t *testing.T) func() {
 		serverTPNS.Close()
 		tpnsClient.Close()
 	}
+}
+
+func TestDebug(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	tmpfile, err := ioutil.TempFile("", "example")
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+
+	tpnsClient, _ = NewClient(nil, &Config{
+		TPNSURL:  serverTPNS.URL,
+		Debug:    true,
+		DebugLog: tmpfile.Name(),
+	})
+	defer tpnsClient.Close()
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	tpnsClient.Messages.Push(&Message{
+		PropositionID: "XYZ",
+		MessageType:   "Push",
+		Content:       "YAY!",
+		Targets:       []string{"foo"},
+	})
+	fi, err := tmpfile.Stat()
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+	if fi.Size() == 0 {
+		t.Errorf("Expected something to be written to DebugLog")
+	}
+
 }
 
 func TestPush(t *testing.T) {
