@@ -1,4 +1,5 @@
 *.env
+*.out
 docs/api/site
 .DS_Store
 tools/*.png

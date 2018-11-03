@@ -78,7 +78,3 @@ type AddressEntry struct {
 	Country    string `json:"country"`
 	Postalcode string `json:"postalcode"`
 }
-
-func (u *Person) validate() error {
-	return nil
-}
