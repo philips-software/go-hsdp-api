@@ -75,8 +75,9 @@ type Client struct {
 	// token type used to make authenticated API calls.
 	tokenType tokenType
 
-	// token used to make authenticated API calls.
-	token string
+	// tokens used to make authenticated API calls.
+	token        string
+	refreshToken string
 
 	// scope holds the client scope
 	scopes []string
@@ -226,6 +227,7 @@ func (c *Client) doLogin(req *http.Request) error {
 	}
 	c.tokenType = oAuthToken
 	c.token = tokenResponse.AccessToken
+	c.refreshToken = tokenResponse.RefreshToken
 	c.scopes = strings.Split(tokenResponse.Scope, " ")
 	return nil
 }
@@ -289,8 +291,8 @@ func (c *Client) SetToken(token string) {
 }
 
 // RefreshToken returns the refresh token
-func (c *Client) RefreshToken() error {
-	return nil
+func (c *Client) RefreshToken() string {
+	return c.refreshToken
 }
 
 // BaseIAMURL return a copy of the baseIAMURL.
@@ -337,8 +339,10 @@ func (c *Client) SetBaseIDMURL(urlStr string) error {
 	return err
 }
 
+// Endpoint type
 type Endpoint string
 
+// Constants
 const (
 	IAM = "IAM"
 	IDM = "IDM"
@@ -492,15 +496,6 @@ func WithContext(ctx context.Context) OptionFunc {
 		*req = *req.WithContext(ctx)
 		return nil
 	}
-}
-
-// Int is a helper routine that allocates a new int32 value
-// to store v and returns a pointer to it, but unlike Int32
-// its argument value is an int.
-func Int(v int) *int {
-	p := new(int)
-	*p = v
-	return p
 }
 
 // String is a helper routine that allocates a new string value
