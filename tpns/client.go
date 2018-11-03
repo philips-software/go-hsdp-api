@@ -91,7 +91,7 @@ func (c *Client) Close() {
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseTPNSURL(urlStr string) error {
 	if urlStr == "" {
-		return errBaseTPNSCannotBeEmpty
+		return ErrBaseTPNSCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {

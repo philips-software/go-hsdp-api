@@ -2,6 +2,7 @@ package tpns
 
 import "errors"
 
+// Errors
 var (
-	errBaseTPNSCannotBeEmpty = errors.New("TPNS base URL cannot be empty")
+	ErrBaseTPNSCannotBeEmpty = errors.New("TPNS base URL cannot be empty")
 )
