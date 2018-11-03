@@ -91,7 +91,7 @@ func (p *ServicesService) GetServiceByName(name string) (*Service, *Response, er
 // GetServicesByApplicationID finds all services which belong to the applicationID
 func (p *ServicesService) GetServicesByApplicationID(applicationID string) (*[]Service, *Response, error) {
 	opt := &GetServiceOptions{
-		ApplicationID: &applicationID,
+		ApplicationID: String(applicationID),
 	}
 	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Service", opt, nil)
 	if err != nil {

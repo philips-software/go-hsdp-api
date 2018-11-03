@@ -3,8 +3,10 @@ package iam
 import (
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -12,11 +14,13 @@ import (
 )
 
 var (
-	muxIAM     *http.ServeMux
-	serverIAM  *httptest.Server
-	muxIDM     *http.ServeMux
-	serverIDM  *httptest.Server
-	signerHSDP *signer.Signer
+	muxIAM       *http.ServeMux
+	serverIAM    *httptest.Server
+	muxIDM       *http.ServeMux
+	serverIDM    *httptest.Server
+	signerHSDP   *signer.Signer
+	token        string
+	refreshToken string
 
 	client *Client
 )
@@ -40,7 +44,8 @@ func setup(t *testing.T) func() {
 		IDMURL:         serverIDM.URL,
 	})
 
-	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
+	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
+	refreshToken = "31f1a449-ef8e-4bfc-a227-4f2353fde547"
 
 	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
@@ -52,7 +57,7 @@ func setup(t *testing.T) func() {
 		io.WriteString(w, `{
     		"scope": "auth_iam_introspect mail tdr.contract tdr.dataitem",
     		"access_token": "`+token+`",
-    		"refresh_token": "31f1a449-ef8e-4bfc-a227-4f2353fde547",
+    		"refresh_token": "`+refreshToken+`",
     		"expires_in": 1799,
     		"token_type": "Bearer"
 		}`)
@@ -76,6 +81,16 @@ func TestLogin(t *testing.T) {
 	}
 	if client.Token() != token {
 		t.Errorf("Unexpected token found: %s, expected: %s", client.Token(), token)
+	}
+
+	if client.BaseIAMURL().String() != serverIAM.URL+"/" {
+		t.Errorf("Unexpected BaseIAMURL: %s <-> %s", client.BaseIAMURL().String(), serverIAM.URL)
+	}
+	if client.BaseIDMURL().String() != serverIDM.URL+"/" {
+		t.Errorf("Unexpected BaseIDMURL: %s <-> %s", client.BaseIDMURL().String(), serverIDM.URL)
+	}
+	if client.RefreshToken() != refreshToken {
+		t.Errorf("Unexpected refresh token")
 	}
 }
 
@@ -289,6 +304,46 @@ func TestWithToken(t *testing.T) {
 
 	if client.WithToken("fooz").Token() != "fooz" {
 		t.Errorf("Unexpected token")
+	}
+
+}
+
+func TestDebug(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	tmpfile, err := ioutil.TempFile("", "example")
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+	sharedKey := "SharedKey"
+	secretKey := "SecretKey"
+
+	client, _ = NewClient(nil, &Config{
+		OAuth2ClientID: "TestClient",
+		OAuth2Secret:   "Secret",
+		SharedKey:      sharedKey,
+		SecretKey:      secretKey,
+		IAMURL:         serverIAM.URL,
+		IDMURL:         serverIDM.URL,
+		Debug:          true,
+		DebugLog:       tmpfile.Name(),
+	})
+
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+	defer client.Close()
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	client.Login("username", "password")
+
+	fi, err := tmpfile.Stat()
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+	if fi.Size() == 0 {
+		t.Errorf("Expected something to be written to DebugLog")
 	}
 
 }
