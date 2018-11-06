@@ -135,18 +135,22 @@ func TestGetUsers(t *testing.T) {
 		t.Errorf("Expected HTTP OK, Got: %d", resp.StatusCode)
 	}
 }
-func TestGetUserIDByLoginID(t *testing.T) {
-	teardown := setup(t)
-	defer teardown()
 
-	userUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
-	muxIDM.HandleFunc("/security/users", func(w http.ResponseWriter, r *http.Request) {
+func userIDByLoginIDHandler(t *testing.T, loginID, userUUID string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
 		}
-
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+
+		if r.URL.Query().Get("loginId") != loginID {
+			io.WriteString(w, `{
+				"responseCode": "4010",
+				"responseMessage": "User does not exist"
+			}`)
+			return
+		}
 		io.WriteString(w, `{
 			"exchange": {
 				"users": [
@@ -158,9 +162,18 @@ func TestGetUserIDByLoginID(t *testing.T) {
 			"responseCode": "200",
 			"responseMessage": "Success"
 		}`)
-	})
+	}
+}
 
-	uuid, resp, err := client.Users.GetUserIDByLoginID(userUUID)
+func TestGetUserIDByLoginID(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	userUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	loginID := "foo@bar.com"
+	muxIDM.HandleFunc("/security/users", userIDByLoginIDHandler(t, loginID, userUUID))
+
+	uuid, resp, err := client.Users.GetUserIDByLoginID(loginID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -226,15 +239,20 @@ func TestUserActions(t *testing.T) {
 	defer teardown()
 
 	muxIDM.HandleFunc("/authorize/identity/User/$resend-activation",
-		actionRequestHandler(t, "resendOTP", "Password reset send"))
+		actionRequestHandler(t, "resendOTP", "Password reset send", http.StatusOK))
 	muxIDM.HandleFunc("/authorize/identity/User/$set-password",
-		actionRequestHandler(t, "setPassword", "TODO: fix"))
+		actionRequestHandler(t, "setPassword", "TODO: fix", http.StatusOK))
 	muxIDM.HandleFunc("/authorize/identity/User/$change-password",
-		actionRequestHandler(t, "changePassword", "TODO: fix"))
+		actionRequestHandler(t, "changePassword", "TODO: fix", http.StatusOK))
 	muxIDM.HandleFunc("/authorize/identity/User/$recover-password",
-		actionRequestHandler(t, "recoverPassword", "TODO: fix"))
+		actionRequestHandler(t, "recoverPassword", "TODO: fix", http.StatusOK))
+	userUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	loginID := "foo@bar.com"
+	muxIDM.HandleFunc("/security/users", userIDByLoginIDHandler(t, loginID, userUUID))
+	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID+"/$mfa",
+		actionRequestHandler(t, "setMFA", "TODO: fix", http.StatusAccepted))
 
-	ok, resp, err := client.Users.ResendActivation("foo@bar.co")
+	ok, resp, err := client.Users.ResendActivation("foo@bar.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -277,9 +295,34 @@ func TestUserActions(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
 	}
+
+	uuid, resp, err := client.Users.GetUserIDByLoginID(loginID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("Unexpected failure, Got !ok")
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	}
+	if uuid != userUUID {
+		t.Errorf("Unexpected UUID: %s", uuid)
+	}
+
+	ok, resp, err = client.Users.SetMFAByLoginID(loginID, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("Unexpected failure, Got !ok")
+	}
+	if resp.StatusCode != http.StatusAccepted {
+		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	}
 }
 
-func actionRequestHandler(t *testing.T, paramName, informationalMessage string) func(http.ResponseWriter, *http.Request) {
+func actionRequestHandler(t *testing.T, paramName, informationalMessage string, statusCode int) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			t.Errorf("Expected ‘POST’ request, got ‘%s’", r.Method)
@@ -290,7 +333,7 @@ func actionRequestHandler(t *testing.T, paramName, informationalMessage string) 
 		//body, _ := ioutil.ReadAll(r.Body)
 		//j, _ := gabs.ParseJSON(body)
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(statusCode)
 		io.WriteString(w, `{
 			"resourceType": "OperationOutcome",
 			"issue": [
