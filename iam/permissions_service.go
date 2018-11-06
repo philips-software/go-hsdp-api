@@ -69,7 +69,7 @@ func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ..
 		return nil, resp, err
 	}
 	if len(*permissions) == 0 {
-		return nil, resp, errEmptyResults
+		return nil, resp, ErrEmptyResults
 	}
 	return &(*permissions)[0], resp, nil
 }
@@ -99,7 +99,7 @@ func (p *PermissionsService) parseFromBundle(bundle []byte) (*[]Permission, erro
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errEmptyResults
+		return nil, ErrEmptyResults
 	}
 	permissions := make([]Permission, int64(count))
 

@@ -3,7 +3,6 @@ package iam
 import (
 	"bytes"
 	"fmt"
-
 	"net/http"
 
 	"github.com/jeffail/gabs"
@@ -121,7 +120,7 @@ func (o *OrganizationsService) parseFromBundle(bundle []byte) (*[]Organization, 
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errEmptyResults
+		return nil, ErrEmptyResults
 	}
 	organizations := make([]Organization, int64(count))
 

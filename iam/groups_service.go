@@ -20,12 +20,12 @@ type Group struct {
 	ManagingOrganization string `json:"managingOrganization,omitempty"`
 }
 
-func (g *Group) validate() error {
+func (g *Group) Validate() error {
 	if g.ManagingOrganization == "" {
-		return errMissingManagingOrganization
+		return ErrMissingManagingOrganization
 	}
 	if g.Name == "" {
-		return errMissingName
+		return ErrMissingName
 	}
 	return nil
 }
@@ -82,7 +82,7 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 
 // CreateGroup creates a Group
 func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
-	if err := group.validate(); err != nil {
+	if err := group.Validate(); err != nil {
 		return nil, nil, err
 	}
 	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group", &group, nil)

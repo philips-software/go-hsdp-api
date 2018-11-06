@@ -71,7 +71,7 @@ func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
 		return nil, resp, err
 	}
 	if role.ID != roleID {
-		return nil, resp, errNotFound
+		return nil, resp, ErrNotFound
 	}
 	return &role, resp, err
 }

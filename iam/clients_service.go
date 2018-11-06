@@ -64,7 +64,7 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 	var id string
 	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Client/%s", &id)
 	if count == 0 {
-		return nil, resp, errCouldNoReadResourceAfterCreate
+		return nil, resp, ErrCouldNoReadResourceAfterCreate
 	}
 	ac.ID = id
 	if len(scopes) > 0 {
@@ -98,10 +98,10 @@ func (c *ClientsService) GetClientByID(id string) (*ApplicationClient, *Response
 		return nil, resp, err
 	}
 	if clients == nil {
-		return nil, resp, errOperationFailed
+		return nil, resp, ErrOperationFailed
 	}
 	if len(*clients) == 0 {
-		return nil, resp, errEmptyResults
+		return nil, resp, ErrEmptyResults
 	}
 	foundClient := (*clients)[0]
 
@@ -149,7 +149,7 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 		return false, resp, err
 	}
 	if resp.StatusCode != http.StatusNoContent {
-		return false, resp, errOperationFailed
+		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil
 }
@@ -161,7 +161,7 @@ func (c *ClientsService) parseFromBundle(bundle []byte) (*[]ApplicationClient, e
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errEmptyResults
+		return nil, ErrEmptyResults
 	}
 	clients := make([]ApplicationClient, int64(count))
 

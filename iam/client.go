@@ -311,7 +311,7 @@ func (c *Client) BaseIDMURL() *url.URL {
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseIAMURL(urlStr string) error {
 	if urlStr == "" {
-		return errBaseIAMCannotBeEmpty
+		return ErrBaseIAMCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
@@ -327,7 +327,7 @@ func (c *Client) SetBaseIAMURL(urlStr string) error {
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseIDMURL(urlStr string) error {
 	if urlStr == "" {
-		return errBaseIDMCannotBeEmpty
+		return ErrBaseIDMCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {

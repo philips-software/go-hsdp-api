@@ -23,13 +23,13 @@ type Proposition struct {
 
 func (p *Proposition) validate() error {
 	if p.Name == "" {
-		return errMissingName
+		return ErrMissingName
 	}
 	if p.OrganizationID == "" {
-		return errMissingOrganization
+		return ErrMissingOrganization
 	}
 	if p.GlobalReferenceID == "" {
-		return errMissingGlobalReference
+		return ErrMissingGlobalReference
 	}
 	return nil
 }
@@ -60,7 +60,7 @@ func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, option
 		return nil, resp, err
 	}
 	if len(*props) == 0 {
-		return nil, resp, errEmptyResults
+		return nil, resp, ErrEmptyResults
 	}
 	return &(*props)[0], resp, nil
 }
@@ -107,7 +107,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	var id string
 	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Proposition/%s", &id)
 	if count == 0 {
-		return nil, resp, errCouldNoReadResourceAfterCreate
+		return nil, resp, ErrCouldNoReadResourceAfterCreate
 	}
 	return p.GetPropositionByID(id)
 }
@@ -119,7 +119,7 @@ func (p *PropositionsService) parseFromBundle(bundle []byte) (*[]Proposition, er
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errEmptyResults
+		return nil, ErrEmptyResults
 	}
 	propositions := make([]Proposition, int64(count))
 

@@ -16,13 +16,13 @@ type Application struct {
 // Validate method
 func (a *Application) Validate() error {
 	if a.Name == "" {
-		return errMissingName
+		return ErrMissingName
 	}
 	if a.PropositionID == "" {
-		return errMissingProposition
+		return ErrMissingProposition
 	}
 	if a.GlobalReferenceID == "" {
-		return errMissingGlobalReference
+		return ErrMissingGlobalReference
 	}
 	return nil
 }

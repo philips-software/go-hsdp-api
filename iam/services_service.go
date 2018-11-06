@@ -206,7 +206,7 @@ func (p *ServicesService) updateScopes(service Service, action string, scopes []
 		return false, resp, err
 	}
 	if resp.StatusCode != http.StatusNoContent {
-		return false, resp, errOperationFailed
+		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil
 }
@@ -218,7 +218,7 @@ func (p *ServicesService) parseFromBundle(bundle []byte) (*[]Service, error) {
 	}
 	count, ok := jsonParsed.S("total").Data().(float64)
 	if !ok || count == 0 {
-		return nil, errEmptyResults
+		return nil, ErrEmptyResults
 	}
 	services := make([]Service, int64(count))
 
