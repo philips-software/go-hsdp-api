@@ -21,8 +21,95 @@ func TestGetContract(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		io.WriteString(w, `{
 			"type": "searchset",
-			"total": 0,
-			"entry": [],
+			"total": 2,
+			"entry": [
+				{
+					"fullUrl": "https://tdr-service-staging.us-east.philips-healthsuite.com/store/tdr/Contract?dataType=TestGo%7CTestGoContract1",
+					"resource": {
+						"deletePolicy": {
+							"duration": 1,
+							"unit": "MONTH"
+						},
+						"sendNotifications": false,
+						"id": "TestGo|TestGoContract1",
+						"meta": {
+							"versionId": "1",
+							"lastUpdated": "2018-11-05T12:55:23.700Z"
+						},
+						"organization": "TDROrg",
+						"dataType": {
+							"system": "TestGo",
+							"code": "TestGoContract1"
+						},
+						"schema": {
+							"$schema": "http://json-schema.org/draft-04/schema#",
+							"type": "object",
+							"properties": {
+								"Temperature": {
+									"type": "number"
+								},
+								"HeartRate": {
+									"type": "integer"
+								},
+								"IsManualMeasurement": {
+									"type": "boolean"
+								},
+								"DeviceStatus": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"Temperature",
+								"HeartRate"
+							]
+						},
+						"resourceType": "Contract"
+					}
+				},
+				{
+					"fullUrl": "https://tdr-service-staging.us-east.philips-healthsuite.com/store/tdr/Contract?dataType=TestGo%7CTestGoContract2",
+					"resource": {
+						"deletePolicy": {
+							"duration": 1,
+							"unit": "MONTH"
+						},
+						"sendNotifications": false,
+						"id": "TestGo|TestGoContract2",
+						"meta": {
+							"versionId": "1",
+							"lastUpdated": "2018-11-05T12:55:23.700Z"
+						},
+						"organization": "TDROrg",
+						"dataType": {
+							"system": "TestGo",
+							"code": "TestGoContract2"
+						},
+						"schema": {
+							"$schema": "http://json-schema.org/draft-04/schema#",
+							"type": "object",
+							"properties": {
+								"Temperature": {
+									"type": "number"
+								},
+								"HeartRate": {
+									"type": "integer"
+								},
+								"IsManualMeasurement": {
+									"type": "boolean"
+								},
+								"DeviceStatus": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"Temperature",
+								"HeartRate"
+							]
+						},
+						"resourceType": "Contract"
+					}
+				}
+			],
 			"resourceType": "Bundle"
 		  }`)
 	})
@@ -35,8 +122,8 @@ func TestGetContract(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
 	}
-	if len(contracts) != 0 {
-		t.Errorf("Expected 0 contracts for now")
+	if l := len(contracts); l != 2 {
+		t.Errorf("Expected 2 contracts for now, got %d", l)
 	}
 }
 
@@ -59,7 +146,7 @@ func TestCreateContract(t *testing.T) {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Location", "/need/to/capture/this")
+		w.Header().Set("Location", "https://golang-testurl.com/store/tdr/Contract?dataType=TestGo%7CTestGoContract")
 		w.WriteHeader(http.StatusCreated)
 	})
 

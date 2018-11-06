@@ -73,7 +73,7 @@ func newClient(httpClient *http.Client, iamClient *iam.Client, config *Config) (
 		return nil, err
 	}
 	if !iamClient.HasScopes("tdr.contract", "tdr.dataitem") {
-		return nil, errMissingTDRScopes
+		return nil, ErrMissingTDRScopes
 	}
 	if config.DebugLog != "" {
 		var err error
@@ -99,7 +99,7 @@ func (c *Client) Close() {
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseTDRURL(urlStr string) error {
 	if urlStr == "" {
-		return errBaseTDRCannotBeEmpty
+		return ErrBaseTDRCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {

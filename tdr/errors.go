@@ -1,8 +1,14 @@
 package tdr
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
+// Errors
 var (
-	errBaseTDRCannotBeEmpty = fmt.Errorf("base TDR URL cannot be empty")
-	errMissingTDRScopes     = fmt.Errorf("missing TDR scopes. Need 'tdr.contract' and 'tdr.dataitem'")
+	ErrBaseTDRCannotBeEmpty           = errors.New("base TDR URL cannot be empty")
+	ErrMissingTDRScopes               = errors.New("missing TDR scopes. Need 'tdr.contract' and 'tdr.dataitem'")
+	ErrEmptyResult                    = errors.New("empty result")
+	ErrCouldNoReadResourceAfterCreate = fmt.Errorf("could not read resource after create")
 )

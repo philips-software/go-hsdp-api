@@ -2,7 +2,10 @@ package tdr
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
+
+	"github.com/philips-software/go-hsdp-api/fhir"
 )
 
 // ContractsService provides operations on TDR contracts
@@ -24,6 +27,7 @@ type GetContractOptions struct {
 
 // GetContract searches for contracts in TDR
 func (c *ContractsService) GetContract(opt *GetContractOptions, options ...OptionFunc) ([]*Contract, *Response, error) {
+	var contracts []*Contract
 
 	req, err := c.client.NewTDRRequest("GET", "store/tdr/Contract", opt, options)
 	if err != nil {
@@ -31,19 +35,22 @@ func (c *ContractsService) GetContract(opt *GetContractOptions, options ...Optio
 	}
 	req.Header.Set("Api-Version", TDRAPIVersion)
 
-	var bundleResponse struct {
-		Type         string      `json:"type,omitempty"`
-		Total        int         `json:"total,omitempty"`
-		Entry        []*Contract `json:"entry,omitempty"`
-		ResourceType string      `json:"resourceType,omitempty"`
-	}
+	var bundleResponse fhir.Bundle
 
 	resp, err := c.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-
-	return bundleResponse.Entry, resp, err
+	if bundleResponse.Total == 0 {
+		return contracts, resp, ErrEmptyResult
+	}
+	for _, e := range bundleResponse.Entry {
+		c := new(Contract)
+		if err := json.Unmarshal(e.Resource, c); err == nil {
+			contracts = append(contracts, c)
+		}
+	}
+	return contracts, resp, err
 }
 
 // CreateContract creates a new contract in TDR
@@ -62,6 +69,8 @@ func (c *ContractsService) CreateContract(contract Contract) (bool, *Response, e
 	if resp.StatusCode != http.StatusCreated {
 		return false, resp, err
 	}
-	// TODO: capture Location header content
+	if location := resp.Header.Get("Location"); location == "" {
+		return false, resp, ErrCouldNoReadResourceAfterCreate
+	}
 	return true, resp, nil
 }
