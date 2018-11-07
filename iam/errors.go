@@ -1,21 +1,23 @@
 package iam
 
-import "fmt"
+import (
+	"errors"
+)
 
 // Exported Errors
 var (
-	ErrNotFound                       = fmt.Errorf("entity not found")
-	ErrMissingManagingOrganization    = fmt.Errorf("missing managing organization")
-	ErrMissingName                    = fmt.Errorf("missing name value")
-	ErrMissingDescription             = fmt.Errorf("missing description value")
-	ErrMalformedInputValue            = fmt.Errorf("malformed input value")
-	ErrMissingOrganization            = fmt.Errorf("missing organization")
-	ErrMissingProposition             = fmt.Errorf("missing proposition")
-	ErrMissingGlobalReference         = fmt.Errorf("missing global reference")
-	ErrNotImplementedByHSDP           = fmt.Errorf("method not implemented by HSDP")
-	ErrCouldNoReadResourceAfterCreate = fmt.Errorf("could not read resource after create")
-	ErrBaseIDMCannotBeEmpty           = fmt.Errorf("base IDM URL cannot be empty")
-	ErrBaseIAMCannotBeEmpty           = fmt.Errorf("base IDM URL cannot be empty")
-	ErrEmptyResults                   = fmt.Errorf("empty results")
-	ErrOperationFailed                = fmt.Errorf("operation failed")
+	ErrNotFound                       = errors.New("entity not found")
+	ErrMissingManagingOrganization    = errors.New("missing managing organization")
+	ErrMissingName                    = errors.New("missing name value")
+	ErrMissingDescription             = errors.New("missing description value")
+	ErrMalformedInputValue            = errors.New("malformed input value")
+	ErrMissingOrganization            = errors.New("missing organization")
+	ErrMissingProposition             = errors.New("missing proposition")
+	ErrMissingGlobalReference         = errors.New("missing global reference")
+	ErrNotImplementedByHSDP           = errors.New("method not implemented by HSDP")
+	ErrCouldNoReadResourceAfterCreate = errors.New("could not read resource after create")
+	ErrBaseIDMCannotBeEmpty           = errors.New("base IDM URL cannot be empty")
+	ErrBaseIAMCannotBeEmpty           = errors.New("base IDM URL cannot be empty")
+	ErrEmptyResults                   = errors.New("empty results")
+	ErrOperationFailed                = errors.New("operation failed")
 )

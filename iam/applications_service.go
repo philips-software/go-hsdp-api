@@ -1,7 +1,6 @@
 package iam
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 )
@@ -26,11 +25,15 @@ type GetApplicationsOptions struct {
 
 // GetApplicationByID retrieves an Application by its ID
 func (a *ApplicationsService) GetApplicationByID(id string) (*Application, *Response, error) {
-	return a.GetApplication(&GetApplicationsOptions{ID: &id}, nil)
+	apps, resp, err := a.GetApplication(&GetApplicationsOptions{ID: String(id)}, nil)
+	if apps == nil || len(apps) == 0 {
+		return nil, resp, ErrNotFound
+	}
+	return apps[0], resp, err
 }
 
 // GetApplication search for an Application entity based on the GetApplicationsOptions values
-func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, options ...OptionFunc) (*Application, *Response, error) {
+func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, options ...OptionFunc) ([]*Application, *Response, error) {
 	req, err := a.client.NewRequest(IDM, "GET", "authorize/identity/Application", opt, options)
 	if err != nil {
 		return nil, nil, err
@@ -38,15 +41,20 @@ func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, option
 	req.Header.Set("api-version", applicationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse bytes.Buffer
+	var bundleResponse struct {
+		Total int
+		Entry []*Application
+	}
 
 	resp, err := a.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	var app Application
-	err = app.parseFromBundle(bundleResponse.Bytes())
-	return &app, resp, err
+	if bundleResponse.Total == 0 {
+		return nil, resp, ErrEmptyResults
+	}
+
+	return bundleResponse.Entry, resp, nil
 }
 
 // CreateApplication creates a Application

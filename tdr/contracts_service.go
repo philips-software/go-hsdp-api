@@ -48,6 +48,8 @@ func (c *ContractsService) GetContract(opt *GetContractOptions, options ...Optio
 		c := new(Contract)
 		if err := json.Unmarshal(e.Resource, c); err == nil {
 			contracts = append(contracts, c)
+		} else {
+			return nil, resp, err
 		}
 	}
 	return contracts, resp, err

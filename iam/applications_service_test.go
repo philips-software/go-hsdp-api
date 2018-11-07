@@ -13,6 +13,7 @@ func TestCreateApplication(t *testing.T) {
 	appID := "10dc5e2f-3940-4cd8-b0ef-297e12ad2f3c"
 	propID := "3af7143e-de76-11e8-9681-6a0002b8cb70"
 	description := "TESTPROP Application"
+	globalReferenceID := "TESTAPPREF"
 
 	muxIDM.HandleFunc("/authorize/identity/Application", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -29,7 +30,7 @@ func TestCreateApplication(t *testing.T) {
                                          "name": "TESTAPP",
                                          "description": "`+description+`",
                                          "propositionId": "`+propID+`",
-                                         "globalReferenceId": "TESTAPP",
+                                         "globalReferenceId": "`+globalReferenceID+`",
                                          "id": "`+appID+`",
                                          "meta": {
                                            "versionId": "0",
@@ -48,7 +49,7 @@ func TestCreateApplication(t *testing.T) {
 	var app = Application{
 		Description:       description,
 		PropositionID:     propID,
-		GlobalReferenceID: "TESTAPPREF",
+		GlobalReferenceID: globalReferenceID,
 	}
 
 	// Test validation
@@ -62,6 +63,16 @@ func TestCreateApplication(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if createdApp.ID != appID {
+		t.Error("Expected ID to be set")
+	}
+	if createdApp.PropositionID != propID {
+		t.Error("Expected propositionID to be set")
+	}
+	if createdApp.GlobalReferenceID != globalReferenceID {
+		t.Error("Expected GlobalReferenceID to be set")
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected HTTP created")
 	}
