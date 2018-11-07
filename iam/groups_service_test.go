@@ -64,11 +64,17 @@ func TestGroupCRUD(t *testing.T) {
 	})
 
 	var g Group
-	g.Name = groupName
 	g.Description = groupDescription
 	g.ManagingOrganization = managingOrgID
 
+	// Test validation
 	group, resp, err := client.Groups.CreateGroup(g)
+	if err == nil {
+		t.Error("Expected validation failure")
+	}
+
+	g.Name = groupName
+	group, resp, err = client.Groups.CreateGroup(g)
 	if err != nil {
 		t.Fatal(err)
 	}

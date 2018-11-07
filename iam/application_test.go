@@ -4,33 +4,6 @@ import (
 	"testing"
 )
 
-func TestApplication(t *testing.T) {
-	var app Application
-
-	// Missing Name
-	if err := app.Validate(); err != ErrMissingName {
-		t.Errorf("Unexpected error: %v", err)
-	}
-	app.Name = "Name"
-
-	// Missing PropositionID
-	if err := app.Validate(); err != ErrMissingProposition {
-		t.Errorf("Unexpected error: %v", err)
-	}
-	app.PropositionID = "uuid"
-
-	// Missing GlobalReferenceID
-	if err := app.Validate(); err != ErrMissingGlobalReference {
-		t.Errorf("Unexpected error: %v", err)
-	}
-	app.GlobalReferenceID = "ref"
-
-	err := app.Validate()
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-}
-
 func TestParseApplicationFromBundle(t *testing.T) {
 	var app Application
 

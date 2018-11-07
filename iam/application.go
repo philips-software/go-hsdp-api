@@ -7,24 +7,10 @@ import (
 // Application represents an IAM Application entity
 type Application struct {
 	ID                string `json:"id,omitempty"`
-	Name              string `json:"name"`
+	Name              string `json:"name" validate:"required"`
 	Description       string `json:"description"`
-	PropositionID     string `json:"propositionId"`
-	GlobalReferenceID string `json:"globalReferenceId"`
-}
-
-// Validate method
-func (a *Application) Validate() error {
-	if a.Name == "" {
-		return ErrMissingName
-	}
-	if a.PropositionID == "" {
-		return ErrMissingProposition
-	}
-	if a.GlobalReferenceID == "" {
-		return ErrMissingGlobalReference
-	}
-	return nil
+	PropositionID     string `json:"propositionId" validate:"required"`
+	GlobalReferenceID string `json:"globalReferenceId" validate:"required"`
 }
 
 func (a *Application) parseFromBundle(bundle []byte) error {

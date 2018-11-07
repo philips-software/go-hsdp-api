@@ -46,12 +46,19 @@ func TestCreateApplication(t *testing.T) {
 	})
 
 	var app = Application{
-		Name:              "TESTAPP",
 		Description:       description,
 		PropositionID:     propID,
 		GlobalReferenceID: "TESTAPPREF",
 	}
+
+	// Test validation
 	createdApp, resp, err := client.Applications.CreateApplication(app)
+	if err == nil {
+		t.Error("Expected validation error")
+	}
+
+	app.Name = "TESTAPP"
+	createdApp, resp, err = client.Applications.CreateApplication(app)
 	if err != nil {
 		t.Fatal(err)
 	}

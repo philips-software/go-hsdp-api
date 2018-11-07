@@ -16,6 +16,7 @@ import (
 	"github.com/google/go-querystring/query"
 	"github.com/philips-software/go-hsdp-api/fhir"
 	hsdpsigner "github.com/philips-software/go-hsdp-signer"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 const (
@@ -67,7 +68,8 @@ type Client struct {
 
 	config *Config
 
-	signer *hsdpsigner.Signer
+	signer   *hsdpsigner.Signer
+	validate *validator.Validate
 
 	baseIAMURL *url.URL
 	baseIDMURL *url.URL
@@ -127,6 +129,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		}
 	}
 
+	c.validate = validator.New()
 	c.signer = signer
 	c.Organizations = &OrganizationsService{client: c}
 	c.Groups = &GroupsService{client: c}

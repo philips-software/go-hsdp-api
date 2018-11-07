@@ -14,20 +14,10 @@ const (
 
 // Group represents an IAM group resource
 type Group struct {
-	ID                   string `json:"id,omitempty"`
-	Name                 string `json:"name,omitempty"`
-	Description          string `json:"description,omitempty"`
-	ManagingOrganization string `json:"managingOrganization,omitempty"`
-}
-
-func (g *Group) Validate() error {
-	if g.ManagingOrganization == "" {
-		return ErrMissingManagingOrganization
-	}
-	if g.Name == "" {
-		return ErrMissingName
-	}
-	return nil
+	ID                   string `json:"id,omitempty" validate:""`
+	Name                 string `json:"name,omitempty" validate:"required"`
+	Description          string `json:"description,omitempty" validate:""`
+	ManagingOrganization string `json:"managingOrganization,omitempty" validate:"required"`
 }
 
 func (g *Group) parseFromBundle(v interface{}) error {
@@ -82,7 +72,7 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 
 // CreateGroup creates a Group
 func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
-	if err := group.Validate(); err != nil {
+	if err := g.client.validate.Struct(group); err != nil {
 		return nil, nil, err
 	}
 	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group", &group, nil)
