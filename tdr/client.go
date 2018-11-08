@@ -1,3 +1,5 @@
+// Package tdr provides support for HSDP TDR operations
+// Contract management and DataItem creation and retrieval are supported
 package tdr
 
 import (
@@ -55,6 +57,7 @@ type Client struct {
 	debugFile *os.File
 
 	Contracts *ContractsService
+	DataItems *DataItemsService
 }
 
 // NewClient returns a new HSDP TDR API client. If a nil httpClient is
@@ -84,6 +87,7 @@ func newClient(httpClient *http.Client, iamClient *iam.Client, config *Config) (
 	}
 
 	c.Contracts = &ContractsService{client: c}
+	c.DataItems = &DataItemsService{client: c}
 	return c, nil
 }
 
