@@ -114,7 +114,7 @@ func TestGetContract(t *testing.T) {
 		  }`)
 	})
 	contracts, resp, err := tdrClient.Contracts.GetContract(&GetContractOptions{
-		Datatype: String("TestGo|TestGoContract"),
+		DataType: String("TestGo|TestGoContract"),
 	}, nil)
 	if err != nil {
 		t.Fatal(err)

@@ -117,7 +117,7 @@ func TestDebug(t *testing.T) {
 
 	iamClient.Login("username", "password")
 	tdrClient.Contracts.GetContract(&GetContractOptions{
-		Datatype: String("TestGo|TestGoContract"),
+		DataType: String("TestGo|TestGoContract"),
 	}, nil)
 
 	fi, err := tmpfile.Stat()
