@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - IAM support
 - Logging support
-- Slack Badge. Use #hsdp-utilities channel to communicate with the maintainers
+- TDR basic support
 
 [Unreleased]: https://github.com/philips-software/go-hsdp-api/compare/1.0.0...HEAD
 

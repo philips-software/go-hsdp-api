@@ -9,12 +9,6 @@ We'd love for you to contribute to our source code and to make the go-hsdp-api e
  - [Submission Guidelines](#submit)
  - [Further Info](#info)
 
-## <a name="question"></a> Got a Question or Problem?
-
-If you have questions about how to use the go-hsdp-api, please direct these to the [Slack group / hsdp-go-api][slack].
-
-[![Slack](https://philips-software-slackin.now.sh/badge.svg)](https://philips-software-slackin.now.sh)
-
 ## <a name="issue"></a> Found an Issue?
 
 If you find a bug in the source code or a mistake in the documentation, you can help us by submitting an issue to our [Github Repository][github]. Even better you can submit a Pull Request with a fix.
@@ -24,10 +18,6 @@ If you find a bug in the source code or a mistake in the documentation, you can 
 ## <a name="feature"></a> Want a Feature?
 
 You can request a new feature by submitting an issue to our [Github Repository][github]. If you would like to implement a new feature then consider what kind of change it is:
-
-* **Major Changes** that you wish to contribute to the project should be discussed first on our [Slack group][slack] so that we can better coordinate our efforts, prevent duplication of work, and help you to craft the change so that it is successfully accepted into the project.
-* **Small Changes** can be crafted and submitted to the [Github Repository][github] as a Pull Request.
-
 
 ## <a name="docs"></a> Want a Doc Fix?
 
@@ -128,8 +118,5 @@ from the main (upstream) repository:
 
 ## <a name="info"></a> Info
 
-For more info, please reach out to the team on [Slack group / go-hsdp-api][slack] in the #hsdp-utilities channel.
-
 [contribute]: CONTRIBUTING.md
 [github]: https://github.com/philips-software/go-hsdp-api/issues 
-[slack]: https://philips-software-slackin.now.sh/
