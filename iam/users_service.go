@@ -306,6 +306,21 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 	return ok, resp, nil
 }
 
+// Unlock unlocks a user account with the given UserID
+func (u *UsersService) Unlock(userID string) (bool, *Response, error) {
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+userID+"/$unlock", nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", userAPIVersion)
+
+	var bundleResponse interface{}
+
+	resp, _ := u.client.Do(req, &bundleResponse)
+	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
+	return ok, resp, nil
+}
+
 // SetMFAByLoginID enabled Multi-Factor-Authentication for the given user. Only OrgAdmins can do this.
 func (u *UsersService) SetMFAByLoginID(loginID string, activate bool) (bool, *Response, error) {
 	userUUID, _, err := u.GetUserIDByLoginID(loginID)

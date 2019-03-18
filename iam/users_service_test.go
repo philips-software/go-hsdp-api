@@ -251,6 +251,8 @@ func TestUserActions(t *testing.T) {
 	muxIDM.HandleFunc("/security/users", userIDByLoginIDHandler(t, loginID, userUUID))
 	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID+"/$mfa",
 		actionRequestHandler(t, "setMFA", "TODO: fix", http.StatusAccepted))
+	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID+"/$unlock",
+		actionRequestHandler(t, "unlock", "TODO: fix", http.StatusNoContent))
 
 	ok, resp, err := client.Users.ResendActivation("foo@bar.com")
 	if err != nil {
@@ -320,6 +322,18 @@ func TestUserActions(t *testing.T) {
 	if resp.StatusCode != http.StatusAccepted {
 		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
 	}
+
+	ok, resp, err = client.Users.Unlock(userUUID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("Unexpected failure, Got !ok")
+	}
+	if resp.StatusCode != http.StatusNoContent {
+		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	}
+
 }
 
 func actionRequestHandler(t *testing.T, paramName, informationalMessage string, statusCode int) func(http.ResponseWriter, *http.Request) {
