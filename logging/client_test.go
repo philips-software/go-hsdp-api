@@ -43,18 +43,22 @@ const (
 	sharedSecret = "SharedSecret"
 )
 
-func setup(t *testing.T, config Config) func() {
+func setup(t *testing.T, config Config) (func(), error) {
+	var err error
+
 	muxLogger = http.NewServeMux()
 	serverLogger = httptest.NewServer(muxLogger)
-
-	config.BaseURL = serverLogger.URL
-
-	var err error
+	if config.BaseURL != "" { // So we can test for missing BaseURL
+		config.BaseURL = serverLogger.URL
+	}
 
 	client, err = NewClient(nil, config)
 	if err != nil {
-		t.Fatal(err)
+		return func() {
+			serverLogger.Close()
+		}, err
 	}
+
 	muxLogger.HandleFunc("/core/log/LogEvent", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -100,16 +104,21 @@ func setup(t *testing.T, config Config) func() {
 
 	return func() {
 		serverLogger.Close()
-	}
+	}, nil
 }
 
 func TestStoreResources(t *testing.T) {
-	teardown := setup(t, Config{
+	teardown, err := setup(t, Config{
 		SharedKey:    sharedKey,
 		SharedSecret: sharedSecret,
 		ProductKey:   productKey,
+		BaseURL:      "http://foo",
 	})
 	defer teardown()
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	var resource = []Resource{
 		validResource,
@@ -130,12 +139,17 @@ func TestStoreResources(t *testing.T) {
 }
 
 func TestStoreResourcesWithInvalidKey(t *testing.T) {
-	teardown := setup(t, Config{
+	teardown, err := setup(t, Config{
 		SharedKey:    sharedKey,
 		SharedSecret: sharedSecret,
 		ProductKey:   "089db3e5-3e3e-4445-8903-29cc848194b1",
+		BaseURL:      "http://foo",
 	})
 	defer teardown()
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	var resource = []Resource{
 		validResource,
@@ -156,12 +170,17 @@ func TestStoreResourcesWithInvalidKey(t *testing.T) {
 
 func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
 	os.Setenv("DEBUG", "true")
-	teardown := setup(t, Config{
+	teardown, err := setup(t, Config{
 		SharedKey:    "bogus",
 		SharedSecret: "keys",
 		ProductKey:   productKey,
+		BaseURL:      "http://foo",
 	})
 	defer teardown()
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	var resource = []Resource{
 		validResource,
@@ -178,5 +197,25 @@ func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
 	}
 	if err == nil {
 		t.Errorf("Expected error response")
+	}
+}
+
+func TestConfig(t *testing.T) {
+	os.Setenv("DEBUG", "false")
+	var errSet = []struct {
+		config Config
+		err    error
+	}{
+		{Config{SharedKey: "", SharedSecret: "bar", ProductKey: "key", BaseURL: "http://foo"}, ErrMissingSharedKey},
+		{Config{SharedKey: "foo", SharedSecret: "", ProductKey: "key", BaseURL: "http://foo"}, ErrMissingSharedSecret},
+		{Config{SharedKey: "foo", SharedSecret: "bar", ProductKey: "", BaseURL: "http://foo"}, ErrMissingProductKey},
+		{Config{SharedKey: "foo", SharedSecret: "bar", ProductKey: "key", BaseURL: ""}, ErrMissingBaseURL},
+	}
+	for _, tt := range errSet {
+		teardown, err := setup(t, tt.config)
+		teardown()
+		if err != tt.err {
+			t.Errorf("Unexpected error: %v, expected: %v", err, tt.err)
+		}
 	}
 }

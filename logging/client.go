@@ -26,12 +26,16 @@ const (
 
 var (
 	// LogTimeFormat is the log time format to use
-	LogTimeFormat    = "2006-01-02T15:04:05.000Z07:00"
-	timeFormat       = time.RFC3339
-	uuidRegex        = regexp.MustCompile(`[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+`)
-	versionRegex     = regexp.MustCompile(`^(\d+\.)?(\d+){1}$`)
-	errInvalidConfig = errors.New("invalid configuration: missing SharedKey, SharedSecret, BaseURL or ProductKey")
-	errNothingToPost = errors.New("nothing to post")
+	LogTimeFormat = "2006-01-02T15:04:05.000Z07:00"
+	timeFormat    = time.RFC3339
+	uuidRegex     = regexp.MustCompile(`[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+`)
+	versionRegex  = regexp.MustCompile(`^(\d+\.)?(\d+){1}$`)
+
+	ErrNothingToPost       = errors.New("nothing to post")
+	ErrMissingSharedKey    = errors.New("missing shared key")
+	ErrMissingSharedSecret = errors.New("missing shared secret")
+	ErrMissingBaseURL      = errors.New("missing base URL")
+	ErrMissingProductKey   = errors.New("missing ProductKey")
 )
 
 // Config the client
@@ -43,11 +47,20 @@ type Config struct {
 }
 
 // Valid returns if all required config fields are present, false otherwise
-func (c *Config) Valid() bool {
-	if c.SharedKey != "" && c.SharedSecret != "" && c.BaseURL != "" && c.ProductKey != "" {
-		return true
+func (c *Config) Valid() (bool, error) {
+	if c.SharedKey == "" {
+		return false, ErrMissingSharedKey
 	}
-	return false
+	if c.SharedSecret == "" {
+		return false, ErrMissingSharedSecret
+	}
+	if c.BaseURL == "" {
+		return false, ErrMissingBaseURL
+	}
+	if c.ProductKey == "" {
+		return false, ErrMissingProductKey
+	}
+	return true, nil
 }
 
 // Client holds the client state
@@ -77,8 +90,8 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
-	if !config.Valid() {
-		return nil, errInvalidConfig
+	if valid, err := config.Valid(); !valid {
+		return nil, err
 	}
 	var logger Client
 
@@ -208,7 +221,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 		j++
 	}
 	if j == 0 { // No payload
-		return nil, errNothingToPost
+		return nil, ErrNothingToPost
 	}
 
 	b.Total = j
