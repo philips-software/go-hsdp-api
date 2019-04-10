@@ -17,7 +17,7 @@ func TestGetDataItem(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"type": "searchset",
 			"total": 1,
 			"entry": [
@@ -78,5 +78,8 @@ func TestGetDataItem(t *testing.T) {
 	}, DataSearch(KeyValue{"data.foo": "bar"}))
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
+	}
+	if l := len(dataItems); l != 1 {
+		t.Errorf("Expected 1 dataItem for now, got %d", l)
 	}
 }

@@ -79,6 +79,9 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 	}
 	var id string
 	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Application/%s", &id)
+	if err != nil {
+		return nil, resp, err
+	}
 	if count == 0 {
 		return nil, resp, ErrCouldNoReadResourceAfterCreate
 	}

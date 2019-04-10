@@ -54,7 +54,7 @@ func setup(t *testing.T) func() {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
     		"scope": "auth_iam_introspect mail tdr.contract tdr.dataitem",
     		"access_token": "`+token+`",
     		"refresh_token": "`+refreshToken+`",
@@ -123,18 +123,18 @@ func TestLoginWithScopes(t *testing.T) {
 		if r.Method != "POST" {
 			t.Errorf("Expected ‘POST’ request")
 		}
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("Unable to parse form")
+		}
 		if strings.Join(r.Form["scope"], " ") != "introspect cn" {
 			t.Fatalf("Expected scope to be `introspect cn` in test")
-			return
 		}
 		if strings.Join(r.Form["grant_type"], " ") != "password" {
 			t.Fatalf("Exepcted grant_type to be `password` in test")
-			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
     		"scope": "`+strings.Join(cfg.Scopes, " ")+`",
     		"access_token": "`+token+`",
     		"refresh_token": "31f1a449-ef8e-4bfc-a227-4f2353fde547",

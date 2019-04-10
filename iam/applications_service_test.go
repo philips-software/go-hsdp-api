@@ -23,7 +23,7 @@ func TestCreateApplication(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
                                      "total": 1,
                                      "entry": [
                                        {

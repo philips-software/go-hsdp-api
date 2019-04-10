@@ -52,7 +52,7 @@ func setup(t *testing.T) func() {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
     "scope": "mail tdr.contract tdr.dataitem",
     "access_token": "`+token+`",
     "refresh_token": "31f1a449-ef8e-4bfc-a227-4f2353fde547",
@@ -62,7 +62,10 @@ func setup(t *testing.T) func() {
 	})
 
 	// Login immediately so we can create tdrClient
-	iamClient.Login("username", "password")
+	err = iamClient.Login("username", "password")
+	if err != nil {
+		t.Fatalf("Failed to create iamClient: %v", err)
+	}
 
 	tdrClient, err = NewClient(nil, iamClient, &Config{
 		TDRURL: serverTDR.URL,
@@ -115,8 +118,12 @@ func TestDebug(t *testing.T) {
 	defer tdrClient.Close()
 	defer os.Remove(tmpfile.Name()) // clean up
 
-	iamClient.Login("username", "password")
-	tdrClient.Contracts.GetContract(&GetContractOptions{
+	err = iamClient.Login("username", "password")
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+
+	_, _, _ = tdrClient.Contracts.GetContract(&GetContractOptions{
 		DataType: String("TestGo|TestGoContract"),
 	}, nil)
 
