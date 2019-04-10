@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/jeffail/gabs"
-	"github.com/philips-software/go-hsdp-signer"
+	signer "github.com/philips-software/go-hsdp-signer"
 )
 
 var (
@@ -32,7 +32,7 @@ var (
 		LogTime:             "2017-10-15T01:53:20Z",
 		Severity:            "INFO",
 		LogData: LogData{
-			Message: "hello world",
+			Message: "aGVsbG8gd29ybGQK",
 		},
 	}
 )
@@ -77,7 +77,7 @@ func setup(t *testing.T, config Config) (func(), error) {
 		}
 		if pk != productKey {
 			w.WriteHeader(http.StatusUnprocessableEntity)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"issue": [
 					{
 						"severity": "error",

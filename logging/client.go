@@ -12,11 +12,9 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"regexp"
-	"time"
 
 	"github.com/philips-software/go-hsdp-api/fhir"
-	"github.com/philips-software/go-hsdp-signer"
+	signer "github.com/philips-software/go-hsdp-signer"
 )
 
 const (
@@ -27,9 +25,6 @@ const (
 var (
 	// LogTimeFormat is the log time format to use
 	LogTimeFormat = "2006-01-02T15:04:05.000Z07:00"
-	timeFormat    = time.RFC3339
-	uuidRegex     = regexp.MustCompile(`[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+`)
-	versionRegex  = regexp.MustCompile(`^(\d+\.)?(\d+){1}$`)
 
 	ErrNothingToPost       = errors.New("nothing to post")
 	ErrMissingSharedKey    = errors.New("missing shared key")
@@ -246,7 +241,9 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Api-Version", "1")
 	req.Header.Set("User-Agent", userAgent)
-	c.httpSigner.SignRequest(req)
+	if err := c.httpSigner.SignRequest(req); err != nil {
+		return nil, err
+	}
 
 	var serverResponse bytes.Buffer
 
