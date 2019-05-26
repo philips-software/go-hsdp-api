@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/jeffail/gabs"
+	"github.com/Jeffail/gabs"
 	signer "github.com/philips-software/go-hsdp-signer"
 )
 

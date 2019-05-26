@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/jeffail/gabs"
+	"github.com/Jeffail/gabs"
 )
 
 func TestCreateUserSelfRegistration(t *testing.T) {

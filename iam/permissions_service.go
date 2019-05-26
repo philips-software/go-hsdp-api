@@ -3,7 +3,7 @@ package iam
 import (
 	"bytes"
 
-	"github.com/jeffail/gabs"
+	"github.com/Jeffail/gabs"
 )
 
 const permissionAPIVersion = "1"

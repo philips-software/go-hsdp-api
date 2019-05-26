@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jeffail/gabs"
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/jeffail/gabs"
 )
 
 const servicesAPIVersion = "1"

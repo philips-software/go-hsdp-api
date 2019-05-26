@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/jeffail/gabs"
+	"github.com/Jeffail/gabs"
 )
 
 var (
