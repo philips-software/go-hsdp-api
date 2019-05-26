@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## v0.1.0
+
 - IAM support
 - Logging support
 - TDR basic support
