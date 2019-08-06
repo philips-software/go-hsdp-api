@@ -14,18 +14,21 @@ import (
 	"strings"
 
 	"github.com/google/go-querystring/query"
+	"github.com/google/uuid"
 	"github.com/philips-software/go-hsdp-api/fhir"
 	hsdpsigner "github.com/philips-software/go-hsdp-signer"
 	validator "gopkg.in/go-playground/validator.v9"
 )
 
-const (
-	libraryVersion  = "0.1.0"
-	userAgent       = "go-hsdp-api/iam/" + libraryVersion
-	loginAPIVersion = "2"
-)
-
 type tokenType int
+type ContextKey string
+
+const (
+	libraryVersion                 = "0.1.0"
+	userAgent                      = "go-hsdp-api/iam/" + libraryVersion
+	loginAPIVersion                = "2"
+	ContextKeyRequestID ContextKey = "requestID"
+)
 
 type tokenResponse struct {
 	Scope        string `json:"scope"`
@@ -449,9 +452,11 @@ func (c *Client) DoSigned(req *http.Request, v interface{}) (*Response, error) {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+	id := uuid.New()
+
 	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] --- Request end ---\n", string(dumped))
+		out := fmt.Sprintf("[go-hsdp-api] --- Request [%s] start ---\n%s\n[go-hsdp-api] --- Request end ---\n", id, string(dumped))
 		if c.debugFile != nil {
 			c.debugFile.WriteString(out)
 		} else {
@@ -461,7 +466,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	resp, err := c.client.Do(req)
 	if c.config.Debug && resp != nil {
 		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
+		out := fmt.Sprintf("[go-hsdp-api] --- Response [%s] start ---\n%s\n[go-hsdp-api] --- Response end ---\n", id, string(dumped))
 		if c.debugFile != nil {
 			c.debugFile.WriteString(out)
 		} else {
