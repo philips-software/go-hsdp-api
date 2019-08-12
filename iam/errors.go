@@ -1,7 +1,7 @@
 package iam
 
 import (
-	"errors"
+	errors "golang.org/x/xerrors"
 )
 
 // Exported Errors

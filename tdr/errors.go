@@ -1,7 +1,7 @@
 package tdr
 
 import (
-	"errors"
+	errors "golang.org/x/xerrors"
 )
 
 // Errors

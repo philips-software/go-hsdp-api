@@ -1,7 +1,6 @@
 package iam
 
 import (
-	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -11,6 +10,7 @@ import (
 	"testing"
 
 	signer "github.com/philips-software/go-hsdp-signer"
+	errors "golang.org/x/xerrors"
 )
 
 var (

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/philips-software/go-hsdp-api/fhir"
 	signer "github.com/philips-software/go-hsdp-signer"
+	errors "golang.org/x/xerrors"
 )
 
 const (

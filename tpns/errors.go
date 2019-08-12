@@ -1,6 +1,8 @@
 package tpns
 
-import "errors"
+import (
+	errors "golang.org/x/xerrors"
+)
 
 // Errors
 var (
