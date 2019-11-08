@@ -1,6 +1,6 @@
 language: go
 go:
-- '1.11'
+- '1.13'
 - master
 before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
