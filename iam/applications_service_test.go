@@ -53,13 +53,13 @@ func TestCreateApplication(t *testing.T) {
 	}
 
 	// Test validation
-	createdApp, resp, err := client.Applications.CreateApplication(app)
+	_, _, err := client.Applications.CreateApplication(app)
 	if err == nil {
 		t.Error("Expected validation error")
 	}
 
 	app.Name = "TESTAPP"
-	createdApp, resp, err = client.Applications.CreateApplication(app)
+	createdApp, resp, err := client.Applications.CreateApplication(app)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -26,7 +26,7 @@ type GetApplicationsOptions struct {
 // GetApplicationByID retrieves an Application by its ID
 func (a *ApplicationsService) GetApplicationByID(id string) (*Application, *Response, error) {
 	apps, resp, err := a.GetApplication(&GetApplicationsOptions{ID: String(id)}, nil)
-	if apps == nil || len(apps) == 0 {
+	if len(apps) == 0 {
 		return nil, resp, ErrNotFound
 	}
 	return apps[0], resp, err
@@ -66,7 +66,7 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", "1")
+	req.Header.Set("api-version", applicationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
 	var bundleResponse interface{}

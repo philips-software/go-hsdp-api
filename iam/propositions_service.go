@@ -105,7 +105,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 		return nil, resp, err
 	}
 	var id string
-	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Proposition/%s", &id)
+	count, _ := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Proposition/%s", &id)
 	if count == 0 {
 		return nil, resp, ErrCouldNoReadResourceAfterCreate
 	}

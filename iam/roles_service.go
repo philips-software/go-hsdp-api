@@ -83,8 +83,8 @@ func (p *RolesService) UpdateRole(role *Role) (*Role, *Response, error) {
 		Description string `json:"description"`
 	}
 	updateRoleRequestBody.Description = role.Description
-	req, err := p.client.NewRequest(IDM, "PUT", "authorize/identity/Role", &updateRoleRequestBody, nil)
-	req.Header.Set("api-version", "1")
+	req, _ := p.client.NewRequest(IDM, "PUT", "authorize/identity/Role", &updateRoleRequestBody, nil)
+	req.Header.Set("api-version", roleAPIVersion)
 
 	var updatedRole Role
 	resp, err := p.client.Do(req, &updatedRole)
@@ -103,8 +103,8 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 		Description:          description,
 		ManagingOrganization: managingOrganization,
 	}
-	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role", role, nil)
-	req.Header.Set("api-version", "1")
+	req, _ := p.client.NewRequest(IDM, "POST", "authorize/identity/Role", role, nil)
+	req.Header.Set("api-version", roleAPIVersion)
 
 	var createdRole Role
 
@@ -121,7 +121,7 @@ func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", "1")
+	req.Header.Set("api-version", roleAPIVersion)
 
 	var deleteResponse bytes.Buffer
 
@@ -140,7 +140,7 @@ func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("api-version", "1")
+	req.Header.Set("api-version", roleAPIVersion)
 
 	var permissionResponse struct {
 		Total int    `json:"total"`
@@ -170,7 +170,7 @@ func (p *RolesService) rolePermissionAction(role Role, permission string, action
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", "1")
+	req.Header.Set("api-version", roleAPIVersion)
 
 	var bundleResponse bytes.Buffer
 

@@ -3,7 +3,7 @@ package iam
 // User represents an IAM user resource
 type Person struct {
 	ID                   string         `json:"id,omitempty"`
-	ResourceType         string         `json:"resourceType,omityempty"`
+	ResourceType         string         `json:"resourceType,omitempty"`
 	Name                 Name           `json:"name"`
 	Telecom              []TelecomEntry `json:"telecom,omitempty"`
 	Address              []AddressEntry `json:"address,omitempty"`

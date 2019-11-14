@@ -184,7 +184,10 @@ func TestServiceLogin(t *testing.T) {
 		if r.Method != "POST" {
 			t.Errorf("Expected ‘POST’ request")
 		}
-		r.ParseForm()
+		err := r.ParseForm()
+		if err != nil {
+			t.Fatalf("Expected ParseForm() to succeed")
+		}
 		if strings.Join(r.Form["grant_type"], " ") != "urn:ietf:params:oauth:grant-type:jwt-bearer" {
 			t.Fatalf("Exepcted grant_type to be `urn:ietf:params:oauth:grant-type:jwt-bearer` in test")
 			return

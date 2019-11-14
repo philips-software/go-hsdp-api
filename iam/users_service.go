@@ -234,6 +234,9 @@ func (u *UsersService) GetUserByID(uuid string) (*Person, *Response, error) {
 		return nil, resp, fmt.Errorf("error parsing json response")
 	}
 	jsonParsed, err := gabs.ParseJSON(m)
+	if err != nil {
+		return nil, resp, err
+	}
 	if statusCode, ok := jsonParsed.Path("responseCode").Data().(string); !ok || statusCode != "200" {
 		return nil, resp, fmt.Errorf("responseCode: %s", statusCode)
 	}

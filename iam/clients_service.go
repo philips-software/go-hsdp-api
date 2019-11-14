@@ -50,7 +50,7 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 	ac.Scopes = []string{}            // Defaults to ["mail", "sn"]
 	ac.DefaultScopes = []string{}
 
-	req, err := c.client.NewRequest(IDM, "POST", "authorize/identity/Client", ac, nil)
+	req, _ := c.client.NewRequest(IDM, "POST", "authorize/identity/Client", ac, nil)
 	req.Header.Set("api-version", clientAPIVersion)
 
 	var createdClient ApplicationClient
@@ -62,13 +62,13 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 		return nil, resp, err
 	}
 	var id string
-	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Client/%s", &id)
+	count, _ := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Client/%s", &id)
 	if count == 0 {
 		return nil, resp, ErrCouldNoReadResourceAfterCreate
 	}
 	ac.ID = id
 	if len(scopes) > 0 {
-		c.UpdateScopes(ac, scopes, defaultScopes)
+		_, _, _ = c.UpdateScopes(ac, scopes, defaultScopes)
 	}
 	return c.GetClientByID(id)
 }
