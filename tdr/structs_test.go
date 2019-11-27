@@ -2,6 +2,8 @@ package tdr
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDataType(t *testing.T) {
@@ -9,7 +11,5 @@ func TestDataType(t *testing.T) {
 		System: "Go",
 		Code:   "Test",
 	}
-	if dataType.String() != "tdr.DataType:System=Go,Code=Test" {
-		t.Errorf("Unexpected output: %s", dataType.String())
-	}
+	assert.Equal(t, "tdr.DataType:System=Go,Code=Test", dataType.String())
 }

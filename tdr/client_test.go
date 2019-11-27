@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/philips-software/go-hsdp-api/iam"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -63,16 +64,12 @@ func setup(t *testing.T) func() {
 
 	// Login immediately so we can create tdrClient
 	err = iamClient.Login("username", "password")
-	if err != nil {
-		t.Fatalf("Failed to create iamClient: %v", err)
-	}
+	assert.Nil(t, err)
 
 	tdrClient, err = NewClient(iamClient, &Config{
 		TDRURL: serverTDR.URL,
 	})
-	if err != nil {
-		t.Fatalf("Failed to create tdrClient: %v", err)
-	}
+	assert.Nilf(t, err, "failed to create tdrClient: %v", err)
 
 	return func() {
 		serverIAM.Close()
@@ -90,12 +87,9 @@ func TestLogin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if iamClient.Token() != token {
-		t.Errorf("Unexpected token found: %s, expected: %s", iamClient.Token(), token)
-	}
-	if !iamClient.HasScopes("tdr.contract", "tdr.dataitem") {
-		t.Errorf("Client should have tdr.contract and tdr.dataitem scopes")
-	}
+	assert.Equal(t, token, iamClient.Token())
+	assert.Equal(t, true, iamClient.HasScopes("tdr.contract", "tdr.dataitem"),
+		"Client should have tdr.contract and tdr.dataitem scopes")
 }
 
 func TestDebug(t *testing.T) {
@@ -119,20 +113,13 @@ func TestDebug(t *testing.T) {
 	defer os.Remove(tmpfile.Name()) // clean up
 
 	err = iamClient.Login("username", "password")
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-	}
+	assert.Nil(t, err)
 
 	_, _, _ = tdrClient.Contracts.GetContract(&GetContractOptions{
 		DataType: String("TestGo|TestGoContract"),
 	}, nil)
 
 	fi, err := tmpfile.Stat()
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-	}
-	if fi.Size() == 0 {
-		t.Errorf("Expected something to be written to DebugLog")
-	}
-
+	assert.Nil(t, err)
+	assert.NotEqual(t, 0, fi.Size(), "Expected something to be written to DebugLog")
 }

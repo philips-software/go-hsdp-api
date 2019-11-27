@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetDataItem(t *testing.T) {
@@ -63,23 +65,14 @@ func TestGetDataItem(t *testing.T) {
 	dataItems, resp, err := tdrClient.DataItems.GetDataItem(&GetDataItemOptions{
 		Organization: String("TDROrg"),
 	}, nil)
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
-	}
-	if l := len(dataItems); l != 1 {
-		t.Errorf("Expected 1 dataItem for now, got %d", l)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, 1, len(dataItems))
 
 	dataItems, resp, err = tdrClient.DataItems.GetDataItem(&GetDataItemOptions{
 		Organization: String("TDROrg"),
 	}, DataSearch(KeyValue{"data.foo": "bar"}))
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-	if l := len(dataItems); l != 1 {
-		t.Errorf("Expected 1 dataItem for now, got %d", l)
-	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Nil(t, err)
+	assert.Equal(t, 1, len(dataItems))
 }

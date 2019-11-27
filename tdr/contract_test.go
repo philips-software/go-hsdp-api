@@ -2,6 +2,8 @@ package tdr
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestContract(t *testing.T) {
@@ -13,7 +15,5 @@ func TestContract(t *testing.T) {
 		},
 		Organization: "TDROrg",
 	}
-	if contract.String() != "tdr.Contract:ID=Contract,DataType=tdr.DataType:System=Go,Code=Test,Organization=TDROrg" {
-		t.Errorf("Unexpected output: %s", contract.String())
-	}
+	assert.Equal(t, "tdr.Contract:ID=Contract,DataType=tdr.DataType:System=Go,Code=Test,Organization=TDROrg", contract.String())
 }

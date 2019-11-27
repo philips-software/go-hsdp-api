@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetContract(t *testing.T) {
@@ -116,15 +118,9 @@ func TestGetContract(t *testing.T) {
 	contracts, resp, err := tdrClient.Contracts.GetContract(&GetContractOptions{
 		DataType: String("TestGo|TestGoContract"),
 	}, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
-	}
-	if l := len(contracts); l != 2 {
-		t.Errorf("Expected 2 contracts for now, got %d", l)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, 2, len(contracts))
 }
 
 func TestCreateContract(t *testing.T) {
@@ -186,15 +182,9 @@ func TestCreateContract(t *testing.T) {
 		},
 		Schema: json.RawMessage(schemaContract),
 	}
-
 	ok, resp, err := tdrClient.Contracts.CreateContract(newContract)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("Expected HTTP created Got: %d", resp.StatusCode)
-	}
-	if !ok {
-		t.Errorf("Contract creation failed")
-	}
+	assert.Nil(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, true, ok, "expected contract creation to succeed")
 }
