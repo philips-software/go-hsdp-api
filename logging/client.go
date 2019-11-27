@@ -79,6 +79,12 @@ type Response struct {
 	Failed  []Resource
 }
 
+// CustomIndexBody describes the custom index request payload
+type CustomIndexBody []struct {
+	Fieldname string `json:"fieldname"`
+	Fieldtype string `json:"fieldtype"`
+}
+
 // newResponse creates a new Response for the provided http.Response.
 func newResponse(r *http.Response) *Response {
 	response := &Response{Response: r}
@@ -200,7 +206,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	var invalid []Resource
 
 	b.ResourceType = "Bundle"
-	b.Entry = make([]Element, count, count)
+	b.Entry = make([]Element, count)
 	b.Type = "transaction"
 	b.ProductKey = c.config.ProductKey
 

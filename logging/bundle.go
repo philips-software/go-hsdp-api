@@ -31,8 +31,12 @@ type Resource struct {
 	ServerName          string  `json:"serverName"`          // app.example.com
 	LogTime             string  `json:"logTime"`             // 2017-01-31T08:00:00Z
 	Severity            string  `json:"severity"`            // INFO
-	LogData             LogData `json:"logData"`
+	LogData             LogData `json:"logData"`             // Log data
+	Custom              Custom  `json:"custom,omitempty"`    // Custom log fields
 }
+
+// Custom log fields
+type Custom map[string]interface{}
 
 // LogData is the payload of a log message
 type LogData struct {
