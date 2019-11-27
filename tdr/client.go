@@ -38,7 +38,6 @@ type Config struct {
 // A Client manages communication with HSDP IAM API
 type Client struct {
 	// HTTP client used to communicate with the API.
-	client    *http.Client
 	iamClient *iam.Client
 
 	config *Config
@@ -57,15 +56,12 @@ type Client struct {
 // NewClient returns a new HSDP TDR API client. If a nil httpClient is
 // provided, http.DefaultClient will be used. A configured IAM client must be provided
 // as well
-func NewClient(httpClient *http.Client, iamClient *iam.Client, config *Config) (*Client, error) {
-	return newClient(httpClient, iamClient, config)
+func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
+	return newClient(iamClient, config)
 }
 
-func newClient(httpClient *http.Client, iamClient *iam.Client, config *Config) (*Client, error) {
-	if httpClient == nil {
-		httpClient = http.DefaultClient
-	}
-	c := &Client{client: httpClient, iamClient: iamClient, config: config, UserAgent: userAgent}
+func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
+	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseTDRURL(c.config.TDRURL); err != nil {
 		return nil, err
 	}
@@ -194,7 +190,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 			fmt.Printf(out)
 		}
 	}
-	resp, err := c.client.Do(req)
+	resp, err := c.iamClient.HttpClient().Do(req)
 	if c.config.Debug && resp != nil {
 		dumped, _ := httputil.DumpResponse(resp, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))

@@ -67,7 +67,7 @@ func setup(t *testing.T) func() {
 		t.Fatalf("Failed to create iamClient: %v", err)
 	}
 
-	tdrClient, err = NewClient(nil, iamClient, &Config{
+	tdrClient, err = NewClient(iamClient, &Config{
 		TDRURL: serverTDR.URL,
 	})
 	if err != nil {
@@ -107,7 +107,7 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 
-	tdrClient, err = NewClient(nil, iamClient, &Config{
+	tdrClient, err = NewClient(iamClient, &Config{
 		TDRURL:   serverTDR.URL,
 		Debug:    true,
 		DebugLog: tmpfile.Name(),

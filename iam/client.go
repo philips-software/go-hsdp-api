@@ -154,6 +154,11 @@ func (c *Client) Close() {
 	}
 }
 
+// Returns the http Client used for connections
+func (c *Client) HttpClient() *http.Client {
+	return c.client
+}
+
 // WithToken returns a cloned client with the token set
 func (c *Client) WithToken(token string) *Client {
 	client, _ := NewClient(c.client, c.config)
