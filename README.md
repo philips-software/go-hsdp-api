@@ -24,6 +24,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [x] Service management
 - [x] Logging
 - [ ] Auditing
+- [x] S3 Credentials Policy management
 
 ## Usage
 
