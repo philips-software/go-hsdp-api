@@ -14,7 +14,35 @@ func TestCreatePolicy(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	productKey := "430deb9e-01c8-4a3b-81dd-e2e46569cd5e"
+	policyJSON := `{
+		"allowed": {
+		  "resources": [
+			"${managingOrganization}/folder1/*",
+			"54ba7674-8722-40b0-95c6-6514083c870e/folder2/*"
+		  ],
+		  "actions": [
+			"PUT"
+		  ]
+		},
+		"conditions": {
+		  "managingOrganizations": [
+			"d4d84cf0-f5ee-47a1-86e7-db26d679d95e"
+		  ],
+		  "groups": [
+			"PublishGroup"
+		  ]
+		},
+		"id": 1,
+		"resourceType": "Policy"
+	  }`
+
 	muxCreds.HandleFunc("/core/credentials/Policy", func(w http.ResponseWriter, r *http.Request) {
+		if k := r.Header.Get("X-Product-Key"); k != productKey {
+			t.Errorf(ErrMissingProductKey.Error())
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			t.Errorf("Unexpected EOF from reading request")
@@ -30,30 +58,18 @@ func TestCreatePolicy(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		io.WriteString(w, `{
-			"allowed": {
-			  "resources": [
-				"${managingOrganization}/folder1/*",
-				"54ba7674-8722-40b0-95c6-6514083c870e/folder2/*"
-			  ],
-			  "actions": [
-				"PUT"
-			  ]
-			},
-			"conditions": {
-			  "managingOrganizations": [
-				"d4d84cf0-f5ee-47a1-86e7-db26d679d95e"
-			  ],
-			  "groups": [
-				"PublishGroup"
-			  ]
-			},
-			"id": 1,
-			"resourceType": "Policy"
-		  }`)
+		io.WriteString(w, policyJSON)
 	})
 
 	var newPolicy = Policy{}
+	err := json.Unmarshal([]byte(policyJSON), &newPolicy)
+	assert.Nil(t, err)
+	// Reset
+	newPolicy.ResourceType = ""
+	newPolicy.ID = 0
+	// Set Policy
+	newPolicy.ProductKey = productKey
+
 	ok, resp, err := credsClient.Policy.CreatePolicy(newPolicy)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
@@ -65,9 +81,15 @@ func TestDeletePolicy(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	productKey := "430deb9e-01c8-4a3b-81dd-e2e46569cd5e"
 	id := "1"
 
 	muxCreds.HandleFunc("/core/credentials/Policy/"+id, func(w http.ResponseWriter, r *http.Request) {
+		if k := r.Header.Get("X-Product-Key"); k != productKey {
+			t.Errorf(ErrMissingProductKey.Error())
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "DELETE":
@@ -75,7 +97,7 @@ func TestDeletePolicy(t *testing.T) {
 		}
 	})
 
-	var newPolicy = Policy{ID: 1}
+	var newPolicy = Policy{ID: 1, ProductKey: productKey}
 	ok, resp, err := credsClient.Policy.DeletePolicy(newPolicy)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
@@ -87,8 +109,14 @@ func TestGetPolicy(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	productKey := "430deb9e-01c8-4a3b-81dd-e2e46569cd5e"
 	id := "1"
 	muxCreds.HandleFunc("/core/credentials/Policy", func(w http.ResponseWriter, r *http.Request) {
+		if k := r.Header.Get("X-Product-Key"); k != productKey {
+			t.Errorf(ErrMissingProductKey.Error())
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "GET":
@@ -126,7 +154,7 @@ func TestGetPolicy(t *testing.T) {
 	})
 
 	intID := 1
-	policies, resp, err := credsClient.Policy.GetPolicy(&GetPolicyOptions{ID: &intID})
+	policies, resp, err := credsClient.Policy.GetPolicy(&GetPolicyOptions{ID: &intID, ProductKey: &productKey})
 	assert.Nil(t, err)
 	assert.NotNil(t, policies)
 	assert.NotNil(t, resp)

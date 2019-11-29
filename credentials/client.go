@@ -29,10 +29,9 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
-	ProductKey string
-	BaseURL    string
-	Debug      bool
-	DebugLog   string
+	BaseURL  string
+	Debug    bool
+	DebugLog string
 }
 
 // A Client manages communication with HSDP IAM API

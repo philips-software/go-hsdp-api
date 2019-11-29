@@ -14,6 +14,7 @@ var (
 	ErrMissingOrganization            = errors.New("missing organization")
 	ErrMissingProposition             = errors.New("missing proposition")
 	ErrMissingGlobalReference         = errors.New("missing global reference")
+	ErrMissingProductKey              = errors.New("missing product key")
 	ErrNotImplementedByHSDP           = errors.New("method not implemented by HSDP")
 	ErrEmptyResults                   = errors.New("empty results")
 	ErrOperationFailed                = errors.New("operation failed")

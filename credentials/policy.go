@@ -13,6 +13,8 @@ type Policy struct {
 		Resources []string `json:"resources"`
 		Actions   []string `json:"actions"`
 	} `json:"allowed"`
+
+	ProductKey string `json:"-"`
 }
 
 func (p Policy) StringID() string {

@@ -45,7 +45,6 @@ func setup(t *testing.T) func() {
 		t.Fatalf("Failed to create iamCleitn: %v", err)
 	}
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
-	productKey := "803505cd-79de-4441-88d7-6b110cd62b6d"
 
 	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
@@ -68,8 +67,7 @@ func setup(t *testing.T) func() {
 	assert.Nil(t, err)
 
 	credsClient, err = NewClient(iamClient, &Config{
-		BaseURL:    serverCreds.URL,
-		ProductKey: productKey,
+		BaseURL: serverCreds.URL,
 	})
 	assert.Nilf(t, err, "failed to create credsClient: %v", err)
 
@@ -96,17 +94,15 @@ func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	productKey := "803505cd-79de-4441-88d7-6b110cd62b6d"
 	tmpfile, err := ioutil.TempFile("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
 
 	credsClient, err = NewClient(iamClient, &Config{
-		BaseURL:    serverCreds.URL,
-		ProductKey: productKey,
-		Debug:      true,
-		DebugLog:   tmpfile.Name(),
+		BaseURL:  serverCreds.URL,
+		Debug:    true,
+		DebugLog: tmpfile.Name(),
 	})
 	if err != nil {
 		t.Fatalf("Error: %v", err)
@@ -117,10 +113,14 @@ func TestDebug(t *testing.T) {
 	err = iamClient.Login("username", "password")
 	assert.Nil(t, err)
 
-	// TODO: perform a call here
-	// _, _, _ = credsClient.Policies.GetPolicy(1)
+	id := 1
+	productKey := "803505cd-79de-4441-88d7-6b110cd62b6d"
+	_, _, _ = credsClient.Policy.GetPolicy(&GetPolicyOptions{
+		ID:         &id,
+		ProductKey: &productKey,
+	})
 
-	//fi, err := tmpfile.Stat()
-	//assert.Nil(t, err)
-	//assert.NotEqual(t, 0, fi.Size(), "Expected something to be written to DebugLog")
+	fi, err := tmpfile.Stat()
+	assert.Nil(t, err)
+	assert.NotEqual(t, 0, fi.Size(), "Expected something to be written to DebugLog")
 }
