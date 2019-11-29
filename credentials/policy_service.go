@@ -1,7 +1,6 @@
 package credentials
 
 import (
-	"bytes"
 	"net/http"
 )
 
@@ -51,26 +50,26 @@ func (c *PolicyService) GetPolicy(opt *GetPolicyOptions, options ...OptionFunc) 
 }
 
 // CreatePolicy creates a new policy for S3 Credentials
-func (c *PolicyService) CreatePolicy(policy Policy) (bool, *Response, error) {
+func (c *PolicyService) CreatePolicy(policy Policy) (*Policy, *Response, error) {
 	req, err := c.client.NewRequest("POST", "core/credentials/Policy", &policy, nil)
 	if err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
 	if policy.ProductKey == "" {
-		return false, nil, ErrMissingProductKey
+		return nil, nil, ErrMissingProductKey
 	}
 	req.Header.Set("Api-Version", CredentialsAPIVersion)
 	req.Header.Set("X-Product-Key", policy.ProductKey)
 
-	var createResponse bytes.Buffer
-	resp, err := c.client.Do(req, &createResponse)
+	var createdPolicy Policy
+	resp, err := c.client.Do(req, &createdPolicy)
 	if err != nil {
-		return false, resp, err
+		return nil, resp, err
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return false, resp, err
+		return nil, resp, err
 	}
-	return true, resp, nil
+	return &createdPolicy, resp, nil
 }
 
 // DeleteGroup deletes the given Group

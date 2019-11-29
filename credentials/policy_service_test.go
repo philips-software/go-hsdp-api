@@ -70,11 +70,14 @@ func TestCreatePolicy(t *testing.T) {
 	// Set Policy
 	newPolicy.ProductKey = productKey
 
-	ok, resp, err := credsClient.Policy.CreatePolicy(newPolicy)
+	createdPolicy, resp, err := credsClient.Policy.CreatePolicy(newPolicy)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
-	assert.Equal(t, true, ok, "expected policy creation to succeed")
+	assert.NotNil(t, createdPolicy)
+	assert.IsType(t, &Policy{}, createdPolicy)
+	assert.Equal(t, 1, createdPolicy.ID)
+
 }
 
 func TestDeletePolicy(t *testing.T) {
