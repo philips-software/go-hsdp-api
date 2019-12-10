@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateProposition(t *testing.T) {
@@ -55,11 +57,11 @@ func TestCreateProposition(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP created")
+	if ok := assert.NotNil(t, createdProp); ok {
+		assert.Equal(t, propID, createdProp.ID)
 	}
-	if createdProp.ID != propID {
-		t.Errorf("Unexpected ID")
+	if ok := assert.NotNil(t, resp); ok {
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
 }
 
@@ -99,10 +101,10 @@ func TestGetPropositions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success")
+	if ok := assert.NotNil(t, props); ok {
+		assert.Equal(t, 1, len(*props))
 	}
-	if len(*props) != 1 {
-		t.Errorf("Expected 1 proposition, Got: %d", len(*props))
+	if ok := assert.NotNil(t, resp); ok {
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
 }

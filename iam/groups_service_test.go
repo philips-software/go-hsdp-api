@@ -96,10 +96,11 @@ func TestGroupCRUD(t *testing.T) {
 	assert.Equal(t, groupID, group.ID)
 
 	ok, resp, err := client.Groups.DeleteGroup(*group)
-	assert.Nil(t, err)
-	assert.NotNil(t, resp)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 	assert.True(t, ok)
+	assert.Nil(t, err)
+	if ok := assert.NotNil(t, resp); ok {
+		assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	}
 }
 
 func TestAssignRole(t *testing.T) {
@@ -157,10 +158,11 @@ func TestAssignRole(t *testing.T) {
 	group.ID = groupID
 	role.ID = roleID
 	ok, resp, err := client.Groups.AssignRole(group, role)
-	assert.Nil(t, err)
-	assert.NotNil(t, resp)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.True(t, ok)
+	assert.Nil(t, err)
+	if ok := assert.NotNil(t, resp); ok {
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	}
 }
 
 func TestAddMembers(t *testing.T) {
