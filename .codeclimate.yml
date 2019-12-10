@@ -1,0 +1,13 @@
+version: "2"
+
+plugins:
+  gofmt:
+    enabled: true
+
+checks:
+  return-statements:
+    config:
+      threshold: 5
+  method-lines:
+    config:
+      threshold: 60
