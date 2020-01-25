@@ -21,4 +21,5 @@ var (
 	ErrEmptyResults                   = errors.New("empty results")
 	ErrOperationFailed                = errors.New("operation failed")
 	ErrMissingEtagInformation         = errors.New("missing etag information")
+	ErrMissingRefreshToken            = errors.New("missing refresh token")
 )

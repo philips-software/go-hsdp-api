@@ -435,10 +435,8 @@ func TestTokenRefresh(t *testing.T) {
 
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
 	refreshToken := "13614f90-9cdf-4962-aea3-01cd51fa56b9"
+	newToken := "90b208cd-aaf3-45bb-9410-ba3f42255b9d"
 	newRefreshToken := "9c45339e-38c8-4dac-b290-5c3ac571c369"
-
-	client.token = "a0538e83-2843-49ee-b9cf-5f5f4a632a07"
-	client.refreshToken = refreshToken
 
 	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
 		if !assert.Equal(t, "POST", r.Method) {
@@ -449,26 +447,48 @@ func TestTokenRefresh(t *testing.T) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		if !assert.Equal(t, "refresh_token", strings.Join(r.Form["grant_type"], " ")) {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		if !assert.Equal(t, refreshToken, strings.Join(r.Form["refresh_token"], " ")) {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
+		grantType := strings.Join(r.Form["grant_type"], " ")
+		receveidRefreshToken := strings.Join(r.Form["refresh_token"], " ")
+
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = io.WriteString(w, `{
-    		"scope": "`+strings.Join(cfg.Scopes, " ")+`",
-    		"access_token": "`+token+`",
-    		"refresh_token": "`+newRefreshToken+`",
-    		"expires_in": 1799,
-    		"token_type": "Bearer"
-		}`)
+		switch grantType {
+		case "refresh_token":
+			if !assert.Equal(t, refreshToken, receveidRefreshToken) {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+				"scope": "`+strings.Join(cfg.Scopes, " ")+`",
+				"access_token": "`+newToken+`",
+				"refresh_token": "`+newRefreshToken+`",
+				"expires_in": 1799,
+				"token_type": "Bearer"
+			}`)
+		case "password":
+			err := r.ParseForm()
+			assert.Nil(t, err)
+			username := r.Form.Get("username")
+			if !assert.Equal(t, "username", username) {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+				"scope": "`+strings.Join(cfg.Scopes, " ")+`",
+				"access_token": "`+token+`",
+				"refresh_token": "`+refreshToken+`",
+				"expires_in": 1799,
+				"token_type": "Bearer"
+			}`)
+		}
+
 	})
+	err = client.Login("username", "password")
+	assert.Nil(t, err)
+
 	err = client.TokenRefresh()
 	assert.Nilf(t, err, fmt.Sprintf("Unexpected error: %v", err))
-	assert.Equal(t, token, client.Token())
+	assert.Equal(t, newToken, client.Token())
 	assert.Equal(t, newRefreshToken, client.RefreshToken())
 }

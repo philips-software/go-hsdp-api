@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	validator "github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
@@ -84,6 +85,7 @@ type Client struct {
 	// tokens used to make authenticated API calls.
 	token        string
 	refreshToken string
+	expiresAt    time.Time
 
 	// scope holds the client scope
 	scopes []string
@@ -272,17 +274,30 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 	c.tokenType = oAuthToken
 	c.token = tokenResponse.AccessToken
 	c.refreshToken = tokenResponse.RefreshToken
+	c.expiresAt = time.Now().Add(time.Duration(tokenResponse.ExpiresIn) * time.Second)
 	c.scopes = strings.Split(tokenResponse.Scope, " ")
 	return nil
 }
 
 // Token returns the current token
 func (c *Client) Token() string {
+	now := time.Now().Unix()
+	expires := c.expiresAt.Unix()
+
+	if expires-now < 60 {
+		if c.TokenRefresh() != nil {
+			return ""
+		}
+	}
 	return c.token
 }
 
 // TokenRefresh refreshes the current access token using the refresh token
 func (c *Client) TokenRefresh() error {
+	if c.refreshToken == "" {
+		return ErrMissingRefreshToken
+	}
+
 	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
 	if err != nil {
 		return err
@@ -352,6 +367,7 @@ func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 // SetToken sets the token
 func (c *Client) SetToken(token string) {
 	c.token = token
+	c.expiresAt = time.Now().Add(86400 * time.Minute)
 	c.tokenType = oAuthToken
 }
 
@@ -476,7 +492,7 @@ func (c *Client) NewRequest(endpoint, method, path string, opt interface{}, opti
 
 	switch c.tokenType {
 	case oAuthToken:
-		if c.token != "" {
+		if token := c.Token(); token != "" {
 			req.Header.Set("Authorization", "Bearer "+c.token)
 		}
 	}
