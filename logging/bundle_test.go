@@ -57,6 +57,9 @@ func TestBundleEncoding(t *testing.T) {
 	assert.Equal(t, nil, err)
 	resource := bundle.Entry[0].Resource
 	assert.Equal(t, "SGVsbG8=", resource.LogData.Message)
-	inner := resource.Custom["key2"].(map[string]interface{})
+	var custom map[string]interface{}
+	err = json.Unmarshal(resource.Custom, &custom)
+	assert.Equal(t, nil, err)
+	inner := custom["key2"].(map[string]interface{})
 	assert.Equal(t, "innervalue", inner["innerkey"].(string))
 }
