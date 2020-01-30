@@ -218,14 +218,15 @@ func (u *UsersService) GetUserByID(uuid string) (*Person, *Response, error) {
 	}
 	m, err := json.Marshal(user)
 	if err != nil {
-		return nil, resp, fmt.Errorf("error parsing json response")
+		return nil, resp, fmt.Errorf("error parsing json response: %w", err)
 	}
+
 	jsonParsed, err := gabs.ParseJSON(m)
 	if err != nil {
-		return nil, resp, err
+		return nil, resp, fmt.Errorf("Eror decoding JSON: %w", err)
 	}
-	if statusCode, ok := jsonParsed.Path("responseCode").Data().(string); !ok || statusCode != "200" {
-		return nil, resp, fmt.Errorf("responseCode: %s", statusCode)
+	if err = checkResponseCode200(jsonParsed); err != nil {
+		return nil, resp, fmt.Errorf("Error finding user with uuid %s: %w", uuid, err)
 	}
 	email, ok := jsonParsed.Path("exchange.loginId").Data().(string)
 	if !ok {
@@ -247,9 +248,20 @@ func (u *UsersService) GetUserByID(uuid string) (*Person, *Response, error) {
 	return &foundUser, resp, nil
 }
 
+func checkResponseCode200(json *gabs.Container) error {
+	if statusCode, ok := json.Path("responseCode").Data().(string); !ok || statusCode != "200" {
+		responseMessage, ok := json.Path("responseMessage").Data().(string)
+		if !ok {
+			return fmt.Errorf("Unknown error")
+		}
+		return fmt.Errorf(responseMessage)
+	}
+	return nil
+}
+
 // GetUserIDByLoginID looks up the UUID of a user by LoginID (email address)
 func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, error) {
-	req, err := u.client.NewRequest(IDM, "GET", "security/users?loginId="+loginID, nil, nil)
+	req, _ := u.client.NewRequest(IDM, "GET", "security/users?loginId="+loginID, nil, nil)
 	var d interface{}
 
 	resp, err := u.client.Do(req, &d)
@@ -258,11 +270,14 @@ func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, er
 	}
 	m, err := json.Marshal(d)
 	if err != nil {
-		return "", resp, fmt.Errorf("error parsing json response")
+		return "", resp, fmt.Errorf("error parsing json response: %w", err)
 	}
 	jsonParsed, err := gabs.ParseJSON(m)
-	if statusCode, ok := jsonParsed.Path("responseCode").Data().(string); !ok || statusCode != "200" {
-		return "", resp, fmt.Errorf("responseCode: %s", statusCode)
+	if err != nil {
+		return "", resp, fmt.Errorf("Eror decoding JSON: %w", err)
+	}
+	if err = checkResponseCode200(jsonParsed); err != nil {
+		return "", resp, fmt.Errorf("Error finding user by loginID: %w", err)
 	}
 
 	r := jsonParsed.Path("exchange.users").Index(0)
