@@ -226,7 +226,7 @@ func (u *UsersService) GetUserByID(uuid string) (*Person, *Response, error) {
 		return nil, resp, fmt.Errorf("Eror decoding JSON: %w", err)
 	}
 	if err = checkResponseCode200(jsonParsed); err != nil {
-		return nil, resp, fmt.Errorf("Error finding user with uuid %s: %w", uuid, err)
+		return nil, resp, &UserError{User: uuid, Err: err}
 	}
 	email, ok := jsonParsed.Path("exchange.loginId").Data().(string)
 	if !ok {
@@ -254,6 +254,10 @@ func checkResponseCode200(json *gabs.Container) error {
 		if !ok {
 			return fmt.Errorf("Unknown error")
 		}
+		switch responseMessage {
+		case "Unauthorized Access":
+			return ErrNotAuthorized
+		}
 		return fmt.Errorf(responseMessage)
 	}
 	return nil
@@ -277,7 +281,7 @@ func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, er
 		return "", resp, fmt.Errorf("Eror decoding JSON: %w", err)
 	}
 	if err = checkResponseCode200(jsonParsed); err != nil {
-		return "", resp, fmt.Errorf("Error finding user by loginID: %w", err)
+		return "", resp, &UserError{User: loginID, Err: err}
 	}
 
 	r := jsonParsed.Path("exchange.users").Index(0)

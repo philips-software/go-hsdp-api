@@ -22,4 +22,14 @@ var (
 	ErrOperationFailed                = errors.New("operation failed")
 	ErrMissingEtagInformation         = errors.New("missing etag information")
 	ErrMissingRefreshToken            = errors.New("missing refresh token")
+	ErrNotAuthorized                  = errors.New("not authorized")
 )
+
+type UserError struct {
+	User string
+	Err  error
+}
+
+func (e *UserError) Error() string { return "user: " + e.User }
+
+func (e *UserError) Unwrap() error { return e.Err }
