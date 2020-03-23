@@ -227,7 +227,6 @@ func (c *Client) ServiceLogin(service Service) error {
 	body += "&"
 	body += form.Encode()
 
-	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
 	req.Body = ioutil.NopCloser(strings.NewReader(body))
 	req.ContentLength = int64(len(body))
 
