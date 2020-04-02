@@ -45,6 +45,8 @@ type Config struct {
 	SharedSecret string
 	BaseURL      string
 	ProductKey   string
+	Debug        bool
+	DebugLog     string
 }
 
 // Valid returns if all required config fields are present, false otherwise
@@ -70,10 +72,10 @@ type Client struct {
 	url        *url.URL
 	httpClient *http.Client
 	httpSigner *signer.Signer
-	debug      bool
+	debugFile  *os.File
 }
 
-// Response holds a logevent response
+// Response holds a LogEvent response
 type Response struct {
 	*http.Response
 	Message string
@@ -117,7 +119,17 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 
 	logger.url = url
 	if os.Getenv("DEBUG") == "true" {
-		logger.debug = true
+		logger.config.Debug = true
+	}
+	if logger.config.Debug {
+		if logger.config.DebugLog != "" {
+			logger.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+			if err != nil {
+				logger.debugFile = os.Stderr
+			}
+		} else {
+			logger.debugFile = os.Stderr
+		}
 	}
 	return &logger, nil
 }
@@ -128,9 +140,9 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
-	if c.debug {
+	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		fmt.Printf("REQUEST: %s\n", string(dumped))
+		fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -141,10 +153,10 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	if c.debug {
+	if c.config.Debug {
 		if resp != nil {
 			dumped, _ := httputil.DumpResponse(resp, true)
-			fmt.Printf("RESPONSE: %s\n", string(dumped))
+			fmt.Fprintf(c.debugFile, "RESPONSE: %s\n", string(dumped))
 		} else {
 			fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
 		}
