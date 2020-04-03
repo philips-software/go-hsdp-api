@@ -46,7 +46,6 @@ type Config struct {
 	BaseURL      string
 	ProductKey   string
 	Debug        bool
-	DebugLog     string
 }
 
 // Valid returns if all required config fields are present, false otherwise
@@ -121,16 +120,6 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	if os.Getenv("DEBUG") == "true" {
 		logger.config.Debug = true
 	}
-	if logger.config.Debug {
-		if logger.config.DebugLog != "" {
-			logger.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-			if err != nil {
-				logger.debugFile = os.Stderr
-			}
-		} else {
-			logger.debugFile = os.Stderr
-		}
-	}
 	return &logger, nil
 }
 
@@ -142,7 +131,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
+		fmt.Fprintf(os.Stderr, "REQUEST: %s\n", string(dumped))
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -156,7 +145,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		if resp != nil {
 			dumped, _ := httputil.DumpResponse(resp, true)
-			fmt.Fprintf(c.debugFile, "RESPONSE: %s\n", string(dumped))
+			fmt.Fprintf(os.Stderr, "RESPONSE: %s\n", string(dumped))
 		} else {
 			fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
 		}
