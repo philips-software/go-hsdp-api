@@ -191,26 +191,19 @@ type Parameter struct {
 	References []Reference `json:"references"`
 }
 
+type memberRequest struct {
+	MemberType string   `json:"memberType"`
+	Value      []string `json:"value"`
+}
+
 type groupRequest struct {
 	ResourceType string      `json:"resourceType,omitempty"`
 	Parameter    []Parameter `json:"parameter,omitempty"`
 	Roles        []string    `json:"roles,omitempty"`
 }
 
-func (g *GroupsService) memberAction(group Group, action string, users ...string) (bool, *Response, error) {
-	var memberRequest = groupRequest{
-		ResourceType: "Parameters",
-		Parameter: []Parameter{
-			{
-				Name: "UserIDCollection",
-			},
-		},
-	}
-	for _, user := range users {
-		memberRequest.Parameter[0].References = append(memberRequest.Parameter[0].References, Reference{Reference: user})
-	}
-
-	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, memberRequest, nil)
+func (g *GroupsService) memberAction(group Group, action string, opt interface{}) (bool, *Response, error) {
+	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -231,12 +224,46 @@ func (g *GroupsService) memberAction(group Group, action string, users ...string
 	return true, resp, nil
 }
 
-// AddMembers adds a user to the given Group
-func (g *GroupsService) AddMembers(group Group, users ...string) (bool, *Response, error) {
-	return g.memberAction(group, "$add-members", users...)
+func memberRequestBody(services ...string) memberRequest {
+	var requestBody = memberRequest{
+		MemberType: "SERVICE",
+		Value:      []string{},
+	}
+	requestBody.Value = append(requestBody.Value, services...)
+	return requestBody
 }
 
-// RemoveMembers adds a user to the given Group
+func groupRequestBody(users ...string) groupRequest {
+	var requestBody = groupRequest{
+		ResourceType: "Parameters",
+		Parameter: []Parameter{
+			{
+				Name: "UserIDCollection",
+			},
+		},
+	}
+	for _, user := range users {
+		requestBody.Parameter[0].References = append(requestBody.Parameter[0].References, Reference{Reference: user})
+	}
+	return requestBody
+}
+
+// AddMembers adds users to the given Group
+func (g *GroupsService) AddMembers(group Group, users ...string) (bool, *Response, error) {
+	return g.memberAction(group, "$add-members", groupRequestBody(users...))
+}
+
+// RemoveMembers removes users from the given Group
 func (g *GroupsService) RemoveMembers(group Group, users ...string) (bool, *Response, error) {
-	return g.memberAction(group, "$remove-members", users...)
+	return g.memberAction(group, "$remove-members", groupRequestBody(users...))
+}
+
+// AddServices adds services to the given Group
+func (g *GroupsService) AddServices(group Group, services ...string) (bool, *Response, error) {
+	return g.memberAction(group, "$assign", memberRequestBody(services...))
+}
+
+// RemoveServices removes services from the given Group
+func (g *GroupsService) RemoveServices(group Group, services ...string) (bool, *Response, error) {
+	return g.memberAction(group, "$remove", memberRequestBody(services...))
 }

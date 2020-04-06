@@ -235,15 +235,12 @@ func TestAddMembers(t *testing.T) {
 	var group Group
 	group.ID = groupID
 	ok, resp, err := client.Groups.AddMembers(group, userID)
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
+	assert.NotNil(t, resp)
+	if resp != nil {
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
-	if !ok {
-		t.Errorf("Expected AddMembers to succeed")
-	}
-	if err != nil {
-		t.Errorf("Did not expect error, Got: %v", err)
-	}
+	assert.True(t, ok)
+	assert.Nil(t, err)
 	ok, resp, err = client.Groups.AddMembers(group, "foo")
 	assert.NotNil(t, resp)
 	assert.False(t, ok)
@@ -325,7 +322,7 @@ func TestRemoveMembers(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	ok, resp, err = client.Groups.AddMembers(group, "foo")
+	ok, resp, err = client.Groups.RemoveMembers(group, "foo")
 	assert.NotNil(t, resp)
 	assert.False(t, ok)
 	assert.NotNil(t, err)
@@ -432,4 +429,147 @@ func TestGetRoles(t *testing.T) {
 	assert.Equal(t, 1, len(*roles))
 	assert.Equal(t, roleID, (*roles)[0].ID)
 	assert.Equal(t, "TDRALL", (*roles)[0].Name)
+}
+
+func TestAddServices(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	serviceID := "f5fe538f-c3b5-4454-8774-cd3789f59b9a"
+	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID+"/$assign", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				t.Errorf("Unexpected EOF from reading request")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			var addRequest struct {
+				MemberType string   `json:"memberType"`
+				Value      []string `json:"value"`
+			}
+			err = json.Unmarshal(body, &addRequest)
+			if err != nil {
+				t.Errorf("Error parsing request: %v", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if addRequest.MemberType != "SERVICE" {
+				t.Errorf("Expected SERVICE MemberType, got: %s", addRequest.MemberType)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if l := len(addRequest.Value); l != 1 {
+				t.Errorf("Expected 1 value, got: %d", l)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if n := addRequest.Value[0]; n != serviceID {
+				w.WriteHeader(http.StatusBadRequest)
+				io.WriteString(w, `{
+					"resourceType": "OperationOutcome",
+					"issues": [
+						{
+							"diagnostic": "failed Operations",
+							"code": "not-found",
+							"severity": "error",
+							"location": [
+								"services/`+serviceID+`"
+							]
+						}
+					]
+				}
+				`)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+		}
+	})
+	var group Group
+	group.ID = groupID
+	ok, resp, err := client.Groups.AddServices(group, serviceID)
+	assert.NotNil(t, resp)
+	if resp != nil {
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	}
+	assert.True(t, ok)
+	assert.Nil(t, err)
+	ok, resp, err = client.Groups.AddServices(group, "foo")
+	assert.NotNil(t, resp)
+	assert.False(t, ok)
+	assert.NotNil(t, err)
+}
+
+func TestRemoveServices(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	serviceID := "f5fe538f-c3b5-4454-8774-cd3789f59b9a"
+	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID+"/$remove", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				t.Errorf("Unexpected EOF from reading request")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			var addRequest struct {
+				MemberType string   `json:"memberType"`
+				Value      []string `json:"value"`
+			}
+			err = json.Unmarshal(body, &addRequest)
+			if err != nil {
+				t.Errorf("Error parsing request: %v", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if addRequest.MemberType != "SERVICE" {
+				t.Errorf("Expected SERVICE MemberType, got: %s", addRequest.MemberType)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if l := len(addRequest.Value); l != 1 {
+				t.Errorf("Expected 1 value, got: %d", l)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if r := addRequest.Value[0]; r != serviceID {
+				w.WriteHeader(http.StatusBadRequest)
+				io.WriteString(w, `{
+					"resourceType": "OperationOutcome",
+					"issues": [
+						{
+							"diagnostic": "failed Operations",
+							"code": "not-found",
+							"severity": "error",
+							"location": [
+								"services/`+r+`"
+							]
+						}
+					]
+				}
+				`)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+		}
+	})
+	var group Group
+	group.ID = groupID
+	ok, resp, err := client.Groups.RemoveServices(group, serviceID)
+	assert.NotNil(t, resp)
+	assert.True(t, ok)
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	ok, resp, err = client.Groups.RemoveServices(group, "foo")
+	assert.NotNil(t, resp)
+	assert.False(t, ok)
+	assert.NotNil(t, err)
 }
