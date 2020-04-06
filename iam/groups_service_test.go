@@ -60,6 +60,14 @@ func TestGroupCRUD(t *testing.T) {
 			"managingOrganization": "`+managingOrgID+`",
 			"id": "`+groupID+`"
 			}`)
+		case "GET":
+			w.WriteHeader(http.StatusOK)
+			io.WriteString(w, `{
+			"name": "`+groupName+`",
+			"description": "`+groupDescription+`",
+			"managingOrganization": "`+managingOrgID+`",
+			"id": "`+groupID+`"
+			}`)
 		case "DELETE":
 			w.WriteHeader(http.StatusNoContent)
 		}

@@ -40,7 +40,19 @@ type GroupsService struct {
 
 // GetGroupByID retrieves a Group based on the ID
 func (g *GroupsService) GetGroupByID(id string) (*Group, *Response, error) {
-	return g.GetGroup(&GetGroupOptions{ID: &id}, nil)
+	req, err := g.client.NewRequest(IDM, "GET", "authorize/identity/Group/"+id, nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", groupAPIVersion)
+
+	var group Group
+
+	resp, err := g.client.Do(req, &group)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &group, resp, err
 }
 
 // GetGroup retrieves a Group entity based on the values passed in GetGroupOptions
