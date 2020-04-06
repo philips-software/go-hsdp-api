@@ -443,8 +443,29 @@ func TestAddServices(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	eTag := "RonSwanson"
 	serviceID := "f5fe538f-c3b5-4454-8774-cd3789f59b9a"
 	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	managingOrgID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc1"
+	groupName := "TestGroup"
+	groupDescription := "Test Group Description"
+	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "GET":
+			w.Header().Set("ETag", eTag)
+			w.WriteHeader(http.StatusOK)
+			io.WriteString(w, `{
+			"name": "`+groupName+`",
+			"description": "`+groupDescription+`",
+			"managingOrganization": "`+managingOrgID+`",
+			"id": "`+groupID+`"
+			}`)
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	})
+
 	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID+"/$assign", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
@@ -474,6 +495,9 @@ func TestAddServices(t *testing.T) {
 				t.Errorf("Expected 1 value, got: %d", l)
 				w.WriteHeader(http.StatusBadRequest)
 				return
+			}
+			if r.Header.Get("If-Match") != eTag {
+				w.WriteHeader(http.StatusBadRequest)
 			}
 			if n := addRequest.Value[0]; n != serviceID {
 				w.WriteHeader(http.StatusBadRequest)
@@ -515,8 +539,28 @@ func TestRemoveServices(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	eTag := "RonSwanson"
 	serviceID := "f5fe538f-c3b5-4454-8774-cd3789f59b9a"
 	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	managingOrgID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc1"
+	groupName := "TestGroup"
+	groupDescription := "Test Group Description"
+	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "GET":
+			w.Header().Set("ETag", eTag)
+			w.WriteHeader(http.StatusOK)
+			io.WriteString(w, `{
+			"name": "`+groupName+`",
+			"description": "`+groupDescription+`",
+			"managingOrganization": "`+managingOrgID+`",
+			"id": "`+groupID+`"
+			}`)
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	})
 	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID+"/$remove", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
@@ -546,6 +590,9 @@ func TestRemoveServices(t *testing.T) {
 				t.Errorf("Expected 1 value, got: %d", l)
 				w.WriteHeader(http.StatusBadRequest)
 				return
+			}
+			if r.Header.Get("If-Match") != eTag {
+				w.WriteHeader(http.StatusBadRequest)
 			}
 			if r := addRequest.Value[0]; r != serviceID {
 				w.WriteHeader(http.StatusBadRequest)

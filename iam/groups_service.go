@@ -214,8 +214,8 @@ type groupRequest struct {
 	Roles        []string    `json:"roles,omitempty"`
 }
 
-func (g *GroupsService) memberAction(group Group, action string, opt interface{}) (bool, *Response, error) {
-	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, nil)
+func (g *GroupsService) memberAction(group Group, action string, opt interface{}, options []OptionFunc) (bool, *Response, error) {
+	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, options)
 	if err != nil {
 		return false, nil, err
 	}
@@ -262,20 +262,37 @@ func groupRequestBody(users ...string) groupRequest {
 
 // AddMembers adds users to the given Group
 func (g *GroupsService) AddMembers(group Group, users ...string) (bool, *Response, error) {
-	return g.memberAction(group, "$add-members", groupRequestBody(users...))
+	return g.memberAction(group, "$add-members", groupRequestBody(users...), nil)
 }
 
 // RemoveMembers removes users from the given Group
 func (g *GroupsService) RemoveMembers(group Group, users ...string) (bool, *Response, error) {
-	return g.memberAction(group, "$remove-members", groupRequestBody(users...))
+	return g.memberAction(group, "$remove-members", groupRequestBody(users...), nil)
+}
+
+func addIfMatchHeader(version string) OptionFunc {
+	return func(req *http.Request) error {
+		req.Header.Set("If-Match", version)
+		return nil
+	}
 }
 
 // AddServices adds services to the given Group
 func (g *GroupsService) AddServices(group Group, services ...string) (bool, *Response, error) {
-	return g.memberAction(group, "$assign", memberRequestBody(services...))
+	_, resp, err := g.GetGroupByID(group.ID)
+	if err != nil {
+		return false, resp, err
+	}
+	version := resp.Header.Get("ETag")
+	return g.memberAction(group, "$assign", memberRequestBody(services...), []OptionFunc{addIfMatchHeader(version)})
 }
 
 // RemoveServices removes services from the given Group
 func (g *GroupsService) RemoveServices(group Group, services ...string) (bool, *Response, error) {
-	return g.memberAction(group, "$remove", memberRequestBody(services...))
+	_, resp, err := g.GetGroupByID(group.ID)
+	if err != nil {
+		return false, resp, err
+	}
+	version := resp.Header.Get("ETag")
+	return g.memberAction(group, "$remove", memberRequestBody(services...), []OptionFunc{addIfMatchHeader(version)})
 }
