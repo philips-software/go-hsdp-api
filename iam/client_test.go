@@ -34,10 +34,12 @@ func setup(t *testing.T) func() {
 	serverIDM = httptest.NewServer(muxIDM)
 	sharedKey := "SharedKey"
 	secretKey := "SecretKey"
+	var err error
 
-	signerHSDP, _ = signer.New(sharedKey, secretKey)
+	signerHSDP, err = signer.New(sharedKey, secretKey)
+	assert.Nil(t, err)
 
-	client, _ = NewClient(nil, &Config{
+	client, err = NewClient(nil, &Config{
 		OAuth2ClientID: "TestClient",
 		OAuth2Secret:   "Secret",
 		SharedKey:      sharedKey,
@@ -45,6 +47,7 @@ func setup(t *testing.T) func() {
 		IAMURL:         serverIAM.URL,
 		IDMURL:         serverIDM.URL,
 	})
+	assert.Nil(t, err)
 
 	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
 	token2 := "55d20214-7879-4e35-923d-f9d4e01c9746"
@@ -76,6 +79,27 @@ func setup(t *testing.T) func() {
 		serverIAM.Close()
 		serverIDM.Close()
 	}
+}
+
+func TestWithMissingSigner(t *testing.T) {
+	muxIAM = http.NewServeMux()
+	serverIAM = httptest.NewServer(muxIAM)
+	muxIDM = http.NewServeMux()
+	serverIDM = httptest.NewServer(muxIDM)
+	var err error
+
+	client, err = NewClient(nil, &Config{
+		OAuth2ClientID: "TestClient",
+		OAuth2Secret:   "Secret",
+		IAMURL:         serverIAM.URL,
+		IDMURL:         serverIDM.URL,
+	})
+	assert.Nil(t, err)
+	assert.NotNil(t, client)
+	assert.Nil(t, client.signer)
+	resp, err := client.DoSigned(&http.Request{}, nil)
+	assert.Nil(t, resp)
+	assert.Equal(t, ErrNoValidSignerAvailable, err)
 }
 
 func TestLogin(t *testing.T) {

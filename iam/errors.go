@@ -23,6 +23,7 @@ var (
 	ErrMissingEtagInformation         = errors.New("missing etag information")
 	ErrMissingRefreshToken            = errors.New("missing refresh token")
 	ErrNotAuthorized                  = errors.New("not authorized")
+	ErrNoValidSignerAvailable         = errors.New("no valid HSDP signer available")
 )
 
 type UserError struct {

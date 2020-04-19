@@ -126,8 +126,8 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 	signer, err := hsdpsigner.New(c.config.SharedKey, c.config.SecretKey)
-	if err != nil {
-		return nil, err
+	if err != nil { // Allow nil signer
+		signer = nil
 	}
 	if config.DebugLog != "" {
 		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
@@ -517,6 +517,9 @@ func newResponse(r *http.Response) *Response {
 
 // DoSigned performs a signed API request
 func (c *Client) DoSigned(req *http.Request, v interface{}) (*Response, error) {
+	if c.signer == nil {
+		return nil, ErrNoValidSignerAvailable
+	}
 	if err := c.signer.SignRequest(req); err != nil {
 		return nil, err
 	}
