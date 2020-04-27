@@ -550,7 +550,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		if c.debugFile != nil {
 			c.debugFile.WriteString(out)
 		} else {
-			fmt.Printf(out)
+			fmt.Println(out)
 		}
 	}
 	if err != nil {

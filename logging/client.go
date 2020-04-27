@@ -12,6 +12,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/philips-software/go-hsdp-api/fhir"
 	signer "github.com/philips-software/go-hsdp-signer"
@@ -71,7 +72,6 @@ type Client struct {
 	url        *url.URL
 	httpClient *http.Client
 	httpSigner *signer.Signer
-	debugFile  *os.File
 }
 
 // Response holds a LogEvent response
@@ -215,6 +215,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	j := 0
 	for i := 0; i < count; i++ {
 		msg := msgs[i]
+		replaceScaryCharacters(&msg)
 		if !msg.Valid() {
 			invalid = append(invalid, msg)
 			continue
@@ -267,4 +268,15 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	}
 
 	return resp, err
+}
+
+func replaceScaryCharacters(msg *Resource) {
+	if len(msg.Custom) == 0 {
+		return
+	}
+	stringCustom := string(msg.Custom)
+	for _, s := range []string{"&", ";", "\\", "<", ">"} {
+		stringCustom = strings.ReplaceAll(stringCustom, s, "💀")
+	}
+	msg.Custom = []byte(stringCustom)
 }
