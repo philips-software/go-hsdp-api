@@ -225,7 +225,7 @@ func TestReplaceScaryCharacters(t *testing.T) {
 	"bad1": ";",
 	"bad2": "<key/>",
 	"bad3": "&amp;",
-	"bad4": "\\\\"
+	"bad4": "a\b"
 }`),
 	}
 	replaceScaryCharacters(&invalidResource)
@@ -235,7 +235,7 @@ func TestReplaceScaryCharacters(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "bar", custom["foo"].(string))
 	assert.Equal(t, "💀", custom["bad1"].(string))
-	assert.Equal(t, "💀key/💀", custom["bad2"].(string))
-	assert.Equal(t, "💀amp💀", custom["bad3"].(string))
-	assert.Equal(t, "💀💀💀💀", custom["bad4"].(string))
+	assert.Equal(t, "👾key/👿", custom["bad2"].(string))
+	assert.Equal(t, "👻amp💀", custom["bad3"].(string))
+	assert.Equal(t, "a🎃b", custom["bad4"].(string))
 }

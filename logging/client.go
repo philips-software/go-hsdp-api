@@ -33,6 +33,14 @@ var (
 	ErrMissingSharedSecret = errors.New("missing shared secret")
 	ErrMissingBaseURL      = errors.New("missing base URL")
 	ErrMissingProductKey   = errors.New("missing ProductKey")
+
+	scaryMap = map[string]string{
+		";":  "💀",
+		"\\": "🎃",
+		"&":  "👻",
+		">":  "👿",
+		"<":  "👾",
+	}
 )
 
 // Storer defines the store operations for logging
@@ -275,8 +283,8 @@ func replaceScaryCharacters(msg *Resource) {
 		return
 	}
 	stringCustom := string(msg.Custom)
-	for _, s := range []string{"&", ";", "\\", "<", ">"} {
-		stringCustom = strings.ReplaceAll(stringCustom, s, "💀")
+	for s, r := range scaryMap {
+		stringCustom = strings.ReplaceAll(stringCustom, s, r)
 	}
 	msg.Custom = []byte(stringCustom)
 }
