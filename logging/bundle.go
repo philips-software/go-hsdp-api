@@ -46,8 +46,13 @@ type LogData struct {
 
 // Valid returns true if a resource is valid according to HSDP rules, false otherwise
 func (r *Resource) Valid() bool {
-	if r.EventID != "" && r.TransactionID != "" && r.LogTime != "" && r.LogData.Message != "" {
-		return true
+	var u map[string]interface{}
+
+	if r.EventID == "" || r.TransactionID == "" || r.LogTime == "" || r.LogData.Message == "" {
+		return false
 	}
-	return false
+	if len(r.Custom) > 0 && json.Unmarshal(r.Custom, &u) != nil {
+		return false
+	}
+	return true
 }
