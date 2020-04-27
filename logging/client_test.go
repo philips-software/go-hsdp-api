@@ -219,22 +219,22 @@ func TestConfig(t *testing.T) {
 func TestReplaceScaryCharacters(t *testing.T) {
 	var invalidResource = Resource{
 		ResourceType: "LogEvent",
-		Custom: []byte(`
-{
+		Custom: []byte(`{
 	"foo": "bar",
 	"bad1": ";",
 	"bad2": "<key/>",
 	"bad3": "&amp;",
 	"bad4": "a\\b",
 	"bad5": "a\b"
-
 }`),
 	}
 	replaceScaryCharacters(&invalidResource)
 
 	var custom map[string]interface{}
 	err := json.Unmarshal(invalidResource.Custom, &custom)
-	assert.Nil(t, err)
+	if !assert.Nil(t, err) {
+		return
+	}
 	assert.Equal(t, "bar", custom["foo"].(string))
 	assert.Equal(t, "💀[semicolon]", custom["bad1"].(string))
 	assert.Equal(t, "👾[lt]key/👿[gt]", custom["bad2"].(string))

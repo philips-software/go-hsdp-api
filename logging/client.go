@@ -289,9 +289,10 @@ func replaceScaryCharacters(msg *Resource) {
 	if len(msg.Custom) == 0 {
 		return
 	}
-	stringCustom := string(msg.Custom)
+	stringCustom := strings.Replace(string(msg.Custom), "\\\\", "🎃[backslash]", -1)
+
 	for s, r := range scaryMap {
-		stringCustom = strings.ReplaceAll(stringCustom, s, r)
+		stringCustom = strings.Replace(stringCustom, s, r, -1)
 	}
 	msg.Custom = []byte(stringCustom)
 }
