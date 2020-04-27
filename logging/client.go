@@ -35,11 +35,11 @@ var (
 	ErrMissingProductKey   = errors.New("missing ProductKey")
 
 	scaryMap = map[string]string{
-		";":  "💀",
-		"\\": "🎃",
-		"&":  "👻",
-		">":  "👿",
-		"<":  "👾",
+		";":    "💀",
+		"\\\\": "🎃",
+		"&":    "👻",
+		">":    "👿",
+		"<":    "👾",
 	}
 )
 
