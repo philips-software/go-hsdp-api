@@ -1,12 +1,15 @@
 package logging
 
 import (
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/Jeffail/gabs"
 	signer "github.com/philips-software/go-hsdp-signer"
@@ -187,17 +190,10 @@ func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
 	}
 
 	resp, err := client.StoreResources(resource, len(resource))
-	if resp == nil {
-		t.Errorf("Unexpected nil value for response")
-		return
-	}
+	assert.NotNil(t, resp)
 	_ = err.Error() // Just to up coverage
-	if resp.StatusCode != http.StatusForbidden {
-		t.Errorf("Expected HTTP 403, Got: %d", resp.StatusCode)
-	}
-	if err == nil {
-		t.Errorf("Expected error response")
-	}
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	assert.NotNil(t, err)
 }
 
 func TestConfig(t *testing.T) {
@@ -218,4 +214,31 @@ func TestConfig(t *testing.T) {
 			t.Errorf("Unexpected error: %v, expected: %v", err, tt.err)
 		}
 	}
+}
+
+func TestReplaceScaryCharacters(t *testing.T) {
+	var invalidResource = Resource{
+		ResourceType: "LogEvent",
+		Custom: []byte(`{
+	"foo": "bar",
+	"bad1": ";",
+	"bad2": "<key/>",
+	"bad3": "&amp;",
+	"bad4": "a\\b",
+	"bad5": "a\b"
+}`),
+	}
+	replaceScaryCharacters(&invalidResource)
+
+	var custom map[string]interface{}
+	err := json.Unmarshal(invalidResource.Custom, &custom)
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, "bar", custom["foo"].(string))
+	assert.Equal(t, "💀[semicolon]", custom["bad1"].(string))
+	assert.Equal(t, "👾[lt]key/👿[gt]", custom["bad2"].(string))
+	assert.Equal(t, "👻[amp]amp💀[semicolon]", custom["bad3"].(string))
+	assert.Equal(t, "a🎃[backslash]b", custom["bad4"].(string))
+	assert.Equal(t, "a🎃[bs]", custom["bad5"].(string))
 }

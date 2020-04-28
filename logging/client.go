@@ -12,6 +12,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/philips-software/go-hsdp-api/fhir"
 	signer "github.com/philips-software/go-hsdp-signer"
@@ -32,6 +33,22 @@ var (
 	ErrMissingSharedSecret = errors.New("missing shared secret")
 	ErrMissingBaseURL      = errors.New("missing base URL")
 	ErrMissingProductKey   = errors.New("missing ProductKey")
+
+	scaryMap = map[string]string{
+		";":    "💀[semicolon]",
+		"\\\\": "🎃[backslash]",
+		"&":    "👻[amp]",
+		">":    "👿[gt]",
+		"<":    "👾[lt]",
+		"=":    "👾[equal]",
+		"\\u":  "🎃[utf]",
+		"\\f":  "🎃[ff]",
+		"\\b":  "🎃[bs]",
+		"\\r":  "🎃[cr]",
+		"\\n":  "🎃[lf]",
+		"\\t":  "🎃[tab]",
+		"\\\"": "🎃[quote]",
+	}
 )
 
 // Storer defines the store operations for logging
@@ -71,7 +88,6 @@ type Client struct {
 	url        *url.URL
 	httpClient *http.Client
 	httpSigner *signer.Signer
-	debugFile  *os.File
 }
 
 // Response holds a LogEvent response
@@ -215,6 +231,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	j := 0
 	for i := 0; i < count; i++ {
 		msg := msgs[i]
+		replaceScaryCharacters(&msg)
 		if !msg.Valid() {
 			invalid = append(invalid, msg)
 			continue
@@ -267,4 +284,16 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	}
 
 	return resp, err
+}
+
+func replaceScaryCharacters(msg *Resource) {
+	if len(msg.Custom) == 0 {
+		return
+	}
+	stringCustom := strings.Replace(string(msg.Custom), "\\\\", "🎃[backslash]", -1)
+
+	for s, r := range scaryMap {
+		stringCustom = strings.Replace(stringCustom, s, r, -1)
+	}
+	msg.Custom = []byte(stringCustom)
 }
