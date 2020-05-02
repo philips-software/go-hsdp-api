@@ -236,12 +236,12 @@ func (g *GroupsService) memberAction(group Group, action string, opt interface{}
 	return true, resp, nil
 }
 
-func memberRequestBody(services ...string) memberRequest {
+func memberRequestBody(memberType string, identities ...string) memberRequest {
 	var requestBody = memberRequest{
-		MemberType: "SERVICE",
+		MemberType: memberType,
 		Value:      []string{},
 	}
-	requestBody.Value = append(requestBody.Value, services...)
+	requestBody.Value = append(requestBody.Value, identities...)
 	return requestBody
 }
 
@@ -277,22 +277,42 @@ func addIfMatchHeader(version string) OptionFunc {
 	}
 }
 
-// AddServices adds services to the given Group
-func (g *GroupsService) AddServices(group Group, services ...string) (bool, *Response, error) {
+// AddIdentities adds services to the given Group
+func (g *GroupsService) AddIdentities(group Group, memberType string, identities ...string) (bool, *Response, error) {
 	_, resp, err := g.GetGroupByID(group.ID)
 	if err != nil {
 		return false, resp, err
 	}
 	version := resp.Header.Get("ETag")
-	return g.memberAction(group, "$assign", memberRequestBody(services...), []OptionFunc{addIfMatchHeader(version)})
+	return g.memberAction(group, "$assign", memberRequestBody(memberType, identities...), []OptionFunc{addIfMatchHeader(version)})
+}
+
+// RemoveIdentities removes services from the given Group
+func (g *GroupsService) RemoveIdentities(group Group, memberType string, identities ...string) (bool, *Response, error) {
+	_, resp, err := g.GetGroupByID(group.ID)
+	if err != nil {
+		return false, resp, err
+	}
+	version := resp.Header.Get("ETag")
+	return g.memberAction(group, "$remove", memberRequestBody("SERVICE", identities...), []OptionFunc{addIfMatchHeader(version)})
+}
+
+// AddDevices adds services to the given Group
+func (g *GroupsService) AddDevices(group Group, devices ...string) (bool, *Response, error) {
+	return g.AddIdentities(group, "DEVICE", devices...)
+}
+
+// RemoveDevices removes services from the given Group
+func (g *GroupsService) RemoveDevices(group Group, devices ...string) (bool, *Response, error) {
+	return g.RemoveIdentities(group, "DEVICE", devices...)
+}
+
+// AddServices adds services to the given Group
+func (g *GroupsService) AddServices(group Group, services ...string) (bool, *Response, error) {
+	return g.AddIdentities(group, "SERVICE", services...)
 }
 
 // RemoveServices removes services from the given Group
 func (g *GroupsService) RemoveServices(group Group, services ...string) (bool, *Response, error) {
-	_, resp, err := g.GetGroupByID(group.ID)
-	if err != nil {
-		return false, resp, err
-	}
-	version := resp.Header.Get("ETag")
-	return g.memberAction(group, "$remove", memberRequestBody(services...), []OptionFunc{addIfMatchHeader(version)})
+	return g.RemoveIdentities(group, "SERVICE", services...)
 }

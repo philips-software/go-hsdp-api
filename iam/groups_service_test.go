@@ -439,16 +439,16 @@ func TestGetRoles(t *testing.T) {
 	assert.Equal(t, "TDRALL", (*roles)[0].Name)
 }
 
-func TestAddServices(t *testing.T) {
+func TestAddServicesAndDevices(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
-
 	eTag := "RonSwanson"
-	serviceID := "f5fe538f-c3b5-4454-8774-cd3789f59b9a"
+	identityID := "f5fe538f-c3b5-4454-8774-cd3789f59b9a"
 	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
 	managingOrgID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc1"
 	groupName := "TestGroup"
 	groupDescription := "Test Group Description"
+
 	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
@@ -486,10 +486,14 @@ func TestAddServices(t *testing.T) {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if addRequest.MemberType != "SERVICE" {
-				t.Errorf("Expected SERVICE MemberType, got: %s", addRequest.MemberType)
+			if !(addRequest.MemberType == "SERVICE" || addRequest.MemberType == "DEVICE") {
+				t.Errorf("Expected SERVICE or DEVICE MemberType, got: %s", addRequest.MemberType)
 				w.WriteHeader(http.StatusBadRequest)
 				return
+			}
+			basePath := "services"
+			if addRequest.MemberType == "DEVICE" {
+				basePath = "devices"
 			}
 			if l := len(addRequest.Value); l != 1 {
 				t.Errorf("Expected 1 value, got: %d", l)
@@ -499,7 +503,7 @@ func TestAddServices(t *testing.T) {
 			if r.Header.Get("If-Match") != eTag {
 				w.WriteHeader(http.StatusBadRequest)
 			}
-			if n := addRequest.Value[0]; n != serviceID {
+			if n := addRequest.Value[0]; n != identityID {
 				w.WriteHeader(http.StatusBadRequest)
 				io.WriteString(w, `{
 					"resourceType": "OperationOutcome",
@@ -509,7 +513,7 @@ func TestAddServices(t *testing.T) {
 							"code": "not-found",
 							"severity": "error",
 							"location": [
-								"services/`+serviceID+`"
+								"`+basePath+`/`+identityID+`"
 							]
 						}
 					]
@@ -522,7 +526,7 @@ func TestAddServices(t *testing.T) {
 	})
 	var group Group
 	group.ID = groupID
-	ok, resp, err := client.Groups.AddServices(group, serviceID)
+	ok, resp, err := client.Groups.AddServices(group, identityID)
 	assert.NotNil(t, resp)
 	if resp != nil {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -533,14 +537,27 @@ func TestAddServices(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.False(t, ok)
 	assert.NotNil(t, err)
+	group.ID = groupID
+
+	ok, resp, err = client.Groups.AddDevices(group, identityID)
+	assert.NotNil(t, resp)
+	if resp != nil {
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	}
+	assert.True(t, ok)
+	assert.Nil(t, err)
+	ok, resp, err = client.Groups.AddDevices(group, "foo")
+	assert.NotNil(t, resp)
+	assert.False(t, ok)
+	assert.NotNil(t, err)
 }
 
-func TestRemoveServices(t *testing.T) {
+func TestRemoveServicesAndDevices(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
 	eTag := "RonSwanson"
-	serviceID := "f5fe538f-c3b5-4454-8774-cd3789f59b9a"
+	identityID := "f5fe538f-c3b5-4454-8774-cd3789f59b9a"
 	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
 	managingOrgID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc1"
 	groupName := "TestGroup"
@@ -571,22 +588,26 @@ func TestRemoveServices(t *testing.T) {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			var addRequest struct {
+			var removeRequest struct {
 				MemberType string   `json:"memberType"`
 				Value      []string `json:"value"`
 			}
-			err = json.Unmarshal(body, &addRequest)
+			err = json.Unmarshal(body, &removeRequest)
 			if err != nil {
 				t.Errorf("Error parsing request: %v", err)
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if addRequest.MemberType != "SERVICE" {
-				t.Errorf("Expected SERVICE MemberType, got: %s", addRequest.MemberType)
+			if !(removeRequest.MemberType == "SERVICE" || removeRequest.MemberType == "DEVICE") {
+				t.Errorf("Expected SERVICE or DEVICE MemberType, got: %s", removeRequest.MemberType)
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if l := len(addRequest.Value); l != 1 {
+			basePath := "services"
+			if removeRequest.MemberType == "DEVICE" {
+				basePath = "devices"
+			}
+			if l := len(removeRequest.Value); l != 1 {
 				t.Errorf("Expected 1 value, got: %d", l)
 				w.WriteHeader(http.StatusBadRequest)
 				return
@@ -594,7 +615,7 @@ func TestRemoveServices(t *testing.T) {
 			if r.Header.Get("If-Match") != eTag {
 				w.WriteHeader(http.StatusBadRequest)
 			}
-			if r := addRequest.Value[0]; r != serviceID {
+			if r := removeRequest.Value[0]; r != identityID {
 				w.WriteHeader(http.StatusBadRequest)
 				io.WriteString(w, `{
 					"resourceType": "OperationOutcome",
@@ -604,7 +625,7 @@ func TestRemoveServices(t *testing.T) {
 							"code": "not-found",
 							"severity": "error",
 							"location": [
-								"services/`+r+`"
+								"`+basePath+`/`+r+`"
 							]
 						}
 					]
@@ -617,13 +638,24 @@ func TestRemoveServices(t *testing.T) {
 	})
 	var group Group
 	group.ID = groupID
-	ok, resp, err := client.Groups.RemoveServices(group, serviceID)
+	ok, resp, err := client.Groups.RemoveServices(group, identityID)
 	assert.NotNil(t, resp)
 	assert.True(t, ok)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	ok, resp, err = client.Groups.RemoveServices(group, "foo")
+	assert.NotNil(t, resp)
+	assert.False(t, ok)
+	assert.NotNil(t, err)
+
+	ok, resp, err = client.Groups.RemoveDevices(group, identityID)
+	assert.NotNil(t, resp)
+	assert.True(t, ok)
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	ok, resp, err = client.Groups.RemoveDevices(group, "foo")
 	assert.NotNil(t, resp)
 	assert.False(t, ok)
 	assert.NotNil(t, err)
