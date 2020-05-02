@@ -236,9 +236,9 @@ func TestReplaceScaryCharacters(t *testing.T) {
 		return
 	}
 	assert.Equal(t, "bar", custom["foo"].(string))
-	assert.Equal(t, "💀[semicolon]", custom["bad1"].(string))
-	assert.Equal(t, "👾[lt]key/👿[gt]", custom["bad2"].(string))
-	assert.Equal(t, "👻[amp]amp💀[semicolon]", custom["bad3"].(string))
-	assert.Equal(t, "a🎃[backslash]b", custom["bad4"].(string))
-	assert.Equal(t, "a🎃[bs]", custom["bad5"].(string))
+	assert.Equal(t, "[sc]", custom["bad1"].(string))
+	assert.Equal(t, "[lt]key/[gt]", custom["bad2"].(string))
+	assert.Equal(t, "[amp]amp[sc]", custom["bad3"].(string))
+	assert.Equal(t, "a[bsl]b", custom["bad4"].(string))
+	assert.Equal(t, "a[bs]", custom["bad5"].(string))
 }

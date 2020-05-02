@@ -35,19 +35,18 @@ var (
 	ErrMissingProductKey   = errors.New("missing ProductKey")
 
 	scaryMap = map[string]string{
-		";":    "💀[semicolon]",
-		"\\\\": "🎃[backslash]",
-		"&":    "👻[amp]",
-		">":    "👿[gt]",
-		"<":    "👾[lt]",
-		"=":    "👾[equal]",
-		"\\u":  "🎃[utf]",
-		"\\f":  "🎃[ff]",
-		"\\b":  "🎃[bs]",
-		"\\r":  "🎃[cr]",
-		"\\n":  "🎃[lf]",
-		"\\t":  "🎃[tab]",
-		"\\\"": "🎃[quote]",
+		";":    "[sc]",
+		"&":    "[amp]",
+		">":    "[gt]",
+		"<":    "[lt]",
+		"=":    "[eq]",
+		"\\u":  "[utf]",
+		"\\f":  "[ff]",
+		"\\b":  "[bs]",
+		"\\r":  "[cr]",
+		"\\n":  "[lf]",
+		"\\t":  "[tab]",
+		"\\\"": "[qt]",
 	}
 )
 
@@ -290,7 +289,7 @@ func replaceScaryCharacters(msg *Resource) {
 	if len(msg.Custom) == 0 {
 		return
 	}
-	stringCustom := strings.Replace(string(msg.Custom), "\\\\", "🎃[backslash]", -1)
+	stringCustom := strings.Replace(string(msg.Custom), "\\\\", "[bsl]", -1)
 
 	for s, r := range scaryMap {
 		stringCustom = strings.Replace(stringCustom, s, r, -1)
