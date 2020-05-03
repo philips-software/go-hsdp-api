@@ -6,7 +6,7 @@ require (
 	github.com/go-playground/validator/v10 v10.0.1
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135
 	github.com/google/uuid v1.1.1
-	github.com/philips-software/go-hsdp-signer v1.1.1-0.20200417110351-20ce3021c3ba
+	github.com/philips-software/go-hsdp-signer v1.3.0
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7
 )
