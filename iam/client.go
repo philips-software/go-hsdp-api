@@ -64,6 +64,7 @@ type Config struct {
 	RootOrgID        string
 	Debug            bool
 	DebugLog         string
+	Signer           *hsdpsigner.Signer
 }
 
 // A Client manages communication with HSDP IAM API
@@ -125,19 +126,25 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if err := c.SetBaseIDMURL(c.config.IDMURL); err != nil {
 		return nil, err
 	}
-	signer, err := hsdpsigner.New(c.config.SharedKey, c.config.SecretKey)
-	if err != nil { // Allow nil signer
-		signer = nil
+	if config.Signer == nil {
+		signer, err := hsdpsigner.New(c.config.SharedKey, c.config.SecretKey)
+		if err != nil { // Allow nil signer
+			signer = nil
+		}
+		c.signer = signer
+	} else {
+		c.signer = config.Signer
 	}
 	if config.DebugLog != "" {
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		debugFile, err := os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 		if err != nil {
 			c.debugFile = nil
+		} else {
+			c.debugFile = debugFile
 		}
 	}
 
 	c.validate = validator.New()
-	c.signer = signer
 	c.Organizations = &OrganizationsService{client: c}
 	c.Groups = &GroupsService{client: c}
 	c.Permissions = &PermissionsService{client: c}
