@@ -190,32 +190,77 @@ func TestGetUsers(t *testing.T) {
 	assert.True(t, list.HasNextPage)
 }
 
-func userIDByLoginIDHandler(t *testing.T, loginID, userUUID string) func(http.ResponseWriter, *http.Request) {
+func userIDByLoginIDHandler(t *testing.T, loginID, email, userUUID string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		userId := r.URL.Query().Get("userId")
 
-		if r.URL.Query().Get("loginId") != loginID {
+		if !(userId == loginID || userId == userUUID) {
 			_, _ = io.WriteString(w, `{
-				"responseCode": "4010",
-				"responseMessage": "User does not exist"
+				"total": 0,
+				"entry": []
 			}`)
 			return
 		}
 		_, _ = io.WriteString(w, `{
-			"exchange": {
-				"users": [
-					{
-						"userUUID": "`+userUUID+`"
-					}
-				]
-			},
-			"responseCode": "200",
-			"responseMessage": "Success"
-		}`)
+  "total": 1,
+  "entry": [
+    {
+      "preferredLanguage": "en-US",
+      "loginId": "`+loginID+`",
+      "emailAddress": "`+email+`",
+      "id": "`+userUUID+`",
+      "managingOrganization": "c29cdb88-7cda-4fc1-af8b-ee5947659958",
+      "name": {
+        "given": "Ron",
+        "family": "Swanson"
+      },
+      "memberships": [
+        {
+          "organizationId": "c29cdb88-7cda-4fc1-af8b-ee5947659958",
+          "organizationName": "Pawnee",
+          "roles": [
+            "ANALYZE",
+            "S3CREDSADMINROLE",
+            "ADMIN"
+          ],
+          "groups": [
+            "S3CredsAdminGroup",
+            "AdminGroup"
+          ]
+        },
+        {
+          "organizationId": "d4be75cc-e81b-4d7d-b034-baf6f3f10792",
+          "organizationName": "Eagleton",
+          "roles": [
+            "LOGUSER"
+          ],
+          "groups": [
+            "LogUserGroup"
+          ]
+        }
+      ],
+      "passwordStatus": {
+        "passwordExpiresOn": "2022-02-04T10:07:55Z",
+        "passwordChangedOn": "2020-02-15T10:07:55Z"
+      },
+      "accountStatus": {
+        "mfaStatus": "NOTREQUIRED",
+        "lastLoginTime": "2020-05-09T12:27:41Z",
+        "emailVerified": true,
+        "numberOfInvalidAttempt": 0,
+        "disabled": false
+      },
+      "consentedApps": [
+        "default default default"
+      ]
+    }
+  ]
+}`)
 	}
 }
 
@@ -224,8 +269,9 @@ func TestGetUserIDByLoginID(t *testing.T) {
 	defer teardown()
 
 	userUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
-	loginID := "foo@bar.com"
-	muxIDM.HandleFunc("/security/users", userIDByLoginIDHandler(t, loginID, userUUID))
+	loginID := "ron"
+	email := "foo@bar.com"
+	muxIDM.HandleFunc("/authorize/identity/User", userIDByLoginIDHandler(t, loginID, email, userUUID))
 
 	uuid, resp, err := client.Users.GetUserIDByLoginID(loginID)
 	if !assert.NotNil(t, resp) {
@@ -241,31 +287,10 @@ func TestGetUserByID(t *testing.T) {
 	defer teardown()
 
 	userUUID := "44d20214-7879-4e35-923d-f9d4e01c9746"
+	loginID := "ron"
+	email := "foo@bar.com"
 
-	muxIDM.HandleFunc("/security/users/"+userUUID, func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "GET" {
-			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = io.WriteString(w, `{
-			"exchange": {
-				"loginId": "john.doe@domain.com",
-				"profile": {
-					"contact": {
-						"emailAddress": "john.doe@domain.com"
-					},
-					"givenName": "John",
-					"familyName": "Doe",
-					"addresses": [],
-					"disabled": false
-				}
-			},
-			"responseCode": "200",
-			"responseMessage": "Success"
-		}`)
-	})
+	muxIDM.HandleFunc("/authorize/identity/User", userIDByLoginIDHandler(t, loginID, email, userUUID))
 
 	foundUser, resp, err := client.Users.GetUserByID(userUUID)
 	if !assert.NotNil(t, resp) {
@@ -276,11 +301,8 @@ func TestGetUserByID(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	if !assert.NotEqual(t, 0, len(foundUser.Telecom)) {
-		return
-	}
-	assert.Equal(t, "john.doe@domain.com", foundUser.Telecom[0].Value)
-	assert.Equal(t, "Doe", foundUser.Name.Family)
+	assert.Equal(t, email, foundUser.EmailAddress)
+	assert.Equal(t, "Swanson", foundUser.Name.Family)
 }
 
 func TestUserActions(t *testing.T) {
@@ -296,8 +318,9 @@ func TestUserActions(t *testing.T) {
 	muxIDM.HandleFunc("/authorize/identity/User/$recover-password",
 		actionRequestHandler(t, "recoverPassword", "TODO: fix", http.StatusOK))
 	userUUID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
-	loginID := "foo@bar.com"
-	muxIDM.HandleFunc("/security/users", userIDByLoginIDHandler(t, loginID, userUUID))
+	loginID := "ron"
+	email := "foo@bar.com"
+	muxIDM.HandleFunc("/authorize/identity/User", userIDByLoginIDHandler(t, loginID, email, userUUID))
 	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID+"/$mfa",
 		actionRequestHandler(t, "setMFA", "TODO: fix", http.StatusAccepted))
 	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID+"/$unlock",
@@ -340,9 +363,8 @@ func TestUserActions(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.True(t, ok)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, userUUID, uuid)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	ok, resp, err = client.Users.SetMFAByLoginID(loginID, true)
 	if !assert.NotNil(t, resp) {

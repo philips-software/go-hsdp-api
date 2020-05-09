@@ -1,6 +1,42 @@
 package iam
 
-// User represents an IAM user resource
+import "time"
+
+// User represents a user profile in IAM
+type User struct {
+	PreferredLanguage string `json:"preferredLanguage"`
+	EmailAddress      string `json:"emailAddress"`
+	ID                string `json:"id"`
+	LoginID           string `json:"loginId"`
+	Name              struct {
+		Given  string `json:"given"`
+		Family string `json:"family"`
+	} `json:"name"`
+	ManagingOrganization string `json:"managingOrganization"`
+	PasswordStatus       struct {
+		PasswordExpiresOn time.Time `json:"passwordExpiresOn"`
+		PasswordChangedOn time.Time `json:"passwordChangedOn"`
+	} `json:"passwordStatus"`
+	Memberships []struct {
+		OrganizationID   string   `json:"organizationId"`
+		OrganizationName string   `json:"organizationName"`
+		Roles            []string `json:"roles"`
+		Groups           []string `json:"groups"`
+	} `json:"memberships"`
+	AccountStatus struct {
+		LastLoginTime          time.Time `json:"lastLoginTime"`
+		MfaStatus              string    `json:"mfaStatus"`
+		EmailVerified          bool      `json:"emailVerified"`
+		Disabled               bool      `json:"disabled"`
+		AccountLockedOn        time.Time `json:"accountLockedOn"`
+		AccountLockedUntil     time.Time `json:"accountLockedUntil"`
+		NumberOfInvalidAttempt int       `json:"numberOfInvalidAttempt"`
+		LastInvalidAttemptedOn time.Time `json:"lastInvalidAttemptedOn"`
+	} `json:"accountStatus"`
+	ConsentedApps []string `json:"consentedApps"`
+}
+
+// Person represents an IAM user resource
 type Person struct {
 	ID string `json:"id,omitempty" validate:"omitempty"`
 	// Pattern: ^((?![~`!#%^&*()+={}[\\]|/\\\\<>,;:\"'?])[\\S])*$

@@ -1,7 +1,6 @@
 package iam
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -22,6 +21,8 @@ type GetUserOptions struct {
 	GroupID        *string `url:"groupId,omitempty"`
 	PageSize       *string `url:"pageSize,omitempty"`
 	PageNumber     *string `url:"pageNumber,omitempty"`
+	UserID         *string `url:"userId,omitempty"`
+	ProfileType    *string `url:"profileType,omitempty" enum:"membership|accountStatus|passwordStatus|consentedApps|all"`
 }
 
 // UsersService provides operations on IAM User resources
@@ -260,44 +261,27 @@ func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*U
 }
 
 // GetUserByID looks up a user by UUID
-func (u *UsersService) GetUserByID(uuid string) (*Person, *Response, error) {
-	req, _ := u.client.NewRequest(IDM, "GET", "security/users/"+uuid, nil, nil)
-	var user interface{}
+func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
+	opt := &GetUserOptions{
+		UserID:      &uuid,
+		ProfileType: String("all"),
+	}
+	req, _ := u.client.NewRequest(IDM, "GET", "authorize/identity/User", opt, nil)
+	req.Header.Set("api-version", userAPIVersion)
 
-	resp, err := u.client.Do(req, &user)
+	var responseStruct struct {
+		Total int    `json:"total"`
+		Entry []User `json:"entry"`
+	}
+
+	resp, err := u.client.Do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}
-	m, err := json.Marshal(user)
-	if err != nil {
-		return nil, resp, fmt.Errorf("error parsing json response: %w", err)
+	if responseStruct.Total == 0 {
+		return nil, resp, ErrEmptyResults
 	}
-
-	jsonParsed, err := gabs.ParseJSON(m)
-	if err != nil {
-		return nil, resp, fmt.Errorf("Eror decoding JSON: %w", err)
-	}
-	if err = checkResponseCode200(jsonParsed); err != nil {
-		return nil, resp, &UserError{User: uuid, Err: err}
-	}
-	email, ok := jsonParsed.Path("exchange.loginId").Data().(string)
-	if !ok {
-		return nil, resp, fmt.Errorf("Invalid response")
-	}
-	r := jsonParsed.Path("exchange.profile")
-	first := r.Path("givenName").Data().(string)
-	last := r.Path("familyName").Data().(string)
-	disabled := r.Path("disabled").Data().(bool)
-	// TODO use Profile here
-	var foundUser Person
-	foundUser.Name.Family = last
-	foundUser.Name.Given = first
-	foundUser.Disabled = disabled
-	foundUser.Telecom = append(foundUser.Telecom, TelecomEntry{
-		System: "email",
-		Value:  email,
-	})
-	return &foundUser, resp, nil
+	return &responseStruct.Entry[0], resp, nil
 }
 
 func checkResponseCode200(json *gabs.Container) error {
@@ -317,32 +301,14 @@ func checkResponseCode200(json *gabs.Container) error {
 
 // GetUserIDByLoginID looks up the UUID of a user by LoginID (email address)
 func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, error) {
-	req, _ := u.client.NewRequest(IDM, "GET", "security/users?loginId="+loginID, nil, nil)
-	var d interface{}
-
-	resp, err := u.client.Do(req, &d)
+	user, resp, err := u.GetUserByID(loginID)
 	if err != nil {
 		return "", resp, err
 	}
-	m, err := json.Marshal(d)
-	if err != nil {
-		return "", resp, fmt.Errorf("error parsing json response: %w", err)
+	if user == nil {
+		return "", resp, ErrEmptyResults
 	}
-	jsonParsed, err := gabs.ParseJSON(m)
-	if err != nil {
-		return "", resp, fmt.Errorf("Eror decoding JSON: %w", err)
-	}
-	if err = checkResponseCode200(jsonParsed); err != nil {
-		return "", resp, &UserError{User: loginID, Err: err}
-	}
-
-	r := jsonParsed.Path("exchange.users").Index(0)
-	userUUID, ok := r.Path("userUUID").Data().(string)
-	if !ok {
-		return "", resp, fmt.Errorf("lookup failed")
-	}
-	return userUUID, resp, nil
-
+	return user.ID, resp, nil
 }
 
 // SetMFA activate Multi-Factor-Authentication for the given UUID. See also SetMFAByLoginID.
