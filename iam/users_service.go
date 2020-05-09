@@ -67,13 +67,13 @@ type UserList struct {
 }
 
 // CreateUser creates a new IAM user.
-func (u *UsersService) CreateUser(person Person) (bool, *Response, error) {
+func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 	if err := u.validate.Struct(person); err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
 	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User", &person, nil)
 	if err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
 	req.Header.Set("api-version", userAPIVersion)
 
@@ -86,10 +86,22 @@ func (u *UsersService) CreateUser(person Person) (bool, *Response, error) {
 	resp, err := doFunc(req, &bundleResponse)
 
 	if err != nil {
-		return false, resp, err
+		return nil, resp, err
 	}
 	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
-	return ok, resp, err
+	if !ok {
+		return nil, resp, ErrCouldNoReadResourceAfterCreate
+	}
+	// Retrieve user details
+	var id string
+	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/User/%s", &id)
+	if err != nil {
+		return nil, resp, ErrCouldNoReadResourceAfterCreate
+	}
+	if count == 0 {
+		return nil, resp, ErrCouldNoReadResourceAfterCreate
+	}
+	return u.GetUserByID(id)
 }
 
 // DeleteUser deletes the  IAM user.

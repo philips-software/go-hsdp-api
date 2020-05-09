@@ -15,26 +15,34 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	newUserUUID := "867128a6-0e02-431c-ba1e-9e764436dae4"
+	loginID := "loafoe"
+	email := "foo@bar.com"
+	firstName := "La"
+	lastName := "Foe"
+
 	muxIDM.HandleFunc("/authorize/identity/User", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
-			t.Errorf("Expected ‘POST’ request, got ‘%s’", r.Method)
-		}
 		if auth := r.Header.Get("Authorization"); auth != "" {
 			t.Errorf("No Authorization header expected, Got: %s", auth)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
 		}
-		body, _ := ioutil.ReadAll(r.Body)
-		j, _ := gabs.ParseJSON(body)
-		ageValidated, ok := j.Path("isAgeValidated").Data().(string)
-		if !ok {
-			t.Errorf("Missing isAgeValidated field")
-		}
-		if ageValidated != "true" {
-			t.Errorf("ageValidated should be true")
-		}
+		switch r.Method {
+		case "POST":
+			body, _ := ioutil.ReadAll(r.Body)
+			j, _ := gabs.ParseJSON(body)
+			ageValidated, ok := j.Path("isAgeValidated").Data().(string)
+			if !ok {
+				t.Errorf("Missing isAgeValidated field")
+			}
+			if ageValidated != "true" {
+				t.Errorf("ageValidated should be true")
+			}
 
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusCreated)
-		_, _ = io.WriteString(w, `{
+			w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+			w.Header().Set("Location", "/authorize/identity/User/"+newUserUUID)
+			w.WriteHeader(http.StatusCreated)
+			_, _ = io.WriteString(w, `{
 			"resourceType": "OperationOutcome",
 			"issue": [
 				{
@@ -46,13 +54,72 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 				}
 			]
 		}`)
+		case "GET":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "total": 1,
+  "entry": [
+    {
+      "preferredLanguage": "en-US",
+      "loginId": "`+loginID+`",
+      "emailAddress": "`+email+`",
+      "id": "`+newUserUUID+`",
+      "managingOrganization": "c29cdb88-7cda-4fc1-af8b-ee5947659958",
+      "name": {
+        "given": "`+firstName+`",
+        "family": "`+lastName+`"
+      },
+      "memberships": [
+        {
+          "organizationId": "c29cdb88-7cda-4fc1-af8b-ee5947659958",
+          "organizationName": "Pawnee",
+          "roles": [
+            "ANALYZE",
+            "S3CREDSADMINROLE",
+            "ADMIN"
+          ],
+          "groups": [
+            "S3CredsAdminGroup",
+            "AdminGroup"
+          ]
+        },
+        {
+          "organizationId": "d4be75cc-e81b-4d7d-b034-baf6f3f10792",
+          "organizationName": "Eagleton",
+          "roles": [
+            "LOGUSER"
+          ],
+          "groups": [
+            "LogUserGroup"
+          ]
+        }
+      ],
+      "passwordStatus": {
+        "passwordExpiresOn": "2022-02-04T10:07:55Z",
+        "passwordChangedOn": "2020-02-15T10:07:55Z"
+      },
+      "accountStatus": {
+        "mfaStatus": "NOTREQUIRED",
+        "lastLoginTime": "2020-05-09T12:27:41Z",
+        "emailVerified": true,
+        "numberOfInvalidAttempt": 0,
+        "disabled": false
+      },
+      "consentedApps": [
+        "default default default"
+      ]
+    }
+  ]
+}`)
+		}
+
 	})
 	person := Person{
 		ResourceType: "Person",
-		LoginID:      "loafoe",
+		LoginID:      loginID,
 		Name: Name{
-			Family: "Foe",
-			Given:  "La",
+			Family: lastName,
+			Given:  firstName,
 		},
 		Telecom: []TelecomEntry{
 			{
@@ -66,13 +133,17 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 		},
 		IsAgeValidated: "true",
 	}
-	ok, resp, err := client.Users.CreateUser(person)
+	user, resp, err := client.Users.CreateUser(person)
 	if !assert.NotNil(t, resp) {
 		return
 	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Nil(t, err)
-	assert.True(t, ok)
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	if !assert.NotNil(t, user) {
+		return
+	}
+	assert.Equal(t, newUserUUID, user.ID)
+	assert.Equal(t, loginID, user.LoginID)
 }
 
 func TestDeleteUser(t *testing.T) {
