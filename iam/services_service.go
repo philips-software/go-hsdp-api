@@ -167,9 +167,9 @@ func (p *ServicesService) DeleteService(service Service) (bool, *Response, error
 
 	resp, err := p.client.Do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, resp, nil
+		return false, resp, err
 	}
-	return true, resp, err
+	return true, resp, nil
 }
 
 // AddScopes add scopes to the service

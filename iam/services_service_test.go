@@ -24,7 +24,7 @@ func TestServicesCRUD(t *testing.T) {
 		switch r.Method {
 		case "POST":
 			w.WriteHeader(http.StatusCreated)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"id": "`+id+`",
 				"serviceId": "`+serviceID+`",
 				"organizationId": "`+orgID+`",
@@ -41,7 +41,7 @@ func TestServicesCRUD(t *testing.T) {
 			}`)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"total": 1,
 				"entry": [
 					{
@@ -91,28 +91,28 @@ func TestServicesCRUD(t *testing.T) {
 	assert.True(t, len(service.PrivateKey) > 0)
 
 	foundService, resp, err := client.Services.GetServiceByID(service.ID)
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
-	}
-	if foundService == nil {
-		t.Errorf("Expected service to be found, Got: %v", err)
+	if !assert.NotNil(t, resp) {
 		return
 	}
-	if foundService.ID != service.ID {
-		t.Errorf("Expected to find service with ID: %s, Got: %s", service.ID, foundService.ID)
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	if !assert.NotNil(t, foundService) {
+		return
 	}
+	assert.Equal(t, service.ID, foundService.ID)
+
 	_, resp, err = client.Services.GetServicesByApplicationID(applicationID)
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
 	ok, resp, err := client.Services.DeleteService(*foundService)
-	if resp.StatusCode != http.StatusNoContent {
-		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Expected service to be deleted")
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.True(t, ok)
 }

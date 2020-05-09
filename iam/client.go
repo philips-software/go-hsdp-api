@@ -158,6 +158,10 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	return c, nil
 }
 
+func (c *Client) validSigner() bool {
+	return c.signer != nil
+}
+
 // Close releases allocated resources of clients
 func (c *Client) Close() {
 	if c.debugFile != nil {
@@ -545,9 +549,9 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		dumped, _ := httputil.DumpRequest(req, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Request [%s] start ---\n%s\n[go-hsdp-api] --- Request [%s] end ---\n", id, string(dumped), id)
 		if c.debugFile != nil {
-			c.debugFile.WriteString(out)
+			_, _ = c.debugFile.WriteString(out)
 		} else {
-			fmt.Printf(out)
+			fmt.Println(out)
 		}
 	}
 	resp, err := c.client.Do(req)
@@ -555,7 +559,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		dumped, _ := httputil.DumpResponse(resp, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Response [%s] start ---\n%s\n[go-hsdp-api] --- Response [%s] end ---\n", id, string(dumped), id)
 		if c.debugFile != nil {
-			c.debugFile.WriteString(out)
+			_, _ = c.debugFile.WriteString(out)
 		} else {
 			fmt.Println(out)
 		}

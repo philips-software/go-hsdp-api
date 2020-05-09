@@ -21,7 +21,7 @@ func TestCreateOrganization(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"exchange": {
 				"name": "`+orgName+`",
 				"description": "`+orgDescription+`",
@@ -64,7 +64,7 @@ func TestGetOrganizationByID(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"resourceType": "bundle",
 			"type": "searchset",
 			"total": 1,
@@ -111,7 +111,7 @@ func TestUpdateOrganization(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"exchange": {
 				"name": "TEST2",
 				"description": "`+description+`",

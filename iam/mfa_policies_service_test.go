@@ -41,7 +41,7 @@ func TestCreateMFAPolicy(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"schemas": [
 			  "urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:MFAPolicy"
 			],
@@ -118,7 +118,7 @@ func TestGetMFAPolicyByID(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/scim+json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"schemas": [
 			  "urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:MFAPolicy"
 			],
@@ -182,7 +182,7 @@ func TestUpdateMFAPolicy(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/scim+json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"schemas": [
 			  "urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:MFAPolicy"
 			],

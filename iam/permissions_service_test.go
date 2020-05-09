@@ -21,7 +21,7 @@ func TestGetPermissions(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"total": 3,
 			"entry": [
 				{
@@ -73,7 +73,7 @@ func TestGetPermissionByID(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"total": 3,
 			"entry": [
 				{

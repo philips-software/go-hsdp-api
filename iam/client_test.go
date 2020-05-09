@@ -282,7 +282,7 @@ func TestServiceLogin(t *testing.T) {
 		// TODO: validate JWT
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"scope": "openid",
 			"access_token": "5301cd36-4361-4b61-98aa-0f5c3acacd21",
 			"expires_in": 1799,

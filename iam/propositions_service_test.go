@@ -24,7 +24,7 @@ func TestCreateProposition(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
                                      "total": 1,
                                      "entry": [
                                        {
@@ -79,7 +79,7 @@ func TestGetPropositions(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"total": 1,
 			"entry": [
 				{

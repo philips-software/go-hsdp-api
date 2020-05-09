@@ -22,7 +22,7 @@ func TestIntrospect(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"active": true,
 			"scope": "mail tdr.contract tdr.dataitem",
 			"username": "foo.bar@philips.com",

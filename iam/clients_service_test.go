@@ -27,7 +27,7 @@ func TestClientCRUD(t *testing.T) {
 			w.WriteHeader(http.StatusCreated)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"total": 1,
 				"entry": [
 					{

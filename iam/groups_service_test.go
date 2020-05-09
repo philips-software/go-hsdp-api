@@ -24,7 +24,7 @@ func TestGroupCRUD(t *testing.T) {
 		switch r.Method {
 		case "POST":
 			w.WriteHeader(http.StatusCreated)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"name": "`+groupName+`",
 				"description": "`+groupDescription+`",
 				"managingOrganization": "`+managingOrgID+`",
@@ -32,7 +32,7 @@ func TestGroupCRUD(t *testing.T) {
 			}`)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"resourceType": "bundle",
 				"type": "searchset",
 				"total": 1,
@@ -54,7 +54,7 @@ func TestGroupCRUD(t *testing.T) {
 		switch r.Method {
 		case "PUT":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 			"name": "`+groupName+`",
 			"description": "`+updateDescription+`",
 			"managingOrganization": "`+managingOrgID+`",
@@ -62,7 +62,7 @@ func TestGroupCRUD(t *testing.T) {
 			}`)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 			"name": "`+groupName+`",
 			"description": "`+groupDescription+`",
 			"managingOrganization": "`+managingOrgID+`",
@@ -147,7 +147,7 @@ func TestAssignRole(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"resourceType": "OperationOutcome",
 				"issue": [
 					{
@@ -221,7 +221,7 @@ func TestAddMembers(t *testing.T) {
 			}
 			if r := addRequest.Parameter[0].References[0].Reference; r != userID {
 				w.WriteHeader(http.StatusBadRequest)
-				io.WriteString(w, `{
+				_, _ = io.WriteString(w, `{
 					"resourceType": "OperationOutcome",
 					"issues": [
 						{
@@ -303,7 +303,7 @@ func TestRemoveMembers(t *testing.T) {
 			}
 			if r := addRequest.Parameter[0].References[0].Reference; r != userID {
 				w.WriteHeader(http.StatusBadRequest)
-				io.WriteString(w, `{
+				_, _ = io.WriteString(w, `{
 					"resourceType": "OperationOutcome",
 					"issues": [
 						{
@@ -372,7 +372,7 @@ func TestRemoveRole(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"resourceType": "OperationOutcome",
 				"issue": [
 					{
@@ -413,7 +413,7 @@ func TestGetRoles(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"total": 1,
 				"entry": [
 					{
@@ -455,7 +455,7 @@ func TestAddServicesAndDevices(t *testing.T) {
 		case "GET":
 			w.Header().Set("ETag", eTag)
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 			"name": "`+groupName+`",
 			"description": "`+groupDescription+`",
 			"managingOrganization": "`+managingOrgID+`",
@@ -505,7 +505,7 @@ func TestAddServicesAndDevices(t *testing.T) {
 			}
 			if n := addRequest.Value[0]; n != identityID {
 				w.WriteHeader(http.StatusBadRequest)
-				io.WriteString(w, `{
+				_, _ = io.WriteString(w, `{
 					"resourceType": "OperationOutcome",
 					"issues": [
 						{
@@ -568,7 +568,7 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 		case "GET":
 			w.Header().Set("ETag", eTag)
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 			"name": "`+groupName+`",
 			"description": "`+groupDescription+`",
 			"managingOrganization": "`+managingOrgID+`",
@@ -617,7 +617,7 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 			}
 			if r := removeRequest.Value[0]; r != identityID {
 				w.WriteHeader(http.StatusBadRequest)
-				io.WriteString(w, `{
+				_, _ = io.WriteString(w, `{
 					"resourceType": "OperationOutcome",
 					"issues": [
 						{

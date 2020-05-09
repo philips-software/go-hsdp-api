@@ -19,7 +19,7 @@ func TestRoleCRUD(t *testing.T) {
 		switch r.Method {
 		case "POST":
 			w.WriteHeader(http.StatusCreated)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"name": "`+roleName+`",
 				"description": "`+roleDescription+`",
 				"managingOrganization": "`+managingOrgID+`",
@@ -32,7 +32,7 @@ func TestRoleCRUD(t *testing.T) {
 		switch r.Method {
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 						"name": "`+roleName+`",
 						"description": "`+roleDescription+`",
 						"managingOrganization": "`+managingOrgID+`",
@@ -73,7 +73,7 @@ func TestRoleCRUD(t *testing.T) {
 	if role.ID != roleID {
 		t.Errorf("Expected to find role with ID: %s, Got: %s", roleID, role.ID)
 	}
-	ok, resp, err := client.Roles.DeleteRole(*role)
+	ok, resp, _ := client.Roles.DeleteRole(*role)
 	if resp.StatusCode != http.StatusNoContent {
 		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
 	}
@@ -86,7 +86,7 @@ func roleActionSuccessHandler(message string) func(http.ResponseWriter, *http.Re
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
                       "resourceType": "OperationOutcome",
                       "issue": [
                         {
@@ -156,7 +156,7 @@ func TestGetRolesByGroupID(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 		    "total": 1,
 		    "entry": [{
 				"name": "`+roleName+`",
