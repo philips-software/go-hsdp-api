@@ -116,3 +116,52 @@ func TestServicesCRUD(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 	assert.True(t, ok)
 }
+
+func TestScopes(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	serviceName := "testservice"
+	serviceDescription := "Service description"
+	applicationID := "b0889958-3762-4427-af07-2d6268c26988"
+	id := "2c266886-f918-4223-941d-437cb3cd09e8"
+
+	muxIDM.HandleFunc("/authorize/identity/Service/"+id+"/$scopes", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "PUT":
+			w.WriteHeader(http.StatusNoContent)
+		default:
+			w.WriteHeader(http.StatusBadRequest)
+		}
+	})
+
+	var r Service
+	r.ID = id
+	r.Name = serviceName
+	r.Description = serviceDescription
+	r.ApplicationID = applicationID
+
+	ok, resp, err := client.Services.AddScopes(r, []string{"foo"}, []string{"foo"})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, ok) {
+		return
+	}
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	ok, resp, err = client.Services.RemoveScopes(r, []string{"foo"}, []string{"foo"})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, ok) {
+		return
+	}
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+}

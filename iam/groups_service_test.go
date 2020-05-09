@@ -97,6 +97,14 @@ func TestGroupCRUD(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
+	group, resp, err = client.Groups.GetGroup(&GetGroupOptions{
+		ID: &group.ID,
+	})
+	assert.Nil(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, groupID, group.ID)
+
 	group, resp, err = client.Groups.GetGroupByID(group.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
