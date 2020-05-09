@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRoleCRUD(t *testing.T) {
@@ -176,4 +178,43 @@ func TestGetRolesByGroupID(t *testing.T) {
 	if len(*roles) != 1 {
 		t.Errorf("Expected 1 role")
 	}
+}
+
+func TestGetRolePermissions(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	permissionName := "TESTPERMISSION"
+	roleDescription := "Role description"
+	roleID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	muxIDM.HandleFunc("/authorize/identity/Permission", func(w http.ResponseWriter, r *http.Request) {
+		if !assert.Equal(t, roleID, r.URL.Query().Get("roleId")) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{
+		    "total": 1,
+		    "entry": [{
+				"name": "`+permissionName+`",
+				"description": "`+roleDescription+`",
+				"category": "FOO",
+				"type": "GLOBAL",
+				"id": "`+roleID+`"
+			}]
+		    }`)
+	})
+	var role Role
+	role.ID = roleID
+	permissions, resp, err := client.Roles.GetRolePermissions(role)
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Nil(t, err)
+	if !assert.NotNil(t, permissions) {
+		return
+	}
+	assert.Contains(t, *permissions, permissionName)
 }

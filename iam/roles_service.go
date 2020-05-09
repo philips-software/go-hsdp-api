@@ -112,30 +112,30 @@ func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
 	return true, resp, err
 }
 
-// GetRolePermissions retrieves the permissions assosciates with the Role
-func (p *RolesService) GetRolePermissions(role Role) (*[]string, error) {
+// GetRolePermissions retrieves the permissions associated with the Role
+func (p *RolesService) GetRolePermissions(role Role) (*[]string, *Response, error) {
 	opt := &GetRolesOptions{RoleID: &role.ID}
 
 	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Permission", opt, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	req.Header.Set("api-version", roleAPIVersion)
 
 	var permissionResponse struct {
-		Total int    `json:"total"`
-		Entry []Role `json:"entry"`
+		Total int          `json:"total"`
+		Entry []Permission `json:"entry"`
 	}
 
-	_, err = p.client.Do(req, &permissionResponse)
+	resp, err := p.client.Do(req, &permissionResponse)
 	if err != nil {
-		return nil, err
+		return nil, resp, err
 	}
 	var permissions []string
 	for _, p := range permissionResponse.Entry {
 		permissions = append(permissions, p.Name)
 	}
-	return &permissions, err
+	return &permissions, resp, err
 
 }
 
