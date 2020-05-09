@@ -2,8 +2,10 @@ package iam
 
 // User represents an IAM user resource
 type Person struct {
-	ID                   string         `json:"id,omitempty" validate:"omitempty"`
-	ResourceType         string         `json:"resourceType,omitempty" validate:"required"`
+	ID string `json:"id,omitempty" validate:"omitempty"`
+	// Pattern: ^((?![~`!#%^&*()+={}[\\]|/\\\\<>,;:\"'?])[\\S])*$
+	LoginID              string         `json:"loginId" validate:"required"`
+	ResourceType         string         `json:"resourceType,omitempty" validate:"required" enum:"Person"`
 	Name                 Name           `json:"name" validate:"required"`
 	Telecom              []TelecomEntry `json:"telecom,omitempty" validate:"min=1"`
 	Address              []AddressEntry `json:"address,omitempty"`
@@ -23,7 +25,7 @@ type Contact struct {
 	HomePhone    string
 }
 
-// Address describes an addres of a Profile
+// Address describes an address of a Profile
 type Address struct {
 	Use        string `json:"use" enum:"home|work|temp|old"`
 	Text       string `json:"text"`
@@ -59,14 +61,14 @@ type Profile struct {
 // Name entity
 type Name struct {
 	Text   string `json:"text"`
-	Family string `json:"family"`
-	Given  string `json:"given"`
+	Family string `json:"family" validate:"required"`
+	Given  string `json:"given" validate:"required"`
 	Prefix string `json:"prefix"`
 }
 
 // TelecomEntry entity
 type TelecomEntry struct {
-	System string `json:"system"`
+	System string `json:"system" enum:"mobile|fax|email|url"`
 	Value  string `json:"value"`
 }
 

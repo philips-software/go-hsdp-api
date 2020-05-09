@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/Jeffail/gabs"
 )
 
@@ -32,7 +34,7 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.WriteHeader(http.StatusCreated)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"resourceType": "OperationOutcome",
 			"issue": [
 				{
@@ -47,6 +49,7 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 	})
 	person := Person{
 		ResourceType: "Person",
+		LoginID:      "loafoe",
 		Name: Name{
 			Family: "Foe",
 			Given:  "La",
@@ -64,15 +67,57 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 		IsAgeValidated: "true",
 	}
 	ok, resp, err := client.Users.CreateUser(person)
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Unexpected failure, Got !ok")
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+}
+
+func TestDeleteUser(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+	userUUID := "2eec7b01-1417-4546-9c5e-088dea0a9e8b"
+
+	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "DELETE" {
+			t.Errorf("Expected ‘DELETE’ request, got ‘%s’", r.Method)
+		}
+		if auth := r.Header.Get("Authorization"); auth != "" {
+			t.Errorf("No Authorization header expected, Got: %s", auth)
+		}
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusNoContent)
+	})
+	person := Person{
+		ID:           userUUID,
+		ResourceType: "Person",
+		LoginID:      "loafoe",
+		Name: Name{
+			Family: "Foe",
+			Given:  "La",
+		},
+		Telecom: []TelecomEntry{
+			{
+				System: "mobile",
+				Value:  "3112345678",
+			},
+			{
+				System: "email",
+				Value:  "john@doe.com",
+			},
+		},
+		IsAgeValidated: "true",
 	}
-	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
+	ok, resp, err := client.Users.DeleteUser(person)
+	if assert.NotNil(t, resp) {
+		return
 	}
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 }
 
 func TestGetUsers(t *testing.T) {
@@ -98,7 +143,7 @@ func TestGetUsers(t *testing.T) {
 			t.Errorf("Expected pageNumber to be 1, Got: %s", pn)
 			return
 		}
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"exchange": {
 				"users": [
 					{
@@ -131,27 +176,18 @@ func TestGetUsers(t *testing.T) {
 		PageNumber: &pageNumber,
 		PageSize:   &pageSize,
 	})
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
+	if !assert.NotNil(t, resp) {
 		return
 	}
-	if list == nil {
-		t.Errorf("Expected non nil list")
+	if !assert.Nil(t, err) {
 		return
 	}
-	if len(list.Users) != 5 {
-		t.Errorf("Expected 5 users, Got: %d", len(list.Users))
-	}
-	if !list.HasNextPage {
-		t.Errorf("Expected to be a next page")
-	}
-	if resp == nil {
-		t.Errorf("Expected non nil response")
+	if !assert.NotNil(t, list) {
 		return
 	}
-	if resp.StatusCode != 200 {
-		t.Errorf("Expected HTTP OK, Got: %d", resp.StatusCode)
-	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, 5, len(list.Users))
+	assert.True(t, list.HasNextPage)
 }
 
 func userIDByLoginIDHandler(t *testing.T, loginID, userUUID string) func(http.ResponseWriter, *http.Request) {
@@ -163,13 +199,13 @@ func userIDByLoginIDHandler(t *testing.T, loginID, userUUID string) func(http.Re
 		w.WriteHeader(http.StatusOK)
 
 		if r.URL.Query().Get("loginId") != loginID {
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
 				"responseCode": "4010",
 				"responseMessage": "User does not exist"
 			}`)
 			return
 		}
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"exchange": {
 				"users": [
 					{
@@ -192,15 +228,12 @@ func TestGetUserIDByLoginID(t *testing.T) {
 	muxIDM.HandleFunc("/security/users", userIDByLoginIDHandler(t, loginID, userUUID))
 
 	uuid, resp, err := client.Users.GetUserIDByLoginID(loginID)
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success")
-	}
-	if uuid != userUUID {
-		t.Errorf("Expected UUID: %s, Got: %s", userUUID, uuid)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, userUUID, uuid)
 }
 
 func TestGetUserByID(t *testing.T) {
@@ -216,7 +249,7 @@ func TestGetUserByID(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"exchange": {
 				"loginId": "john.doe@domain.com",
 				"profile": {
@@ -235,21 +268,19 @@ func TestGetUserByID(t *testing.T) {
 	})
 
 	foundUser, resp, err := client.Users.GetUserByID(userUUID)
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success")
+	if !assert.NotNil(t, foundUser) {
+		return
 	}
-	if len(foundUser.Telecom) < 1 {
-		t.Errorf("Expected at least one TelecomEntry (email)")
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	if !assert.NotEqual(t, 0, len(foundUser.Telecom)) {
+		return
 	}
-	if foundUser.Telecom[0].Value != "john.doe@domain.com" {
-		t.Errorf("Unexpected email: %s", foundUser.Telecom[0].Value)
-	}
-	if foundUser.Name.Family != "Doe" {
-		t.Errorf("Expected family name: %s, got: %s", "Doe", foundUser.Name.Family)
-	}
+	assert.Equal(t, "john.doe@domain.com", foundUser.Telecom[0].Value)
+	assert.Equal(t, "Doe", foundUser.Name.Family)
 }
 
 func TestUserActions(t *testing.T) {
@@ -273,85 +304,61 @@ func TestUserActions(t *testing.T) {
 		actionRequestHandler(t, "unlock", "TODO: fix", http.StatusNoContent))
 
 	ok, resp, err := client.Users.ResendActivation("foo@bar.com")
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Unexpected failure, Got !ok")
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
-	}
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	ok, resp, err = client.Users.RecoverPassword("foo@bar.co")
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Unexpected failure, Got !ok")
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
-	}
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	ok, resp, err = client.Users.ChangePassword("foo@bar.co", "0ld", "N3w")
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Unexpected failure, Got !ok")
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
-	}
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	ok, resp, err = client.Users.SetPassword("foo@bar.com", "1234", "newp@ss", "context")
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Unexpected failure, Got !ok")
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
-	}
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	uuid, resp, err := client.Users.GetUserIDByLoginID(loginID)
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Unexpected failure, Got !ok")
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
-	}
-	if uuid != userUUID {
-		t.Errorf("Unexpected UUID: %s", uuid)
-	}
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, userUUID, uuid)
 
 	ok, resp, err = client.Users.SetMFAByLoginID(loginID, true)
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Unexpected failure, Got !ok")
-	}
-	if resp.StatusCode != http.StatusAccepted {
-		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
-	}
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusAccepted, resp.StatusCode)
 
 	ok, resp, err = client.Users.Unlock(userUUID)
-	if err != nil {
-		t.Fatal(err)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Unexpected failure, Got !ok")
-	}
-	if resp.StatusCode != http.StatusNoContent {
-		t.Errorf("Expected HTTP create, Got: %d", resp.StatusCode)
-	}
-
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 }
 
 func actionRequestHandler(t *testing.T, paramName, informationalMessage string, statusCode int) func(http.ResponseWriter, *http.Request) {
@@ -366,7 +373,7 @@ func actionRequestHandler(t *testing.T, paramName, informationalMessage string, 
 		//j, _ := gabs.ParseJSON(body)
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.WriteHeader(statusCode)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"resourceType": "OperationOutcome",
 			"issue": [
 				{

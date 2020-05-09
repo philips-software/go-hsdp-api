@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	userAPIVersion = "1"
+	userAPIVersion = "2"
 )
 
 // GetUserOptions describes search criteria for looking up users
@@ -35,6 +35,11 @@ type UsersService struct {
 type Parameters struct {
 	ResourceType string  `json:"resourceType"`
 	Parameter    []Param `json:"parameter"`
+}
+
+// ChangeLoginIDRequest
+type ChangeLoginIDRequest struct {
+	LoginID string `json:"loginId"`
 }
 
 // Param describes a resource
@@ -72,12 +77,10 @@ func (u *UsersService) CreateUser(person Person) (bool, *Response, error) {
 	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
-	var doFunc func(*http.Request, interface{}) (*Response, error)
 
+	doFunc := u.client.Do
 	if person.ManagingOrganization == "" { // Self registration
 		doFunc = u.client.DoSigned
-	} else { // Admin registration
-		doFunc = u.client.Do
 	}
 	resp, err := doFunc(req, &bundleResponse)
 
@@ -88,7 +91,32 @@ func (u *UsersService) CreateUser(person Person) (bool, *Response, error) {
 	return ok, resp, err
 }
 
+// DeleteUser deletes the  IAM user.
+func (u *UsersService) DeleteUser(person Person) (bool, *Response, error) {
+	req, err := u.client.NewRequest(IDM, "DELETE", "authorize/identity/User/"+person.ID, nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", "1")
+
+	var bundleResponse interface{}
+
+	doFunc := u.client.DoSigned
+	if !u.client.validSigner() {
+		doFunc = u.client.Do
+	}
+	resp, err := doFunc(req, &bundleResponse)
+
+	if err != nil {
+		return false, resp, err
+	}
+	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
+	return ok, resp, err
+}
+
 // RecoverPassword triggers the recovery flow for the given user
+//
+// Deprecated: Support end date is 1 Augustus 2020
 func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) {
 	body := &Parameters{
 		ResourceType: "Parameters",
@@ -101,10 +129,34 @@ func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) 
 			},
 		},
 	}
-	return u.userAction(body, "$recover-password")
+	return u.userActionV(body, "$recover-password", "1")
 }
 
-// ResendActivation resends an activation email to the given user
+// ChangeLoginID changes the loginID
+func (u *UsersService) ChangeLoginID(user Person, newLoginID string) (bool, *Response, error) {
+	body := &ChangeLoginIDRequest{
+		LoginID: newLoginID,
+	}
+	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+user.ID+"/$change-loginid", body, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", userAPIVersion)
+
+	var bundleResponse interface{}
+	doFunc := u.client.DoSigned
+	if !u.client.validSigner() {
+		doFunc = u.client.Do
+	}
+	resp, err := doFunc(req, &bundleResponse)
+	if err != nil {
+		return false, resp, err
+	}
+	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
+	return ok, resp, err
+}
+
+// ResendActivation re-sends an activation email to the given user
 func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error) {
 	body := &Parameters{
 		ResourceType: "Parameters",
@@ -117,15 +169,15 @@ func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error)
 			},
 		},
 	}
-	return u.userAction(body, "$resend-activation")
+	return u.userActionV(body, "$resend-activation", "2")
 }
 
-func (u *UsersService) userAction(body *Parameters, action string) (bool, *Response, error) {
+func (u *UsersService) userActionV(body *Parameters, action, apiVersion string) (bool, *Response, error) {
 	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+action, body, nil)
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", userAPIVersion)
+	req.Header.Set("api-version", apiVersion)
 
 	var bundleResponse interface{}
 
@@ -153,7 +205,7 @@ func (u *UsersService) SetPassword(loginID, confirmationCode, newPassword, conte
 			},
 		},
 	}
-	return u.userAction(body, "$set-password")
+	return u.userActionV(body, "$set-password", "2")
 }
 
 // ChangePassword changes the password. The current pasword must be provided as well.
@@ -171,7 +223,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 			},
 		},
 	}
-	return u.userAction(body, "$change-password")
+	return u.userActionV(body, "$change-password", "1")
 }
 
 // GetUsers looks up users by search criteria specified in GetUserOptions
