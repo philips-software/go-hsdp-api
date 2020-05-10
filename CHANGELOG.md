@@ -6,12 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## v0.2.0
+## v0.14.0
+- [IAM] Move user find API to v2
+- [IAM] Update go-hsdp-signer
+- [Logger] Better support for custom logging
 
+## v0.2.0
 - Upgrade github.com/Jeffail/gabs
 
 ## v0.1.0
-
 - IAM support
 - Logging support
 - TDR basic support
