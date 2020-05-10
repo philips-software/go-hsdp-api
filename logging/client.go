@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.1.0"
+	libraryVersion = "0.15.0"
 	userAgent      = "go-hsdp-api/logging/" + libraryVersion
 )
 
