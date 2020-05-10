@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -54,34 +52,7 @@ func setup(t *testing.T, config Config) (func(), error) {
 		}, err
 	}
 
-	muxCartel.HandleFunc("/v3/api/get_security_groups", endpointMocker(config.Secret,
-		`[
-    "foo",
-    "bar",
-    "baz"
-]`))
-
 	return func() {
 		cartelServer.Close()
 	}, nil
-}
-
-func TestGetRoles(t *testing.T) {
-	teardown, err := setup(t, Config{
-		Token:  sharedToken,
-		Secret: sharedSecret,
-		Host:   "http://foo",
-	})
-	defer teardown()
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := client.GetSecurityGroups()
-	if !assert.NotNil(t, resp) {
-		return
-	}
-	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }

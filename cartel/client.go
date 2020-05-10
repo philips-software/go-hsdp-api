@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -36,10 +37,9 @@ var (
 
 // Config the client
 type Config struct {
-	SkipVerify bool
 	Token      string
 	Secret     []byte
-	NoTLS      bool
+	SkipVerify bool
 	Host       string
 	Debug      bool
 }
@@ -84,8 +84,16 @@ func newResponse(r *http.Response) *Response {
 // NewClient returns an instance of the logger client with the given Config
 func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		httpClient = &http.Client{}
+		tr := &http.Transport{}
+		if config.SkipVerify {
+			tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		} else {
+			tr.TLSClientConfig = &tls.Config{}
+		}
+		httpClient.Transport = tr
 	}
+
 	if valid, err := config.Valid(); !valid {
 		return nil, err
 	}
