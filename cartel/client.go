@@ -40,6 +40,7 @@ type Config struct {
 	Token      string
 	Secret     []byte
 	SkipVerify bool
+	NoTLS      bool
 	Host       string
 	Debug      bool
 }
@@ -104,11 +105,16 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	cartel.userAgent = userAgent
 
 	// Make sure the given URL end with a slash
-	if !strings.HasSuffix(cartel.config.Host, "/") {
-		cartel.config.Host += "/"
+	host := fmt.Sprintf("https://%s", cartel.config.Host)
+	if config.NoTLS {
+		host = fmt.Sprintf("http://%s", cartel.config.Host)
 	}
+	if !strings.HasSuffix(host, "/") {
+		host += "/"
+	}
+
 	var err error
-	cartel.baseURL, err = url.Parse(cartel.config.Host)
+	cartel.baseURL, err = url.Parse(host)
 	if err != nil {
 		return nil, err
 	}
