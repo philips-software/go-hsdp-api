@@ -46,6 +46,7 @@ func setup(t *testing.T) func() {
 		SecretKey:      secretKey,
 		IAMURL:         serverIAM.URL,
 		IDMURL:         serverIDM.URL,
+		Signer:         signerHSDP,
 	})
 	assert.Nil(t, err)
 

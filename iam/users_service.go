@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Jeffail/gabs"
 	validator "github.com/go-playground/validator/v10"
 )
 
@@ -294,21 +293,6 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 		return nil, resp, ErrEmptyResults
 	}
 	return &responseStruct.Entry[0], resp, nil
-}
-
-func checkResponseCode200(json *gabs.Container) error {
-	if statusCode, ok := json.Path("responseCode").Data().(string); !ok || statusCode != "200" {
-		responseMessage, ok := json.Path("responseMessage").Data().(string)
-		if !ok {
-			return fmt.Errorf("Unknown error")
-		}
-		switch responseMessage {
-		case "Unauthorized Access":
-			return ErrNotAuthorized
-		}
-		return fmt.Errorf(responseMessage)
-	}
-	return nil
 }
 
 // GetUserIDByLoginID looks up the UUID of a user by LoginID (email address)
