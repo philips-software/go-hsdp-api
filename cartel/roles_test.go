@@ -9,9 +9,11 @@ import (
 
 func TestRoles(t *testing.T) {
 	teardown, err := setup(t, Config{
-		Token:  sharedToken,
-		Secret: sharedSecret,
-		Host:   "http://foo",
+		NoTLS:      true,
+		SkipVerify: true,
+		Token:      sharedToken,
+		Secret:     sharedSecret,
+		Host:       "foo",
 	})
 
 	muxCartel.HandleFunc("/v3/api/get_all_roles", endpointMocker(sharedSecret,
@@ -36,13 +38,13 @@ func TestRoles(t *testing.T) {
 	}
 
 	roles, resp, err := client.GetRoles()
+	assert.Nil(t, err)
 	if !assert.NotNil(t, resp) {
 		return
 	}
 	if !assert.NotNil(t, roles) {
 		return
 	}
-	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	if !assert.Equal(t, 3, len(*roles)) {
 		return

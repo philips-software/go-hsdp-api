@@ -8,7 +8,6 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -26,13 +25,6 @@ import (
 const (
 	libraryVersion = "0.15.0"
 	userAgent      = "go-hsdp-api/cartel/" + libraryVersion
-)
-
-var (
-	ErrMissingSecret  = errors.New("missing secret")
-	ErrMissingToken   = errors.New("missing token")
-	ErrMissingHost    = errors.New("missing host")
-	ErrNotImplemented = errors.New("not implemented")
 )
 
 // Config the client
@@ -240,6 +232,12 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Opti
 
 		if err := fn(req); err != nil {
 			return nil, err
+		}
+	}
+	// Set token if missing
+	if b, ok := opt.(CartelRequestBody); ok {
+		if b.Token == "" {
+			b.Token = c.config.Token
 		}
 	}
 

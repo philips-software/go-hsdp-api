@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
@@ -42,7 +43,8 @@ func setup(t *testing.T, config Config) (func(), error) {
 	muxCartel = http.NewServeMux()
 	cartelServer = httptest.NewServer(muxCartel)
 	if config.Host != "" { // So we can test for missing BaseURL
-		config.Host = cartelServer.URL
+		u, _ := url.Parse(cartelServer.URL)
+		config.Host = u.Host
 	}
 
 	client, err = NewClient(nil, config)

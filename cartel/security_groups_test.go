@@ -12,7 +12,8 @@ func TestSecurityGroups(t *testing.T) {
 	teardown, err := setup(t, Config{
 		Token:  sharedToken,
 		Secret: sharedSecret,
-		Host:   "http://foo",
+		Host:   "foo",
+		NoTLS:  true,
 	})
 
 	muxCartel.HandleFunc("/v3/api/get_security_groups", endpointMocker(sharedSecret,
