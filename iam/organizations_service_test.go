@@ -142,7 +142,7 @@ func TestGetOrganizationByID(t *testing.T) {
 	assert.Equal(t, orgUUID, foundOrg.ID)
 }
 
-func TestUpdateOrganization(t *testing.T) {
+func TestUpdateAndDeleteOrganization(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
@@ -211,4 +211,12 @@ func TestUpdateOrganization(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.Equal(t, orgUUID, updatedOrg.ID)
+
+	deleted, resp, err := client.Organizations.DeleteOrganization(*updatedOrg)
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.True(t, deleted)
+	assert.Nil(t, err)
+
 }

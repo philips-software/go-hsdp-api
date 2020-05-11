@@ -49,6 +49,23 @@ func (o *OrganizationsService) CreateOrganization(organization Organization) (*O
 	return &newOrg, resp, err
 }
 
+// DeleteOrganization deletes the organization
+// WARNING: Not implemented in current IAM releases (As of May 11th 2020)
+func (o *OrganizationsService) DeleteOrganization(org Organization) (bool, *Response, error) {
+	req, err := o.client.NewRequest(IDM, "DELETE", "authorize/scim/v2/Organizations/"+org.ID, nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", organizationAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := o.client.Do(req, nil)
+	if err != nil {
+		return false, resp, err
+	}
+	return resp.StatusCode == http.StatusNoContent, resp, nil
+}
+
 // UpdateOrganization updates the description of the organization.
 func (o *OrganizationsService) UpdateOrganization(org Organization) (*Organization, *Response, error) {
 	req, err := o.client.NewRequest(IDM, "PUT", "authorize/scim/v2/Organizations/"+org.ID, &org, nil)
