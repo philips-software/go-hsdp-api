@@ -220,3 +220,50 @@ func TestUpdateAndDeleteOrganization(t *testing.T) {
 	assert.Nil(t, err)
 
 }
+
+func TestGetOrganization(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	orgUUID := "c57b2625-eda3-4b27-a8e6-86f0a0e76afc"
+	orgName := "DCOrg"
+
+	muxIDM.HandleFunc("/authorize/identity/Organization", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{
+                       "resourceType": "bundle",
+                       "type": "searchset",
+                       "total": 1,
+                       "entry": [
+                                 {
+                                        "resource": {
+                                               "id": "`+orgUUID+`",
+                                               "resourceType": "Organization",
+                                               "text": "TestDev",
+                                               "name": "`+orgName+`"
+                                       },
+                                       "fullUrl": "https%3A%2F%2Fidm-something.foo-bar.com%2Fauthorize%2Fidentity%2FOrganization%3F_id%3D`+orgUUID+`"
+                               }
+                       ]
+               }`)
+	})
+
+	foundOrg, resp, err := client.Organizations.GetOrganization(&GetOrganizationOptions{
+		ID: &orgUUID,
+	})
+	assert.Nil(t, err)
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, foundOrg) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, orgName, foundOrg.Name)
+	assert.Equal(t, orgUUID, foundOrg.ID)
+}
