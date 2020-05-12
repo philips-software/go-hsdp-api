@@ -1,7 +1,7 @@
 package cartel
 
 func (c *Client) GetAllInstances() (*[]InstanceDetails, *Response, error) {
-	var body CartelRequestBody
+	var body RequestBody
 
 	req, err := c.NewRequest("POST", "v3/api/get_all_instances", &body, nil)
 	if err != nil {

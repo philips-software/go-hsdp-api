@@ -6,7 +6,7 @@ type Role struct {
 }
 
 func (c *Client) GetRoles() (*[]Role, *Response, error) {
-	var body CartelRequestBody
+	var body RequestBody
 	body.Token = c.config.Token
 
 	req, err := c.NewRequest("POST", "v3/api/get_all_roles", &body, nil)

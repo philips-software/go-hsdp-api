@@ -25,7 +25,7 @@ type InstanceDetails struct {
 type DetailsResponse map[string]InstanceDetails
 
 func (c *Client) GetDetailsMulti(tags ...string) (*DetailsResponse, *Response, error) {
-	var body CartelRequestBody
+	var body RequestBody
 	body.NameTag = tags
 
 	req, err := c.NewRequest("POST", "v3/api/instance_details", &body, nil)

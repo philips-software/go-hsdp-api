@@ -165,11 +165,13 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 // ErrorResponse holds an error response from the server
 type ErrorResponse struct {
-	Response *http.Response
-	Message  string
+	Response    *http.Response `json:"-"`
+	Message     string         `json:"-"`
+	Code        int            `json:"code"`
+	Description string         `json:"description"`
 }
 
-func (e *ErrorResponse) Error() string {
+func (e ErrorResponse) Error() string {
 	path, _ := url.QueryUnescape(e.Response.Request.URL.Opaque)
 	u := fmt.Sprintf("%s://%s%s", e.Response.Request.URL.Scheme, e.Response.Request.URL.Host, path)
 	return fmt.Sprintf("%s %s: %d %s", e.Response.Request.Method, u, e.Response.StatusCode, e.Message)
@@ -201,7 +203,7 @@ func CheckResponse(r *http.Response) error {
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewRequest(method, path string, opt *CartelRequestBody, options []OptionFunc) (*http.Request, error) {
+func (c *Client) NewRequest(method, path string, opt *RequestBody, options []OptionFunc) (*http.Request, error) {
 	var u url.URL
 
 	u = *c.baseURL

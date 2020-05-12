@@ -29,10 +29,14 @@ func TestSecurityGroups(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := client.GetSecurityGroups()
+	groups, resp, err := client.GetSecurityGroups()
 	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, groups) {
 		return
 	}
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, 3, len(*groups))
 }
