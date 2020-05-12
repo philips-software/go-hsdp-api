@@ -31,7 +31,7 @@ func (cr CreateResponse) IPAddress() string {
 	return cr.Message[0].IPAddress
 }
 
-func (c *Client) CreateInstance(tagName string, opts ...RequestOptionFunc) (*CreateResponse, *Response, error) {
+func (c *Client) Create(tagName string, opts ...RequestOptionFunc) (*CreateResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = []string{tagName}
 	body.Role = "container-host"

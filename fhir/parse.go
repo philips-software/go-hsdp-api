@@ -26,7 +26,10 @@ func ParseError(raw interface{}) string {
 		}
 		sort.Strings(errs)
 		return strings.Join(errs, ", ")
-
+	case float64:
+		return fmt.Sprintf("%d", int64(raw))
+	case int64:
+		return fmt.Sprintf("%d", raw)
 	default:
 		return fmt.Sprintf("failed to parse unexpected error type: %T", raw)
 	}

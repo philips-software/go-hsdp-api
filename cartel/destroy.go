@@ -15,7 +15,7 @@ func (dr DestroyResponse) Success() bool {
 	return false
 }
 
-func (c *Client) DestroyInstance(tagName string) (*DestroyResponse, *Response, error) {
+func (c *Client) Destroy(tagName string) (*DestroyResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = []string{tagName}
 
