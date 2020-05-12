@@ -201,7 +201,7 @@ func CheckResponse(r *http.Response) error {
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+func (c *Client) NewRequest(method, path string, opt *CartelRequestBody, options []OptionFunc) (*http.Request, error) {
 	var u url.URL
 
 	u = *c.baseURL
@@ -234,11 +234,9 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Opti
 			return nil, err
 		}
 	}
-	// Set token if missing
-	if b, ok := opt.(CartelRequestBody); ok {
-		if b.Token == "" {
-			b.Token = c.config.Token
-		}
+	// Add token
+	if opt != nil && opt.Token == "" {
+		opt.Token = c.config.Token
 	}
 
 	if method == "POST" || method == "PUT" {
