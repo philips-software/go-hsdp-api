@@ -9,7 +9,7 @@ func (c *Client) GetRoles() (*[]Role, *Response, error) {
 	var body CartelRequestBody
 	body.Token = c.config.Token
 
-	req, err := c.NewRequest("POST", "v3/api/get_all_roles", body, nil)
+	req, err := c.NewRequest("POST", "v3/api/get_all_roles", &body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
