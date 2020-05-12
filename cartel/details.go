@@ -3,32 +3,32 @@ package cartel
 import "time"
 
 type InstanceDetails struct {
-	BlockDevices   []string    `json:"block_devices"`
+	BlockDevices   []string    `json:"block_devices,omitempty"`
 	InstanceID     string      `json:"instance_id"`
-	InstanceType   string      `json:"instance_type"`
-	LaunchTime     time.Time   `json:"launch_time"`
-	LdapGroups     []string    `json:"ldap_groups"`
-	PrivateAddress string      `json:"private_address"`
-	Protection     bool        `json:"protection"`
-	PublicAddress  interface{} `json:"public_address"`
+	InstanceType   string      `json:"instance_type,omitempty"`
+	LaunchTime     *time.Time   `json:"launch_time,omitempty"`
+	LdapGroups     []string    `json:"ldap_groups,omitempty"`
+	PrivateAddress string      `json:"private_address,omitempty"`
+	Protection     bool        `json:"protection,omitempty"`
+	PublicAddress  string 		`json:"public_address,omitempty"`
 	Role           string      `json:"role"`
-	SecurityGroups []string    `json:"security_groups"`
-	State          string      `json:"state"`
-	Subnet         string      `json:"subnet"`
-	Tags           struct {
-		Billing string `json:"billing"`
-	} `json:"tags"`
-	Vpc  string `json:"vpc"`
-	Zone string `json:"zone"`
+	SecurityGroups []string    `json:"security_groups,omitempty"`
+	State          string      `json:"state,omitempty"`
+	Subnet         string      `json:"subnet,omitempty"`
+	Tags		   map[string]string `json:"tags,omitempty"`
+	Vpc  string `json:"vpc,omitempty"`
+	Zone string `json:"zone,omitempty"`
+	Owner string `json:"owner,omitempty"`
+	NameTag string `json:"name_tag,omitempty"`
 }
 
 type DetailsResponse map[string]InstanceDetails
 
-func (c *Client) GetDetails(tags ...string) (*DetailsResponse, *Response, error) {
+func (c *Client) GetDetailsMulti(tags ...string) (*DetailsResponse, *Response, error) {
 	var body CartelRequestBody
 	body.NameTag = tags
 
-	req, err := c.NewRequest("POST", "v3/api/instance_details", body, nil)
+	req, err := c.NewRequest("POST", "v3/api/instance_details", &body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -36,7 +36,7 @@ func (c *Client) GetDetails(tags ...string) (*DetailsResponse, *Response, error)
 	var detailResponse []map[string]InstanceDetails
 
 	resp, err := c.Do(req, &detailResponse)
-	var response DetailsResponse
+	response := make(DetailsResponse, len(detailResponse))
 	for _, r := range detailResponse {
 		for k, v := range r {
 			response[k] = v
@@ -45,8 +45,8 @@ func (c *Client) GetDetails(tags ...string) (*DetailsResponse, *Response, error)
 	return &response, resp, err
 }
 
-func (c *Client) GetDetail(tag string) (*InstanceDetails, *Response, error) {
-	details, resp, err := c.GetDetails(tag)
+func (c *Client) GetDetails(tag string) (*InstanceDetails, *Response, error) {
+	details, resp, err := c.GetDetailsMulti(tag)
 	if err != nil {
 		return nil, resp, err
 	}
