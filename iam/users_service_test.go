@@ -1,14 +1,13 @@
 package iam
 
 import (
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/Jeffail/gabs"
 )
 
 func TestCreateUserSelfRegistration(t *testing.T) {
@@ -29,16 +28,18 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 		}
 		switch r.Method {
 		case "POST":
+			var person Person
 			body, _ := ioutil.ReadAll(r.Body)
-			j, _ := gabs.ParseJSON(body)
-			ageValidated, ok := j.Path("isAgeValidated").Data().(string)
-			if !ok {
-				t.Errorf("Missing isAgeValidated field")
+			err := json.Unmarshal(body, &person)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
 			}
-			if ageValidated != "true" {
+			if person.IsAgeValidated != "true" {
 				t.Errorf("ageValidated should be true")
+				w.WriteHeader(http.StatusBadRequest)
+				return
 			}
-
 			w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 			w.Header().Set("Location", "/authorize/identity/User/"+newUserUUID)
 			w.WriteHeader(http.StatusCreated)
@@ -462,8 +463,6 @@ func actionRequestHandler(t *testing.T, paramName, informationalMessage string, 
 		if auth := r.Header.Get("Authorization"); auth != "" {
 			t.Errorf("No Authorization header expected, Got: %s", auth)
 		}
-		//body, _ := ioutil.ReadAll(r.Body)
-		//j, _ := gabs.ParseJSON(body)
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.WriteHeader(statusCode)
 		_, _ = io.WriteString(w, `{

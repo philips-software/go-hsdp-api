@@ -11,7 +11,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/Jeffail/gabs"
 	signer "github.com/philips-software/go-hsdp-signer"
 )
 
@@ -72,13 +71,16 @@ func setup(t *testing.T, config Config) (func(), error) {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
+
 		body, _ := ioutil.ReadAll(r.Body)
-		j, _ := gabs.ParseJSON(body)
-		pk, ok := j.Path("productKey").Data().(string)
-		if !ok {
-			t.Errorf("Missing productKey field")
+		var bundle Bundle
+		err := json.Unmarshal(body, &bundle)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
-		if pk != productKey {
+
+		if bundle.ProductKey != productKey {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			_, _ = io.WriteString(w, `{
 				"issue": [

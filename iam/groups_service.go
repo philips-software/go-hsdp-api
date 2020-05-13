@@ -1,32 +1,15 @@
 package iam
 
 import (
-	"encoding/json"
 	"io"
 	"net/http"
-
-	"github.com/Jeffail/gabs"
 )
 
 const (
 	groupAPIVersion = "1"
 )
 
-func (g *Group) parseFromBundle(v interface{}) error {
-	m, _ := json.Marshal(v)
-	jsonParsed, err := gabs.ParseJSON(m)
-	if err != nil {
-		return err
-	}
-	r := jsonParsed.Path("entry").Index(0).Path("resource")
-	g.ID = r.Path("_id").Data().(string)
-	g.ManagingOrganization, _ = r.Path("orgId").Data().(string)
-	g.Name, _ = r.Path("groupName").Data().(string)
-	g.Description, _ = r.Path("groupDescription").Data().(string)
-	return nil
-}
-
-// GetGroupOptions describes the fileds on which you can search for Groups
+// GetGroupOptions describes the fields on which you can search for Groups
 type GetGroupOptions struct {
 	ID             *string `url:"_id,omitempty"`
 	OrganizationID *string `url:"Id,omitempty"`
@@ -63,15 +46,23 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 	}
 	req.Header.Set("api-version", groupAPIVersion)
 
-	var bundleResponse interface{}
+	var bundleResponse struct {
+		Total int `json:"total"`
+		Entry []struct {
+			Resource struct {
+				ID string `json:"_id"`
+			} `json:"resource"`
+		} `json:"entry"`
+	}
 
 	resp, err := g.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	var group Group
-	err = group.parseFromBundle(bundleResponse)
-	return &group, resp, err
+	if bundleResponse.Total == 0 {
+		return nil, resp, ErrNotFound
+	}
+	return g.GetGroupByID(bundleResponse.Entry[0].Resource.ID)
 }
 
 // CreateGroup creates a Group

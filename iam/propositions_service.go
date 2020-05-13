@@ -1,11 +1,8 @@
 package iam
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
-
-	"github.com/Jeffail/gabs"
 )
 
 const (
@@ -74,14 +71,16 @@ func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, optio
 	req.Header.Set("api-version", propositionAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse bytes.Buffer
+	var bundleResponse struct {
+		Total int           `json:"total"`
+		Entry []Proposition `json:"entry"`
+	}
 
 	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	props, err := p.parseFromBundle(bundleResponse.Bytes())
-	return props, resp, err
+	return &bundleResponse.Entry, resp, err
 }
 
 // CreateProposition creates a Proposition
@@ -110,29 +109,4 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 		return nil, resp, ErrCouldNoReadResourceAfterCreate
 	}
 	return p.GetPropositionByID(id)
-}
-
-func (p *PropositionsService) parseFromBundle(bundle []byte) (*[]Proposition, error) {
-	jsonParsed, err := gabs.ParseJSON(bundle)
-	if err != nil {
-		return nil, err
-	}
-	count, ok := jsonParsed.S("total").Data().(float64)
-	if !ok || count == 0 {
-		return nil, ErrEmptyResults
-	}
-	propositions := make([]Proposition, int64(count))
-
-	children, _ := jsonParsed.S("entry").Children()
-	for i, r := range children {
-		var p Proposition
-		p.ID, _ = r.Path("id").Data().(string)
-		p.Name, _ = r.Path("name").Data().(string)
-		p.Description, _ = r.Path("description").Data().(string)
-		p.OrganizationID, _ = r.Path("organizationId").Data().(string)
-		p.GlobalReferenceID, _ = r.Path("globalReferenceId").Data().(string)
-		// TODO: add meta part
-		propositions[i] = p
-	}
-	return &propositions, nil
 }

@@ -1,11 +1,5 @@
 package iam
 
-import (
-	"bytes"
-
-	"github.com/Jeffail/gabs"
-)
-
 const permissionAPIVersion = "1"
 
 // Permission represents a IAM Permission resource
@@ -82,36 +76,14 @@ func (p *PermissionsService) GetPermissions(opt *GetPermissionOptions, options .
 	}
 	req.Header.Set("api-version", permissionAPIVersion)
 
-	var bundleResponse bytes.Buffer
+	var responseStruct struct {
+		Total int          `json:"total"`
+		Entry []Permission `json:"entry"`
+	}
 
-	resp, err := p.client.Do(req, &bundleResponse)
+	resp, err := p.client.Do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}
-	permissions, err := p.parseFromBundle(bundleResponse.Bytes())
-	return permissions, resp, err
-}
-
-func (p *PermissionsService) parseFromBundle(bundle []byte) (*[]Permission, error) {
-	jsonParsed, err := gabs.ParseJSON(bundle)
-	if err != nil {
-		return nil, err
-	}
-	count, ok := jsonParsed.S("total").Data().(float64)
-	if !ok || count == 0 {
-		return nil, ErrEmptyResults
-	}
-	permissions := make([]Permission, int64(count))
-
-	children, _ := jsonParsed.S("entry").Children()
-	for i, r := range children {
-		var p Permission
-		p.ID = r.Path("id").Data().(string)
-		p.Category, _ = r.Path("category").Data().(string)
-		p.Name, _ = r.Path("name").Data().(string)
-		p.Description, _ = r.Path("description").Data().(string)
-		p.Type, _ = r.Path("type").Data().(string)
-		permissions[i] = p
-	}
-	return &permissions, nil
+	return &responseStruct.Entry, resp, err
 }

@@ -228,7 +228,17 @@ func TestGetOrganization(t *testing.T) {
 	orgUUID := "c57b2625-eda3-4b27-a8e6-86f0a0e76afc"
 	orgName := "DCOrg"
 
-	muxIDM.HandleFunc("/authorize/identity/Organization", func(w http.ResponseWriter, r *http.Request) {
+	muxIDM.HandleFunc("/authorize/scim/v2/Organizations/"+orgUUID, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, testOrg)
+	})
+
+	muxIDM.HandleFunc("/authorize/scim/v2/Organizations", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			t.Errorf("Expected ‘GET’ request, got ‘%s’", r.Method)
 		}
@@ -236,26 +246,24 @@ func TestGetOrganization(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = io.WriteString(w, `{
-                       "resourceType": "bundle",
-                       "type": "searchset",
-                       "total": 1,
-                       "entry": [
-                                 {
-                                        "resource": {
-                                               "id": "`+orgUUID+`",
-                                               "resourceType": "Organization",
-                                               "text": "TestDev",
-                                               "name": "`+orgName+`"
-                                       },
-                                       "fullUrl": "https%3A%2F%2Fidm-something.foo-bar.com%2Fauthorize%2Fidentity%2FOrganization%3F_id%3D`+orgUUID+`"
-                               }
-                       ]
-               }`)
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+  ],
+  "totalResults": -1,
+  "Resources": [
+    {
+      "schemas": [
+        "urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:Organization"
+      ],
+      "id": "`+orgUUID+`"
+    }
+  ],
+  "startIndex": 1,
+  "itemsPerPage": 1
+}`)
 	})
 
-	foundOrg, resp, err := client.Organizations.GetOrganization(&GetOrganizationOptions{
-		ID: &orgUUID,
-	})
+	foundOrg, resp, err := client.Organizations.GetOrganization(FilterOrgEq(orgUUID))
 	assert.Nil(t, err)
 	if !assert.NotNil(t, resp) {
 		return

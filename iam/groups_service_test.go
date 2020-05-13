@@ -40,6 +40,7 @@ func TestGroupCRUD(t *testing.T) {
 					{
 						"resource": {
 							"resourceType": "Group",
+							"groupDescription": "Group for test",
 							"groupName": "`+groupName+`",
 							"orgId": "`+managingOrgID+`",
 							"_id": "`+groupID+`"
@@ -102,12 +103,18 @@ func TestGroupCRUD(t *testing.T) {
 	})
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
+	if !assert.NotNil(t, group) {
+		return
+	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, groupID, group.ID)
 
 	group, resp, err = client.Groups.GetGroupByID(group.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
+	if !assert.NotNil(t, group) {
+		return
+	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, groupID, group.ID)
 

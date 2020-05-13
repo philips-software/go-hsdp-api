@@ -1,11 +1,8 @@
 package iam
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
-
-	"github.com/Jeffail/gabs"
 )
 
 const (
@@ -19,9 +16,36 @@ type OrganizationsService struct {
 
 // GetOrganizationOptions describes the criteria for looking up Organizations
 type GetOrganizationOptions struct {
-	ID          *string `url:"_id,omitempty"`
-	ParentOrgID *string `url:"parentOrgId,omitempty"`
-	Name        *string `url:"name,omitempty"`
+	Filter             *string `url:"filter,omitempty"`
+	Attributes         *string `url:"attributes,omitempty"`
+	ExcludedAttributes *string `url:"excludedAttributes,omitempty"`
+}
+
+func FilterOrgEq(orgID string) *GetOrganizationOptions {
+	query := "id eq \"" + orgID + "\""
+	attributes := "id"
+	return &GetOrganizationOptions{
+		Filter:     &query,
+		Attributes: &attributes,
+	}
+}
+
+func FilterParentEq(parentID string) *GetOrganizationOptions {
+	query := "parent.value eq \"" + parentID + "\""
+	attributes := "id"
+	return &GetOrganizationOptions{
+		Filter:     &query,
+		Attributes: &attributes,
+	}
+}
+
+func FilterNameEq(name string) *GetOrganizationOptions {
+	query := "name eq \"" + name + "\""
+	attributes := "id"
+	return &GetOrganizationOptions{
+		Filter:     &query,
+		Attributes: &attributes,
+	}
 }
 
 // CreateOrganization creates a (sub) organization in IAM
@@ -105,45 +129,25 @@ func (o *OrganizationsService) GetOrganizationByID(id string) (*Organization, *R
 }
 
 // GetOrganization retrieves an organization based on the GetOrganizationOptions parameters.
-// Deprecated: need to switch to SCIM variant
 func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, options ...OptionFunc) (*Organization, *Response, error) {
-	req, err := o.client.NewRequest(IDM, "GET", "authorize/identity/Organization", opt, options)
+	req, err := o.client.NewRequest(IDM, "GET", "authorize/scim/v2/Organizations", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", "1")
+	req.Header.Set("api-version", organizationAPIVersion)
 
-	var bundleResponse bytes.Buffer
-
-	resp, err := o.client.DoSigned(req, &bundleResponse)
+	var bundleResponse struct {
+		Resources []struct {
+			ID string `json:"id"`
+		}
+	}
+	resp, err := o.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	organizations, err := o.parseFromBundle(bundleResponse.Bytes())
-	if err != nil {
-		return nil, resp, err
+	if len(bundleResponse.Resources) == 0 {
+		return nil, resp, ErrNotFound
 	}
-	return &(*organizations)[0], resp, nil
-}
 
-func (o *OrganizationsService) parseFromBundle(bundle []byte) (*[]Organization, error) {
-	jsonParsed, err := gabs.ParseJSON(bundle)
-	if err != nil {
-		return nil, err
-	}
-	count, ok := jsonParsed.S("total").Data().(float64)
-	if !ok || count == 0 {
-		return nil, ErrEmptyResults
-	}
-	organizations := make([]Organization, int64(count))
-
-	children, _ := jsonParsed.S("entry").Children()
-	for i, r := range children {
-		var org Organization
-		org.ID, _ = r.Path("resource.id").Data().(string)
-		org.Name, _ = r.Path("resource.name").Data().(string)
-		org.Description, _ = r.Path("resource.text").Data().(string)
-		organizations[i] = org
-	}
-	return &organizations, nil
+	return o.GetOrganizationByID(bundleResponse.Resources[0].ID)
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Jeffail/gabs"
 	validator "github.com/go-playground/validator/v10"
 )
 
@@ -124,14 +123,16 @@ func (c *ClientsService) GetClients(opt *GetClientsOptions, options ...OptionFun
 	req.Header.Set("api-version", clientAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse bytes.Buffer
+	var bundleResponse struct {
+		Total int                 `json:"total"`
+		Entry []ApplicationClient `json:"entry"`
+	}
 
 	resp, err := c.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	clients, err := c.parseFromBundle(bundleResponse.Bytes())
-	return clients, resp, err
+	return &bundleResponse.Entry, resp, err
 }
 
 // UpdateScope updates a clients scope
@@ -159,48 +160,4 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil
-}
-
-func (c *ClientsService) parseFromBundle(bundle []byte) (*[]ApplicationClient, error) {
-	jsonParsed, err := gabs.ParseJSON(bundle)
-	if err != nil {
-		return nil, err
-	}
-	count, ok := jsonParsed.S("total").Data().(float64)
-	if !ok || count == 0 {
-		return nil, ErrEmptyResults
-	}
-	clients := make([]ApplicationClient, int64(count))
-
-	children, _ := jsonParsed.S("entry").Children()
-	for i, r := range children {
-		var cl ApplicationClient
-		cl.ID, _ = r.Path("id").Data().(string)
-		cl.ClientID, _ = r.Path("clientId").Data().(string)
-		cl.Name, _ = r.Path("name").Data().(string)
-		cl.Description, _ = r.Path("description").Data().(string)
-		cl.Type, _ = r.Path("type").Data().(string)
-		cl.GlobalReferenceID, _ = r.Path("globalReferenceId").Data().(string)
-		cl.ApplicationID, _ = r.Path("applicationId").Data().(string)
-		children, _ = r.Path("redirectionURIs").Children()
-		for _, child := range children {
-			cl.RedirectionURIs = append(cl.RedirectionURIs, child.Data().(string))
-		}
-		children, _ = r.Path("responseTypes").Children()
-		for _, child := range children {
-			cl.ResponseTypes = append(cl.ResponseTypes, child.Data().(string))
-		}
-		children, _ = r.Path("scopes").Children()
-		for _, child := range children {
-			cl.Scopes = append(cl.Scopes, child.Data().(string))
-		}
-		children, _ = r.Path("defaultScopes").Children()
-		for _, child := range children {
-			cl.DefaultScopes = append(cl.DefaultScopes, child.Data().(string))
-		}
-		cl.Disabled, _ = r.Path("disabled").Data().(bool)
-		// TODO finish parsing complete resource
-		clients[i] = cl
-	}
-	return &clients, nil
 }
