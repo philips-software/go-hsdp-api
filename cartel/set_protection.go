@@ -10,7 +10,7 @@ func (pr ProtectionResponse) Success() bool {
 	return pr.Code == 0
 }
 
-func (c *Client) SetProtection(nameTag string, protection bool) (interface{}, *Response, error) {
+func (c *Client) SetProtection(nameTag string, protection bool) (*ProtectionResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = []string{nameTag}
 	body.Protect = protection

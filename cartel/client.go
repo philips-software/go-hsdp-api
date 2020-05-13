@@ -204,9 +204,7 @@ func CheckResponse(r *http.Response) error {
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
 func (c *Client) NewRequest(method, path string, opt *RequestBody, options []OptionFunc) (*http.Request, error) {
-	var u url.URL
-
-	u = *c.baseURL
+	u := *c.baseURL
 	u.Opaque = c.baseURL.Path + path
 
 	if opt != nil {
@@ -264,6 +262,6 @@ func (c *Client) NewRequest(method, path string, opt *RequestBody, options []Opt
 
 func generateSignature(secret []byte, payload []byte) string {
 	hash := hmac.New(sha256.New, secret)
-	hash.Write(payload)
+	_, _ = hash.Write(payload)
 	return base64.StdEncoding.EncodeToString(hash.Sum(nil))
 }

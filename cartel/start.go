@@ -4,7 +4,7 @@ import "encoding/json"
 
 type StartResponse struct {
 	Message     json.RawMessage `json:"message,omitempty"`
-	Code        int             `json:"code,omitempty""`
+	Code        int             `json:"code,omitempty"`
 	Description string          `json:"description,omitempty"`
 }
 

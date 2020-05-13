@@ -1,14 +1,29 @@
 package cartel
 
-func (c *Client) AddSecurityGroups(instances []string, groups []string) (interface{}, error) {
+import "encoding/json"
+
+type SecurityGroupsResponse struct {
+	Message     json.RawMessage `json:"message,omitempty"`
+	Result      string          `json:"result,omitempty"`
+	Code        int             `json:"code,omitempty"`
+	Description string          `json:"description,omitempty"`
+}
+
+func (sgr SecurityGroupsResponse) Success() bool {
+	return sgr.Code == 0
+}
+
+func (c *Client) AddSecurityGroups(instances []string, groups []string) (*SecurityGroupsResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = instances
 	body.SecurityGroup = groups
 
 	req, err := c.NewRequest("POST", "v3/api/add_security_groups", &body, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	var responseBody interface{}
-	return c.Do(req, &responseBody)
+	var responseBody SecurityGroupsResponse
+	resp, err := c.Do(req, &responseBody)
+
+	return &responseBody, resp, err
 }

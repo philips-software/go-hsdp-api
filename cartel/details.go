@@ -3,23 +3,23 @@ package cartel
 import "time"
 
 type InstanceDetails struct {
-	BlockDevices   []string    `json:"block_devices,omitempty"`
-	InstanceID     string      `json:"instance_id"`
-	InstanceType   string      `json:"instance_type,omitempty"`
-	LaunchTime     *time.Time   `json:"launch_time,omitempty"`
-	LdapGroups     []string    `json:"ldap_groups,omitempty"`
-	PrivateAddress string      `json:"private_address,omitempty"`
-	Protection     bool        `json:"protection,omitempty"`
-	PublicAddress  string 		`json:"public_address,omitempty"`
-	Role           string      `json:"role"`
-	SecurityGroups []string    `json:"security_groups,omitempty"`
-	State          string      `json:"state,omitempty"`
-	Subnet         string      `json:"subnet,omitempty"`
-	Tags		   map[string]string `json:"tags,omitempty"`
-	Vpc  string `json:"vpc,omitempty"`
-	Zone string `json:"zone,omitempty"`
-	Owner string `json:"owner,omitempty"`
-	NameTag string `json:"name_tag,omitempty"`
+	BlockDevices   []string          `json:"block_devices,omitempty"`
+	InstanceID     string            `json:"instance_id"`
+	InstanceType   string            `json:"instance_type,omitempty"`
+	LaunchTime     *time.Time        `json:"launch_time,omitempty"`
+	LdapGroups     []string          `json:"ldap_groups,omitempty"`
+	PrivateAddress string            `json:"private_address,omitempty"`
+	Protection     bool              `json:"protection,omitempty"`
+	PublicAddress  string            `json:"public_address,omitempty"`
+	Role           string            `json:"role"`
+	SecurityGroups []string          `json:"security_groups,omitempty"`
+	State          string            `json:"state,omitempty"`
+	Subnet         string            `json:"subnet,omitempty"`
+	Tags           map[string]string `json:"tags,omitempty"`
+	Vpc            string            `json:"vpc,omitempty"`
+	Zone           string            `json:"zone,omitempty"`
+	Owner          string            `json:"owner,omitempty"`
+	NameTag        string            `json:"name_tag,omitempty"`
 }
 
 type DetailsResponse map[string]InstanceDetails

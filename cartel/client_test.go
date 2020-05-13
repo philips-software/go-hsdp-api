@@ -33,7 +33,7 @@ func endpointMocker(secret []byte, responseBody string) func(http.ResponseWriter
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(responseBody))
+		_, _ = w.Write([]byte(responseBody))
 	}
 }
 
