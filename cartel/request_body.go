@@ -95,10 +95,10 @@ func SubnetType(subnetType string) RequestOptionFunc {
 	}
 }
 
-// Subnet sets the subnet
-func Subnet(subnet string) RequestOptionFunc {
+// InSubnet sets the subnet
+func InSubnet(subnetID string) RequestOptionFunc {
 	return func(body *RequestBody) error {
-		body.Subnet = subnet
+		body.Subnet = subnetID
 		return nil
 	}
 }
