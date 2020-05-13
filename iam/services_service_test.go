@@ -101,10 +101,14 @@ func TestServicesCRUD(t *testing.T) {
 	}
 	assert.Equal(t, service.ID, foundService.ID)
 
-	_, resp, err = client.Services.GetServicesByApplicationID(applicationID)
+	services, resp, err := client.Services.GetServicesByApplicationID(applicationID)
 	if !assert.NotNil(t, resp) {
 		return
 	}
+	if !assert.NotNil(t, services) {
+		return
+	}
+	assert.Equal(t, 1, len(*services))
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 

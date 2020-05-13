@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jeffail/gabs"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
@@ -144,14 +143,16 @@ func (p *ServicesService) GetServices(opt *GetServiceOptions, options ...OptionF
 	req.Header.Set("api-version", servicesAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse bytes.Buffer
+	var bundleResponse struct {
+		Total int       `json:"total"`
+		Entry []Service `json:"entry"`
+	}
 
 	resp, err := p.client.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	services, err := p.parseFromBundle(bundleResponse.Bytes())
-	return services, resp, err
+	return &bundleResponse.Entry, resp, err
 }
 
 // DeleteService deletes the given Service
@@ -209,39 +210,4 @@ func (p *ServicesService) updateScopes(service Service, action string, scopes []
 		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil
-}
-
-func (p *ServicesService) parseFromBundle(bundle []byte) (*[]Service, error) {
-	jsonParsed, err := gabs.ParseJSON(bundle)
-	if err != nil {
-		return nil, err
-	}
-	count, ok := jsonParsed.S("total").Data().(float64)
-	if !ok || count == 0 {
-		return nil, ErrEmptyResults
-	}
-	services := make([]Service, int64(count))
-
-	children, _ := jsonParsed.S("entry").Children()
-	for i, r := range children {
-		var s Service
-		s.ID = r.Path("id").Data().(string)
-		s.Name, _ = r.Path("name").Data().(string)
-		s.Description, _ = r.Path("description").Data().(string)
-		s.ServiceID, _ = r.Path("serviceId").Data().(string)
-		s.OrganizationID, _ = r.Path("organizationId").Data().(string)
-		s.ApplicationID, _ = r.Path("applicationId").Data().(string)
-		s.PrivateKey, _ = r.Path("privateKey").Data().(string)
-		s.ExpiresOn, _ = r.Path("expiresOn").Data().(string)
-		children, _ = r.Path("scopes").Children()
-		for _, child := range children {
-			s.Scopes = append(s.Scopes, child.Data().(string))
-		}
-		children, _ = r.Path("defaultScopes").Children()
-		for _, child := range children {
-			s.DefaultScopes = append(s.DefaultScopes, child.Data().(string))
-		}
-		services[i] = s
-	}
-	return &services, nil
 }
