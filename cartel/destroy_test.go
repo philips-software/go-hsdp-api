@@ -7,13 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStop(t *testing.T) {
-	var stopResponse = `{
-  "AWS": "Instance(s) i-03a562c262b18bf3d terminated",
-  "Cartel": {
-    "foo.dev.com": "Instance removed."
-  }
-}`
+func TestDestroy(t *testing.T) {
+	var stopResponse = `{"message": {"foo.dev": {"cartel": "Instance suspended"}}}`
+	var _ = `{"message": "Instance cannot be started due to current state: running"}`
 
 	teardown, err := setup(t, Config{
 		Token:  sharedToken,
