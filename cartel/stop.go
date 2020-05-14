@@ -12,7 +12,7 @@ func (sr StopResponse) Success() bool {
 	return sr.Code == 0
 }
 
-func (c *Client) Stop(nameTag string) (interface{}, *Response, error) {
+func (c *Client) Stop(nameTag string) (*StopResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = []string{nameTag}
 
@@ -20,7 +20,7 @@ func (c *Client) Stop(nameTag string) (interface{}, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	var responseBody StartResponse
+	var responseBody StopResponse
 	resp, err := c.Do(req, &responseBody)
 	return &responseBody, resp, err
 }

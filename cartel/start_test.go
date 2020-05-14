@@ -1,0 +1,40 @@
+package cartel
+
+import (
+	"net/http"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestStart(t *testing.T) {
+	var startResponse = `{"message": {"foo.dev": {"cartel": "Instance started"}}}`
+	var _ = `{"message": "Instance cannot be started due to current state: running"}`
+
+	teardown, err := setup(t, Config{
+		Token:  sharedToken,
+		Secret: sharedSecret,
+		Host:   "foo",
+		NoTLS:  true,
+	})
+
+	muxCartel.HandleFunc("/v3/api/start", endpointMocker(sharedSecret,
+		startResponse))
+
+	defer teardown()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sr, resp, err := client.Start("foo.dev")
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, sr) {
+		return
+	}
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, true, sr.Success())
+}
