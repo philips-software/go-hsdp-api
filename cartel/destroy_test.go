@@ -18,7 +18,7 @@ func TestDestroy(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/suspend", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/destroy", endpointMocker(sharedSecret,
 		stopResponse))
 
 	defer teardown()
@@ -27,7 +27,7 @@ func TestDestroy(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	sr, resp, err := client.Stop("foo.dev")
+	sr, resp, err := client.Destroy("foo.dev")
 	if !assert.NotNil(t, resp) {
 		return
 	}
