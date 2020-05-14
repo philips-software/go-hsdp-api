@@ -1,6 +1,16 @@
 package cartel
 
-func (c *Client) AddTags(instances []string, tags map[string]string) (interface{}, *Response, error) {
+type AddTagResponse struct {
+	Message     string `json:"message,omitempty"`
+	Code        int    `json:"code,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+func (atr AddTagResponse) Success() bool {
+	return atr.Code == 0
+}
+
+func (c *Client) AddTags(instances []string, tags map[string]string) (*AddTagResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = instances
 	body.Tags = tags
@@ -9,7 +19,7 @@ func (c *Client) AddTags(instances []string, tags map[string]string) (interface{
 	if err != nil {
 		return nil, nil, err
 	}
-	var responseBody interface{}
+	var responseBody AddTagResponse
 	resp, err := c.Do(req, &responseBody)
 
 	return &responseBody, resp, err
