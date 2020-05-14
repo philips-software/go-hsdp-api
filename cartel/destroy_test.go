@@ -8,8 +8,12 @@ import (
 )
 
 func TestDestroy(t *testing.T) {
-	var stopResponse = `{"message": {"foo.dev": {"cartel": "Instance suspended"}}}`
-	var _ = `{"message": "Instance cannot be started due to current state: running"}`
+	var destroyResponse = `{
+  "AWS": "Instance(s) i-xxa562c262b18bfzz terminated",
+  "Cartel": {
+    "foo.dev.com": "Instance removed."
+  }
+}`
 
 	teardown, err := setup(t, Config{
 		Token:  sharedToken,
@@ -19,7 +23,7 @@ func TestDestroy(t *testing.T) {
 	})
 
 	muxCartel.HandleFunc("/v3/api/destroy", endpointMocker(sharedSecret,
-		stopResponse))
+		destroyResponse))
 
 	defer teardown()
 

@@ -1,6 +1,9 @@
 package cartel
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 type StartResponse struct {
 	Message     json.RawMessage `json:"message,omitempty"`
@@ -9,7 +12,7 @@ type StartResponse struct {
 }
 
 func (sr StartResponse) Success() bool {
-	return sr.Code == 0
+	return sr.Code == http.StatusOK
 }
 
 func (c *Client) Start(nameTag string) (*StartResponse, *Response, error) {
@@ -22,5 +25,8 @@ func (c *Client) Start(nameTag string) (*StartResponse, *Response, error) {
 	}
 	var responseBody StartResponse
 	resp, err := c.Do(req, &responseBody)
+	if resp != nil {
+		responseBody.Code = resp.StatusCode
+	}
 	return &responseBody, resp, err
 }

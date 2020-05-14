@@ -19,7 +19,7 @@ var (
 	sharedToken  = "SharedToken"
 )
 
-func endpointMocker(secret []byte, responseBody string) func(http.ResponseWriter, *http.Request) {
+func endpointMocker(secret []byte, responseBody string, statusCode ...int) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -32,7 +32,11 @@ func endpointMocker(secret []byte, responseBody string) func(http.ResponseWriter
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
+		if len(statusCode) > 0 {
+			w.WriteHeader(statusCode[0])
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
 		_, _ = w.Write([]byte(responseBody))
 	}
 }
