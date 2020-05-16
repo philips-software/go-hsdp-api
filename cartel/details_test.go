@@ -1,6 +1,7 @@
 package cartel
 
 import (
+	"encoding/json"
 	"net/http"
 	"testing"
 
@@ -66,4 +67,27 @@ func TestDetails(t *testing.T) {
 	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, "container-host", details.Role)
+}
+
+func TestDetailStruct(t *testing.T) {
+	var details InstanceDetails
+
+	err := json.Unmarshal([]byte(`{
+      "ldap_groups": [
+        "my-group"
+      ]
+    }`), &details)
+	assert.Nil(t, err)
+	assert.Contains(t, details.LdapGroups, "my-group")
+
+	err = json.Unmarshal([]byte(`{
+      "ldap_groups": "my-group"
+    }`), &details)
+	assert.Nil(t, err)
+	assert.Contains(t, details.LdapGroups, "my-group")
+
+	err = json.Unmarshal([]byte(`{
+      "ldap_groups": ""
+    }`), &details)
+	assert.Nil(t, err)
 }

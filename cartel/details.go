@@ -1,13 +1,36 @@
 package cartel
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
+
+type LdapGroups []string
+
+func (lg *LdapGroups) UnmarshalJSON(b []byte) error {
+	var a []string
+	if b[0] == '[' { // String array
+		err := json.Unmarshal(b, &a)
+		if err != nil {
+			return err
+		}
+		*lg = a
+		return nil
+	}
+	var s string
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+	*lg = []string{s}
+	return nil
+}
 
 type InstanceDetails struct {
 	BlockDevices   []string          `json:"block_devices,omitempty"`
 	InstanceID     string            `json:"instance_id"`
 	InstanceType   string            `json:"instance_type,omitempty"`
 	LaunchTime     *time.Time        `json:"launch_time,omitempty"`
-	LdapGroups     []string          `json:"ldap_groups,omitempty"`
+	LdapGroups     LdapGroups        `json:"ldap_groups,omitempty"`
 	PrivateAddress string            `json:"private_address,omitempty"`
 	Protection     bool              `json:"protection,omitempty"`
 	PublicAddress  string            `json:"public_address,omitempty"`
