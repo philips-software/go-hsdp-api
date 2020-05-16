@@ -35,6 +35,7 @@ type Config struct {
 	NoTLS      bool
 	Host       string
 	Debug      bool
+	DebugLog   string
 }
 
 // Valid returns if all required config fields are present, false otherwise
@@ -57,6 +58,8 @@ type Client struct {
 	httpClient *http.Client
 	baseURL    *url.URL
 	userAgent  string
+
+	debugFile *os.File
 }
 
 // Response holds a LogEvent response
@@ -111,8 +114,16 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 		return nil, err
 	}
 
-	if os.Getenv("DEBUG") == "true" {
-		cartel.config.Debug = true
+	if cartel.config.Debug {
+		if cartel.config.DebugLog != "" {
+			debugFile, err := os.OpenFile(cartel.config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+			if err == nil {
+				cartel.debugFile = debugFile
+			}
+		}
+		if cartel.debugFile == nil {
+			cartel.debugFile = os.Stderr
+		}
 	}
 	return &cartel, nil
 }
@@ -125,7 +136,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		fmt.Fprintf(os.Stderr, "REQUEST: %s\n", string(dumped))
+		fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -139,9 +150,9 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		if resp != nil {
 			dumped, _ := httputil.DumpResponse(resp, true)
-			fmt.Fprintf(os.Stderr, "RESPONSE: %s\n", string(dumped))
+			fmt.Fprintf(c.debugFile, "RESPONSE: %s\n", string(dumped))
 		} else {
-			fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
+			fmt.Fprintf(c.debugFile, "Error sending response: %s\n", err)
 		}
 	}
 
