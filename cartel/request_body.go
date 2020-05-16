@@ -38,10 +38,18 @@ func InstanceType(instanceType string) RequestOptionFunc {
 	}
 }
 
-// EncryptVolumes enables volume encryption
-func EncryptVolumes() RequestOptionFunc {
+// VolumeEncryption enables volume encryption
+func VolumeEncryption(value bool) RequestOptionFunc {
 	return func(body *RequestBody) error {
-		body.EncryptVols = true
+		body.EncryptVols = value
+		return nil
+	}
+}
+
+// Protect enables volume encryption
+func Protect(value bool) RequestOptionFunc {
+	return func(body *RequestBody) error {
+		body.Protect = value
 		return nil
 	}
 }

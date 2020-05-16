@@ -43,4 +43,12 @@ func TestRequestBody(t *testing.T) {
 	err = VPCID("v-bbiab")(&requestBody)
 	assert.Nil(t, err)
 	assert.Equal(t, "v-bbiab", requestBody.VpcId)
+
+	err = Protect(true)(&requestBody)
+	assert.Nil(t, err)
+	assert.Equal(t, true, requestBody.Protect)
+
+	err = VolumeEncryption(true)(&requestBody)
+	assert.Nil(t, err)
+	assert.Equal(t, true, requestBody.EncryptVols)
 }

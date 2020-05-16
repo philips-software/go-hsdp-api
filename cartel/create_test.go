@@ -38,7 +38,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	sr, resp, err := client.Create("foo.dev",
-		EncryptVolumes(),
+		VolumeEncryption(true),
 		VolumesAndSize(1, 50),
 		SecurityGroups("foo", "bar"),
 		UserGroups("andy"))
