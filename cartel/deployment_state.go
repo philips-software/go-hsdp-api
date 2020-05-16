@@ -17,5 +17,9 @@ func (c *Client) GetDeploymentState(nameTag string) (string, *Response, error) {
 	if !ok {
 		return "unknown_instance", resp, err
 	}
-	return state["deploy_state"].(string), resp, err
+	deployState, ok := state["deploy_state"].(string)
+	if !ok {
+		return "unknown_state", resp, err
+	}
+	return deployState, resp, err
 }
