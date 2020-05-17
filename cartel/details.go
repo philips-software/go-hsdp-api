@@ -2,7 +2,6 @@ package cartel
 
 import (
 	"encoding/json"
-	"time"
 )
 
 type LdapGroups []string
@@ -29,7 +28,7 @@ type InstanceDetails struct {
 	BlockDevices   []string          `json:"block_devices,omitempty"`
 	InstanceID     string            `json:"instance_id"`
 	InstanceType   string            `json:"instance_type,omitempty"`
-	LaunchTime     *time.Time        `json:"launch_time,omitempty"`
+	LaunchTime     string            `json:"launch_time,omitempty"`
 	LdapGroups     LdapGroups        `json:"ldap_groups,omitempty"`
 	PrivateAddress string            `json:"private_address,omitempty"`
 	Protection     bool              `json:"protection,omitempty"`
