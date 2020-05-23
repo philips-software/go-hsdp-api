@@ -265,7 +265,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusCreated { // Only good outcome
-		var errResponse BundleErrorResponse
+		var errResponse bundleErrorResponse
 		err := json.Unmarshal(serverResponse.Bytes(), &errResponse)
 		if err != nil {
 			return &StoreResponse{Response: resp}, err
