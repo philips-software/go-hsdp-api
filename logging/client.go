@@ -12,9 +12,10 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 
-	"github.com/philips-software/go-hsdp-api/fhir"
 	signer "github.com/philips-software/go-hsdp-signer"
 	errors "golang.org/x/xerrors"
 )
@@ -25,14 +26,15 @@ const (
 )
 
 var (
-	// LogTimeFormat is the log time format to use
-	LogTimeFormat = "2006-01-02T15:04:05.000Z07:00"
-
 	ErrNothingToPost       = errors.New("nothing to post")
 	ErrMissingSharedKey    = errors.New("missing shared key")
 	ErrMissingSharedSecret = errors.New("missing shared secret")
 	ErrMissingBaseURL      = errors.New("missing base URL")
 	ErrMissingProductKey   = errors.New("missing ProductKey")
+	ErrBatchErrors         = errors.New("batch errors. check FailedIndex for details")
+	ErrResponseError       = errors.New("unexpected HSDP response error")
+
+	entryRegex = regexp.MustCompile(`^entry\[(\d+)]`)
 
 	scaryMap = map[string]string{
 		";":    "[sc]",
@@ -93,7 +95,7 @@ type Client struct {
 type Response struct {
 	*http.Response
 	Message string
-	Failed  []Resource
+	Failed  map[int]Resource
 }
 
 // CustomIndexBody describes the custom index request payload
@@ -121,7 +123,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	logger.config = config
 	logger.httpClient = httpClient
 
-	url, err := url.Parse(config.BaseURL + "/core/log/LogEvent")
+	parsedURL, err := url.Parse(config.BaseURL + "/core/log/LogEvent")
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +133,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 		return nil, err
 	}
 
-	logger.url = url
+	logger.url = parsedURL
 	if os.Getenv("DEBUG") == "true" {
 		logger.config.Debug = true
 	}
@@ -146,7 +148,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		fmt.Fprintf(os.Stderr, "REQUEST: %s\n", string(dumped))
+		_, _ = fmt.Fprintf(os.Stderr, "REQUEST: %s\n", string(dumped))
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -160,19 +162,13 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		if resp != nil {
 			dumped, _ := httputil.DumpResponse(resp, true)
-			fmt.Fprintf(os.Stderr, "RESPONSE: %s\n", string(dumped))
+			_, _ = fmt.Fprintf(os.Stderr, "RESPONSE: %s\n", string(dumped))
 		} else {
-			fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
+			_, _ = fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
 		}
 	}
 
-	err = CheckResponse(resp)
-	if err != nil {
-		// even though there was an error, we still return the response
-		// in case the caller wants to inspect it further
-		return response, err
-	}
-
+	//err = CheckResponse(resp)
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
@@ -196,31 +192,15 @@ func (e *ErrorResponse) Error() string {
 	return fmt.Sprintf("%s %s: %d %s", e.Response.Request.Method, u, e.Response.StatusCode, e.Message)
 }
 
-// CheckResponse checks the API response for errors, and returns them if present.
-func CheckResponse(r *http.Response) error {
-	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
-		return nil
-	}
-
-	errorResponse := &ErrorResponse{Response: r}
-	data, err := ioutil.ReadAll(r.Body)
-	if err == nil && data != nil {
-		var raw interface{}
-		if err := json.Unmarshal(data, &raw); err != nil {
-			errorResponse.Message = "failed to parse unknown error format"
-		}
-
-		errorResponse.Message = fhir.ParseError(raw)
-	}
-
-	return errorResponse
-}
-
 // StoreResources posts one or more log messages
+// In case invalid resources are detected StoreResources will return
+// with ErrBatchErrors and the Response.Failed map will contain the resources
+// This also happens in case the HSDP Ingestor API flags resources. In both cases
+// the complete batch should be considered as not persisted and the LogEvents should
+// be resubmitted for storage
 func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	var b Bundle
-	var invalid []Resource
+	invalid := make(map[int]Resource)
 
 	b.ResourceType = "Bundle"
 	b.Entry = make([]Element, count)
@@ -232,7 +212,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 		msg := msgs[i]
 		replaceScaryCharacters(&msg)
 		if !msg.Valid() {
-			invalid = append(invalid, msg)
+			invalid[i] = msg
 			continue
 		}
 		// Element
@@ -244,6 +224,16 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 		b.Entry[j] = e
 		j++
 	}
+	if len(invalid) > 0 { // Don't even POST anything due to errors in the batch
+		resp := Response{
+			Failed: invalid,
+			Response: &http.Response{
+				StatusCode: http.StatusBadRequest,
+			},
+		}
+		return &resp, ErrBatchErrors
+	}
+
 	if j == 0 { // No payload
 		return nil, ErrNothingToPost
 	}
@@ -277,11 +267,32 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 	var serverResponse bytes.Buffer
 
 	resp, err := c.Do(req, &serverResponse)
-
+	if resp == nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusCreated { // Only good outcome
+		var errResponse BundleErrorResponse
+		err := json.Unmarshal(serverResponse.Bytes(), &errResponse)
+		if err != nil {
+			return resp, err
+		}
+		if len(errResponse.Issue) == 0 || len(errResponse.Issue[0].Location) == 0 {
+			return resp, ErrResponseError
+		}
+		for _, entry := range errResponse.Issue[0].Location {
+			if entries := entryRegex.FindStringSubmatch(entry); len(entries) > 1 {
+				i, err := strconv.Atoi(entries[1])
+				if err != nil {
+					return resp, err
+				}
+				invalid[i] = msgs[i]
+			}
+		}
+	}
 	if len(invalid) > 0 {
 		resp.Failed = invalid
+		err = ErrBatchErrors
 	}
-
 	return resp, err
 }
 

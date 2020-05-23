@@ -404,7 +404,7 @@ func TestDebug(t *testing.T) {
 	sharedKey := "SharedKey"
 	secretKey := "SecretKey"
 
-	client, _ = NewClient(nil, &Config{
+	client, err = NewClient(nil, &Config{
 		OAuth2ClientID: "TestClient",
 		OAuth2Secret:   "Secret",
 		SharedKey:      sharedKey,
