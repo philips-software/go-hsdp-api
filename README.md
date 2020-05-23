@@ -12,6 +12,7 @@ A HSDP API client enabling Go programs to interact with various HSDP APIs in a s
 
 The current implement covers only a subset of HSDP APIs. Basically we implement functonality as needed.
 
+- [x] Cartel
 - [x] IAM token authorization
 - [x] Group management
 - [x] Organization management
