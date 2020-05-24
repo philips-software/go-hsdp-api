@@ -258,6 +258,12 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 		return nil, err
 	}
 
+	return c.performAndParseResponse(req, msgs)
+}
+
+func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*StoreResponse, error) {
+	invalid := make(map[int]Resource)
+
 	var serverResponse bytes.Buffer
 
 	resp, err := c.Do(req, &serverResponse)
