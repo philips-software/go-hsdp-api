@@ -1,8 +1,10 @@
 package iam
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 const (
@@ -19,6 +21,20 @@ type GetOrganizationOptions struct {
 	Filter             *string `url:"filter,omitempty"`
 	Attributes         *string `url:"attributes,omitempty"`
 	ExcludedAttributes *string `url:"excludedAttributes,omitempty"`
+}
+
+type OrganizationStatus struct {
+	Schemas        []string `json:"schemas"`
+	ID             string   `json:"id"`
+	Status         string   `json:"status"`
+	TotalResources int      `json:"totalResources"`
+	Meta           struct {
+		ResourceType string    `json:"resourceType"`
+		Created      time.Time `json:"created"`
+		LastModified time.Time `json:"lastModified"`
+		Location     string    `json:"location"`
+		Version      string    `json:"version"`
+	} `json:"meta"`
 }
 
 func FilterOrgEq(orgID string) *GetOrganizationOptions {
@@ -74,7 +90,6 @@ func (o *OrganizationsService) CreateOrganization(organization Organization) (*O
 }
 
 // DeleteOrganization deletes the organization
-// WARNING: Not implemented in current IAM releases (As of May 11th 2020)
 func (o *OrganizationsService) DeleteOrganization(org Organization) (bool, *Response, error) {
 	req, err := o.client.NewRequest(IDM, "DELETE", "authorize/scim/v2/Organizations/"+org.ID, nil, nil)
 	if err != nil {
@@ -82,12 +97,15 @@ func (o *OrganizationsService) DeleteOrganization(org Organization) (bool, *Resp
 	}
 	req.Header.Set("api-version", organizationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("If-Method", "DELETE")
 
-	resp, err := o.client.Do(req, nil)
+	var deleteResponse bytes.Buffer
+
+	resp, err := o.client.Do(req, &deleteResponse)
 	if err != nil {
 		return false, resp, err
 	}
-	return resp.StatusCode == http.StatusNoContent, resp, nil
+	return resp.StatusCode == http.StatusAccepted, resp, nil
 }
 
 // UpdateOrganization updates the description of the organization.
@@ -150,4 +168,19 @@ func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, opti
 	}
 
 	return o.GetOrganizationByID(bundleResponse.Resources[0].ID)
+}
+
+// DeleteStatus returns the status of a delete operation on an organization
+func (o *OrganizationsService) DeleteStatus(id string) (*OrganizationStatus, *Response, error) {
+	req, err := o.client.NewRequest(IDM, "GET", "authorize/scim/v2/Organizations/"+id+"/deleteStatus", nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", organizationAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var deleteResponse OrganizationStatus
+
+	resp, err := o.client.Do(req, &deleteResponse)
+	return &deleteResponse, resp, err
 }

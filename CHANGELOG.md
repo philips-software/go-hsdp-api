@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## v0.15.0
+
+- [NEW] Cartel API support
+- Switch to SCIM based organization management
+- Add Organizations.DeleteOrganization()
+- Add Organizations.DeleteStatus()
+
+
 ## v0.14.0
 - [IAM] Move user find API to v2
 - [IAM] Update go-hsdp-signer
