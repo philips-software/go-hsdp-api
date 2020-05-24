@@ -178,7 +178,6 @@ func (o *OrganizationsService) DeleteStatus(id string) (*OrganizationStatus, *Re
 	}
 	req.Header.Set("api-version", organizationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("If-Method", "DELETE")
 
 	var deleteResponse OrganizationStatus
 
