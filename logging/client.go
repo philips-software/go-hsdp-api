@@ -270,26 +270,26 @@ func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*S
 	if resp == nil {
 		return nil, err
 	}
+	storeResp := &StoreResponse{Response: resp}
 	if resp.StatusCode != http.StatusCreated { // Only good outcome
 		var errResponse bundleErrorResponse
 		err := json.Unmarshal(serverResponse.Bytes(), &errResponse)
 		if err != nil {
-			return &StoreResponse{Response: resp}, err
+			return storeResp, err
 		}
 		if len(errResponse.Issue) == 0 || len(errResponse.Issue[0].Location) == 0 {
-			return &StoreResponse{Response: resp}, ErrResponseError
+			return storeResp, ErrResponseError
 		}
 		for _, entry := range errResponse.Issue[0].Location {
 			if entries := entryRegex.FindStringSubmatch(entry); len(entries) > 1 {
 				i, err := strconv.Atoi(entries[1])
 				if err != nil {
-					return &StoreResponse{Response: resp}, err
+					return storeResp, err
 				}
 				invalid[i] = msgs[i]
 			}
 		}
 	}
-	storeResp := &StoreResponse{Response: resp}
 	if len(invalid) > 0 {
 		storeResp.Failed = invalid
 		err = ErrBatchErrors
