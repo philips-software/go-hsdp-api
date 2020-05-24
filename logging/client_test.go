@@ -37,6 +37,25 @@ var (
 			Message: "aGVsbG8gd29ybGQK",
 		},
 	}
+	invalidResource = Resource{
+		ID:                  "deb545e2-ccea-4868-99fe-b9dfbf5ce56e",
+		ResourceType:        "LogEvent",
+		ServerName:          "foo.bar.com",
+		ApplicationName:     "some-space",
+		EventID:             "1",
+		Category:            "Tracelog",
+		Component:           "PHS",
+		TransactionID:       "",
+		ServiceName:         "mcvs",
+		ApplicationInstance: "85e597cb-2648-4187-78ec-2c58",
+		ApplicationVersion:  "0.0.0",
+		OriginatingUser:     "ActiveUser",
+		LogTime:             "2017-10-15T01:53:20Z",
+		Severity:            "INFO",
+		LogData: LogData{
+			Message: "aGVsbG8gd29ybGQK",
+		},
+	}
 )
 
 const (
@@ -45,7 +64,7 @@ const (
 	sharedSecret = "SharedSecret"
 )
 
-func setup(t *testing.T, config Config) (func(), error) {
+func setup(t *testing.T, config Config, method string, statusCode int, responseBody string) (func(), error) {
 	var err error
 
 	muxLogger = http.NewServeMux()
@@ -62,7 +81,7 @@ func setup(t *testing.T, config Config) (func(), error) {
 	}
 
 	muxLogger.HandleFunc("/core/log/LogEvent", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
+		if r.Method != method {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
@@ -104,7 +123,10 @@ func setup(t *testing.T, config Config) (func(), error) {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
+		w.WriteHeader(statusCode)
+		if responseBody != "" {
+			_, _ = w.Write([]byte(responseBody))
+		}
 	})
 
 	return func() {
@@ -118,9 +140,10 @@ func TestStoreResources(t *testing.T) {
 		SharedSecret: sharedSecret,
 		ProductKey:   productKey,
 		BaseURL:      "http://foo",
-	})
-	defer teardown()
-
+	}, "POST", http.StatusCreated, "")
+	if teardown != nil {
+		defer teardown()
+	}
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,8 +172,10 @@ func TestStoreResourcesWithInvalidKey(t *testing.T) {
 		SharedSecret: sharedSecret,
 		ProductKey:   "089db3e5-3e3e-4445-8903-29cc848194b1",
 		BaseURL:      "http://foo",
-	})
-	defer teardown()
+	}, "POST", http.StatusCreated, "")
+	if teardown != nil {
+		defer teardown()
+	}
 
 	if err != nil {
 		t.Fatal(err)
@@ -174,15 +199,16 @@ func TestStoreResourcesWithInvalidKey(t *testing.T) {
 }
 
 func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
-	os.Setenv("DEBUG", "true")
+	_ = os.Setenv("DEBUG", "true")
 	teardown, err := setup(t, Config{
 		SharedKey:    "bogus",
 		SharedSecret: "keys",
 		ProductKey:   productKey,
 		BaseURL:      "http://foo",
-	})
-	defer teardown()
-
+	}, "POST", http.StatusCreated, "")
+	if teardown != nil {
+		defer teardown()
+	}
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -192,6 +218,9 @@ func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
 	}
 
 	resp, err := client.StoreResources(resource, len(resource))
+	if !assert.NotNil(t, err) {
+		return
+	}
 	assert.NotNil(t, resp)
 	_ = err.Error() // Just to up coverage
 	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
@@ -199,7 +228,7 @@ func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
 }
 
 func TestConfig(t *testing.T) {
-	os.Setenv("DEBUG", "false")
+	_ = os.Setenv("DEBUG", "false")
 	var errSet = []struct {
 		config Config
 		err    error
@@ -210,10 +239,13 @@ func TestConfig(t *testing.T) {
 		{Config{SharedKey: "foo", SharedSecret: "bar", ProductKey: "key", BaseURL: ""}, ErrMissingBaseURL},
 	}
 	for _, tt := range errSet {
-		teardown, err := setup(t, tt.config)
-		teardown()
+		teardown, err := setup(t, tt.config, "POST", http.StatusCreated, "")
+
 		if err != tt.err {
 			t.Errorf("Unexpected error: %v, expected: %v", err, tt.err)
+		}
+		if teardown != nil {
+			teardown()
 		}
 	}
 }
@@ -243,4 +275,65 @@ func TestReplaceScaryCharacters(t *testing.T) {
 	assert.Equal(t, "[amp]amp[sc]", custom["bad3"].(string))
 	assert.Equal(t, "a[bsl]b", custom["bad4"].(string))
 	assert.Equal(t, "a[bs]", custom["bad5"].(string))
+}
+
+func TestStoreResourcesWithBadResources(t *testing.T) {
+	_ = os.Setenv("DEBUG", "true")
+	teardown, err := setup(t, Config{
+		SharedKey:    sharedKey,
+		SharedSecret: sharedSecret,
+		ProductKey:   productKey,
+		BaseURL:      "http://foo",
+	}, "POST", http.StatusBadRequest, `{
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "coding": [
+          {
+            "system": "https://www.hl7.org/fhir/valueset-operation-outcome.html",
+            "code": "MSG_PARAM_INVALID"
+          }
+        ],
+        "text": "Mandatory fields are Missing or field data passed is invalid"
+      },
+      "diagnostics": "Invalid or missing parameter. Refer to API specification",
+      "location": [
+        "entry[0].resource.transactionId"
+      ]
+    }
+  ],
+  "resourceType": "OperationOutcome"
+}`)
+	if teardown != nil {
+		defer teardown()
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var resource = []Resource{
+		invalidResource,
+	}
+
+	resp, err := client.StoreResources(resource, len(resource))
+	if !assert.NotNil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, ErrBatchErrors, err)
+
+	resp, err = client.StoreResources([]Resource{validResource}, 1)
+	if !assert.NotNil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, ErrBatchErrors, err)
 }

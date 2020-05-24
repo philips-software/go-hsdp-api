@@ -56,3 +56,20 @@ func (r *Resource) Valid() bool {
 	}
 	return true
 }
+
+type bundleErrorResponse struct {
+	Issue []struct {
+		Severity string `json:"severity"`
+		Code     string `json:"code"`
+		Details  struct {
+			Coding []struct {
+				System string `json:"system"`
+				Code   string `json:"code"`
+			} `json:"coding"`
+			Text string `json:"text"`
+		} `json:"details"`
+		Diagnostics string   `json:"diagnostics"`
+		Location    []string `json:"location"`
+	} `json:"issue"`
+	ResourceType string `json:"resourceType"`
+}

@@ -12,27 +12,32 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 
-	"github.com/philips-software/go-hsdp-api/fhir"
 	signer "github.com/philips-software/go-hsdp-signer"
 	errors "golang.org/x/xerrors"
 )
 
 const (
+	// TimeFormat is the time format used for the LogTime field
+	TimeFormat = "2006-01-02T15:04:05.000Z07:00"
+
 	libraryVersion = "0.15.0"
 	userAgent      = "go-hsdp-api/logging/" + libraryVersion
 )
 
 var (
-	// LogTimeFormat is the log time format to use
-	LogTimeFormat = "2006-01-02T15:04:05.000Z07:00"
-
 	ErrNothingToPost       = errors.New("nothing to post")
 	ErrMissingSharedKey    = errors.New("missing shared key")
 	ErrMissingSharedSecret = errors.New("missing shared secret")
 	ErrMissingBaseURL      = errors.New("missing base URL")
 	ErrMissingProductKey   = errors.New("missing ProductKey")
+	ErrBatchErrors         = errors.New("batch errors. check Invalid map for details")
+	ErrResponseError       = errors.New("unexpected HSDP response error")
+
+	entryRegex = regexp.MustCompile(`^entry\[(\d+)]`)
 
 	scaryMap = map[string]string{
 		";":    "[sc]",
@@ -52,7 +57,7 @@ var (
 
 // Storer defines the store operations for logging
 type Storer interface {
-	StoreResources(msgs []Resource, count int) (*Response, error)
+	StoreResources(msgs []Resource, count int) (*StoreResponse, error)
 }
 
 // Config the client
@@ -90,22 +95,16 @@ type Client struct {
 }
 
 // Response holds a LogEvent response
-type Response struct {
+type StoreResponse struct {
 	*http.Response
 	Message string
-	Failed  []Resource
+	Failed  map[int]Resource
 }
 
 // CustomIndexBody describes the custom index request payload
 type CustomIndexBody []struct {
 	Fieldname string `json:"fieldname"`
 	Fieldtype string `json:"fieldtype"`
-}
-
-// newResponse creates a new Response for the provided http.Response.
-func newResponse(r *http.Response) *Response {
-	response := &Response{Response: r}
-	return response
 }
 
 // NewClient returns an instance of the logger client with the given Config
@@ -121,7 +120,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	logger.config = config
 	logger.httpClient = httpClient
 
-	url, err := url.Parse(config.BaseURL + "/core/log/LogEvent")
+	parsedURL, err := url.Parse(config.BaseURL + "/core/log/LogEvent")
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +130,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 		return nil, err
 	}
 
-	logger.url = url
+	logger.url = parsedURL
 	if os.Getenv("DEBUG") == "true" {
 		logger.config.Debug = true
 	}
@@ -143,10 +142,10 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 // error if an API error has occurred. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
-func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
-		fmt.Fprintf(os.Stderr, "REQUEST: %s\n", string(dumped))
+		_, _ = fmt.Fprintf(os.Stderr, "REQUEST: %s\n", string(dumped))
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -155,22 +154,13 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 	defer resp.Body.Close()
 
-	response := newResponse(resp)
-
 	if c.config.Debug {
 		if resp != nil {
 			dumped, _ := httputil.DumpResponse(resp, true)
-			fmt.Fprintf(os.Stderr, "RESPONSE: %s\n", string(dumped))
+			_, _ = fmt.Fprintf(os.Stderr, "RESPONSE: %s\n", string(dumped))
 		} else {
-			fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
+			_, _ = fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
 		}
-	}
-
-	err = CheckResponse(resp)
-	if err != nil {
-		// even though there was an error, we still return the response
-		// in case the caller wants to inspect it further
-		return response, err
 	}
 
 	if v != nil {
@@ -181,7 +171,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		}
 	}
 
-	return response, err
+	return resp, err
 }
 
 // ErrorResponse holds an error response from the server
@@ -196,31 +186,15 @@ func (e *ErrorResponse) Error() string {
 	return fmt.Sprintf("%s %s: %d %s", e.Response.Request.Method, u, e.Response.StatusCode, e.Message)
 }
 
-// CheckResponse checks the API response for errors, and returns them if present.
-func CheckResponse(r *http.Response) error {
-	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
-		return nil
-	}
-
-	errorResponse := &ErrorResponse{Response: r}
-	data, err := ioutil.ReadAll(r.Body)
-	if err == nil && data != nil {
-		var raw interface{}
-		if err := json.Unmarshal(data, &raw); err != nil {
-			errorResponse.Message = "failed to parse unknown error format"
-		}
-
-		errorResponse.Message = fhir.ParseError(raw)
-	}
-
-	return errorResponse
-}
-
 // StoreResources posts one or more log messages
-func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
+// In case invalid resources are detected StoreResources will return
+// with ErrBatchErrors and the Response.Failed map will contain the resources
+// This also happens in case the HSDP Ingestor API flags resources. In both cases
+// the complete batch should be considered as not persisted and the LogEvents should
+// be resubmitted for storage
+func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, error) {
 	var b Bundle
-	var invalid []Resource
+	invalid := make(map[int]Resource)
 
 	b.ResourceType = "Bundle"
 	b.Entry = make([]Element, count)
@@ -232,7 +206,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 		msg := msgs[i]
 		replaceScaryCharacters(&msg)
 		if !msg.Valid() {
-			invalid = append(invalid, msg)
+			invalid[i] = msg
 			continue
 		}
 		// Element
@@ -244,6 +218,16 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 		b.Entry[j] = e
 		j++
 	}
+	if len(invalid) > 0 { // Don't even POST anything due to errors in the batch
+		resp := StoreResponse{
+			Failed: invalid,
+			Response: &http.Response{
+				StatusCode: http.StatusBadRequest,
+			},
+		}
+		return &resp, ErrBatchErrors
+	}
+
 	if j == 0 { // No payload
 		return nil, ErrNothingToPost
 	}
@@ -274,15 +258,43 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*Response, error) {
 		return nil, err
 	}
 
+	return c.performAndParseResponse(req, msgs)
+}
+
+func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*StoreResponse, error) {
+	invalid := make(map[int]Resource)
+
 	var serverResponse bytes.Buffer
 
 	resp, err := c.Do(req, &serverResponse)
-
-	if len(invalid) > 0 {
-		resp.Failed = invalid
+	if resp == nil {
+		return nil, err
 	}
-
-	return resp, err
+	storeResp := &StoreResponse{Response: resp}
+	if resp.StatusCode != http.StatusCreated { // Only good outcome
+		var errResponse bundleErrorResponse
+		err := json.Unmarshal(serverResponse.Bytes(), &errResponse)
+		if err != nil {
+			return storeResp, err
+		}
+		if len(errResponse.Issue) == 0 || len(errResponse.Issue[0].Location) == 0 {
+			return storeResp, ErrResponseError
+		}
+		for _, entry := range errResponse.Issue[0].Location {
+			if entries := entryRegex.FindStringSubmatch(entry); len(entries) > 1 {
+				i, err := strconv.Atoi(entries[1])
+				if err != nil {
+					return storeResp, err
+				}
+				invalid[i] = msgs[i]
+			}
+		}
+	}
+	if len(invalid) > 0 {
+		storeResp.Failed = invalid
+		err = ErrBatchErrors
+	}
+	return storeResp, err
 }
 
 func replaceScaryCharacters(msg *Resource) {

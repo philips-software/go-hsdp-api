@@ -4,6 +4,7 @@
 package main
 
 import (
+        "net/http"
         "fmt"
         "time"
         "github.com/philips-software/go-hsdp-api/logging"
@@ -11,11 +12,15 @@ import (
 
 func main() {
         client, err := logging.NewClient(http.DefaultClient, logging.Config{
-                SharedKey:    "YourSharedKey",
-                SharedSecret: "YourSharedSecret",
-                BaseURL:      "https://logingestor-xxx.foo.com",
-                ProductKey:   "YourProductKey",
+                SharedKey:    "YourSharedKeyHere=",
+                SharedSecret: "YourSharedSecretHere==",
+                BaseURL:      "https://logingestor-xx.host.com",
+                ProductKey:   "product-akey-4bf2-9f2c-herec37ffake",
         })
+        if err != nil {
+            fmt.Printf("Error: %v\n", err)
+            return
+        }
         var logResource = logging.Resource{
            ID: "856b1142-6df5-4c84-b11d-da3f0a794e84",
            EventID: "1",
@@ -26,10 +31,12 @@ func main() {
            ApplicationInstance: "7248e79e-ba0b-4d0e-82a9-fb7a47d26c23",
            OriginatingUser: "729e83bb-ce7d-4052-92f8-077a376d774c",
            Severity: "Info",
-           LogTime: time.Now().Format("2006-01-02T15:04:05.000Z07:00")
-           LogData.Message: "Test log message",
+           LogTime: time.Now().Format("2006-01-02T15:04:05.000Z07:00"),
+           LogData: logging.LogData{
+               Message: "Test log message",
+           },
         }
-        _, err := client.StoreResource([]logging.Resource{ logResource }, 1)
+        _, err = client.StoreResources([]logging.Resource{ logResource }, 1)
         if err != nil {
             fmt.Printf("Batch flushing failed: %v\n", err)
         }
