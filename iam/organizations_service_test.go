@@ -185,7 +185,11 @@ func TestUpdateAndDeleteOrganization(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 			_, _ = io.WriteString(w, string(responseBody))
 		case "DELETE":
-			w.WriteHeader(http.StatusNoContent)
+			if r.Header.Get("If-Method") != "DELETE" {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
+			w.WriteHeader(http.StatusAccepted)
 			return
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -202,6 +206,9 @@ func TestUpdateAndDeleteOrganization(t *testing.T) {
 	}
 
 	updatedOrg, resp, err := client.Organizations.UpdateOrganization(*foundOrg)
+	if !assert.Nil(t, err) {
+		return
+	}
 	if !assert.NotNil(t, resp) {
 		return
 	}
@@ -274,4 +281,65 @@ func TestGetOrganization(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, orgName, foundOrg.Name)
 	assert.Equal(t, orgUUID, foundOrg.ID)
+}
+
+func TestDeleteStatus(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	orgUUID := "c57b2625-eda3-4b27-a8e6-86f0a0e76afc"
+
+	muxIDM.HandleFunc("/authorize/scim/v2/Organizations/"+orgUUID+"/deleteStatus", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:philips:hsdp:2.0:DeleteStatus"
+  ],
+  "id": "`+orgUUID+`",
+  "status": "IN_PROGRESS",
+  "totalResources": 100,
+  "meta": {
+    "resourceType": "Organization",
+    "created": "2020-05-24T20:33:59.192Z",
+    "lastModified": "2020-05-24T20:33:59.192Z",
+    "location": "https://idm-xx.us-east.philips-healthsuite.com/authorize/scim/v2/Organizations/`+orgUUID+`",
+    "version": "W/\"f250dd84f0671c3\""
+  }
+}`)
+	})
+
+	status, resp, err := client.Organizations.DeleteStatus(orgUUID)
+	assert.Nil(t, err)
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, status) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, "IN_PROGRESS", status.Status)
+	assert.Equal(t, orgUUID, status.ID)
+}
+
+func TestFilters(t *testing.T) {
+	opts := FilterParentEq("xxx")
+	if !assert.NotNil(t, opts) {
+		return
+	}
+	assert.Equal(t, `parent.value eq "xxx"`, *opts.Filter)
+	opts = FilterOrgEq("yyy")
+	if !assert.NotNil(t, opts) {
+		return
+	}
+	assert.Equal(t, `id eq "yyy"`, *opts.Filter)
+	opts = FilterNameEq("zzz")
+	if !assert.NotNil(t, opts) {
+		return
+	}
+	assert.Equal(t, `name eq "zzz"`, *opts.Filter)
 }
