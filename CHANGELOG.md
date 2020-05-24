@@ -9,15 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## v0.15.0
 
 - [NEW] Cartel API support
-- Switch to SCIM based organization management
-- Add Organizations.DeleteOrganization()
-- Add Organizations.DeleteStatus()
-
+- [IAM] Switch to SCIM based organization management
+- [IAM] Add Organizations.DeleteOrganization()
+- [IAM] Add Organizations.DeleteStatus()
+- [Logging] Detect errors in batch sends
 
 ## v0.14.0
 - [IAM] Move user find API to v2
 - [IAM] Update go-hsdp-signer
-- [Logger] Better support for custom logging
+- [Logging] Better support for custom logging
 
 ## v0.2.0
 - Upgrade github.com/Jeffail/gabs
