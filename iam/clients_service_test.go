@@ -58,7 +58,7 @@ func TestClientCRUD(t *testing.T) {
 						"id": "`+clientID+`",
 						"meta": {
 							"versionId": "0",
-							"lastModified": "2018-07-26T18:08:207.010Z"
+							"lastModified": "2015-07-29T15:42:03.123Z"
 						}
 					}
 				]
@@ -68,6 +68,28 @@ func TestClientCRUD(t *testing.T) {
 	muxIDM.HandleFunc("/authorize/identity/Client/"+clientID, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
+		case "PUT":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+    "id": "`+clientID+`",
+    "meta": {
+      "versionId": "4",
+      "lastModified": "2015-07-29T15:42:03.123Z"
+    },
+    "clientId": "test1",
+    "name":"TestClient1",
+    "type":"Public",
+    "description": "Device client1",
+    "redirectionURIs": [
+        "https://example.com/please/send/code_here" ],
+    "responseTypes" :["code id_token","id_token"],
+    "defaultScopes":["cn"],
+    "scopes":["sn","cn"],
+    "applicationId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "disabled":false,
+    "globalReferenceId": "string",
+    "consentImplied": false
+}`)
 		case "DELETE":
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -101,18 +123,24 @@ func TestClientCRUD(t *testing.T) {
 	createdClient, resp, err = client.Clients.GetClientByID(createdClient.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
-	assert.NotNil(t, createdClient)
+	if !assert.NotNil(t, createdClient) {
+		return
+	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, clientID, createdClient.ID)
 
-	ok, resp, err := client.Clients.UpdateScopes(*createdClient, []string{"cn", "introspect"}, []string{"cn"})
-	assert.True(t, ok)
-	assert.Nil(t, err)
-	assert.NotNil(t, resp)
-	assert.NotNil(t, createdClient)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	createdClient.Password = password
+	cl, resp, err := client.Clients.UpdateClient(*createdClient)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, cl) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, "Public", cl.Type)
 
-	ok, resp, err = client.Clients.DeleteClient(*createdClient)
+	ok, resp, err := client.Clients.DeleteClient(*createdClient)
 	assert.True(t, ok)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)

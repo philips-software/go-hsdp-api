@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"time"
 
 	validator "github.com/go-playground/validator/v10"
 )
@@ -14,19 +15,27 @@ var (
 
 // ApplicationClient represents an IAM client resource
 type ApplicationClient struct {
-	ID                string   `json:"id,omitempty"`
-	ClientID          string   `json:"clientId" validate:"required,min=5,max=20"`
-	Type              string   `json:"type"`
-	Name              string   `json:"name" validate:"required,min=5,max=50"`
-	Password          string   `json:"password,omitempty" validate:"required,min=8,max=16"`
-	RedirectionURIs   []string `json:"redirectionURIs"`
-	ResponseTypes     []string `json:"responseTypes"`
-	Scopes            []string `json:"scopes,omitempty"`
-	DefaultScopes     []string `json:"defaultScopes,omitempty"`
-	Disabled          bool     `json:"disabled,omitempty"`
-	Description       string   `json:"description" validate:"max=250"`
-	ApplicationID     string   `json:"applicationId" validate:"required"`
-	GlobalReferenceID string   `json:"globalReferenceId" validate:"required,min=3,max=50"`
+	ID                   string   `json:"id,omitempty"`
+	ClientID             string   `json:"clientId" validate:"required,min=5,max=20"`
+	Type                 string   `json:"type"`
+	Name                 string   `json:"name" validate:"required,min=5,max=50"`
+	Password             string   `json:"password,omitempty" validate:"required,min=8,max=16"`
+	RedirectionURIs      []string `json:"redirectionURIs"`
+	ResponseTypes        []string `json:"responseTypes"`
+	Scopes               []string `json:"scopes,omitempty"`
+	DefaultScopes        []string `json:"defaultScopes,omitempty"`
+	Disabled             bool     `json:"disabled,omitempty"`
+	Description          string   `json:"description" validate:"max=250"`
+	ApplicationID        string   `json:"applicationId" validate:"required"`
+	GlobalReferenceID    string   `json:"globalReferenceId" validate:"required,min=3,max=50"`
+	ConsentImplied       bool     `json:"consentImplied"`
+	AccessTokenLifetime  int      `json:"accessTokenLifetime,omitempty" validate:"min=0,max=31536000"`
+	RefreshTokenLifetime int      `json:"refreshTokenLifetime,omitempty" validate:"min=0,max=157680000"`
+	IDTokenLifetime      int      `json:"idTokenLifetime,omitempty" validate:"min=0,max=31536000"`
+	Meta                 struct {
+		VersionID    string    `json:"versionId,omitempty"`
+		LastModified time.Time `json:"lastModified,omitempty"`
+	} `json:"meta,omitempty"`
 }
 
 // ClientsService provides operations on IAM roles resources
@@ -160,4 +169,24 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil
+}
+
+// UpdateClient updates a client
+func (c *ClientsService) UpdateClient(ac ApplicationClient) (*ApplicationClient, *Response, error) {
+	if err := c.validate.Struct(ac); err != nil {
+		return nil, nil, err
+	}
+	req, err := c.client.NewRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ID, ac, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", clientAPIVersion)
+
+	var updatedClient ApplicationClient
+
+	resp, err := c.client.Do(req, &updatedClient)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &updatedClient, resp, nil
 }
