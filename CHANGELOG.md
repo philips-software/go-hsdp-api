@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## v0.16.0
+- [IAM] Add UpdateClient() method 
+- [Logging] Add Meta tags to Resource
+
 ## v0.15.0
 
 - [NEW] Cartel API support
