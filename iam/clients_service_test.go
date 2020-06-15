@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -146,4 +148,24 @@ func TestClientCRUD(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.NotNil(t, createdClient)
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+}
+
+func TestPasswordValidation(t *testing.T) {
+	var c ApplicationClient
+	c.Name = "TestClient"
+	c.Description = "Group description"
+	c.ApplicationID = "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	c.ClientID = "TestClient"
+	c.Password = "SomePassword"
+	c.GlobalReferenceID = "c3fe79e6-13c2-48c1-adfa-826a01d4b31c"
+	validate := validator.New()
+	err := validate.Struct(c)
+	assert.Nil(t, err)
+	c.ID = ""
+	c.Password = ""
+	err = validate.Struct(c)
+	assert.NotNil(t, err)
+	c.ID = "X"
+	err = validate.Struct(c)
+	assert.Nil(t, err)
 }

@@ -18,7 +18,7 @@ type ApplicationClient struct {
 	ClientID             string   `json:"clientId" validate:"required,min=5,max=20"`
 	Type                 string   `json:"type"`
 	Name                 string   `json:"name" validate:"required,min=5,max=50"`
-	Password             string   `json:"password,omitempty" validate:"required,min=8,max=16"`
+	Password             string   `json:"password,omitempty" validate:"required_without=ID,max=16"`
 	RedirectionURIs      []string `json:"redirectionURIs"`
 	ResponseTypes        []string `json:"responseTypes"`
 	Scopes               []string `json:"scopes,omitempty"`
