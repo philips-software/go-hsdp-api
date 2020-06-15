@@ -87,6 +87,7 @@ func TestClientCRUD(t *testing.T) {
     "responseTypes" :["code id_token","id_token"],
     "defaultScopes":["cn"],
     "scopes":["sn","cn"],
+	"realms":["/"],
     "applicationId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "disabled":false,
     "globalReferenceId": "string",
@@ -158,6 +159,7 @@ func TestPasswordValidation(t *testing.T) {
 	c.ClientID = "TestClient"
 	c.Password = "SomePassword"
 	c.GlobalReferenceID = "c3fe79e6-13c2-48c1-adfa-826a01d4b31c"
+	c.Realms = []string{"/"}
 	validate := validator.New()
 	err := validate.Struct(c)
 	assert.Nil(t, err)

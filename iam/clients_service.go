@@ -31,6 +31,7 @@ type ApplicationClient struct {
 	AccessTokenLifetime  int      `json:"accessTokenLifetime,omitempty" validate:"min=0,max=31536000"`
 	RefreshTokenLifetime int      `json:"refreshTokenLifetime,omitempty" validate:"min=0,max=157680000"`
 	IDTokenLifetime      int      `json:"idTokenLifetime,omitempty" validate:"min=0,max=31536000"`
+	Realms               []string `json:"realms,omitempty" validate:"required_with=ID"`
 	Meta                 struct {
 		VersionID    string `json:"versionId,omitempty"`
 		LastModified string `json:"lastModified,omitempty"`
