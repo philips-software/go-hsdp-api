@@ -1,9 +1,5 @@
 package iam
 
-import (
-	"time"
-)
-
 type MFAPolicy struct {
 	Schemas     []string          `json:"schemas" validate:"min=1"`
 	ID          string            `json:"id,omitempty" validate:"omitempty,min=1,max=256"`
@@ -31,11 +27,11 @@ type MFAPolicyResource struct {
 }
 
 type MFAPolicyMeta struct {
-	ResourceType string     `json:"resourceType,omitempty"`
-	Created      *time.Time `json:"created,omitempty"`
-	LastModified *time.Time `json:"lastModified,omitempty"`
-	Location     string     `json:"location,omitempty"`
-	Version      string     `json:"version,omitempty"`
+	ResourceType string `json:"resourceType,omitempty"`
+	Created      string `json:"created,omitempty"`
+	LastModified string `json:"lastModified,omitempty"`
+	Location     string `json:"location,omitempty"`
+	Version      string `json:"version,omitempty"`
 }
 
 func (p *MFAPolicy) SetActive(val bool) {

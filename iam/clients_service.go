@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"time"
 
 	validator "github.com/go-playground/validator/v10"
 )
@@ -33,8 +32,8 @@ type ApplicationClient struct {
 	RefreshTokenLifetime int      `json:"refreshTokenLifetime,omitempty" validate:"min=0,max=157680000"`
 	IDTokenLifetime      int      `json:"idTokenLifetime,omitempty" validate:"min=0,max=31536000"`
 	Meta                 struct {
-		VersionID    string    `json:"versionId,omitempty"`
-		LastModified time.Time `json:"lastModified,omitempty"`
+		VersionID    string `json:"versionId,omitempty"`
+		LastModified string `json:"lastModified,omitempty"`
 	} `json:"meta,omitempty"`
 }
 

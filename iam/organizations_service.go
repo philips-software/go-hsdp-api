@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"time"
 )
 
 const (
@@ -29,11 +28,11 @@ type OrganizationStatus struct {
 	Status         string   `json:"status"`
 	TotalResources int      `json:"totalResources"`
 	Meta           struct {
-		ResourceType string    `json:"resourceType"`
-		Created      time.Time `json:"created"`
-		LastModified time.Time `json:"lastModified"`
-		Location     string    `json:"location"`
-		Version      string    `json:"version"`
+		ResourceType string `json:"resourceType"`
+		Created      string `json:"created"`
+		LastModified string `json:"lastModified"`
+		Location     string `json:"location"`
+		Version      string `json:"version"`
 	} `json:"meta"`
 }
 
