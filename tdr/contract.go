@@ -13,7 +13,7 @@ type DeletePolicy struct {
 // Contract describes a TDR Contract
 type Contract struct {
 	ID                         string          `json:"id,omitempty"`
-	Meta                       Meta            `json:"meta,omitempty"`
+	Meta                       *Meta           `json:"meta,omitempty"`
 	DataType                   DataType        `json:"dataType,omitempty"`
 	Schema                     json.RawMessage `json:"schema,omitempty"`
 	Organization               string          `json:"organization,omitempty"`

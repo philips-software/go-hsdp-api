@@ -187,7 +187,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		if c.debugFile != nil {
 			_, _ = c.debugFile.WriteString(out)
 		} else {
-			fmt.Printf(out)
+			fmt.Print(out)
 		}
 	}
 	resp, err := c.iamClient.HttpClient().Do(req)
@@ -197,7 +197,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		if c.debugFile != nil {
 			_, _ = c.debugFile.WriteString(out)
 		} else {
-			fmt.Printf(out)
+			fmt.Print(out)
 		}
 	}
 	if err != nil {

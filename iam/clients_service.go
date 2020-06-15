@@ -14,28 +14,30 @@ var (
 
 // ApplicationClient represents an IAM client resource
 type ApplicationClient struct {
-	ID                   string   `json:"id,omitempty"`
-	ClientID             string   `json:"clientId" validate:"required,min=5,max=20"`
-	Type                 string   `json:"type"`
-	Name                 string   `json:"name" validate:"required,min=5,max=50"`
-	Password             string   `json:"password,omitempty" validate:"required_without=ID,max=16"`
-	RedirectionURIs      []string `json:"redirectionURIs"`
-	ResponseTypes        []string `json:"responseTypes"`
-	Scopes               []string `json:"scopes,omitempty"`
-	DefaultScopes        []string `json:"defaultScopes,omitempty"`
-	Disabled             bool     `json:"disabled,omitempty"`
-	Description          string   `json:"description" validate:"max=250"`
-	ApplicationID        string   `json:"applicationId" validate:"required"`
-	GlobalReferenceID    string   `json:"globalReferenceId" validate:"required,min=3,max=50"`
-	ConsentImplied       bool     `json:"consentImplied"`
-	AccessTokenLifetime  int      `json:"accessTokenLifetime,omitempty" validate:"min=0,max=31536000"`
-	RefreshTokenLifetime int      `json:"refreshTokenLifetime,omitempty" validate:"min=0,max=157680000"`
-	IDTokenLifetime      int      `json:"idTokenLifetime,omitempty" validate:"min=0,max=31536000"`
-	Realms               []string `json:"realms,omitempty" validate:"required_with=ID"`
-	Meta                 struct {
-		VersionID    string `json:"versionId,omitempty"`
-		LastModified string `json:"lastModified,omitempty"`
-	} `json:"meta,omitempty"`
+	ID                   string      `json:"id,omitempty"`
+	ClientID             string      `json:"clientId" validate:"required,min=5,max=20"`
+	Type                 string      `json:"type"`
+	Name                 string      `json:"name" validate:"required,min=5,max=50"`
+	Password             string      `json:"password,omitempty" validate:"required_without=ID,max=16"`
+	RedirectionURIs      []string    `json:"redirectionURIs"`
+	ResponseTypes        []string    `json:"responseTypes"`
+	Scopes               []string    `json:"scopes,omitempty"`
+	DefaultScopes        []string    `json:"defaultScopes,omitempty"`
+	Disabled             bool        `json:"disabled,omitempty"`
+	Description          string      `json:"description" validate:"max=250"`
+	ApplicationID        string      `json:"applicationId" validate:"required"`
+	GlobalReferenceID    string      `json:"globalReferenceId" validate:"required,min=3,max=50"`
+	ConsentImplied       bool        `json:"consentImplied"`
+	AccessTokenLifetime  int         `json:"accessTokenLifetime,omitempty" validate:"min=0,max=31536000"`
+	RefreshTokenLifetime int         `json:"refreshTokenLifetime,omitempty" validate:"min=0,max=157680000"`
+	IDTokenLifetime      int         `json:"idTokenLifetime,omitempty" validate:"min=0,max=31536000"`
+	Realms               []string    `json:"realms,omitempty" validate:"required_with=ID"`
+	Meta                 *ClientMeta `json:"meta,omitempty"`
+}
+
+type ClientMeta struct {
+	VersionID    string `json:"versionId,omitempty"`
+	LastModified string `json:"lastModified,omitempty"`
 }
 
 // ClientsService provides operations on IAM roles resources

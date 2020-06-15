@@ -39,5 +39,5 @@ type Organization struct {
 	Owners            []Attribute `json:"owners"`
 	CreatedBy         Attribute   `json:"createdBy,omitempty"`
 	ModifiedBy        Attribute   `json:"modifiedBy,omitempty"`
-	Meta              Meta        `json:"meta,omitempty"`
+	Meta              *Meta       `json:"meta,omitempty"`
 }
