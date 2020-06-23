@@ -72,7 +72,7 @@ func NewClient(config *Config) (*Client, error) {
 }
 
 func newClient(config *Config) (*Client, error) {
-	c := &Client{config: config, UserAgent: userAgent}
+	c := &Client{config: config, UserAgent: userAgent, client: http.DefaultClient}
 	if err := c.SetBaseIronURL(IronBaseURL); err != nil {
 		return nil, err
 	}
@@ -84,14 +84,14 @@ func newClient(config *Config) (*Client, error) {
 		}
 	}
 
-	c.Tasks = &TasksServices{client: c}
+	c.Tasks = &TasksServices{client: c, projectID: config.ProjectID}
 	return c, nil
 }
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
 	if c.debugFile != nil {
-		c.debugFile.Close()
+		_ = c.debugFile.Close()
 		c.debugFile = nil
 	}
 }
@@ -296,12 +296,4 @@ func WithContext(ctx context.Context) OptionFunc {
 		*req = *req.WithContext(ctx)
 		return nil
 	}
-}
-
-// String is a helper routine that allocates a new string value
-// to store v and returns a pointer to it.
-func String(v string) *string {
-	p := new(string)
-	*p = v
-	return p
 }

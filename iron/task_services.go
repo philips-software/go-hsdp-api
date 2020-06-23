@@ -30,7 +30,7 @@ type Task struct {
 }
 
 func (t *TasksServices) GetTasks() (*[]Task, *Response, error) {
-	req, err := t.client.NewRequest("POST", "projects/"+t.projectID+"/tasks", nil, nil)
+	req, err := t.client.NewRequest("GET", "projects/"+t.projectID+"/tasks", nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
