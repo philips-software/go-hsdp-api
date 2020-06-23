@@ -62,6 +62,7 @@ type Client struct {
 	debugFile *os.File
 
 	Tasks *TasksServices
+	Codes *CodesServices
 }
 
 // NewClient returns a new HSDP HAS API client. If a nil httpClient is
@@ -85,6 +86,7 @@ func newClient(config *Config) (*Client, error) {
 	}
 
 	c.Tasks = &TasksServices{client: c, projectID: config.ProjectID}
+	c.Codes = &CodesServices{client: c, projectID: config.ProjectID, token: config.Token}
 	return c, nil
 }
 

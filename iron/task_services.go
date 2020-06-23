@@ -1,6 +1,8 @@
 package iron
 
-import "time"
+import (
+	"time"
+)
 
 type TasksServices struct {
 	client    *Client
@@ -13,22 +15,23 @@ type Task struct {
 	UpdatedAt     *time.Time `json:"updated_at,omitempty"`
 	ProjectID     string     `json:"project_id"`
 	CodeID        string     `json:"code_id"`
-	CodeHistoryID string     `json:"code_history_id"`
-	Status        string     `json:"status"`
-	Msg           string     `json:"msg"`
-	CodeName      string     `json:"code_name"`
-	CodeRev       string     `json:"code_rev"`
+	CodeHistoryID string     `json:"code_history_id,omitempty"`
+	Status        string     `json:"status,omitempty"`
+	Msg           string     `json:"msg,omitempty"`
+	CodeName      string     `json:"code_name,omitempty"`
+	CodeRev       string     `json:"code_rev,omitempty"`
 	StartTime     *time.Time `json:"start_time,omitempty"`
 	EndTime       *time.Time `json:"end_time,omitempty"`
-	Timeout       int        `json:"timeout"`
-	Payload       string     `json:"payload"`
-	ScheduleID    string     `json:"schedule_id"`
-	MessageID     string     `json:"message_id"`
-	Cluster       string     `json:"cluster"`
+	Timeout       int        `json:"timeout,omitempty"`
+	Payload       string     `json:"payload,omitempty"`
+	ScheduleID    string     `json:"schedule_id,omitempty"`
+	MessageID     string     `json:"message_id,omitempty"`
+	Cluster       string     `json:"cluster,omitempty"`
 	Duration      int        `json:"duration,omitempty"`
 	LogSize       int        `json:"log_size,omitempty"`
 }
 
+// GetTasks gets the tasks of the project
 func (t *TasksServices) GetTasks() (*[]Task, *Response, error) {
 	req, err := t.client.NewRequest("GET", "projects/"+t.projectID+"/tasks", nil, nil)
 	if err != nil {
@@ -39,4 +42,49 @@ func (t *TasksServices) GetTasks() (*[]Task, *Response, error) {
 	}
 	resp, err := t.client.Do(req, &tasks)
 	return &tasks.Tasks, resp, err
+}
+
+// GetTask gets info on a single task
+func (t *TasksServices) GetTask(taskID string) (*Task, *Response, error) {
+	req, err := t.client.NewRequest("GET", "projects/"+t.projectID+"/tasks/"+taskID, nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	var task Task
+	resp, err := t.client.Do(req, &task)
+	return &task, resp, err
+}
+
+// QueueTasks queues one or more tasks for execution
+func (t *TasksServices) QueueTasks(tasks []Task) (*[]Task, *Response, error) {
+	var queuRequest struct {
+		Tasks []Task `json:"tasks"`
+	}
+	queuRequest.Tasks = tasks
+
+	req, err := t.client.NewRequest("POST", "projects/"+t.projectID+"/tasks", &queuRequest, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	var queuResponse struct {
+		Tasks []Task `json:"tasks"`
+	}
+	resp, err := t.client.Do(req, &queuResponse)
+	return &queuResponse.Tasks, resp, err
+}
+
+// CancelTask cancels the given task
+func (t *TasksServices) CancelTask(taskID string) (bool, *Response, error) {
+	req, err := t.client.NewRequest("POST", "projects/"+t.projectID+"/tasks/"+taskID+"/cancel", nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	var cancelResponse struct {
+		Message string `json:"msg"`
+	}
+	resp, err := t.client.Do(req, &cancelResponse)
+	if cancelResponse.Message != "Cancelled" {
+		return false, resp, err
+	}
+	return true, resp, nil
 }
