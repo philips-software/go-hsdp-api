@@ -15,13 +15,12 @@ import (
 	"strings"
 
 	"github.com/google/go-querystring/query"
-	"github.com/philips-software/go-hsdp-api/fhir"
 )
 
 const (
 	libraryVersion = "0.17.0"
 	userAgent      = "go-hsdp-api/iron/" + libraryVersion
-	IronBaseURL    = "https://worker-aws-us-east-1.iron.io/2/"
+	IronBaseURL    = "https://worker-aws-us-east-1.iron.io/"
 )
 
 // OptionFunc is the function signature function for options
@@ -29,6 +28,7 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
+	BaseURL     string        `cloud:"-"`
 	Debug       bool          `cloud:"-"`
 	DebugLog    string        `cloud:"-"`
 	ClusterInfo []ClusterInfo `cloud:"cluster_info"`
@@ -75,7 +75,11 @@ func NewClient(config *Config) (*Client, error) {
 
 func newClient(config *Config) (*Client, error) {
 	c := &Client{config: config, UserAgent: userAgent, client: http.DefaultClient}
-	if err := c.SetBaseIronURL(IronBaseURL); err != nil {
+	useURL := IronBaseURL
+	if config.BaseURL != "" {
+		useURL = config.BaseURL
+	}
+	if err := c.SetBaseIronURL(useURL); err != nil {
 		return nil, err
 	}
 	if config.DebugLog != "" {
@@ -275,13 +279,6 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	defer resp.Body.Close()
 
 	response := newResponse(resp)
-
-	err = fhir.CheckResponse(resp)
-	if err != nil {
-		// even though there was an error, we still return the response
-		// in case the caller wants to inspect it further
-		return response, err
-	}
 
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {

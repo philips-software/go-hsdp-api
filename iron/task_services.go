@@ -33,7 +33,7 @@ type Task struct {
 
 // GetTasks gets the tasks of the project
 func (t *TasksServices) GetTasks() (*[]Task, *Response, error) {
-	req, err := t.client.NewRequest("GET", "projects/"+t.projectID+"/tasks", nil, nil)
+	req, err := t.client.NewRequest("GET", "2/projects/"+t.projectID+"/tasks", nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -46,7 +46,7 @@ func (t *TasksServices) GetTasks() (*[]Task, *Response, error) {
 
 // GetTask gets info on a single task
 func (t *TasksServices) GetTask(taskID string) (*Task, *Response, error) {
-	req, err := t.client.NewRequest("GET", "projects/"+t.projectID+"/tasks/"+taskID, nil, nil)
+	req, err := t.client.NewRequest("GET", "2/projects/"+t.projectID+"/tasks/"+taskID, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -71,7 +71,7 @@ func (t *TasksServices) QueueTasks(tasks []Task) (*[]Task, *Response, error) {
 	}
 	queueRequest.Tasks = tasks
 
-	req, err := t.client.NewRequest("POST", "projects/"+t.projectID+"/tasks", &queueRequest, nil)
+	req, err := t.client.NewRequest("POST", "2/projects/"+t.projectID+"/tasks", &queueRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -84,7 +84,7 @@ func (t *TasksServices) QueueTasks(tasks []Task) (*[]Task, *Response, error) {
 
 // CancelTask cancels the given task
 func (t *TasksServices) CancelTask(taskID string) (bool, *Response, error) {
-	req, err := t.client.NewRequest("POST", "projects/"+t.projectID+"/tasks/"+taskID+"/cancel", nil, nil)
+	req, err := t.client.NewRequest("POST", "2/projects/"+t.projectID+"/tasks/"+taskID+"/cancel", nil, nil)
 	if err != nil {
 		return false, nil, err
 	}

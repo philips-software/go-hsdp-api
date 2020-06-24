@@ -64,7 +64,7 @@ func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) 
 	}
 	_ = w.Close()
 
-	req, err := http.NewRequest("POST", c.client.baseIRONURL.String()+"projects/"+c.projectID+"/codes", &b)
+	req, err := http.NewRequest("POST", c.client.baseIRONURL.String()+"2/projects/"+c.projectID+"/codes", &b)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -83,7 +83,7 @@ func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) 
 }
 
 func (c *CodesServices) GetCodes() (*[]Code, *Response, error) {
-	req, err := c.client.NewRequest("GET", "projects/"+c.projectID+"/codes", nil, nil)
+	req, err := c.client.NewRequest("GET", "2/projects/"+c.projectID+"/codes", nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -95,7 +95,7 @@ func (c *CodesServices) GetCodes() (*[]Code, *Response, error) {
 }
 
 func (c *CodesServices) GetCode(codeID string) (*Code, *Response, error) {
-	req, err := c.client.NewRequest("GET", "projects/"+c.projectID+"/codes/"+codeID, nil, nil)
+	req, err := c.client.NewRequest("GET", "2/projects/"+c.projectID+"/codes/"+codeID, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -106,7 +106,7 @@ func (c *CodesServices) GetCode(codeID string) (*Code, *Response, error) {
 
 // DeleteCode deletes a code from Iron
 func (c *CodesServices) DeleteCode(codeID string) (bool, *Response, error) {
-	req, err := c.client.NewRequest("DELETE", "projects/"+c.projectID+"/codes/"+codeID, nil, nil)
+	req, err := c.client.NewRequest("DELETE", "2/projects/"+c.projectID+"/codes/"+codeID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -134,7 +134,7 @@ func (c *CodesServices) DockerLogin(creds DockerCredentials) (bool, *Response, e
 		Auth string `json:"auth"`
 	}
 	authRequest.Auth = authString
-	req, err := c.client.NewRequest("POST", "projects/"+c.projectID+"/credentials", &authRequest, nil)
+	req, err := c.client.NewRequest("POST", "2/projects/"+c.projectID+"/credentials", &authRequest, nil)
 	if err != nil {
 		return false, nil, err
 	}

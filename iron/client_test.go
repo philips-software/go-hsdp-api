@@ -6,21 +6,25 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/philips-software/go-hsdp-api/iron"
+
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	muxIRON    *http.ServeMux
-	serverIRON *httptest.Server
+	muxIRON           *http.ServeMux
+	serverIRON        *httptest.Server
+	client            *iron.Client
+	projectID         = "48a0183d-a588-41c2-9979-737d15e9e860"
+	apiProjectsPrefix = "/2/projects/" + projectID
+	token             = "YM7eZakYwqoui5znoH4g"
 )
 
 func setup(t *testing.T) func() {
 	muxIRON = http.NewServeMux()
 	serverIRON = httptest.NewServer(muxIRON)
 
-	projectID := "48a0183d-a588-41c2-9979-737d15e9e860"
-
-	muxIRON.HandleFunc("/projects/"+projectID+"/tasks", func(w http.ResponseWriter, r *http.Request) {
+	muxIRON.HandleFunc(apiProjectsPrefix+"/tasks", func(w http.ResponseWriter, r *http.Request) {
 		if !assert.Equal(t, "GET", r.Method) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -68,8 +72,19 @@ func setup(t *testing.T) func() {
       "log_size": 34,
       "message_id": "6841460372259136626",
       "cluster": "9PbpheKmd0bSHIelR7O6ChcH"
-    }`)
+    }]}`)
 	})
+	var err error
+
+	client, err = iron.NewClient(&iron.Config{
+		BaseURL:   serverIRON.URL,
+		ProjectID: projectID,
+		Token:     token,
+		Debug:     true,
+		DebugLog:  "/tmp/iron_test.log",
+	})
+	assert.Nil(t, err)
+	assert.NotNil(t, client)
 
 	return func() {
 		serverIRON.Close()
