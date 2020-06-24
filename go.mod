@@ -5,10 +5,11 @@ require (
 	github.com/go-playground/validator/v10 v10.0.1
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135
 	github.com/google/uuid v1.1.1
+	github.com/kr/pretty v0.1.0 // indirect
 	github.com/philips-software/go-hsdp-signer v1.3.0
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
-	google.golang.org/api v0.28.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
 
 go 1.13
