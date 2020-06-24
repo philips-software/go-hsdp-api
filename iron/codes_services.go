@@ -44,6 +44,7 @@ func (d DockerCredentials) Valid() bool {
 	return true
 }
 
+// CreateOrUpdateCode creates or updates code packages on Iron which can be used to run tasks
 func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) {
 	var b bytes.Buffer
 	var err error
