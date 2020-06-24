@@ -2,6 +2,7 @@ package iron
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"mime/multipart"
@@ -22,10 +23,25 @@ type Code struct {
 	ProjectID       string     `json:"project_id,omitempty"`
 	Name            string     `json:"name"`
 	Image           string     `json:"image"`
-	LatestChecksum  string     `json:"latest_checksum"`
+	LatestChecksum  string     `json:"latest_checksum,omitempty"`
 	Rev             int        `json:"rev,omitempty"`
 	LatestHistoryID string     `json:"latest_history_id,omitempty"`
-	LatestChange    time.Time  `json:"latest_change,omitempty"`
+	LatestChange    *time.Time `json:"latest_change,omitempty"`
+}
+
+// DockerCredentials describes a set of docker credentials
+type DockerCredentials struct {
+	Email         string `json:"email"`
+	Username      string `json:"username"`
+	Password      string `json:"password"`
+	ServerAddress string `json:"serveraddress"`
+}
+
+func (d DockerCredentials) Valid() bool {
+	if d.Email == "" || d.Username == "" || d.Password == "" || d.ServerAddress == "" {
+		return false
+	}
+	return true
 }
 
 func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) {
@@ -87,6 +103,7 @@ func (c *CodesServices) GetCode(codeID string) (*Code, *Response, error) {
 	return &code, resp, err
 }
 
+// DeleteCode deletes a code from Iron
 func (c *CodesServices) DeleteCode(codeID string) (bool, *Response, error) {
 	req, err := c.client.NewRequest("DELETE", "projects/"+c.projectID+"/codes/"+codeID, nil, nil)
 	if err != nil {
@@ -100,4 +117,33 @@ func (c *CodesServices) DeleteCode(codeID string) (bool, *Response, error) {
 		return false, resp, err
 	}
 	return true, resp, nil
+}
+
+// DockerLogin stores private Docker registry credentials so Iron can fetch images when needed
+func (c *CodesServices) DockerLogin(creds DockerCredentials) (bool, *Response, error) {
+	if !creds.Valid() {
+		return false, nil, ErrInvalidDockerCredentials
+	}
+	data, err := json.Marshal(&creds)
+	if err != nil {
+		return false, nil, err
+	}
+	authString := base64.StdEncoding.EncodeToString(data)
+	var authRequest struct {
+		Auth string `json:"auth"`
+	}
+	authRequest.Auth = authString
+	req, err := c.client.NewRequest("POST", "projects/"+c.projectID+"/credentials", &authRequest, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	var authResponse struct {
+		Message string `json:"msg"`
+	}
+	var success bool
+	resp, err := c.client.Do(req, &authResponse)
+	if resp != nil {
+		success = resp.StatusCode == http.StatusOK
+	}
+	return success, resp, err
 }
