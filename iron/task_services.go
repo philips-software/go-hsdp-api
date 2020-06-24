@@ -13,8 +13,8 @@ type Task struct {
 	ID            string     `json:"id,omitempty"`
 	CreatedAt     *time.Time `json:"created_at,omitempty"`
 	UpdatedAt     *time.Time `json:"updated_at,omitempty"`
-	ProjectID     string     `json:"project_id"`
-	CodeID        string     `json:"code_id"`
+	ProjectID     string     `json:"project_id,omitempty"`
+	CodeID        string     `json:"code_id,omitempty"`
 	CodeHistoryID string     `json:"code_history_id,omitempty"`
 	Status        string     `json:"status,omitempty"`
 	Msg           string     `json:"msg,omitempty"`
