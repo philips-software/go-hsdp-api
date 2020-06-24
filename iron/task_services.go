@@ -66,20 +66,20 @@ func (t *TasksServices) QueueTask(task Task) (*Task, *Response, error) {
 
 // QueueTasks queues one or more tasks for execution
 func (t *TasksServices) QueueTasks(tasks []Task) (*[]Task, *Response, error) {
-	var queuRequest struct {
+	var queueRequest struct {
 		Tasks []Task `json:"tasks"`
 	}
-	queuRequest.Tasks = tasks
+	queueRequest.Tasks = tasks
 
-	req, err := t.client.NewRequest("POST", "projects/"+t.projectID+"/tasks", &queuRequest, nil)
+	req, err := t.client.NewRequest("POST", "projects/"+t.projectID+"/tasks", &queueRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	var queuResponse struct {
+	var queueResponse struct {
 		Tasks []Task `json:"tasks"`
 	}
-	resp, err := t.client.Do(req, &queuResponse)
-	return &queuResponse.Tasks, resp, err
+	resp, err := t.client.Do(req, &queueResponse)
+	return &queueResponse.Tasks, resp, err
 }
 
 // CancelTask cancels the given task

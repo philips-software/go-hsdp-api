@@ -7,7 +7,8 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/philips-software/go-hsdp-signer v1.3.0
 	github.com/stretchr/testify v1.5.1
-	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898
+	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
+	google.golang.org/api v0.28.0 // indirect
 )
 
 go 1.13
