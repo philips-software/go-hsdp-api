@@ -62,6 +62,9 @@ func (s *SchedulesServices) CreateSchedule(schedule Schedule) (*Schedule, *Respo
 
 // GetSchedules gets the schedules of the project
 func (s *SchedulesServices) GetSchedules() (*[]Schedule, *Response, error) {
+	var schedules struct {
+		Schedules []Schedule `json:"schedules"`
+	}
 	path := s.client.Path("projects", s.projectID, "schedules")
 	req, err := s.client.NewRequest(
 		"GET",
@@ -70,9 +73,6 @@ func (s *SchedulesServices) GetSchedules() (*[]Schedule, *Response, error) {
 		nil)
 	if err != nil {
 		return nil, nil, err
-	}
-	var schedules struct {
-		Schedules []Schedule `json:"schedules"`
 	}
 	resp, err := s.client.Do(req, &schedules)
 	return &schedules.Schedules, resp, err
