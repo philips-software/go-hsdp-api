@@ -11,12 +11,11 @@ import (
 )
 
 var (
-	muxIRON           *http.ServeMux
-	serverIRON        *httptest.Server
-	client            *iron.Client
-	projectID         = "48a0183d-a588-41c2-9979-737d15e9e860"
-	apiProjectsPrefix = "/2/projects/" + projectID
-	token             = "YM7eZakYwqoui5znoH4g"
+	muxIRON    *http.ServeMux
+	serverIRON *httptest.Server
+	client     *iron.Client
+	projectID  = "48a0183d-a588-41c2-9979-737d15e9e860"
+	token      = "YM7eZakYwqoui5znoH4g"
 )
 
 func setup(t *testing.T) func() {

@@ -54,7 +54,7 @@ type ClusterStats struct {
 // In some cases a token might not have the proper scope
 // to retrieve a list of clusters in which case the list will be empty
 func (c *ClustersServices) GetClusters() (*[]Cluster, *Response, error) {
-	req, err := c.client.NewRequest("GET", "2/clusters", nil, nil)
+	req, err := c.client.NewRequest("GET", c.client.Path("clusters"), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -67,7 +67,7 @@ func (c *ClustersServices) GetClusters() (*[]Cluster, *Response, error) {
 
 // GetCluster gets cluster details
 func (c *ClustersServices) GetCluster(clusterID string) (*Cluster, *Response, error) {
-	req, err := c.client.NewRequest("GET", "2/clusters/"+clusterID, nil, nil)
+	req, err := c.client.NewRequest("GET", c.client.Path("clusters", clusterID), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -80,7 +80,7 @@ func (c *ClustersServices) GetCluster(clusterID string) (*Cluster, *Response, er
 
 // GetClusterStats gets cluster statistics
 func (c *ClustersServices) GetClusterStats(clusterID string) (*ClusterStats, *Response, error) {
-	req, err := c.client.NewRequest("GET", "2/clusters/"+clusterID+"/stats", nil, nil)
+	req, err := c.client.NewRequest("GET", c.client.Path("clusters", clusterID, "stats"), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}

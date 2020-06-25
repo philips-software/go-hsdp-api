@@ -14,7 +14,7 @@ func TestTasksServices_GetTasks(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	muxIRON.HandleFunc(apiProjectsPrefix+"/tasks", func(w http.ResponseWriter, r *http.Request) {
+	muxIRON.HandleFunc(client.Path("projects", projectID, "tasks"), func(w http.ResponseWriter, r *http.Request) {
 		if !assert.Equal(t, "GET", r.Method) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -85,7 +85,7 @@ func TestTasksServices_GetTask(t *testing.T) {
 
 	taskID := "bFp7OMpXdVsvRHp4sVtqb3gV"
 
-	muxIRON.HandleFunc(apiProjectsPrefix+"/tasks/"+taskID, func(w http.ResponseWriter, r *http.Request) {
+	muxIRON.HandleFunc(client.Path("projects", projectID, "tasks", taskID), func(w http.ResponseWriter, r *http.Request) {
 		if !assert.Equal(t, "GET", r.Method) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -128,13 +128,12 @@ func TestTasksServices_GetTask(t *testing.T) {
 }
 
 func TestTasksServices_QueueTask(t *testing.T) {
-	//
 	teardown := setup(t)
 	defer teardown()
 
 	taskID := "bFp7OMpXdVsvRHp4sVtqb3gV"
 
-	muxIRON.HandleFunc(apiProjectsPrefix+"/tasks", func(w http.ResponseWriter, r *http.Request) {
+	muxIRON.HandleFunc(client.Path("projects", projectID, "tasks"), func(w http.ResponseWriter, r *http.Request) {
 		if !assert.Equal(t, "POST", r.Method) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -143,7 +142,7 @@ func TestTasksServices_QueueTask(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = io.WriteString(w, `{"tasks":[{"id":"`+taskID+`"}],"msg":"Queued up"}`)
 	})
-	muxIRON.HandleFunc(apiProjectsPrefix+"/tasks/"+taskID, func(w http.ResponseWriter, r *http.Request) {
+	muxIRON.HandleFunc(client.Path("projects", projectID, "tasks", taskID), func(w http.ResponseWriter, r *http.Request) {
 		if !assert.Equal(t, "GET", r.Method) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -188,4 +187,32 @@ func TestTasksServices_QueueTask(t *testing.T) {
 		return
 	}
 	assert.Equal(t, taskID, task.ID)
+}
+
+func TestTasksServices_CancelTask(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	taskID := "bFp7OMpXdVsvRHp4sVtqb3gV"
+
+	muxIRON.HandleFunc(client.Path("projects", projectID, "tasks", taskID, "cancel"), func(w http.ResponseWriter, r *http.Request) {
+		if !assert.Equal(t, "POST", r.Method) {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{"msg":"Cancelled"}`)
+	})
+	ok, resp, err := client.Tasks.CancelTask(taskID)
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.True(t, ok) {
+		return
+	}
 }

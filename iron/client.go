@@ -110,9 +110,8 @@ func (c *Client) SetBaseIronURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrBaseIRONURLCannotBeEmpty
 	}
-	// Make sure the given URL end with a slash
-	if !strings.HasSuffix(urlStr, "/") {
-		urlStr += "/"
+	if strings.HasSuffix(urlStr, "/") {
+		urlStr = strings.TrimSuffix(urlStr, "/")
 	}
 
 	var err error
@@ -120,7 +119,7 @@ func (c *Client) SetBaseIronURL(urlStr string) error {
 	return err
 }
 
-// NewRequest creates an API request. A relative URL path can be provided in
+// NewRequest creates an API request. A relative URL Path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
@@ -158,7 +157,7 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Opti
 	}
 
 	req.Header.Set("Authorization", "OAuth "+c.config.Token)
-	if method == "POST" || method == "PUT" {
+	if (method == "POST" || method == "PUT") && opt != nil {
 		bodyBytes, err := json.Marshal(opt)
 		if err != nil {
 			return nil, err
@@ -178,7 +177,7 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Opti
 	return req, nil
 }
 
-// NewIronRequest creates an new TDR API request. A relative URL path can be provided in
+// NewIronRequest creates an new TDR API request. A relative URL Path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
@@ -289,6 +288,10 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
+}
+
+func (c *Client) Path(components ...string) string {
+	return "/2/" + strings.Join(components, "/")
 }
 
 // WithContext runs the request with the provided context
