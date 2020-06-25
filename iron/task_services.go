@@ -65,7 +65,8 @@ func (t *TasksServices) GetTask(taskID string) (*Task, *Response, error) {
 
 // QueueTask queues a single task for execution
 func (t *TasksServices) QueueTask(task Task) (*Task, *Response, error) {
-	tasks, resp, err := t.QueueTasks([]Task{task})
+	taskList := []Task{task}
+	tasks, resp, err := t.QueueTasks(taskList)
 	if err != nil {
 		return nil, resp, err
 	}

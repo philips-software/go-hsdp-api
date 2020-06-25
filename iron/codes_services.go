@@ -80,10 +80,10 @@ func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) 
 }
 
 func (c *CodesServices) GetCodes() (*[]Code, *Response, error) {
-	path := c.client.Path("projects", c.projectID, "codes")
+	getPath := c.client.Path("projects", c.projectID, "codes")
 	req, err := c.client.NewRequest(
 		"GET",
-		path,
+		getPath,
 		nil,
 		nil)
 	if err != nil {
