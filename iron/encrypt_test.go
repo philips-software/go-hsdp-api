@@ -22,6 +22,12 @@ vZ8QOSJQ7NotGuO2wwIDAQAB
 	assert.Equal(t, fixedPubkey, noop)
 }
 
+func TestBrokenPubkey(t *testing.T) {
+	pubkey := []byte("broken!!!!")
+	_, err := EncryptPayload([]byte(pubkey), []byte("Yo"))
+	assert.NotNil(t, err)
+}
+
 func TestEncryptPayload(t *testing.T) {
 	pubkey := []byte(`-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCdS2oE9+dhexZc3/sEtI+a6ZKt
