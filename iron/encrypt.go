@@ -24,20 +24,15 @@ func EncryptPayload(publicKey []byte, pbytes []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	// get a random aes-128 session key to encrypt
 	aesKey := make([]byte, 128/8)
 	if _, err := rand.Read(aesKey); err != nil {
 		return "", err
 	}
 	// have to use sha1 b/c ruby openssl picks it for OAEP:  https://www.openssl.org/docs/manmaster/crypto/RSA_public_encrypt.html
-	aesKeyCipher, err := rsa.EncryptOAEP(sha1.New(), rand.Reader, rsaPublicKey, aesKey, nil)
-	if err != nil {
-		return "", err
-	}
-	block, err := aes.NewCipher(aesKey)
-	if err != nil {
-		return "", err
-	}
+	aesKeyCipher, _ := rsa.EncryptOAEP(sha1.New(), rand.Reader, rsaPublicKey, aesKey, nil)
+	block, _ := aes.NewCipher(aesKey)
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
 		return "", err
