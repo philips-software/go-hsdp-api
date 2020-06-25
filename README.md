@@ -12,22 +12,23 @@ A HSDP API client enabling Go programs to interact with various HSDP APIs in a s
 
 The current implement covers only a subset of HSDP APIs. Basically we implement functonality as needed.
 
-- [x] Cartel
-- [x] IAM token authorization
-- [x] Group management
-- [x] Organization management
-- [x] Permission management
-- [x] Role managemnet
-- [x] User management
-- [x] Password management
-- [ ] Device management
-- [x] Proposition management
-- [x] Application management
-- [x] Service management
-- [x] Logging
+- [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
+- [x] IronIO tasks, codes and schedules management ([examples](iron/README.md))
+- [x] HSDP IAM/IDM management
+  - [x] Group management
+  - [x] Organization management
+  - [x] Permission management
+  - [x] Role managemnet
+  - [x] User management
+  - [x] Password management
+  - [x] Proposition management
+  - [x] Application management
+  - [x] Service management
+  - [ ] Device management
+  - [x] MFA Policies management
+- [x] Logging ([examples](logging/README.md))
 - [ ] Auditing
 - [x] S3 Credentials Policy management
-- [x] MFA Policies management
 
 ## Usage
 
@@ -64,13 +65,12 @@ func main() {
 ## TODO
 
 - Increase API coverage
-- Increase code coverage
 
 ## Issues
 
 - If you have an issue: report it on the [issue tracker](https://github.com/philips-software/go-hsdp-api/issues)
 
-## Author
+## Contact / Getting help
 
 Andy Lo-A-Foe (<andy.lo-a-foe@philips.com>)
 
