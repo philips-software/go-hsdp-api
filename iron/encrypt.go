@@ -24,7 +24,6 @@ func EncryptPayload(publicKey []byte, pbytes []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	// get a random aes-128 session key to encrypt
 	aesKey := make([]byte, 128/8)
 	if _, err := rand.Read(aesKey); err != nil {

@@ -3,7 +3,6 @@ package iron
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -177,66 +176,6 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Opti
 	return req, nil
 }
 
-// NewIronRequest creates an new TDR API request. A relative URL Path can be provided in
-// urlStr, in which case it is resolved relative to the base URL of the Client.
-// Relative URL paths should always be specified without a preceding slash. If
-// specified, the value pointed to by body is JSON encoded and included as the
-// request body.
-func (c *Client) NewIronRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
-	u := *c.baseIRONURL
-	// Set the encoded opaque data
-	u.Opaque = c.baseIRONURL.Path + path
-
-	if opt != nil {
-		q, err := query.Values(opt)
-		if err != nil {
-			return nil, err
-		}
-		u.RawQuery = q.Encode()
-	}
-
-	req := &http.Request{
-		Method:     method,
-		URL:        &u,
-		Proto:      "HTTP/1.1",
-		ProtoMajor: 1,
-		ProtoMinor: 1,
-		Header:     make(http.Header),
-		Host:       u.Host,
-	}
-
-	for _, fn := range options {
-		if fn == nil {
-			continue
-		}
-
-		if err := fn(req); err != nil {
-			return nil, err
-		}
-	}
-
-	if method == "POST" || method == "PUT" {
-		bodyBytes, err := json.Marshal(opt)
-		if err != nil {
-			return nil, err
-		}
-		bodyReader := bytes.NewReader(bodyBytes)
-
-		u.RawQuery = ""
-		req.Body = ioutil.NopCloser(bodyReader)
-		req.ContentLength = int64(bodyReader.Len())
-		req.Header.Set("Content-Type", "application/json")
-	}
-
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "OAuth "+c.config.Token)
-
-	if c.UserAgent != "" {
-		req.Header.Set("User-Agent", c.UserAgent)
-	}
-	return req, nil
-}
-
 // Response is a HSDP IAM API response. This wraps the standard http.Response
 // returned from HSDP IAM and provides convenient access to things like errors
 type Response struct {
@@ -292,12 +231,4 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 func (c *Client) Path(components ...string) string {
 	return "/2/" + strings.Join(components, "/")
-}
-
-// WithContext runs the request with the provided context
-func WithContext(ctx context.Context) OptionFunc {
-	return func(req *http.Request) error {
-		*req = *req.WithContext(ctx)
-		return nil
-	}
 }
