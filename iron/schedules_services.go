@@ -19,8 +19,8 @@ type Schedule struct {
 	NextStart   *time.Time `json:"next_start,omitempty"`
 	LastRunTime *time.Time `json:"last_run_time,omitempty"`
 	Timeout     int        `json:"timeout"`
-	RunTimes    int        `json:"run_times"`
-	RunEvery    int        `json:"run_every"`
+	RunTimes    int        `json:"run_times,omitempty"`
+	RunEvery    int        `json:"run_every,omitempty"`
 	Cluster     string     `json:"cluster,omitempty"`
 	Payload     string     `json:"payload,omitempty"`
 }
