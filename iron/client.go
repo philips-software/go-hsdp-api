@@ -27,24 +27,24 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
-	BaseURL     string        `cloud:"-"`
-	Debug       bool          `cloud:"-"`
-	DebugLog    string        `cloud:"-"`
-	ClusterInfo []ClusterInfo `cloud:"cluster_info"`
-	Email       string        `cloud:"email"`
-	Password    string        `cloud:"password"`
-	Project     string        `cloud:"project"`
-	ProjectID   string        `cloud:"project_id"`
-	Token       string        `cloud:"token"`
-	UserID      string        `cloud:"user_id"`
+	BaseURL     string        `cloud:"-" json:"-"`
+	Debug       bool          `cloud:"-" json:"-"`
+	DebugLog    string        `cloud:"-" json:"-"`
+	ClusterInfo []ClusterInfo `cloud:"cluster_info" json:"cluster_info"`
+	Email       string        `cloud:"email" json:"email"`
+	Password    string        `cloud:"password" json:"password"`
+	Project     string        `cloud:"project" json:"project"`
+	ProjectID   string        `cloud:"project_id" json:"project_id"`
+	Token       string        `cloud:"token" json:"token"`
+	UserID      string        `cloud:"user_id" json:"user_id"`
 }
 
 // ClusterInfo contains details on an Iron cluster
 type ClusterInfo struct {
-	ClusterID   string `cloud:"cluster_id"`
-	ClusterName string `cloud:"cluster_name"`
-	Pubkey      string `cloud:"pubkey"`
-	UserID      string `cloud:"user_id"`
+	ClusterID   string `cloud:"cluster_id" json:"cluster_id"`
+	ClusterName string `cloud:"cluster_name" json:"cluster_name"`
+	Pubkey      string `cloud:"pubkey" json:"pubkey"`
+	UserID      string `cloud:"user_id" json:"user_id"`
 }
 
 // A Client manages communication with IronIO
