@@ -60,3 +60,20 @@ func TestClient_Error(t *testing.T) {
 	assert.NotNil(t, task)
 	client.Close()
 }
+
+func TestClusterInfo_Encrypt(t *testing.T) {
+	pubkey := []byte("-----BEGIN PUBLIC KEY----- MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCdS2oE9+dhexZc3/sEtI+a6ZKt 6FwBZaAgytdkQ7sX4FwbZAdJ7zFS1m0gDezyFTBJSPVjYOKYr0fu1ao/xkNkKnnz J2WkW6qsDNKwJgrHiCO1asnoW5XWtk8Yc4kKkg63REuV20x+QoD6onTCo3T2DfUI vZ8QOSJQ7NotGuO2wwIDAQAB -----END PUBLIC KEY-----")
+	ci := &iron.ClusterInfo{
+		UserID:      "foo",
+		ClusterID:   "bar",
+		ClusterName: "cluster",
+	}
+	encrypted, err := ci.Encrypt([]byte(`hello world`))
+	assert.Equal(t, iron.ErrNoPublicKey, err)
+	ci.Pubkey = string(pubkey)
+	encrypted, err = ci.Encrypt([]byte(`hello world`))
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, 224, len(encrypted))
+}

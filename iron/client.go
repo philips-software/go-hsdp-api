@@ -97,6 +97,13 @@ func newClient(config *Config) (*Client, error) {
 	return c, nil
 }
 
+func (c ClusterInfo) Encrypt(payload []byte) (string, error) {
+	if c.Pubkey == "" {
+		return "", ErrNoPublicKey
+	}
+	return EncryptPayload([]byte(c.Pubkey), payload)
+}
+
 // Close releases allocated resources of clients
 func (c *Client) Close() {
 	if c.debugFile != nil {
