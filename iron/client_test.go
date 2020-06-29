@@ -68,10 +68,10 @@ func TestClusterInfo_Encrypt(t *testing.T) {
 		ClusterID:   "bar",
 		ClusterName: "cluster",
 	}
-	encrypted, err := ci.Encrypt([]byte(`hello world`))
+	_, err := ci.Encrypt([]byte(`hello world`))
 	assert.Equal(t, iron.ErrNoPublicKey, err)
 	ci.Pubkey = string(pubkey)
-	encrypted, err = ci.Encrypt([]byte(`hello world`))
+	encrypted, err := ci.Encrypt([]byte(`hello world`))
 	if !assert.Nil(t, err) {
 		return
 	}

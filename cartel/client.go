@@ -29,13 +29,13 @@ const (
 
 // Config the client
 type Config struct {
-	Token      string
-	Secret     []byte
-	SkipVerify bool
-	NoTLS      bool
-	Host       string
-	Debug      bool
-	DebugLog   string
+	Token      string `cloud:"token" json:"token"`
+	Secret     []byte `cloud:"secret" json:"secret"`
+	SkipVerify bool   `cloud:"skip_verify" json:"skip_verify"`
+	NoTLS      bool   `cloud:"no_tls" json:"no_tls"`
+	Host       string `cloud:"host" json:"host"`
+	Debug      bool   `cloud:"-" json:"debug,omitempty"`
+	DebugLog   string `cloud:"-" json:"debug_log,omitempty"`
 }
 
 // Valid returns if all required config fields are present, false otherwise
