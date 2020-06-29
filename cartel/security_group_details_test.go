@@ -27,7 +27,7 @@ func TestSecurityGroupDetails(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/security_group_details", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/security_group_details", endpointMocker([]byte(sharedSecret),
 		detailsResponse))
 
 	defer teardown()

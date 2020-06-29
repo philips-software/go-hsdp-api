@@ -16,7 +16,7 @@ func TestSecurityGroups(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/get_security_groups", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/get_security_groups", endpointMocker([]byte(sharedSecret),
 		`[
     "foo",
     "bar",

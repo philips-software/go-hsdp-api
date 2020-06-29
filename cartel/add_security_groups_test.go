@@ -18,7 +18,7 @@ func TestAddSecurityGroups(t *testing.T) {
 		Host:       "foo",
 	})
 
-	muxCartel.HandleFunc("/v3/api/add_security_groups", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/add_security_groups", endpointMocker([]byte(sharedSecret),
 		addResponse))
 
 	defer teardown()

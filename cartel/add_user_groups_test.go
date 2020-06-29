@@ -18,7 +18,7 @@ func TestAddUserGroups(t *testing.T) {
 		Host:       "foo",
 	})
 
-	muxCartel.HandleFunc("/v3/api/add_ldap_group", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/add_ldap_group", endpointMocker([]byte(sharedSecret),
 		addResponse))
 
 	defer teardown()

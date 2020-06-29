@@ -17,7 +17,7 @@ func TestSetProtect(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/protect", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/protect", endpointMocker([]byte(sharedSecret),
 		protectResponse))
 
 	defer teardown()

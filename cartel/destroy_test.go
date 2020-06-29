@@ -22,7 +22,7 @@ func TestDestroy(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/destroy", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/destroy", endpointMocker([]byte(sharedSecret),
 		destroyResponse))
 
 	defer teardown()

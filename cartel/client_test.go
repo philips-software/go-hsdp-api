@@ -15,7 +15,7 @@ var (
 )
 
 var (
-	sharedSecret = []byte("SharedSecret")
+	sharedSecret = "SharedSecret"
 	sharedToken  = "SharedToken"
 )
 

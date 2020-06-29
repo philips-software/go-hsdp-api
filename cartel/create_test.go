@@ -28,7 +28,7 @@ func TestCreate(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/create", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/create", endpointMocker([]byte(sharedSecret),
 		createResponse))
 
 	defer teardown()

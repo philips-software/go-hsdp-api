@@ -17,7 +17,7 @@ func TestAllInstances(t *testing.T) {
 	})
 	var responseBody = `[{"instance_id":"i-deadbeaf","name_tag":"some.dev","owner":"xxx","role":"container-host"}]`
 
-	muxCartel.HandleFunc("/v3/api/get_all_instances", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/get_all_instances", endpointMocker([]byte(sharedSecret),
 		responseBody))
 
 	defer teardown()

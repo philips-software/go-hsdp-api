@@ -18,7 +18,7 @@ func TestStart(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/start", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/start", endpointMocker([]byte(sharedSecret),
 		startResponse))
 
 	defer teardown()
@@ -49,7 +49,7 @@ func TestAlreadyRunning(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/start", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/start", endpointMocker([]byte(sharedSecret),
 		failResponse, http.StatusBadRequest))
 
 	defer teardown()

@@ -16,7 +16,7 @@ func TestRoles(t *testing.T) {
 		Host:       "foo",
 	})
 
-	muxCartel.HandleFunc("/v3/api/get_all_roles", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/get_all_roles", endpointMocker([]byte(sharedSecret),
 		`[
     {
         "description": "Some role.",

@@ -29,7 +29,7 @@ func TestSubnets(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/get_all_subnets", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/get_all_subnets", endpointMocker([]byte(sharedSecret),
 		subnetResponse))
 
 	defer teardown()

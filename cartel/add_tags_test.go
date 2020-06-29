@@ -1,14 +1,14 @@
 package cartel
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-
 func TestAddTags(t *testing.T) {
-	var addResponse =`{"message": "Added tags foo, bar to foo.dev"}`
+	var addResponse = `{"message": "Added tags foo, bar to foo.dev"}`
 
 	teardown, err := setup(t, Config{
 		NoTLS:      true,
@@ -18,7 +18,7 @@ func TestAddTags(t *testing.T) {
 		Host:       "foo",
 	})
 
-	muxCartel.HandleFunc("/v3/api/add_tags", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/add_tags", endpointMocker([]byte(sharedSecret),
 		addResponse))
 
 	defer teardown()

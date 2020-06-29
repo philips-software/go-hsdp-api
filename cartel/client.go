@@ -30,7 +30,7 @@ const (
 // Config the client
 type Config struct {
 	Token      string `cloud:"token" json:"token"`
-	Secret     []byte `cloud:"secret" json:"secret"`
+	Secret     string `cloud:"secret" json:"secret"`
 	SkipVerify bool   `cloud:"skip_verify" json:"skip_verify"`
 	NoTLS      bool   `cloud:"no_tls" json:"no_tls"`
 	Host       string `cloud:"host" json:"host"`
@@ -261,7 +261,7 @@ func (c *Client) NewRequest(method, path string, opt *RequestBody, options []Opt
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", string(generateSignature(c.config.Secret, bodyBytes)))
+		req.Header.Set("Authorization", string(generateSignature([]byte(c.config.Secret), bodyBytes)))
 	}
 	req.Header.Set("Accept", "application/json")
 

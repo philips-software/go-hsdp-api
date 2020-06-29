@@ -48,7 +48,7 @@ func TestDetails(t *testing.T) {
   }
 ]`
 
-	muxCartel.HandleFunc("/v3/api/instance_details", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/instance_details", endpointMocker([]byte(sharedSecret),
 		responseBody))
 
 	defer teardown()

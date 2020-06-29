@@ -22,7 +22,7 @@ func TestStop(t *testing.T) {
 		NoTLS:  true,
 	})
 
-	muxCartel.HandleFunc("/v3/api/suspend", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/suspend", endpointMocker([]byte(sharedSecret),
 		stopResponse))
 
 	defer teardown()

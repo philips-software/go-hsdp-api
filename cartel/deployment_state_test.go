@@ -18,7 +18,7 @@ func TestDeploymentState(t *testing.T) {
 		Host:       "foo",
 	})
 
-	muxCartel.HandleFunc("/v3/api/deployment_status", endpointMocker(sharedSecret,
+	muxCartel.HandleFunc("/v3/api/deployment_status", endpointMocker([]byte(sharedSecret),
 		deployResponse))
 
 	defer teardown()
