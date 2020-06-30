@@ -95,3 +95,35 @@ func TestMissing(t *testing.T) {
 	_, err = missingService.String("foo")
 	assert.NotNil(t, err)
 }
+
+func TestServices(t *testing.T) {
+	config, err := config.New(
+		config.WithRegion("us-east"),
+		config.WithEnv("client-test"))
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, config) {
+		return
+	}
+	services := config.Services()
+	assert.Less(t, 0, len(services))
+}
+
+func TestKeys(t *testing.T) {
+	config, err := config.New(
+		config.WithRegion("us-east"),
+		config.WithEnv("client-test"))
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, config) {
+		return
+	}
+	cartel := config.Service("cartel")
+	assert.True(t, cartel.Available())
+	keys := cartel.Keys()
+	assert.Less(t, 0, len(keys))
+	_, err = cartel.String("bogus")
+	assert.NotNil(t, err)
+}

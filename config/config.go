@@ -9,9 +9,11 @@ import (
 )
 
 const (
+	// CanonicalURL is the source of truth
 	CanonicalURL = "https://raw.githubusercontent.com/philips-software/go-hsdp-api/master/config/hsdp.toml"
 )
 
+// Config holds the state of a Config instance
 type Config struct {
 	region      string
 	environment string
@@ -19,13 +21,15 @@ type Config struct {
 	config      *toml.Tree
 }
 
+// Service holds the relevant toml data for a service
 type Service struct {
 	config *toml.Tree
 }
 
 type OptionFunc func(*Config) error
 
-// New returns a Config Instance
+// New returns a Config Instance. You can pass
+// a list OptionFunc to cater the Config to your needs
 func New(opts ...OptionFunc) (*Config, error) {
 	config := &Config{}
 	for _, opt := range opts {
@@ -49,6 +53,9 @@ func New(opts ...OptionFunc) (*Config, error) {
 	return config, nil
 }
 
+// FromReader option specifies the toml source to read
+// If this option is not provided the canonical source
+// hosted on Github will be used. See CanonicalURL
 func FromReader(reader io.Reader) OptionFunc {
 	return func(c *Config) error {
 		c.source = reader
@@ -56,6 +63,7 @@ func FromReader(reader io.Reader) OptionFunc {
 	}
 }
 
+// WithRegion sets the region of the newly created Config instance
 func WithRegion(region string) OptionFunc {
 	return func(c *Config) error {
 		c.region = region
@@ -63,6 +71,7 @@ func WithRegion(region string) OptionFunc {
 	}
 }
 
+// WithEnv sets the environment of the newly created Config instance
 func WithEnv(env string) OptionFunc {
 	return func(c *Config) error {
 		c.environment = env
@@ -70,6 +79,7 @@ func WithEnv(env string) OptionFunc {
 	}
 }
 
+// Region returns a new Config instance with region set
 func (c *Config) Region(region string) *Config {
 	return &Config{
 		config:      c.config,
@@ -78,6 +88,7 @@ func (c *Config) Region(region string) *Config {
 	}
 }
 
+// Env returns a new Config instance with environment set
 func (c *Config) Env(environment string) *Config {
 	return &Config{
 		config:      c.config,
@@ -86,6 +97,27 @@ func (c *Config) Env(environment string) *Config {
 	}
 }
 
+// Services returns a list of available services in the region
+func (c *Config) Services() []string {
+	services := make([]string, 0)
+	// region level
+	regional, ok := c.config.Get(fmt.Sprintf("region.%s.service", c.region)).(*toml.Tree)
+	if ok && len(regional.Keys()) > 0 {
+		for _, s := range regional.Keys() {
+			services = append(services, s)
+		}
+	}
+	// environment
+	environment, ok := c.config.Get(fmt.Sprintf("region.%s.env.%s.service", c.region, c.environment)).(*toml.Tree)
+	if ok && len(environment.Keys()) > 0 {
+		for _, s := range environment.Keys() {
+			services = append(services, s)
+		}
+	}
+	return services
+}
+
+// Service returns an instance scoped to the service in the region and environment
 func (c *Config) Service(service string) *Service {
 	// Check if service is at region level
 	regionService, ok := c.config.Get(fmt.Sprintf("region.%s.service.%s", c.region, service)).(*toml.Tree)
@@ -104,6 +136,7 @@ func (c *Config) Service(service string) *Service {
 	return &Service{}
 }
 
+// String returns the string key of the Service
 func (s *Service) String(str string) (string, error) {
 	if s.config == nil {
 		return "", fmt.Errorf("missing config")
@@ -115,9 +148,20 @@ func (s *Service) String(str string) (string, error) {
 	return "", fmt.Errorf("not found")
 }
 
+// Available returns true if the Service exists and has data
 func (s *Service) Available() bool {
 	if s == nil || s.config == nil {
 		return false
 	}
 	return len(s.config.Keys()) != 0
+}
+
+// Keys returns the list of available keys for Service
+func (s *Service) Keys() []string {
+	keys := make([]string, 0)
+	if s == nil || s.config == nil {
+		return keys
+	}
+	keys = append(keys, s.config.Keys()...)
+	return keys
 }
