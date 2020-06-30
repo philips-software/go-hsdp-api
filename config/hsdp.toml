@@ -59,43 +59,43 @@
 # Example of a enivronment bound service: IAM
 
 # Service Cloud foundry
-[reg.us-east.service.cf]
+[region.us-east.service.cf]
 api_url = "https://api.cloud.pcftest.com"
-[reg.eu-west.service.cf]
+[region.eu-west.service.cf]
 api_url = "https://api.eu1.phsdp.com"
 
 # Environments
-[reg.us-east.env.client-test]
-[reg.us-east.env.prod]
-[reg.eu-west.env.client-test]
-[reg.eu-west.env.prod]
+[region.us-east.env.client-test]
+[region.us-east.env.prod]
+[region.eu-west.env.client-test]
+[region.eu-west.env.prod]
 
 # Service IAM
-[reg.us-east.env.client-test.service.iam]
+[region.us-east.env.client-test.service.iam]
 base_url = "https://iam-client-test.us-east.philips-healthsuite.com"
 oidc_configuration = "https://iam-client-test.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
-[reg.eu-west.env.client-test.service.iam]
+[region.eu-west.env.client-test.service.iam]
 base_url = "https://iam-client-test.eu-west.philips-healthsuite.com"
 oidc_configuration = "https://iam-client-test.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 
 # Service IDM
-[reg.us-east.env.client-test.service.idm]
+[region.us-east.env.client-test.service.idm]
 base_url = "https://idm-client-test.us-east.philips-healthsuite.com"
-[reg.eu-west.env.client-test.service.idm]
+[region.eu-west.env.client-test.service.idm]
 base_url = "https://idm-client-test.eu-west.philips-healthsuite.com"
-[reg.us-east.env.prod.service.idm]
+[region.us-east.env.prod.service.idm]
 base_url = "https://idm-service.us-east.philips-healthsuite.com"
-[reg.eu-west.env.prod.service.idm]
+[region.eu-west.env.prod.service.idm]
 base_url = "https://idm-service.eu-west.philips-healthsuite.com"
 
 # Service CARTEL
-[reg.us-east.service.cartel]
+[region.us-east.service.cartel]
 host = "cartel-na1.cloud.phsdp.com"
 
 # Service S3CREDS
-[reg.us-east.env.client-test.service.s3creds]
+[region.us-east.env.client-test.service.s3creds]
 base_url = "https://s3creds-client-test.us-east.philips-healthsuite.com"
 
 # Service HAS
-[reg.eu-west.env.client-test.service.has]
+[region.eu-west.env.client-test.service.has]
 base_url = "https://has-client-test.eu-west.philips-healthsuite.com"
