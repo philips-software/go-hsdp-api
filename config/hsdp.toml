@@ -1,0 +1,94 @@
+# This is a global registry for public HSDP services
+# containing most static configuration. Its main purpose is to 
+# reduce configuration parameters and drive automation of the 
+# platform further by having a human and machine readable source of
+# common configuration parameters
+# 
+# Before using it as your source of truth please confirm it has
+# the expected values.
+#
+# Also it goes without saying, but we will say it anyway:
+# It is your responsibilty to ensure correct configuration of 
+# your deployments.
+#
+# If you spot errors or incomplete information please raise a 
+# PR. Thanks!
+#
+# Definitions:
+#
+# Region - a geographical region where services are deployed
+# Environment - a stage within a geographical region to aid in phased deployment 
+# Service - a consumable software service
+# Instance - a specific deployment of a service
+#
+# Hierarchy example:
+#
+# Earth
+#   Region us-east
+#     Environment client-test
+#       Service iam
+#       Service idm
+#       Service cartel
+#     Environemnt production
+#       Service iam
+#       Service idm
+#       Service cartel
+#       Service cdr
+#       
+#   Region eu-west
+#     Environment client-test
+#       Service idm
+#       Service idm
+#       Service has
+#    Environemnt production
+#       Service iam
+#       Service idm
+#       Service s3cred
+# 
+# Nesting syntax: [region.environment.service.instance]
+#
+# When a service/configuration is tied to a region its value
+# will appear directly under that region. Similar for environment
+# bound configuration. An example is Cloud foundry, which has a single deployment per region
+
+# Regions
+[us-east]
+cf_api = "https://api.cloud.pcftest.com"
+[eu-west]
+cf_api = "https://api.eu1.phsdp.com"
+
+# Environments
+[us-east.client-test]
+[us-east.prod]
+[eu-west.client-test]
+[eu-west.prod]
+
+# Service IAM
+[us-east.client-test.iam]
+base_url = "https://iam-client-test.us-east.philips-healthsuite.com"
+oidc_configuration = "https://iam-client-test.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
+[eu-west.client-test.iam]
+base_url = "https://iam-client-test.eu-west.philips-healthsuite.com"
+oidc_configuration = "https://iam-client-test.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
+
+# Service IDM
+[us-east.client-test.idm]
+base_url = "https://idm-client-test.us-east.philips-healthsuite.com"
+[eu-west.client-test.idm]
+base_url = "https://idm-client-test.eu-west.philips-healthsuite.com"
+[us-east.prod.idm]
+base_url = "https://idm-service.us-east.philips-healthsuite.com"
+[eu-west.prod.idm]
+base_url = "https://idm-service.eu-west.philips-healthsuite.com"
+
+# Service CARTEL
+[us-east.client-test.cartel]
+host = "cartel-na1.cloud.phsdp.com"
+
+# Service S3CREDS
+[us-east.client-test.s3creds]
+base_url = "https://s3creds-client-test.us-east.philips-healthsuite.com"
+
+# Service HAS
+[eu-west.client-test.has]
+base_url = "https://has-client-test.eu-west.philips-healthsuite.com"
