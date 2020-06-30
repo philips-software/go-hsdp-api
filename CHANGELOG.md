@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## v0.19.0
+- [NEW] Service/config discovery
+- Share structs with gautocloud-connectors
+
+## v0.18.0
+- [NEW] IronIO Worker support
+  Codes CRUD
+  Tasks CRUD
+  Schedules CRUD
+  Clusters Read/stats
+
 ## v0.17.0
 - [IAM] Metadata field changes
 
