@@ -70,32 +70,56 @@ api_url = "https://api.eu1.phsdp.com"
 [region.eu-west.env.client-test]
 [region.eu-west.env.prod]
 
+# Service DOCKER
+[region.us-east.service.docker]
+host = "docker.na1.hsdp.io"
+[region.eu-west.service.docker]
+host = "docker.eu1.hsdp.io"
+
+# Service CONSOLE
+[region.us-east.service.console]
+url = "https://console.na1.hsdp.io"
+[region.eu-west.service.console]
+url = "https://console.eu1.hsdp.io"
+
+# Service KIBANA
+[region.us-east.env.client-test.service.kibana]
+url = "https://kibana-client-test.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.kibana]
+url = "https://kibana.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.kibana]
+url = "https://kibana-client-test.eu-east.philips-healthsuite.com"
+[region.eu-west.env.prod.service.kibana]
+url = "https://kibana.eu-west.philips-healthsuite.com"
+
 # Service IAM
 [region.us-east.env.client-test.service.iam]
-base_url = "https://iam-client-test.us-east.philips-healthsuite.com"
+url = "https://iam-client-test.us-east.philips-healthsuite.com"
 oidc_configuration = "https://iam-client-test.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.eu-west.env.client-test.service.iam]
-base_url = "https://iam-client-test.eu-west.philips-healthsuite.com"
+url = "https://iam-client-test.eu-west.philips-healthsuite.com"
 oidc_configuration = "https://iam-client-test.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 
 # Service IDM
 [region.us-east.env.client-test.service.idm]
-base_url = "https://idm-client-test.us-east.philips-healthsuite.com"
+url = "https://idm-client-test.us-east.philips-healthsuite.com"
 [region.eu-west.env.client-test.service.idm]
-base_url = "https://idm-client-test.eu-west.philips-healthsuite.com"
+url = "https://idm-client-test.eu-west.philips-healthsuite.com"
 [region.us-east.env.prod.service.idm]
-base_url = "https://idm-service.us-east.philips-healthsuite.com"
+url = "https://idm-service.us-east.philips-healthsuite.com"
 [region.eu-west.env.prod.service.idm]
-base_url = "https://idm-service.eu-west.philips-healthsuite.com"
+url = "https://idm-service.eu-west.philips-healthsuite.com"
 
 # Service CARTEL
 [region.us-east.service.cartel]
 host = "cartel-na1.cloud.phsdp.com"
+[region.eu-west.service.cartel]
+host = "cartel-eu1.cloud.phsdp.com"
 
 # Service S3CREDS
 [region.us-east.env.client-test.service.s3creds]
-base_url = "https://s3creds-client-test.us-east.philips-healthsuite.com"
+url = "https://s3creds-client-test.us-east.philips-healthsuite.com"
 
 # Service HAS
 [region.eu-west.env.client-test.service.has]
-base_url = "https://has-client-test.eu-west.philips-healthsuite.com"
+url = "https://has-client-test.eu-west.philips-healthsuite.com"
