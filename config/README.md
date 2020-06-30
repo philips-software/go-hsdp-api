@@ -1,12 +1,15 @@
 # Config
-Many services have specific endpoints per region. The config API helps you
-discover the available services and their settings
+Services have specific endpoints per region. Thisconfig API helps you
+discover the available services and their settings. Since the data is
+machine readable this enables auto configuration of endpoints.
 
 # Canonical source
 The canonical source for configuration is:
 https://github.com/philips-software/go-hsdp-api/blob/master/config/hsdp.toml
 
 # Example
+Determine the IAM base URL of a region and environment
+
 ```go
 package main
 
