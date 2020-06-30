@@ -77,12 +77,16 @@ api_url = "https://api.sys.sa1.hsdp.io"
 host = "docker.na1.hsdp.io"
 [region.eu-west.service.docker]
 host = "docker.eu1.hsdp.io"
+[region.sa1.service.docker]
+host = "docker.sa1.hsdp.io"
 
 # Service CONSOLE
 [region.us-east.service.console]
 url = "https://console.na1.hsdp.io"
 [region.eu-west.service.console]
 url = "https://console.eu1.hsdp.io"
+[region.sa1.service.console]
+url = "https://console.sa1.hsdp.io"
 
 # Service IAM
 [region.us-east.env.client-test.service.iam]
@@ -167,3 +171,10 @@ kibana_url = "https://kibana-client-test.us-east.philips-healthsuite.com"
 [region.us-east.env.prod.service.logging]
 ingestor_url = "https://logingestor2.us-east.philips-healthsuite.com"
 kibana_url = "https://kibana.us-east.philips-healthsuite.com"
+[region.sa1.env.client-test.service.logging]
+ingestor_url = "https://logingestor2-client-test.sa1.hsdp.io"
+kibana_url = "https://kibana-client-test.sa1.hsdp.io"
+[region.sa1.env.prod.service.logging]
+ingestor_url = "https://logingestor2.sa1.hsdp.io"
+kibana_url = "https://kibana.sa1.hsdp.io"
+
