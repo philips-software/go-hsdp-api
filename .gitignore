@@ -9,3 +9,4 @@ example/
 debug.test
 launch.json
 .idea/
+.vscode/
