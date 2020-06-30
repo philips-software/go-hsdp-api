@@ -82,16 +82,6 @@ url = "https://console.na1.hsdp.io"
 [region.eu-west.service.console]
 url = "https://console.eu1.hsdp.io"
 
-# Service KIBANA
-[region.us-east.env.client-test.service.kibana]
-url = "https://kibana-client-test.us-east.philips-healthsuite.com"
-[region.us-east.env.prod.service.kibana]
-url = "https://kibana.us-east.philips-healthsuite.com"
-[region.eu-west.env.client-test.service.kibana]
-url = "https://kibana-client-test.eu-east.philips-healthsuite.com"
-[region.eu-west.env.prod.service.kibana]
-url = "https://kibana.eu-west.philips-healthsuite.com"
-
 # Service IAM
 [region.us-east.env.client-test.service.iam]
 url = "https://iam-client-test.us-east.philips-healthsuite.com"
@@ -143,9 +133,13 @@ url = "https://cdr-stu3-sandbox.us-east.philips-healthsuite.com"
 # Service LOGGING
 [region.eu-west.env.client-test.service.logging]
 ingestor_url = "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
+kibana_url = "https://kibana-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.logging]
 ingestor_url = "https://logingestor2.eu-west.philips-healthsuite.com"
+kibana_url = "https://kibana.eu-west.philips-healthsuite.com"
 [region.us-east.env.client-test.service.logging]
 ingestor_url = "https://logingestor2-client-test.us-east.philips-healthsuite.com"
+kibana_url = "https://kibana-client-test.us-east.philips-healthsuite.com"
 [region.us-east.env.prod.service.logging]
 ingestor_url = "https://logingestor2.us-east.philips-healthsuite.com"
+kibana_url = "https://kibana.us-east.philips-healthsuite.com"
