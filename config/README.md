@@ -1,5 +1,5 @@
 # Config
-Many services have specific endpoints per region. Th config API helps you
+Many services have specific endpoints per region. The config API helps you
 discover the available services and their settings
 
 # Canonical source
@@ -28,4 +28,5 @@ func main() {
 		return
 	}
 	fmt.Printf("IAM Base URL: %s\n", baseIAMURLInUSEastClientTest)
+}
 ```
