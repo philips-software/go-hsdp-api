@@ -63,6 +63,8 @@
 api_url = "https://api.cloud.pcftest.com"
 [region.eu-west.service.cf]
 api_url = "https://api.eu1.phsdp.com"
+[region.sa1.service.cf]
+api_url = "https://api.sys.sa1.hsdp.io"
 
 # Environments
 [region.us-east.env.client-test]
@@ -95,6 +97,10 @@ oidc_configuration = "https://iam-client-test.eu-west.philips-healthsuite.com/au
 [region.eu-west.env.prod.service.iam]
 url = "https://iam-service.eu-west.philips-healthsuite.com"
 oidc_configuration = "https://iam-service.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
+[region.sa1.env.client-test.service.iam]
+url = "https://iam-client-test.sa1.hsdp.io"
+[region.sa1.env.prod.service.iam]
+url = "https://iam-service.sa1.hsdp.io"
 
 # Service IDM
 [region.us-east.env.client-test.service.idm]
@@ -105,6 +111,24 @@ url = "https://idm-client-test.eu-west.philips-healthsuite.com"
 url = "https://idm-service.us-east.philips-healthsuite.com"
 [region.eu-west.env.prod.service.idm]
 url = "https://idm-service.eu-west.philips-healthsuite.com"
+[region.sa1.env.client-test.service.idm]
+url = "https://idm-client-test.sa1.hsdp.io"
+[region.sa1.env.prod.service.idm]
+url = "https://idm-service.sa1.hsdp.io"
+
+# Service AUTHUI
+[region.us-east.env.client-test.service.authui]
+url = "https://authui-client-test.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.authui]
+url = "https://authui-client-test.eu-west.philips-healthsuite.com"
+[region.us-east.env.prod.service.authui]
+url = "https://authui-service.us-east.philips-healthsuite.com"
+[region.eu-west.env.prod.service.authui]
+url = "https://authui-service.eu-west.philips-healthsuite.com"
+[region.sa1.env.client-test.service.authui]
+url = "https://authui-client-test.sa1.hsdp.io"
+[region.sa1.env.prod.service.authui]
+url = "https://authui-service.sa1.hsdp.io"
 
 # Service CARTEL
 [region.us-east.service.cartel]
