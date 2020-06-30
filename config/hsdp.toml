@@ -96,9 +96,15 @@ url = "https://kibana.eu-west.philips-healthsuite.com"
 [region.us-east.env.client-test.service.iam]
 url = "https://iam-client-test.us-east.philips-healthsuite.com"
 oidc_configuration = "https://iam-client-test.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
+[region.us-east.env.prod.service.iam]
+url = "https://iam-service.us-east.philips-healthsuite.com"
+oidc_configuration = "https://iam-service.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.eu-west.env.client-test.service.iam]
 url = "https://iam-client-test.eu-west.philips-healthsuite.com"
 oidc_configuration = "https://iam-client-test.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
+[region.eu-west.env.prod.service.iam]
+url = "https://iam-service.eu-west.philips-healthsuite.com"
+oidc_configuration = "https://iam-service.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 
 # Service IDM
 [region.us-east.env.client-test.service.idm]
@@ -119,7 +125,27 @@ host = "cartel-eu1.cloud.phsdp.com"
 # Service S3CREDS
 [region.us-east.env.client-test.service.s3creds]
 url = "https://s3creds-client-test.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.s3creds]
+url = "https://s3creds-service.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.s3creds]
+url = "https://s3creds-client-test.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.s3creds]
+url = "https://s3creds-service.eu-west.philips-healthsuite.com"
 
 # Service HAS
 [region.eu-west.env.client-test.service.has]
 url = "https://has-client-test.eu-west.philips-healthsuite.com"
+
+# Service CDR-STU3
+[region.us-east.env.sandbox.service.cdr-stu3]
+url = "https://cdr-stu3-sandbox.us-east.philips-healthsuite.com"
+
+# Service LOGGING
+[region.eu-west.env.client-test.service.logging]
+ingestor_url = "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.logging]
+ingestor_url = "https://logingestor2.eu-west.philips-healthsuite.com"
+[region.us-east.env.client-test.service.logging]
+ingestor_url = "https://logingestor2-client-test.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.logging]
+ingestor_url = "https://logingestor2.us-east.philips-healthsuite.com"
