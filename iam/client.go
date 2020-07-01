@@ -277,10 +277,10 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 		return err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Login failed: %d", resp.StatusCode)
+		return fmt.Errorf("login failed: %d", resp.StatusCode)
 	}
 	if tokenResponse.AccessToken == "" {
-		return fmt.Errorf("Login failed: invalid credentials")
+		return ErrNotAuthorized
 	}
 	c.tokenType = oAuthToken
 	c.token = tokenResponse.AccessToken
