@@ -9,22 +9,22 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	config, err := config.New()
+	c, err := config.New()
 	if !assert.Nil(t, err) {
 		return
 	}
-	if !assert.NotNil(t, config) {
+	if !assert.NotNil(t, c) {
 		return
 	}
 
-	iamService := config.
+	iamService := c.
 		Region("us-east").
 		Env("client-test").
 		Service("iam")
 	if !assert.NotNil(t, iamService) {
 		return
 	}
-	url, err := iamService.String("url")
+	url, err := iamService.String("iam_url")
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -32,15 +32,15 @@ func TestNew(t *testing.T) {
 }
 
 func TestCartel(t *testing.T) {
-	config, err := config.New()
+	c, err := config.New()
 	if !assert.Nil(t, err) {
 		return
 	}
-	if !assert.NotNil(t, config) {
+	if !assert.NotNil(t, c) {
 		return
 	}
 
-	cartelService := config.
+	cartelService := c.
 		Region("us-east").
 		Service("cartel")
 	if !assert.NotNil(t, cartelService) {
@@ -81,14 +81,14 @@ func TestOpts(t *testing.T) {
 }
 
 func TestMissing(t *testing.T) {
-	config, err := config.New()
+	c, err := config.New()
 	if !assert.Nil(t, err) {
 		return
 	}
-	if !assert.NotNil(t, config) {
+	if !assert.NotNil(t, c) {
 		return
 	}
-	missingService := config.
+	missingService := c.
 		Region("us-east").
 		Service("bogus")
 	assert.False(t, missingService.Available())
@@ -97,33 +97,36 @@ func TestMissing(t *testing.T) {
 }
 
 func TestServices(t *testing.T) {
-	config, err := config.New(
+	c, err := config.New(
 		config.WithRegion("us-east"),
 		config.WithEnv("client-test"))
 	if !assert.Nil(t, err) {
 		return
 	}
-	if !assert.NotNil(t, config) {
+	if !assert.NotNil(t, c) {
 		return
 	}
-	services := config.Services()
+	services := c.Services()
 	assert.Less(t, 0, len(services))
 }
 
 func TestKeys(t *testing.T) {
-	config, err := config.New(
+	c, err := config.New(
 		config.WithRegion("us-east"),
 		config.WithEnv("client-test"))
 	if !assert.Nil(t, err) {
 		return
 	}
-	if !assert.NotNil(t, config) {
+	if !assert.NotNil(t, c) {
 		return
 	}
-	cartel := config.Service("cartel")
+	cartel := c.Service("cartel")
 	assert.True(t, cartel.Available())
 	keys := cartel.Keys()
 	assert.Less(t, 0, len(keys))
 	_, err = cartel.String("bogus")
 	assert.NotNil(t, err)
+	port, err := cartel.Int("port")
+	assert.Equal(t, config.ErrNotFound, err)
+	assert.Equal(t, 0, port)
 }

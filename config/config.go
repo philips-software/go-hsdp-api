@@ -137,15 +137,27 @@ func (c *Config) Service(service string) *Service {
 }
 
 // String returns the string key of the Service
-func (s *Service) String(str string) (string, error) {
+func (s *Service) String(key string) (string, error) {
 	if s.config == nil {
-		return "", fmt.Errorf("missing config")
+		return "", ErrMissingConfig
 	}
-	out, ok := s.config.Get(str).(string)
+	out, ok := s.config.Get(key).(string)
 	if ok {
 		return out, nil
 	}
-	return "", fmt.Errorf("not found")
+	return "", ErrNotFound
+}
+
+// Int returns the int key of the Service
+func (s *Service) Int(key string) (int, error) {
+	if s.config == nil {
+		return 0, ErrMissingConfig
+	}
+	out, ok := s.config.Get(key).(int)
+	if ok {
+		return out, nil
+	}
+	return 0, ErrNotFound
 }
 
 // Available returns true if the Service exists and has data
