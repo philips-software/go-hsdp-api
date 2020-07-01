@@ -66,18 +66,12 @@ api_url = "https://api.eu1.phsdp.com"
 [region.sa1.service.cf]
 api_url = "https://api.sys.sa1.hsdp.io"
 
-# Environments
-[region.us-east.env.client-test]
-[region.us-east.env.prod]
-[region.eu-west.env.client-test]
-[region.eu-west.env.prod]
-
-# Service DOCKER
-[region.us-east.service.docker]
+# Service DOCKER-REGISTRY
+[region.us-east.service.docker-registry]
 host = "docker.na1.hsdp.io"
-[region.eu-west.service.docker]
+[region.eu-west.service.docker-registry]
 host = "docker.eu1.hsdp.io"
-[region.sa1.service.docker]
+[region.sa1.service.docker-registry]
 host = "docker.sa1.hsdp.io"
 
 # Service CONSOLE
@@ -90,49 +84,35 @@ url = "https://console.sa1.hsdp.io"
 
 # Service IAM
 [region.us-east.env.client-test.service.iam]
-url = "https://iam-client-test.us-east.philips-healthsuite.com"
+iam_url = "https://iam-client-test.us-east.philips-healthsuite.com"
+idm_url = "https://idm-client-test.us-east.philips-healthsuite.com"
+authui_url = "https://authui-client-test.us-east.philips-healthsuite.com"
 oidc_configuration = "https://iam-client-test.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.us-east.env.prod.service.iam]
-url = "https://iam-service.us-east.philips-healthsuite.com"
+iam_url = "https://iam-service.us-east.philips-healthsuite.com"
+idm_url = "https://idm-service.us-east.philips-healthsuite.com"
+authui_url = "https://authui-service.us-east.philips-healthsuite.com"
 oidc_configuration = "https://iam-service.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.eu-west.env.client-test.service.iam]
-url = "https://iam-client-test.eu-west.philips-healthsuite.com"
+iam_url = "https://iam-client-test.eu-west.philips-healthsuite.com"
+idm_url = "https://idm-client-test.eu-west.philips-healthsuite.com"
+authui_url = "https://authui-client-test.eu-west.philips-healthsuite.com"
 oidc_configuration = "https://iam-client-test.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.eu-west.env.prod.service.iam]
-url = "https://iam-service.eu-west.philips-healthsuite.com"
+iam_url = "https://iam-service.eu-west.philips-healthsuite.com"
+idm_url = "https://idm-service.eu-west.philips-healthsuite.com"
+authui_url = "https://authui-service.eu-west.philips-healthsuite.com"
 oidc_configuration = "https://iam-service.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.sa1.env.client-test.service.iam]
-url = "https://iam-client-test.sa1.hsdp.io"
+iam_url = "https://iam-client-test.sa1.hsdp.io"
+idm_url = "https://idm-client-test.sa1.hsdp.io"
+authui_url = "https://authui-client-test.sa1.hsdp.io"
+oidc_configuration = "https://iam-client-test.sa1.hsdp.io/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.sa1.env.prod.service.iam]
-url = "https://iam-service.sa1.hsdp.io"
-
-# Service IDM
-[region.us-east.env.client-test.service.idm]
-url = "https://idm-client-test.us-east.philips-healthsuite.com"
-[region.eu-west.env.client-test.service.idm]
-url = "https://idm-client-test.eu-west.philips-healthsuite.com"
-[region.us-east.env.prod.service.idm]
-url = "https://idm-service.us-east.philips-healthsuite.com"
-[region.eu-west.env.prod.service.idm]
-url = "https://idm-service.eu-west.philips-healthsuite.com"
-[region.sa1.env.client-test.service.idm]
-url = "https://idm-client-test.sa1.hsdp.io"
-[region.sa1.env.prod.service.idm]
-url = "https://idm-service.sa1.hsdp.io"
-
-# Service AUTHUI
-[region.us-east.env.client-test.service.authui]
-url = "https://authui-client-test.us-east.philips-healthsuite.com"
-[region.eu-west.env.client-test.service.authui]
-url = "https://authui-client-test.eu-west.philips-healthsuite.com"
-[region.us-east.env.prod.service.authui]
-url = "https://authui-service.us-east.philips-healthsuite.com"
-[region.eu-west.env.prod.service.authui]
-url = "https://authui-service.eu-west.philips-healthsuite.com"
-[region.sa1.env.client-test.service.authui]
-url = "https://authui-client-test.sa1.hsdp.io"
-[region.sa1.env.prod.service.authui]
-url = "https://authui-service.sa1.hsdp.io"
+iam_url = "https://iam-service.sa1.hsdp.io"
+idm_url = "https://idm-service.sa1.hsdp.io"
+authui_url = "https://authui-service.sa1.hsdp.io"
+oidc_configuration = "https://iam-service.sa1.hsdp.io/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 
 # Service CARTEL
 [region.us-east.service.cartel]
