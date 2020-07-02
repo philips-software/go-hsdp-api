@@ -20,7 +20,7 @@ func TestSecurityGroupDetails(t *testing.T) {
     }
   ]
 }`
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		Token:  sharedToken,
 		Secret: sharedSecret,
 		Host:   "foo",

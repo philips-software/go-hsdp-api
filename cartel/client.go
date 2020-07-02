@@ -17,9 +17,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/google/go-querystring/query"
+	autoconf "github.com/philips-software/go-hsdp-api/config"
 
-	"github.com/philips-software/go-hsdp-api/fhir"
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -29,13 +29,15 @@ const (
 
 // Config the client
 type Config struct {
-	Token      string `cloud:"token" json:"token"`
-	Secret     string `cloud:"secret" json:"secret"`
-	SkipVerify bool   `cloud:"skip_verify" json:"skip_verify"`
-	NoTLS      bool   `cloud:"no_tls" json:"no_tls"`
-	Host       string `cloud:"host" json:"host"`
-	Debug      bool   `cloud:"-" json:"debug,omitempty"`
-	DebugLog   string `cloud:"-" json:"debug_log,omitempty"`
+	Region      string `cloud:"-", json:"-"`
+	Environment string `cloud:"-" json:"-"`
+	Token       string `cloud:"token" json:"token"`
+	Secret      string `cloud:"secret" json:"secret"`
+	SkipVerify  bool   `cloud:"skip_verify" json:"skip_verify"`
+	NoTLS       bool   `cloud:"no_tls" json:"no_tls"`
+	Host        string `cloud:"host" json:"host"`
+	Debug       bool   `cloud:"-" json:"debug,omitempty"`
+	DebugLog    string `cloud:"-" json:"debug_log,omitempty"`
 }
 
 // Valid returns if all required config fields are present, false otherwise
@@ -54,7 +56,7 @@ func (c *Config) Valid() (bool, error) {
 
 // Client holds the client state
 type Client struct {
-	config     Config
+	config     *Config
 	httpClient *http.Client
 	baseURL    *url.URL
 	userAgent  string
@@ -77,8 +79,24 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
+func doAutoconf(config *Config) {
+	r := config.Region
+	e := config.Environment
+	if r != "" && e != "" {
+		ac, err := autoconf.New(
+			autoconf.WithRegion(r),
+			autoconf.WithEnv(e))
+		if err == nil {
+			loggingService := ac.Service("cartel")
+			if host, err := loggingService.GetString("host"); err == nil && config.Host == "" {
+				config.Host = host
+			}
+		}
+	}
+}
+
 // NewClient returns an instance of the logger client with the given Config
-func NewClient(httpClient *http.Client, config Config) (*Client, error) {
+func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = &http.Client{}
 		tr := &http.Transport{}
@@ -89,7 +107,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 		}
 		httpClient.Transport = tr
 	}
-
+	doAutoconf(config)
 	if valid, err := config.Valid(); !valid {
 		return nil, err
 	}
@@ -107,13 +125,17 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	if !strings.HasSuffix(host, "/") {
 		host += "/"
 	}
-
 	var err error
 	cartel.baseURL, err = url.Parse(host)
 	if err != nil {
 		return nil, err
 	}
 
+	configDebug(&cartel)
+	return &cartel, nil
+}
+
+func configDebug(cartel *Client) {
 	if cartel.config.Debug {
 		if cartel.config.DebugLog != "" {
 			debugFile, err := os.OpenFile(cartel.config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
@@ -125,7 +147,6 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 			cartel.debugFile = os.Stderr
 		}
 	}
-	return &cartel, nil
 }
 
 // Do sends an API request and returns the API response. The API response is
@@ -150,9 +171,9 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if c.config.Debug {
 		if resp != nil {
 			dumped, _ := httputil.DumpResponse(resp, true)
-			fmt.Fprintf(c.debugFile, "RESPONSE: %s\n", string(dumped))
+			_, _ = fmt.Fprintf(c.debugFile, "RESPONSE: %s\n", string(dumped))
 		} else {
-			fmt.Fprintf(c.debugFile, "Error sending response: %s\n", err)
+			_, _ = fmt.Fprintf(c.debugFile, "Error sending response: %s\n", err)
 		}
 	}
 
@@ -182,31 +203,13 @@ type ErrorResponse struct {
 	Description string         `json:"description"`
 }
 
-func (e ErrorResponse) Error() string {
-	path, _ := url.QueryUnescape(e.Response.Request.URL.Opaque)
-	u := fmt.Sprintf("%s://%s%s", e.Response.Request.URL.Scheme, e.Response.Request.URL.Host, path)
-	return fmt.Sprintf("%s %s: %d %s", e.Response.Request.Method, u, e.Response.StatusCode, e.Message)
-}
-
 // CheckResponse checks the API response for errors, and returns them if present.
 func CheckResponse(r *http.Response) error {
 	switch r.StatusCode {
 	case 200, 201, 202, 204, 304:
 		return nil
 	}
-
-	errorResponse := &ErrorResponse{Response: r}
-	data, err := ioutil.ReadAll(r.Body)
-	if err == nil && data != nil {
-		var raw interface{}
-		if err := json.Unmarshal(data, &raw); err != nil {
-			errorResponse.Message = "failed to parse unknown error format"
-		}
-
-		errorResponse.Message = fhir.ParseError(raw)
-	}
-
-	return errorResponse
+	return ErrNonHttp20xResponse
 }
 
 // NewRequest creates an API request. A relative URL path can be provided in

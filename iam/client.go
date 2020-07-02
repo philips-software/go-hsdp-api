@@ -18,6 +18,7 @@ import (
 	validator "github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
 	"github.com/google/uuid"
+	autoconf "github.com/philips-software/go-hsdp-api/config"
 	"github.com/philips-software/go-hsdp-api/fhir"
 	hsdpsigner "github.com/philips-software/go-hsdp-signer"
 )
@@ -50,6 +51,8 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
+	Region           string
+	Environment      string
 	OAuth2ClientID   string
 	OAuth2Secret     string
 	SharedKey        string
@@ -119,6 +122,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
+	doAutoconf(config)
 	c := &Client{client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseIAMURL(c.config.IAMURL); err != nil {
 		return nil, err
@@ -156,6 +160,23 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Services = &ServicesService{client: c}
 	c.MFAPolicies = &MFAPoliciesService{client: c, validate: validator.New()}
 	return c, nil
+}
+
+func doAutoconf(config *Config) {
+	if config.Region != "" && config.Environment != "" {
+		c, err := autoconf.New(
+			autoconf.WithRegion(config.Region),
+			autoconf.WithEnv(config.Environment))
+		if err == nil {
+			iamService := c.Service("iam")
+			if iamURL, err := iamService.GetString("iam_url"); err == nil && config.IAMURL == "" {
+				config.IAMURL = iamURL
+			}
+			if idmURL, err := iamService.GetString("idm_url"); err == nil && config.IDMURL == "" {
+				config.IDMURL = idmURL
+			}
+		}
+	}
 }
 
 func (c *Client) validSigner() bool {

@@ -10,7 +10,7 @@ import (
 func TestAddTags(t *testing.T) {
 	var addResponse = `{"message": "Added tags foo, bar to foo.dev"}`
 
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		NoTLS:      true,
 		SkipVerify: true,
 		Token:      sharedToken,

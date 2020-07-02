@@ -8,7 +8,7 @@ import (
 )
 
 func TestRoles(t *testing.T) {
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		NoTLS:      true,
 		SkipVerify: true,
 		Token:      sharedToken,

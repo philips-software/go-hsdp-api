@@ -16,6 +16,8 @@ import (
 	"strconv"
 	"strings"
 
+	autoconf "github.com/philips-software/go-hsdp-api/config"
+
 	signer "github.com/philips-software/go-hsdp-signer"
 	errors "golang.org/x/xerrors"
 )
@@ -57,6 +59,8 @@ var (
 
 // Config the client
 type Config struct {
+	Region       string
+	Environment  string
 	SharedKey    string
 	SharedSecret string
 	BaseURL      string
@@ -83,7 +87,7 @@ func (c *Config) Valid() (bool, error) {
 
 // Client holds the client state
 type Client struct {
-	config     Config
+	config     *Config
 	url        *url.URL
 	httpClient *http.Client
 	httpSigner *signer.Signer
@@ -103,9 +107,21 @@ type CustomIndexBody []struct {
 }
 
 // NewClient returns an instance of the logger client with the given Config
-func NewClient(httpClient *http.Client, config Config) (*Client, error) {
+func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
+	}
+	// Autoconfig
+	if config.Region != "" && config.Environment != "" {
+		c, err := autoconf.New(
+			autoconf.WithRegion(config.Region),
+			autoconf.WithEnv(config.Environment))
+		if err == nil {
+			loggingService := c.Service("logging")
+			if ingestorURL, err := loggingService.GetString("ingestor_url"); err == nil && config.BaseURL == "" {
+				config.BaseURL = ingestorURL
+			}
+		}
 	}
 	if valid, err := config.Valid(); !valid {
 		return nil, err

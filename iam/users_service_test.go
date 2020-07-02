@@ -396,7 +396,9 @@ func TestUserActions(t *testing.T) {
 	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID+"/$mfa",
 		actionRequestHandler(t, "setMFA", "TODO: fix", http.StatusAccepted))
 	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID+"/$unlock",
-		actionRequestHandler(t, "unlock", "TODO: fix", http.StatusNoContent))
+		actionRequestHandler(t, "unlock", "", http.StatusNoContent))
+	muxIDM.HandleFunc("/authorize/identity/User/"+userUUID+"/$change-loginid",
+		actionRequestHandler(t, "unlock", "", http.StatusNoContent))
 
 	ok, resp, err := client.Users.ResendActivation("foo@bar.com")
 	if !assert.NotNil(t, resp) {
@@ -453,6 +455,17 @@ func TestUserActions(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+
+	ok, resp, err = client.Users.ChangeLoginID(Person{
+		ID:      userUUID,
+		LoginID: "ronswanon1",
+	}, "ronswanson2")
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 }
 
 func actionRequestHandler(t *testing.T, paramName, informationalMessage string, statusCode int) func(http.ResponseWriter, *http.Request) {
@@ -465,7 +478,8 @@ func actionRequestHandler(t *testing.T, paramName, informationalMessage string, 
 		}
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		w.WriteHeader(statusCode)
-		_, _ = io.WriteString(w, `{
+		if informationalMessage != "" {
+			_, _ = io.WriteString(w, `{
 			"resourceType": "OperationOutcome",
 			"issue": [
 				{
@@ -476,6 +490,7 @@ func actionRequestHandler(t *testing.T, paramName, informationalMessage string, 
 					}
 				}
 			]
-		}`)
+		  }`)
+		}
 	}
 }

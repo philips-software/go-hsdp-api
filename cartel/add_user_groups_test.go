@@ -10,7 +10,7 @@ import (
 func TestAddUserGroups(t *testing.T) {
 	var addResponse = `{"foo.dev.com": {"ldap_groups": ["foo", "bar"]}}`
 
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		NoTLS:      true,
 		SkipVerify: true,
 		Token:      sharedToken,

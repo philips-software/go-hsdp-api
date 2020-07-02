@@ -10,7 +10,7 @@ import (
 func TestRemoveUserGroups(t *testing.T) {
 	var addResponse = `{"message": "Security group(s) foo removed from foo.dev.com"}`
 
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		NoTLS:      true,
 		SkipVerify: true,
 		Token:      sharedToken,

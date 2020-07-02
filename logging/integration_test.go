@@ -17,7 +17,7 @@ func TestIntegration(t *testing.T) {
 	if key == "" || secret == "" || productKey == "" || ingestorURL == "" {
 		return
 	}
-	intClient, err := NewClient(nil, Config{
+	intClient, err := NewClient(nil, &Config{
 		SharedKey:    key,
 		SharedSecret: secret,
 		ProductKey:   productKey,

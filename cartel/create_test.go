@@ -21,7 +21,7 @@ func TestCreate(t *testing.T) {
   "result": "Success"
 }`
 
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		Token:  sharedToken,
 		Secret: sharedSecret,
 		Host:   "foo",

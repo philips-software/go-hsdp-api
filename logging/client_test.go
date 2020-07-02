@@ -64,7 +64,7 @@ const (
 	sharedSecret = "SharedSecret"
 )
 
-func setup(t *testing.T, config Config, method string, statusCode int, responseBody string) (func(), error) {
+func setup(t *testing.T, config *Config, method string, statusCode int, responseBody string) (func(), error) {
 	var err error
 
 	muxLogger = http.NewServeMux()
@@ -135,7 +135,7 @@ func setup(t *testing.T, config Config, method string, statusCode int, responseB
 }
 
 func TestStoreResources(t *testing.T) {
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		SharedKey:    sharedKey,
 		SharedSecret: sharedSecret,
 		ProductKey:   productKey,
@@ -167,7 +167,7 @@ func TestStoreResources(t *testing.T) {
 }
 
 func TestStoreResourcesWithInvalidKey(t *testing.T) {
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		SharedKey:    sharedKey,
 		SharedSecret: sharedSecret,
 		ProductKey:   "089db3e5-3e3e-4445-8903-29cc848194b1",
@@ -200,7 +200,7 @@ func TestStoreResourcesWithInvalidKey(t *testing.T) {
 
 func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
 	_ = os.Setenv("DEBUG", "true")
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		SharedKey:    "bogus",
 		SharedSecret: "keys",
 		ProductKey:   productKey,
@@ -230,13 +230,13 @@ func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
 func TestConfig(t *testing.T) {
 	_ = os.Setenv("DEBUG", "false")
 	var errSet = []struct {
-		config Config
+		config *Config
 		err    error
 	}{
-		{Config{SharedKey: "", SharedSecret: "bar", ProductKey: "key", BaseURL: "http://foo"}, ErrMissingSharedKey},
-		{Config{SharedKey: "foo", SharedSecret: "", ProductKey: "key", BaseURL: "http://foo"}, ErrMissingSharedSecret},
-		{Config{SharedKey: "foo", SharedSecret: "bar", ProductKey: "", BaseURL: "http://foo"}, ErrMissingProductKey},
-		{Config{SharedKey: "foo", SharedSecret: "bar", ProductKey: "key", BaseURL: ""}, ErrMissingBaseURL},
+		{&Config{SharedKey: "", SharedSecret: "bar", ProductKey: "key", BaseURL: "http://foo"}, ErrMissingSharedKey},
+		{&Config{SharedKey: "foo", SharedSecret: "", ProductKey: "key", BaseURL: "http://foo"}, ErrMissingSharedSecret},
+		{&Config{SharedKey: "foo", SharedSecret: "bar", ProductKey: "", BaseURL: "http://foo"}, ErrMissingProductKey},
+		{&Config{SharedKey: "foo", SharedSecret: "bar", ProductKey: "key", BaseURL: ""}, ErrMissingBaseURL},
 	}
 	for _, tt := range errSet {
 		teardown, err := setup(t, tt.config, "POST", http.StatusCreated, "")
@@ -279,7 +279,7 @@ func TestReplaceScaryCharacters(t *testing.T) {
 
 func TestStoreResourcesWithBadResources(t *testing.T) {
 	_ = os.Setenv("DEBUG", "true")
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		SharedKey:    sharedKey,
 		SharedSecret: sharedSecret,
 		ProductKey:   productKey,
@@ -336,4 +336,25 @@ func TestStoreResourcesWithBadResources(t *testing.T) {
 	}
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	assert.Equal(t, ErrBatchErrors, err)
+}
+
+func TestAutoconfig(t *testing.T) {
+	cfg := &Config{
+		SharedSecret: "alice",
+		SharedKey:    "foo",
+		Region:       "us-east",
+		Environment:  "client-test",
+	}
+
+	_, err := NewClient(nil, cfg)
+	if !assert.Equal(t, ErrMissingProductKey, err) {
+		return
+	}
+	assert.NotEmpty(t, cfg.BaseURL)
+
+	// Explicit config always wins over autoconfig
+	foo := "https://foo.com"
+	cfg.BaseURL = foo
+	_, _ = NewClient(nil, cfg)
+	assert.Equal(t, foo, cfg.BaseURL)
 }
