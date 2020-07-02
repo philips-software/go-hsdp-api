@@ -79,6 +79,22 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
+func doAutoconf(config *Config) {
+	r := config.Region
+	e := config.Environment
+	if r != "" && e != "" {
+		ac, err := autoconf.New(
+			autoconf.WithRegion(r),
+			autoconf.WithEnv(e))
+		if err == nil {
+			loggingService := ac.Service("cartel")
+			if host, err := loggingService.GetString("host"); err == nil && config.Host == "" {
+				config.Host = host
+			}
+		}
+	}
+}
+
 // NewClient returns an instance of the logger client with the given Config
 func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
@@ -91,18 +107,7 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 		}
 		httpClient.Transport = tr
 	}
-	// Autoconfig
-	if config.Region != "" && config.Environment != "" {
-		c, err := autoconf.New(
-			autoconf.WithRegion(config.Region),
-			autoconf.WithEnv(config.Environment))
-		if err == nil {
-			loggingService := c.Service("cartel")
-			if host, err := loggingService.GetString("host"); err == nil && config.Host == "" {
-				config.Host = host
-			}
-		}
-	}
+	doAutoconf(config)
 	if valid, err := config.Valid(); !valid {
 		return nil, err
 	}
@@ -120,13 +125,17 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if !strings.HasSuffix(host, "/") {
 		host += "/"
 	}
-
 	var err error
 	cartel.baseURL, err = url.Parse(host)
 	if err != nil {
 		return nil, err
 	}
 
+	configDebug(&cartel)
+	return &cartel, nil
+}
+
+func configDebug(cartel *Client) {
 	if cartel.config.Debug {
 		if cartel.config.DebugLog != "" {
 			debugFile, err := os.OpenFile(cartel.config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
@@ -138,7 +147,6 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 			cartel.debugFile = os.Stderr
 		}
 	}
-	return &cartel, nil
 }
 
 // Do sends an API request and returns the API response. The API response is
