@@ -1,9 +1,12 @@
+//go:generate go-bindata -pkg config -o bindata.go hsdp.toml
 package config
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/pelletier/go-toml"
 )
@@ -40,10 +43,23 @@ func New(opts ...OptionFunc) (*Config, error) {
 	if config.source == nil {
 		resp, err := http.Get(CanonicalURL)
 		if err != nil {
-			return nil, err
+			// Fallback to baked in copy in case github.com is down,
+			// but only if its not older than 180 days
+			if bakedInCopy, err := hsdpToml(); err != nil ||
+				bakedInCopy.info.ModTime().Before(time.Now().AddDate(0, 0, -180)) {
+				return nil, ErrUnreachableOrOutdatedConfigSource
+			} else {
+				data, err := Asset(bakedInCopy.info.Name())
+				if err != nil {
+					return nil, err
+					// Asset was not found.
+				}
+				config.source = bytes.NewReader(data)
+			}
+		} else {
+			defer resp.Body.Close()
+			config.source = resp.Body
 		}
-		defer resp.Body.Close()
-		config.source = resp.Body
 	}
 	content, err := toml.LoadReader(config.source)
 	if err != nil {
