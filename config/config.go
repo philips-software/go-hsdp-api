@@ -113,6 +113,17 @@ func (c *Config) Env(environment string) *Config {
 	}
 }
 
+// Regions returns the known regions
+func (c *Config) Regions() []string {
+	regions := make([]string, 0)
+	// region level
+	regional, ok := c.config.Get(fmt.Sprintf("region")).(*toml.Tree)
+	if ok && len(regional.Keys()) > 0 {
+		regions = append(regions, regional.Keys()...)
+	}
+	return regions
+}
+
 // Services returns a list of available services in the region
 func (c *Config) Services() []string {
 	services := make([]string, 0)

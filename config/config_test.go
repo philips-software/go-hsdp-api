@@ -117,6 +117,19 @@ func TestMissing(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestRegions(t *testing.T) {
+	c, err := localConfig(t)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, c) {
+		return
+	}
+	regions := c.Regions()
+	assert.Less(t, 0, len(regions))
+	assert.Contains(t, regions, "eu-west")
+}
+
 func TestServices(t *testing.T) {
 	c, err := localConfig(t)
 	if !assert.Nil(t, err) {
