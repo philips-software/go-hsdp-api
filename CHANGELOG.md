@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## v0.20.0
+- Autoconfig support for IAM, Cartel and Logging
+- Add ap3 region
+- Fallback mechanism for discovery
+
 ## v0.19.0
 - [NEW] Service/config discovery
 - Share structs with gautocloud-connectors
