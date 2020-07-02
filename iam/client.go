@@ -129,10 +129,10 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 			autoconf.WithEnv(config.Environment))
 		if err == nil {
 			iamService := c.Service("iam")
-			if iamURL, err := iamService.String("iam_url"); err == nil && config.IAMURL == "" {
+			if iamURL, err := iamService.GetString("iam_url"); err == nil && config.IAMURL == "" {
 				config.IAMURL = iamURL
 			}
-			if idmURL, err := iamService.String("idm_url"); err == nil && config.IDMURL == "" {
+			if idmURL, err := iamService.GetString("idm_url"); err == nil && config.IDMURL == "" {
 				config.IDMURL = idmURL
 			}
 		}

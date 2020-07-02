@@ -98,7 +98,7 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 			autoconf.WithEnv(config.Environment))
 		if err == nil {
 			loggingService := c.Service("cartel")
-			if host, err := loggingService.String("host"); err == nil && config.Host == "" {
+			if host, err := loggingService.GetString("host"); err == nil && config.Host == "" {
 				config.Host = host
 			}
 		}

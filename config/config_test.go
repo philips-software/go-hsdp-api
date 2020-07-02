@@ -24,7 +24,7 @@ func TestNew(t *testing.T) {
 	if !assert.NotNil(t, iamService) {
 		return
 	}
-	url, err := iamService.String("iam_url")
+	url, err := iamService.GetString("iam_url")
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -46,7 +46,7 @@ func TestCartel(t *testing.T) {
 	if !assert.NotNil(t, cartelService) {
 		return
 	}
-	host, err := cartelService.String("host")
+	host, err := cartelService.GetString("host")
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -72,7 +72,7 @@ func TestOpts(t *testing.T) {
 	if !assert.NotNil(t, c) {
 		return
 	}
-	host, err := c.Service("cartel").String("host")
+	host, err := c.Service("cartel").GetString("host")
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -92,7 +92,7 @@ func TestMissing(t *testing.T) {
 		Region("us-east").
 		Service("bogus")
 	assert.False(t, missingService.Available())
-	_, err = missingService.String("foo")
+	_, err = missingService.GetString("foo")
 	assert.NotNil(t, err)
 }
 
@@ -124,9 +124,9 @@ func TestKeys(t *testing.T) {
 	assert.True(t, cartel.Available())
 	keys := cartel.Keys()
 	assert.Less(t, 0, len(keys))
-	_, err = cartel.String("bogus")
+	_, err = cartel.GetString("bogus")
 	assert.NotNil(t, err)
-	port, err := cartel.Int("port")
+	port, err := cartel.GetInt("port")
 	assert.Equal(t, config.ErrNotFound, err)
 	assert.Equal(t, 0, port)
 }

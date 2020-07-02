@@ -149,7 +149,7 @@ func (c *Config) Service(service string) *Service {
 }
 
 // String returns the string key of the Service
-func (s *Service) String(key string) (string, error) {
+func (s *Service) GetString(key string) (string, error) {
 	if s.config == nil {
 		return "", ErrMissingConfig
 	}
@@ -160,8 +160,8 @@ func (s *Service) String(key string) (string, error) {
 	return "", ErrNotFound
 }
 
-// Int returns the int key of the Service
-func (s *Service) Int(key string) (int, error) {
+// GetInt returns the int key of the Service
+func (s *Service) GetInt(key string) (int, error) {
 	if s.config == nil {
 		return 0, ErrMissingConfig
 	}
