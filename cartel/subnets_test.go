@@ -22,7 +22,7 @@ func TestSubnets(t *testing.T) {
     "network": "192.68.8.0/21"
   }
 }`
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		Token:  sharedToken,
 		Secret: sharedSecret,
 		Host:   "foo",

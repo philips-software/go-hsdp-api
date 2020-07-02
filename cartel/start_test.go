@@ -11,7 +11,7 @@ func TestStart(t *testing.T) {
 	var startResponse = `{"message": {"foo.dev": {"cartel": "Instance started"}}}`
 	var _ = `{"message": "Instance cannot be started due to current state: running"}`
 
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		Token:  sharedToken,
 		Secret: sharedSecret,
 		Host:   "foo",
@@ -42,7 +42,7 @@ func TestStart(t *testing.T) {
 func TestAlreadyRunning(t *testing.T) {
 	var failResponse = `{"message": "Instance cannot be started due to current state: running"}`
 
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		Token:  sharedToken,
 		Secret: sharedSecret,
 		Host:   "foo",

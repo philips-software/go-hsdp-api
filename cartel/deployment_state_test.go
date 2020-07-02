@@ -10,7 +10,7 @@ import (
 func TestDeploymentState(t *testing.T) {
 	var deployResponse = `{"foo.dev":{"deploy_state":"succeeded"}}`
 
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		NoTLS:      true,
 		SkipVerify: true,
 		Token:      sharedToken,

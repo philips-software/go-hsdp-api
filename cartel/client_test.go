@@ -5,7 +5,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -41,7 +44,7 @@ func endpointMocker(secret []byte, responseBody string, statusCode ...int) func(
 	}
 }
 
-func setup(t *testing.T, config Config) (func(), error) {
+func setup(t *testing.T, config *Config) (func(), error) {
 	var err error
 
 	muxCartel = http.NewServeMux()
@@ -61,4 +64,60 @@ func setup(t *testing.T, config Config) (func(), error) {
 	return func() {
 		cartelServer.Close()
 	}, nil
+}
+
+func TestDebug(t *testing.T) {
+	tmpfile, err := ioutil.TempFile("", "cartel")
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+	teardown, err := setup(t, &Config{
+		NoTLS:      true,
+		SkipVerify: true,
+		Token:      sharedToken,
+		Secret:     sharedSecret,
+		Host:       "foo",
+		Debug:      true,
+		DebugLog:   tmpfile.Name(),
+	})
+	var responseBody = `[{"instance_id":"i-deadbeaf","name_tag":"some.dev","owner":"xxx","role":"container-host"}]`
+
+	muxCartel.HandleFunc("/v3/api/get_all_instances", endpointMocker([]byte(sharedSecret),
+		responseBody))
+	if !assert.Nil(t, err) {
+		return
+	}
+	defer teardown()
+	_, _, err = client.GetAllInstances()
+	if !assert.Nil(t, err) {
+		return
+	}
+	defer func() {
+		_ = os.Remove(tmpfile.Name())
+	}() // clean up
+	fi, err := tmpfile.Stat()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Less(t, int64(0), fi.Size())
+}
+
+func TestAutoconfig(t *testing.T) {
+	cfg := &Config{
+		Token:       "alice",
+		Secret:      "foo",
+		Region:      "us-east",
+		Environment: "client-test",
+	}
+	_, err := NewClient(nil, cfg)
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.NotEmpty(t, cfg.Host)
+
+	// Explicit config always wins over autoconfig
+	foo := "foo.com"
+	cfg.Host = foo
+	_, _ = NewClient(nil, cfg)
+	assert.Equal(t, foo, cfg.Host)
 }

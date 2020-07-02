@@ -263,8 +263,10 @@ func TestServiceLogin(t *testing.T) {
 		ServiceID:  "testservice.vhtestapp.vhprop@vhdev.h2hdevorg.philips-healthsuite.com",
 	}
 
-	client, _ = NewClient(nil, cfg)
-
+	client, err := NewClient(nil, cfg)
+	if !assert.Nil(t, err) {
+		return
+	}
 	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			t.Errorf("Expected ‘POST’ request")
@@ -292,7 +294,7 @@ func TestServiceLogin(t *testing.T) {
 		  }`)
 	})
 
-	err := client.ServiceLogin(*service)
+	err = client.ServiceLogin(*service)
 	assert.Nil(t, err)
 	assert.True(t, client.HasScopes("openid"))
 }
@@ -516,4 +518,29 @@ func TestTokenRefresh(t *testing.T) {
 	assert.Nilf(t, err, fmt.Sprintf("Unexpected error: %v", err))
 	assert.Equal(t, newToken, client.Token())
 	assert.Equal(t, newRefreshToken, client.RefreshToken())
+	httpClient := client.HttpClient()
+	assert.NotNil(t, httpClient)
+}
+
+func TestAutoconfig(t *testing.T) {
+	cfg := &Config{
+		OAuth2ClientID: "TestClient",
+		OAuth2Secret:   "Secret",
+		SharedKey:      "foo",
+		SecretKey:      "bar",
+		Region:         "us-east",
+		Environment:    "client-test",
+	}
+
+	_, _ = NewClient(nil, cfg)
+	assert.NotEmpty(t, cfg.IAMURL)
+	assert.NotEmpty(t, cfg.IDMURL)
+
+	// Explicit config always wins over autoconfig
+	foo := "https://foo.com"
+	cfg.IAMURL = foo
+	cfg.IDMURL = foo
+	_, _ = NewClient(nil, cfg)
+	assert.Equal(t, foo, cfg.IAMURL)
+	assert.Equal(t, foo, cfg.IDMURL)
 }

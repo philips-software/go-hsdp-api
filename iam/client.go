@@ -18,6 +18,7 @@ import (
 	validator "github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
 	"github.com/google/uuid"
+	autoconf "github.com/philips-software/go-hsdp-api/config"
 	"github.com/philips-software/go-hsdp-api/fhir"
 	hsdpsigner "github.com/philips-software/go-hsdp-signer"
 )
@@ -50,6 +51,8 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
+	Region           string
+	Environment      string
 	OAuth2ClientID   string
 	OAuth2Secret     string
 	SharedKey        string
@@ -118,6 +121,21 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
+	}
+	// Autoconfig
+	if config.Region != "" && config.Environment != "" {
+		c, err := autoconf.New(
+			autoconf.WithRegion(config.Region),
+			autoconf.WithEnv(config.Environment))
+		if err == nil {
+			iamService := c.Service("iam")
+			if iamURL, err := iamService.String("iam_url"); err == nil && config.IAMURL == "" {
+				config.IAMURL = iamURL
+			}
+			if idmURL, err := iamService.String("idm_url"); err == nil && config.IDMURL == "" {
+				config.IDMURL = idmURL
+			}
+		}
 	}
 	c := &Client{client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseIAMURL(c.config.IAMURL); err != nil {

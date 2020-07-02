@@ -8,7 +8,7 @@ import (
 )
 
 func TestAllInstances(t *testing.T) {
-	teardown, err := setup(t, Config{
+	teardown, err := setup(t, &Config{
 		NoTLS:      true,
 		SkipVerify: true,
 		Token:      sharedToken,
@@ -19,13 +19,10 @@ func TestAllInstances(t *testing.T) {
 
 	muxCartel.HandleFunc("/v3/api/get_all_instances", endpointMocker([]byte(sharedSecret),
 		responseBody))
-
-	defer teardown()
-
-	if err != nil {
-		t.Fatal(err)
+	if !assert.Nil(t, err) {
+		return
 	}
-
+	defer teardown()
 	instances, resp, err := client.GetAllInstances()
 	assert.Nil(t, err)
 	if !assert.NotNil(t, resp) {
