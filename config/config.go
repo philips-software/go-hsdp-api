@@ -119,16 +119,12 @@ func (c *Config) Services() []string {
 	// region level
 	regional, ok := c.config.Get(fmt.Sprintf("region.%s.service", c.region)).(*toml.Tree)
 	if ok && len(regional.Keys()) > 0 {
-		for _, s := range regional.Keys() {
-			services = append(services, s)
-		}
+		services = append(services, regional.Keys()...)
 	}
 	// environment
 	environment, ok := c.config.Get(fmt.Sprintf("region.%s.env.%s.service", c.region, c.environment)).(*toml.Tree)
 	if ok && len(environment.Keys()) > 0 {
-		for _, s := range environment.Keys() {
-			services = append(services, s)
-		}
+		services = append(services, environment.Keys()...)
 	}
 	return services
 }

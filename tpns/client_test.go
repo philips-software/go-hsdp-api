@@ -8,6 +8,8 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -54,7 +56,7 @@ func setup(t *testing.T) func() {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{
+		_, _ = io.WriteString(w, `{
 			"issue": [
 			  {
 				"Severity": "information",
@@ -92,23 +94,22 @@ func TestDebug(t *testing.T) {
 		Debug:    true,
 		DebugLog: tmpfile.Name(),
 	})
-	defer tpnsClient.Close()
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer func() {
+		tpnsClient.Close()
+		_ = os.Remove(tmpfile.Name())
+	}()
 
-	tpnsClient.Messages.Push(&Message{
+	_, _, _ = tpnsClient.Messages.Push(&Message{
 		PropositionID: "XYZ",
 		MessageType:   "Push",
 		Content:       "YAY!",
 		Targets:       []string{"foo"},
 	})
 	fi, err := tmpfile.Stat()
-	if err != nil {
-		t.Fatalf("Error: %v", err)
+	if !assert.Nil(t, err) {
+		return
 	}
-	if fi.Size() == 0 {
-		t.Errorf("Expected something to be written to DebugLog")
-	}
-
+	assert.Less(t, int64(0), fi.Size())
 }
 
 func TestPush(t *testing.T) {

@@ -28,7 +28,7 @@ func TestGetAccess(t *testing.T) {
 		switch r.Method {
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `[
+			_, _ = io.WriteString(w, `[
 				{
 					"allowed": {
 					  "resources": [

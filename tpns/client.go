@@ -185,9 +185,9 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		dumped, _ := httputil.DumpRequest(req, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
 		if c.debugFile != nil {
-			c.debugFile.WriteString(out)
+			_, _ = c.debugFile.WriteString(out)
 		} else {
-			fmt.Printf(out)
+			fmt.Println(out)
 		}
 	}
 	resp, err := c.client.Do(req)
@@ -195,9 +195,9 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		dumped, _ := httputil.DumpResponse(resp, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
 		if c.debugFile != nil {
-			c.debugFile.WriteString(out)
+			_, _ = c.debugFile.WriteString(out)
 		} else {
-			fmt.Printf(out)
+			fmt.Println(out)
 		}
 	}
 	if err != nil {

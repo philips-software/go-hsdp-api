@@ -59,7 +59,7 @@ func TestCreatePolicy(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		io.WriteString(w, policyJSON)
+		_, _ = io.WriteString(w, policyJSON)
 	})
 
 	var newPolicy = Policy{}
@@ -127,11 +127,11 @@ func TestGetPolicy(t *testing.T) {
 		case "GET":
 			if r.URL.Query().Get("id") != id {
 				w.WriteHeader(http.StatusOK)
-				io.WriteString(w, `[]`)
+				_, _ = io.WriteString(w, `[]`)
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `[
+			_, _ = io.WriteString(w, `[
 				{
 					"allowed": {
 					  "resources": [
