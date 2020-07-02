@@ -10,7 +10,7 @@ import (
 func TestCheckResponse(t *testing.T) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, `{"foo":"bar"}`)
+		_, _ = io.WriteString(w, `{"foo":"bar"}`)
 	}
 
 	req := httptest.NewRequest("GET", "http://example.com/foo", nil)
@@ -25,7 +25,7 @@ func TestCheckResponse(t *testing.T) {
 
 	handlerErr := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
-		io.WriteString(w, `{"result":"denied"}`)
+		_, _ = io.WriteString(w, `{"result":"denied"}`)
 	}
 	req = httptest.NewRequest("GET", "http://example.com/foo", nil)
 	w = httptest.NewRecorder()
@@ -44,7 +44,7 @@ func TestCheckResponse(t *testing.T) {
 
 	handlerBroken := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
-		io.WriteString(w, `{`)
+		_, _ = io.WriteString(w, `{`)
 	}
 	req = httptest.NewRequest("GET", "http://example.com/foo", nil)
 	w = httptest.NewRecorder()
