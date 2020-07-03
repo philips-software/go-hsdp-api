@@ -65,7 +65,7 @@ api_url = "https://api.cloud.pcftest.com"
 api_url = "https://api.eu1.phsdp.com"
 [region.sa1.service.cf]
 api_url = "https://api.sys.sa1.hsdp.io"
-[region.ap3.service.cf]
+[region.apac3.service.cf]
 api_url = "https://api.sys.ap3.hsdp.io"
 
 # Service DOCKER-REGISTRY
@@ -75,7 +75,7 @@ host = "docker.na1.hsdp.io"
 host = "docker.eu1.hsdp.io"
 [region.sa1.service.docker-registry]
 host = "docker.sa1.hsdp.io"
-[region.ap3.service.docker-registry]
+[region.apac3.service.docker-registry]
 host = "docker.ap3.hsdp.io"
 
 # Service CONSOLE
@@ -85,7 +85,7 @@ url = "https://console.na1.hsdp.io"
 url = "https://console.eu1.hsdp.io"
 [region.sa1.service.console]
 url = "https://console.sa1.hsdp.io"
-[region.ap3.service.console]
+[region.apac3.service.console]
 url = "https://console.ap3.hsdp.io"
 
 # Service IAM
@@ -119,7 +119,7 @@ iam_url = "https://iam-service.sa1.hsdp.io"
 idm_url = "https://idm-service.sa1.hsdp.io"
 authui_url = "https://authui-service.sa1.hsdp.io"
 oidc_configuration = "https://iam-service.sa1.hsdp.io/authorize/oauth2/.well-known/openid-configuration?api-version=1"
-[region.ap3.env.prod.service.iam]
+[region.apac3.env.prod.service.iam]
 iam_url = "https://iam-service.ap3.hsdp.io"
 idm_url = "https://idm-service.ap3.hsdp.io"
 authui_url = "https://authui-service.ap3.hsdp.io"
@@ -130,6 +130,18 @@ oidc_configuration = "https://iam-service.ap3.hsdp.io/authorize/oauth2/.well-kno
 host = "cartel-na1.cloud.phsdp.com"
 [region.eu-west.service.cartel]
 host = "cartel-eu1.cloud.phsdp.com"
+[region.sa1.service.cartel]
+host = "cartel-sa1.cloud.phsdp.com"
+
+# Service GATEWAY
+[region.us-east.service.gateway]
+host = "gw-na1.phsdp.com"
+[region.eu-west.service.gateway]
+host = "gw-eu1.phsdp.com"
+[region.sa1.service.gateway]
+host = "gw-sa1.phsdp.com"
+[region.apac3.service.gateway]
+host = "gw-apac3.phsdp.com"
 
 # Service S3CREDS
 [region.us-east.env.client-test.service.s3creds]
@@ -168,6 +180,6 @@ kibana_url = "https://kibana-client-test.sa1.hsdp.io"
 [region.sa1.env.prod.service.logging]
 ingestor_url = "https://logingestor2.sa1.hsdp.io"
 kibana_url = "https://kibana.sa1.hsdp.io"
-[region.ap3.env.prod.service.logging]
+[region.apac3.env.prod.service.logging]
 ingestor_url = "https://logingestor2.ap3.hsdp.io"
 kibana_url = "https://kibana.ap3.hsdp.io"
