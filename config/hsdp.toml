@@ -124,6 +124,11 @@ iam_url = "https://iam-service.ap3.hsdp.io"
 idm_url = "https://idm-service.ap3.hsdp.io"
 authui_url = "https://authui-service.ap3.hsdp.io"
 oidc_configuration = "https://iam-service.ap3.hsdp.io/authorize/oauth2/.well-known/openid-configuration?api-version=1"
+[region.us-east.env.dev.service.iam]
+iam_url = "https://iam-development.us-east.philips-healthsuite.com"
+idm_url = "https://idm-development.us-east.philips-healthsuite.com"
+authui_url = "https://authui-development.us-east.philips-healthsuite.com"
+oidc_configuration = "https://iam-development.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 
 # Service CARTEL
 [region.us-east.service.cartel]
