@@ -34,7 +34,9 @@ func (cr CreateResponse) IPAddress() string {
 func (c *Client) Create(tagName string, opts ...RequestOptionFunc) (*CreateResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = []string{tagName}
-	body.Role = "container-host"
+	if body.Role == "" {
+		body.Role = "container-host"
+	}
 
 	for _, f := range opts {
 		if f != nil {
