@@ -38,6 +38,14 @@ func InstanceType(instanceType string) RequestOptionFunc {
 	}
 }
 
+// InstanceRole sets the instance role
+func InstanceRole(role string) RequestOptionFunc {
+	return func(body *RequestBody) error {
+		body.Role = role
+		return nil
+	}
+}
+
 // VolumeEncryption enables volume encryption
 func VolumeEncryption(value bool) RequestOptionFunc {
 	return func(body *RequestBody) error {
