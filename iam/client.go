@@ -99,16 +99,17 @@ type Client struct {
 
 	debugFile *os.File
 
-	Organizations *OrganizationsService
-	Groups        *GroupsService
-	Permissions   *PermissionsService
-	Roles         *RolesService
-	Users         *UsersService
-	Applications  *ApplicationsService
-	Propositions  *PropositionsService
-	Clients       *ClientsService
-	Services      *ServicesService
-	MFAPolicies   *MFAPoliciesService
+	Organizations    *OrganizationsService
+	Groups           *GroupsService
+	Permissions      *PermissionsService
+	Roles            *RolesService
+	Users            *UsersService
+	Applications     *ApplicationsService
+	Propositions     *PropositionsService
+	Clients          *ClientsService
+	Services         *ServicesService
+	MFAPolicies      *MFAPoliciesService
+	PasswordPolicies *PasswordPoliciesService
 }
 
 // NewClient returns a new HSDP IAM API client. If a nil httpClient is
@@ -159,6 +160,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Clients = &ClientsService{client: c, validate: validator.New()}
 	c.Services = &ServicesService{client: c}
 	c.MFAPolicies = &MFAPoliciesService{client: c, validate: validator.New()}
+	c.PasswordPolicies = &PasswordPoliciesService{client: c, validate: validator.New()}
 	return c, nil
 }
 
@@ -186,7 +188,7 @@ func (c *Client) validSigner() bool {
 // Close releases allocated resources of clients
 func (c *Client) Close() {
 	if c.debugFile != nil {
-		c.debugFile.Close()
+		_ = c.debugFile.Close()
 		c.debugFile = nil
 	}
 }

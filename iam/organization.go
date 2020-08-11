@@ -13,6 +13,8 @@ type Meta struct {
 	ResourceType string `json:"resourceType,omitempty"`
 	Created      string `json:"created,omitempty"`
 	LastModified string `json:"lastModified,omitempty"`
+	UpdatedBy    string `json:"updatedBy,omitempty"`
+	CreatedBy    string `json:"createdBy,omitempty"`
 	Location     string `json:"location,omitempty"`
 	Version      string `json:"version,omitempty"`
 }
