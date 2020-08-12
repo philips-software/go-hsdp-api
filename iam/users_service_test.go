@@ -258,7 +258,7 @@ func TestGetUsers(t *testing.T) {
 		return
 	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.Equal(t, 5, len(list.Users))
+	assert.Equal(t, 5, len(list.UserUUIDs))
 	assert.True(t, list.HasNextPage)
 }
 

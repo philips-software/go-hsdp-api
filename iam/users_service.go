@@ -3,6 +3,7 @@ package iam
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	validator "github.com/go-playground/validator/v10"
 )
@@ -14,7 +15,7 @@ const (
 // GetUserOptions describes search criteria for looking up users
 type GetUserOptions struct {
 	ID             *string `url:"_id,omitempty"`
-	OrganizationID *string `url:"Id,omitempty"`
+	OrganizationID *string `url:"organizationID,omitempty"`
 	Name           *string `url:"name,omitempty"`
 	LoginID        *string `url:"loginId,omitempty"`
 	GroupID        *string `url:"groupId,omitempty"`
@@ -59,7 +60,7 @@ type Resource struct {
 
 // UserList holds a paginated lists of users
 type UserList struct {
-	Users       []Person
+	UserUUIDs   []string
 	PageNumber  int
 	PageSize    int
 	HasNextPage bool
@@ -253,16 +254,24 @@ func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*U
 		ResponseMessage string `json:"responseMessage"`
 	}
 
-	resp, err := u.client.DoSigned(req, &bundleResponse)
+	doFunc := u.client.DoSigned
+	if !u.client.validSigner() {
+		doFunc = u.client.Do
+	}
+	resp, err := doFunc(req, &bundleResponse)
+
 	if err != nil {
 		return nil, resp, err
 	}
 	var list UserList
 
 	list.HasNextPage = bundleResponse.Exchange.NextPageExists
-	list.Users = make([]Person, len(bundleResponse.Exchange.Users))
-	for i, u := range bundleResponse.Exchange.Users {
-		list.Users[i] = Person{ID: u.UserUUID}
+	if opts != nil && opts.PageNumber != nil {
+		pageNumber, _ := strconv.ParseInt(*opts.PageNumber, 10, 8)
+		list.PageNumber = int(pageNumber)
+	}
+	for _, u := range bundleResponse.Exchange.Users {
+		list.UserUUIDs = append(list.UserUUIDs, u.UserUUID)
 	}
 
 	return &list, resp, err
