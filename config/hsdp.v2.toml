@@ -30,7 +30,7 @@
 #     Environment client-test
 #       Service
 #         iam
-#	  idm
+#	      idm
 #         cartel
 #     Environemnt production
 #       Service
@@ -60,13 +60,13 @@
 
 # Service Cloud foundry
 [region.us-east.service.cf]
-api_url = "https://api.cloud.pcftest.com"
+url = "https://api.cloud.pcftest.com"
 [region.eu-west.service.cf]
-api_url = "https://api.eu1.phsdp.com"
+url = "https://api.eu1.phsdp.com"
 [region.sa1.service.cf]
-api_url = "https://api.sys.sa1.hsdp.io"
+url = "https://api.sys.sa1.hsdp.io"
 [region.apac3.service.cf]
-api_url = "https://api.sys.ap3.hsdp.io"
+url = "https://api.sys.ap3.hsdp.io"
 
 # Service DOCKER-REGISTRY
 [region.us-east.service.docker-registry]
@@ -91,36 +91,20 @@ url = "https://console.ap3.hsdp.io"
 # Service IAM
 [region.us-east.env.client-test.service.iam]
 url = "https://iam-client-test.us-east.philips-healthsuite.com"
-iam_url = "https://iam-client-test.us-east.philips-healthsuite.com"
-idm_url = "https://idm-client-test.us-east.philips-healthsuite.com"
 [region.us-east.env.prod.service.iam]
 url = "https://iam-service.us-east.philips-healthsuite.com"
-iam_url = "https://iam-service.us-east.philips-healthsuite.com"
-idm_url = "https://idm-service.us-east.philips-healthsuite.com"
 [region.eu-west.env.client-test.service.iam]
-url = "https://iam-service.us-east.philips-healthsuite.com"
-iam_url = "https://iam-service.us-east.philips-healthsuite.com"
-idm_url = "https://idm-client-test.eu-west.philips-healthsuite.com"
+url = "https://iam-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.iam]
-url = "https://iam-service.us-east.philips-healthsuite.com"
-iam_url = "https://iam-service.us-east.philips-healthsuite.com"
-idm_url = "https://idm-service.eu-west.philips-healthsuite.com"
+url = "https://iam-service.eu-west.philips-healthsuite.com"
 [region.sa1.env.client-test.service.iam]
 url = "https://iam-client-test.sa1.hsdp.io"
-iam_url = "https://iam-client-test.sa1.hsdp.io"
-idm_url = "https://idm-client-test.sa1.hsdp.io"
 [region.sa1.env.prod.service.iam]
 url = "https://iam-service.sa1.hsdp.io"
-iam_url = "https://iam-service.sa1.hsdp.io"
-idm_url = "https://idm-service.sa1.hsdp.io"
 [region.apac3.env.prod.service.iam]
 url = "https://iam-service.ap3.hsdp.io"
-iam_url = "https://iam-service.ap3.hsdp.io"
-idm_url = "https://idm-service.ap3.hsdp.io"
 [region.us-east.env.dev.service.iam]
 url = "https://iam-development.us-east.philips-healthsuite.com"
-iam_url = "https://iam-development.us-east.philips-healthsuite.com"
-idm_url = "https://idm-development.us-east.philips-healthsuite.com"
 
 # Service IDM
 [region.us-east.env.prod.service.idm]
@@ -137,7 +121,6 @@ url = "https://idm-service.sa1.hsdp.io"
 url = "https://idm-service.ap3.hsdp.io"
 [region.us-east.env.dev.service.idm]
 url = "https://idm-development.us-east.philips-healthsuite.com"
-
 
 # Service CARTEL
 [region.us-east.service.cartel]
