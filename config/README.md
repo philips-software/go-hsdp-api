@@ -25,7 +25,7 @@ func main() {
 		fmt.Printf("error loading: %v\n", err)
 		return
 	}
-	baseIAMURLInUSEastClientTest, err := c.Region("us-east").Env("client-test").Service("iam").String("iam_url")
+	baseIAMURLInUSEastClientTest, err := c.Region("us-east").Env("client-test").Service("iam").String("url")
 	if err != nil {
 		fmt.Printf("not found: %v\n", err)
 		return

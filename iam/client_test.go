@@ -531,11 +531,6 @@ func TestAutoconfig(t *testing.T) {
 		Region:         "us-east",
 		Environment:    "client-test",
 	}
-
-	_, _ = NewClient(nil, cfg)
-	assert.NotEmpty(t, cfg.IAMURL)
-	assert.NotEmpty(t, cfg.IDMURL)
-
 	// Explicit config always wins over autoconfig
 	foo := "https://foo.com"
 	cfg.IAMURL = foo

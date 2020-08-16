@@ -60,13 +60,13 @@
 
 # Service Cloud foundry
 [region.us-east.service.cf]
-api_url = "https://api.cloud.pcftest.com"
+url = "https://api.cloud.pcftest.com"
 [region.eu-west.service.cf]
-api_url = "https://api.eu1.phsdp.com"
+url = "https://api.eu1.phsdp.com"
 [region.sa1.service.cf]
-api_url = "https://api.sys.sa1.hsdp.io"
+url = "https://api.sys.sa1.hsdp.io"
 [region.apac3.service.cf]
-api_url = "https://api.sys.ap3.hsdp.io"
+url = "https://api.sys.ap3.hsdp.io"
 
 # Service DOCKER-REGISTRY
 [region.us-east.service.docker-registry]
@@ -90,45 +90,54 @@ url = "https://console.ap3.hsdp.io"
 
 # Service IAM
 [region.us-east.env.client-test.service.iam]
+url = "https://iam-client-test.us-east.philips-healthsuite.com"
 iam_url = "https://iam-client-test.us-east.philips-healthsuite.com"
 idm_url = "https://idm-client-test.us-east.philips-healthsuite.com"
-authui_url = "https://authui-client-test.us-east.philips-healthsuite.com"
-oidc_configuration = "https://iam-client-test.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.us-east.env.prod.service.iam]
+url = "https://iam-service.us-east.philips-healthsuite.com"
 iam_url = "https://iam-service.us-east.philips-healthsuite.com"
 idm_url = "https://idm-service.us-east.philips-healthsuite.com"
-authui_url = "https://authui-service.us-east.philips-healthsuite.com"
-oidc_configuration = "https://iam-service.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.eu-west.env.client-test.service.iam]
-iam_url = "https://iam-client-test.eu-west.philips-healthsuite.com"
+url = "https://iam-service.us-east.philips-healthsuite.com"
+iam_url = "https://iam-service.us-east.philips-healthsuite.com"
 idm_url = "https://idm-client-test.eu-west.philips-healthsuite.com"
-authui_url = "https://authui-client-test.eu-west.philips-healthsuite.com"
-oidc_configuration = "https://iam-client-test.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.eu-west.env.prod.service.iam]
-iam_url = "https://iam-service.eu-west.philips-healthsuite.com"
+url = "https://iam-service.us-east.philips-healthsuite.com"
+iam_url = "https://iam-service.us-east.philips-healthsuite.com"
 idm_url = "https://idm-service.eu-west.philips-healthsuite.com"
-authui_url = "https://authui-service.eu-west.philips-healthsuite.com"
-oidc_configuration = "https://iam-service.eu-west.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.sa1.env.client-test.service.iam]
+url = "https://iam-client-test.sa1.hsdp.io"
 iam_url = "https://iam-client-test.sa1.hsdp.io"
 idm_url = "https://idm-client-test.sa1.hsdp.io"
-authui_url = "https://authui-client-test.sa1.hsdp.io"
-oidc_configuration = "https://iam-client-test.sa1.hsdp.io/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.sa1.env.prod.service.iam]
+url = "https://iam-service.sa1.hsdp.io"
 iam_url = "https://iam-service.sa1.hsdp.io"
 idm_url = "https://idm-service.sa1.hsdp.io"
-authui_url = "https://authui-service.sa1.hsdp.io"
-oidc_configuration = "https://iam-service.sa1.hsdp.io/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.apac3.env.prod.service.iam]
+url = "https://iam-service.ap3.hsdp.io"
 iam_url = "https://iam-service.ap3.hsdp.io"
 idm_url = "https://idm-service.ap3.hsdp.io"
-authui_url = "https://authui-service.ap3.hsdp.io"
-oidc_configuration = "https://iam-service.ap3.hsdp.io/authorize/oauth2/.well-known/openid-configuration?api-version=1"
 [region.us-east.env.dev.service.iam]
+url = "https://iam-development.us-east.philips-healthsuite.com"
 iam_url = "https://iam-development.us-east.philips-healthsuite.com"
 idm_url = "https://idm-development.us-east.philips-healthsuite.com"
-authui_url = "https://authui-development.us-east.philips-healthsuite.com"
-oidc_configuration = "https://iam-development.us-east.philips-healthsuite.com/authorize/oauth2/.well-known/openid-configuration?api-version=1"
+
+# Service IDM
+[region.us-east.env.prod.service.idm]
+url = "https://idm-service.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.idm]
+url = "https://idm-client-test.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.idm]
+url = "https://idm-service.eu-west.philips-healthsuite.com"
+[region.sa1.env.client-test.service.idm]
+url = "https://idm-client-test.sa1.hsdp.io"
+[region.sa1.env.prod.service.idm]
+url = "https://idm-service.sa1.hsdp.io"
+[region.apac3.env.prod.service.idm]
+url = "https://idm-service.ap3.hsdp.io"
+[region.us-east.env.dev.service.idm]
+url = "https://idm-development.us-east.philips-healthsuite.com"
+
 
 # Service CARTEL
 [region.us-east.service.cartel]
@@ -168,23 +177,32 @@ url = "https://cdr-stu3-sandbox.us-east.philips-healthsuite.com"
 
 # Service LOGGING
 [region.eu-west.env.client-test.service.logging]
-ingestor_url = "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
-kibana_url = "https://kibana-client-test.eu-west.philips-healthsuite.com"
+url = "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.logging]
-ingestor_url = "https://logingestor2.eu-west.philips-healthsuite.com"
-kibana_url = "https://kibana.eu-west.philips-healthsuite.com"
+url = "https://logingestor2.eu-west.philips-healthsuite.com"
 [region.us-east.env.client-test.service.logging]
-ingestor_url = "https://logingestor2-client-test.us-east.philips-healthsuite.com"
-kibana_url = "https://kibana-client-test.us-east.philips-healthsuite.com"
+url = "https://logingestor2-client-test.us-east.philips-healthsuite.com"
 [region.us-east.env.prod.service.logging]
-ingestor_url = "https://logingestor2.us-east.philips-healthsuite.com"
-kibana_url = "https://kibana.us-east.philips-healthsuite.com"
+url = "https://logingestor2.us-east.philips-healthsuite.com"
 [region.sa1.env.client-test.service.logging]
-ingestor_url = "https://logingestor2-client-test.sa1.hsdp.io"
-kibana_url = "https://kibana-client-test.sa1.hsdp.io"
+url = "https://logingestor2-client-test.sa1.hsdp.io"
 [region.sa1.env.prod.service.logging]
-ingestor_url = "https://logingestor2.sa1.hsdp.io"
-kibana_url = "https://kibana.sa1.hsdp.io"
+url = "https://logingestor2.sa1.hsdp.io"
 [region.apac3.env.prod.service.logging]
-ingestor_url = "https://logingestor2.ap3.hsdp.io"
-kibana_url = "https://kibana.ap3.hsdp.io"
+url = "https://logingestor2.ap3.hsdp.io"
+
+# Service KIBANA
+[region.eu-west.env.client-test.service.kibana]
+url = "https://kibana-client-test.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.kibana]
+url = "https://kibana.eu-west.philips-healthsuite.com"
+[region.us-east.env.client-test.service.kibana]
+url = "https://kibana-client-test.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.kibana]
+url = "https://kibana.us-east.philips-healthsuite.com"
+[region.sa1.env.client-test.service.kibana]
+url = "https://kibana-client-test.sa1.hsdp.io"
+[region.sa1.env.prod.service.kibana]
+url = "https://kibana.sa1.hsdp.io"
+[region.apac3.env.prod.service.kibana]
+url = "https://kibana.ap3.hsdp.io"

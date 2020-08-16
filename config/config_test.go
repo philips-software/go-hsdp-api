@@ -43,7 +43,7 @@ func TestNew(t *testing.T) {
 	if !assert.NotNil(t, iamService) {
 		return
 	}
-	url, err := iamService.GetString("iam_url")
+	url, err := iamService.GetString("url")
 	if !assert.Nil(t, err) {
 		return
 	}
