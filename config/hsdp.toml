@@ -60,13 +60,13 @@
 
 # Service Cloud foundry
 [region.us-east.service.cf]
-api_url = "https://api.cloud.pcftest.com"
+url = "https://api.cloud.pcftest.com"
 [region.eu-west.service.cf]
-api_url = "https://api.eu1.phsdp.com"
+url = "https://api.eu1.phsdp.com"
 [region.sa1.service.cf]
-api_url = "https://api.sys.sa1.hsdp.io"
+url = "https://api.sys.sa1.hsdp.io"
 [region.apac3.service.cf]
-api_url = "https://api.sys.ap3.hsdp.io"
+url = "https://api.sys.ap3.hsdp.io"
 
 # Service DOCKER-REGISTRY
 [region.us-east.service.docker-registry]
