@@ -123,6 +123,8 @@ iam_url = "https://iam-development.us-east.philips-healthsuite.com"
 idm_url = "https://idm-development.us-east.philips-healthsuite.com"
 
 # Service IDM
+[region.us-east.env.client-test.service.idm]
+url = "https://idm-client-test.us-east.philips-healthsuite.com"
 [region.us-east.env.prod.service.idm]
 url = "https://idm-service.us-east.philips-healthsuite.com"
 [region.eu-west.env.client-test.service.idm]
