@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/philips-software/go-hsdp-api.svg?branch=master)](https://travis-ci.com/philips-software/go-hsdp-api)
 [![Maintainability](https://api.codeclimate.com/v1/badges/125caa4282d4d82b84cd/maintainability)](https://codeclimate.com/github/philips-software/go-hsdp-api/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/125caa4282d4d82b84cd/test_coverage)](https://codeclimate.com/github/philips-software/go-hsdp-api/test_coverage)
-[![GoDoc](https://godoc.org/github.com/philips-software/go-hsdp-api?status.svg)](http://godoc.org/github.com/philips-software/go-hsdp-api)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/philips-software/go-hsdp-api)](https://pkg.go.dev/github.com/philips-software/go-hsdp-api)
 
 # go-hsdp-api
 
