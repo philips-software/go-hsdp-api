@@ -1,10 +1,8 @@
-// Package tdr provides support for HSDP TDR operations
-// Contract management and DataItem creation and retrieval are supported
-package tdr
+// Package has provides support for HSDP Appstreaming service
+package has
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,7 +20,7 @@ import (
 
 const (
 	libraryVersion = "0.21.0"
-	userAgent      = "go-hsdp-api/tdr/" + libraryVersion
+	userAgent      = "go-hsdp-api/has/" + libraryVersion
 )
 
 // OptionFunc is the function signature function for options
@@ -30,7 +28,8 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
-	TDRURL   string
+	HASURL   string
+	OrgID    string
 	Debug    bool
 	DebugLog string
 }
@@ -42,18 +41,19 @@ type Client struct {
 
 	config *Config
 
-	baseTDRURL *url.URL
+	baseHASURL *url.URL
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
 
 	debugFile *os.File
 
-	Contracts *ContractsService
-	DataItems *DataItemsService
+	Resources *ResourcesService
+	Sessions  *SessionsService
+	Images    *ImagesService
 }
 
-// NewClient returns a new HSDP TDR API client. If a nil httpClient is
+// NewClient returns a new HSDP HAS API client. If a nil httpClient is
 // provided, http.DefaultClient will be used. A configured IAM client must be provided
 // as well
 func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
@@ -62,11 +62,12 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
-	if err := c.SetBaseTDRURL(c.config.TDRURL); err != nil {
+	if err := c.SetBaseHASURL(c.config.HASURL); err != nil {
 		return nil, err
 	}
-	if !iamClient.HasScopes("tdr.contract", "tdr.dataitem") {
-		return nil, ErrMissingTDRScopes
+	if config.OrgID == "" || !iamClient.HasPermissions(config.OrgID,
+		"HAS_SESSION.ALL", "HAS_RESOURCE.ALL") {
+		return nil, ErrMissingHASPermissions
 	}
 	if config.DebugLog != "" {
 		var err error
@@ -76,8 +77,9 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		}
 	}
 
-	c.Contracts = &ContractsService{client: c}
-	c.DataItems = &DataItemsService{client: c}
+	c.Resources = &ResourcesService{client: c, orgID: config.OrgID}
+	c.Sessions = &SessionsService{client: c, orgID: config.OrgID}
+	c.Images = &ImagesService{client: c, orgID: config.OrgID}
 	return c, nil
 }
 
@@ -91,9 +93,9 @@ func (c *Client) Close() {
 
 // SetBaseTDRURL sets the base URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
-func (c *Client) SetBaseTDRURL(urlStr string) error {
+func (c *Client) SetBaseHASURL(urlStr string) error {
 	if urlStr == "" {
-		return ErrBaseTDRCannotBeEmpty
+		return ErrBaseHASCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
@@ -101,19 +103,19 @@ func (c *Client) SetBaseTDRURL(urlStr string) error {
 	}
 
 	var err error
-	c.baseTDRURL, err = url.Parse(urlStr)
+	c.baseHASURL, err = url.Parse(urlStr)
 	return err
 }
 
-// NewTDRRequest creates an new TDR API request. A relative URL path can be provided in
+// NewHASRequest creates an new TDR API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewTDRRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
-	u := *c.baseTDRURL
+func (c *Client) NewHASRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+	u := *c.baseHASURL
 	// Set the encoded opaque data
-	u.Opaque = c.baseTDRURL.Path + path
+	u.Opaque = c.baseHASURL.Path + path
 
 	if opt != nil {
 		q, err := query.Values(opt)
@@ -223,20 +225,4 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
-}
-
-// WithContext runs the request with the provided context
-func WithContext(ctx context.Context) OptionFunc {
-	return func(req *http.Request) error {
-		*req = *req.WithContext(ctx)
-		return nil
-	}
-}
-
-// String is a helper routine that allocates a new string value
-// to store v and returns a pointer to it.
-func String(v string) *string {
-	p := new(string)
-	*p = v
-	return p
 }

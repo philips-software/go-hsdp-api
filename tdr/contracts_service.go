@@ -18,7 +18,7 @@ const (
 	TDRAPIVersion = "4"
 )
 
-// GetContractOptions describes the fileds on which you can search for contracts
+// GetContractOptions describes the fields on which you can search for contracts
 type GetContractOptions struct {
 	Organization *string `url:"organization,omitempty"`
 	DataType     *string `url:"dataType,omitempty"`

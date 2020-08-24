@@ -15,7 +15,7 @@ type IntrospectResponse struct {
 	Active        bool   `json:"active"`
 	Scope         string `json:"scope"`
 	Username      string `json:"username"`
-	Expires       int    `json:"exp"`
+	Expires       int64  `json:"exp"`
 	Sub           string `json:"sub"`
 	ISS           string `json:"iss"`
 	Organizations struct {

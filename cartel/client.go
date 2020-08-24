@@ -23,13 +23,13 @@ import (
 )
 
 const (
-	libraryVersion = "0.20.0"
+	libraryVersion = "0.21.0"
 	userAgent      = "go-hsdp-api/cartel/" + libraryVersion
 )
 
 // Config the client
 type Config struct {
-	Region      string `cloud:"-", json:"-"`
+	Region      string `cloud:"-" json:"-"`
 	Environment string `cloud:"-" json:"-"`
 	Token       string `cloud:"token" json:"token"`
 	Secret      string `cloud:"secret" json:"secret"`

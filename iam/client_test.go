@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	signer "github.com/philips-software/go-hsdp-signer"
 	"github.com/stretchr/testify/assert"
@@ -348,6 +349,7 @@ func TestIDMRequest(t *testing.T) {
 	defer teardown()
 
 	client.SetToken("xxx")
+	client.SetTokens("xxx", "yyy", "zzz", time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC).Unix())
 	req, err := client.NewRequest(IDM, "GET", "/foo", nil, nil)
 
 	if err != nil {
@@ -514,7 +516,7 @@ func TestTokenRefresh(t *testing.T) {
 	err = client.Login("username", "password")
 	assert.Nil(t, err)
 
-	err = client.TokenRefresh()
+	err = client.tokenRefresh()
 	assert.Nilf(t, err, fmt.Sprintf("Unexpected error: %v", err))
 	assert.Equal(t, newToken, client.Token())
 	assert.Equal(t, newRefreshToken, client.RefreshToken())
