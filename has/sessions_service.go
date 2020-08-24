@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-// ContractsService provides operations on TDR contracts
+// SessionsService provides operations on HAS sessions
 type SessionsService struct {
 	orgID  string
 	client *Client

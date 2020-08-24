@@ -1,5 +1,4 @@
 // Package has provides support for HSDP Appstreaming service
-// Contract management and DataItem creation and retrieval are supported
 package has
 
 import (

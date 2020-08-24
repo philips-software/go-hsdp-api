@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-// ContractsService provides operations on TDR contracts
+// ResourcesService provides operations on HAS resources
 type ResourcesService struct {
 	orgID  string
 	client *Client
