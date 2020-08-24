@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	validator "github.com/go-playground/validator/v10"
@@ -27,7 +28,7 @@ type tokenType int
 type ContextKey string
 
 const (
-	libraryVersion                 = "0.20.0"
+	libraryVersion                 = "0.21.0"
 	userAgent                      = "go-hsdp-api/iam/" + libraryVersion
 	loginAPIVersion                = "2"
 	ContextKeyRequestID ContextKey = "requestID"
@@ -49,27 +50,6 @@ const (
 // OptionFunc is the function signature function for options
 type OptionFunc func(*http.Request) error
 
-// Config contains the configuration of a client
-type Config struct {
-	Region           string
-	Environment      string
-	OAuth2ClientID   string
-	OAuth2Secret     string
-	SharedKey        string
-	SecretKey        string
-	BaseIAMURL       string
-	BaseIDMURL       string
-	OrgAdminUsername string
-	OrgAdminPassword string
-	IAMURL           string
-	IDMURL           string
-	Scopes           []string
-	RootOrgID        string
-	Debug            bool
-	DebugLog         string
-	Signer           *hsdpsigner.Signer
-}
-
 // A Client manages communication with HSDP IAM API
 type Client struct {
 	// HTTP client used to communicate with the API.
@@ -89,6 +69,7 @@ type Client struct {
 	// tokens used to make authenticated API calls.
 	token        string
 	refreshToken string
+	idToken      string
 	expiresAt    time.Time
 
 	// scope holds the client scope
@@ -99,18 +80,20 @@ type Client struct {
 
 	debugFile *os.File
 
-	Organizations    *OrganizationsService
-	Groups           *GroupsService
-	Permissions      *PermissionsService
-	Roles            *RolesService
-	Users            *UsersService
-	Applications     *ApplicationsService
-	Propositions     *PropositionsService
-	Clients          *ClientsService
-	Services         *ServicesService
-	MFAPolicies      *MFAPoliciesService
+	Organizations *OrganizationsService
+	Groups        *GroupsService
+	Permissions   *PermissionsService
+	Roles         *RolesService
+	Users         *UsersService
+	Applications  *ApplicationsService
+	Propositions  *PropositionsService
+	Clients       *ClientsService
+	Services      *ServicesService
+	MFAPolicies   *MFAPoliciesService
 	PasswordPolicies *PasswordPoliciesService
 	Devices          *DevicesService
+
+	sync.Mutex
 }
 
 // NewClient returns a new HSDP IAM API client. If a nil httpClient is
@@ -202,6 +185,7 @@ func (c *Client) HttpClient() *http.Client {
 }
 
 // WithToken returns a cloned client with the token set
+// Deprecated: use SetTokens on existing client
 func (c *Client) WithToken(token string) *Client {
 	client, _ := NewClient(c.client, c.config)
 	client.SetToken(token)
@@ -222,122 +206,38 @@ func (c *Client) accessTokenEndpoint() string {
 	return c.baseIAMURL.String() + "oauth2/access_token"
 }
 
-// CodeLogin
-func (c *Client) CodeLogin(code string, redirectURI string) error {
-	// Authorize
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
-	}
-	form := url.Values{}
-	form.Add("grant_type", "authorization_code")
-	form.Add("code", code)
-	if len(redirectURI) > 0 {
-		form.Add("redirect_uri", redirectURI)
-	}
-	body := form.Encode()
-	req.Body = ioutil.NopCloser(strings.NewReader(body))
-	req.ContentLength = int64(len(body))
-
-	return c.doTokenRequest(req)
-}
-
-// ServiceLogin logs a service in using a JWT signed with the service private key
-func (c *Client) ServiceLogin(service Service) error {
-	token, err := service.GetToken(c.accessTokenEndpoint())
-	if err != nil {
-		return err
-	}
-	// Authorize
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
-	}
-	form := url.Values{}
-	if len(c.config.Scopes) > 0 {
-		scopes := strings.Join(c.config.Scopes, " ")
-		form.Add("scope", scopes)
-	}
-	// HSDP IAM currently croakes on URL encoded grant_type value. INC0038532
-	body := "assertion=" + token
-	body += "&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer"
-	body += "&"
-	body += form.Encode()
-
-	req.Body = ioutil.NopCloser(strings.NewReader(body))
-	req.ContentLength = int64(len(body))
-
-	return c.doTokenRequest(req)
-}
-
-// Login logs in a user with `username` and `password`
-func (c *Client) Login(username, password string) error {
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
-	}
-	form := url.Values{}
-	form.Add("username", username)
-	form.Add("password", password)
-	form.Add("grant_type", "password")
-	if len(c.config.Scopes) > 0 {
-		scopes := strings.Join(c.config.Scopes, " ")
-		form.Add("scope", scopes)
-	}
-	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
-	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
-	req.ContentLength = int64(len(form.Encode()))
-
-	return c.doTokenRequest(req)
-}
-
-func (c *Client) doTokenRequest(req *http.Request) error {
-	var tokenResponse tokenResponse
-
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Api-Version", loginAPIVersion)
-	resp, err := c.Do(req, &tokenResponse)
-
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("login failed: %d", resp.StatusCode)
-	}
-	if tokenResponse.AccessToken == "" {
-		return ErrNotAuthorized
-	}
-	c.tokenType = oAuthToken
-	c.token = tokenResponse.AccessToken
-	c.refreshToken = tokenResponse.RefreshToken
-	c.expiresAt = time.Now().Add(time.Duration(tokenResponse.ExpiresIn) * time.Second)
-	c.scopes = strings.Split(tokenResponse.Scope, " ")
-	return nil
-}
-
 // Token returns the current token
 func (c *Client) Token() string {
+	c.Lock()
+	defer c.Unlock()
+
 	now := time.Now().Unix()
 	expires := c.expiresAt.Unix()
 
 	if expires-now < 60 {
-		if c.TokenRefresh() != nil {
+		if c.tokenRefresh() != nil {
 			return ""
 		}
 	}
 	return c.token
 }
 
-// TokenRefresh refreshes the current access token using the refresh token
-func (c *Client) TokenRefresh() error {
+func (c *Client) tokenRefresh() error {
 	if c.refreshToken == "" {
 		return ErrMissingRefreshToken
 	}
 
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
+	u := *c.baseIAMURL
+	u.Opaque = c.baseIAMURL.Path + "authorize/oauth2/token"
+
+	req := &http.Request{
+		Method:     "POST",
+		URL:        &u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Host:       u.Host,
 	}
 	form := url.Values{}
 	form.Add("token", c.refreshToken)
@@ -402,15 +302,37 @@ func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 }
 
 // SetToken sets the token
+// Deprecated: use SetTokens instead
 func (c *Client) SetToken(token string) {
 	c.token = token
 	c.expiresAt = time.Now().Add(86400 * time.Minute)
 	c.tokenType = oAuthToken
 }
 
+// SetTokens sets the token
+func (c *Client) SetTokens(accessToken, refreshToken, idToken string, expiresAt int64) {
+	c.Lock()
+	defer c.Unlock()
+	c.token = accessToken
+	c.refreshToken = refreshToken
+	c.idToken = idToken
+	c.expiresAt = time.Unix(expiresAt, 0)
+	c.tokenType = oAuthToken
+}
+
 // RefreshToken returns the refresh token
 func (c *Client) RefreshToken() string {
 	return c.refreshToken
+}
+
+// IDToken returns the ID token
+func (c *Client) IDToken() string {
+	return c.idToken
+}
+
+// Expires returns the expiry time (Unix) of the access token
+func (c *Client) Expires() int64 {
+	return c.expiresAt.Unix()
 }
 
 // BaseIAMURL return a copy of the baseIAMURL.

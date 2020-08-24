@@ -3,10 +3,10 @@ package cartel
 import errors "golang.org/x/xerrors"
 
 var (
-	ErrMissingSecret      = errors.New("missing secret")
-	ErrMissingToken       = errors.New("missing token")
-	ErrMissingHost        = errors.New("missing host")
-	ErrNotImplemented     = errors.New("not implemented")
+	ErrMissingSecret      = errors.New("missing cartel secret")
+	ErrMissingToken       = errors.New("missing cartel token")
+	ErrMissingHost        = errors.New("missing cartel host")
+	ErrNotImplemented     = errors.New("not implemented by cartel client")
 	ErrNotFound           = errors.New("not found")
-	ErrNonHttp20xResponse = errors.New("non http 20x response")
+	ErrNonHttp20xResponse = errors.New("non http 20x cartel response")
 )
