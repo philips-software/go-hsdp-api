@@ -69,7 +69,7 @@ type resourceResponse struct {
 	ErrorDescription string     `json:"error_description,omitempty"`
 }
 
-// Result of a resourc action API call
+// Result of a resource action API call
 type Result struct {
 	ResourceID    string `json:"resourceId"`
 	Action        string `json:"action"`
@@ -103,9 +103,6 @@ func (c *ResourcesService) CreateResource(resource Resource) (*[]Resource, *Resp
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, resp, err
-	}
-	if len(cr.Resources) == 0 {
-		return nil, resp, ErrEmptyResult
 	}
 	return &cr.Resources, resp, nil
 }

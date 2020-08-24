@@ -25,6 +25,7 @@ var (
 	iamClient *iam.Client
 	hasClient *has.Client
 	hasOrgID  = "48a0183d-a588-41c2-9979-737d15e9e860"
+	userUUID  = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
 )
 
 func setup(t *testing.T) func() {
@@ -79,7 +80,7 @@ func setup(t *testing.T) func() {
   "scope": "auth_iam_organization auth_iam_introspect mail openid profile cn",
   "username": "ronswanson",
   "exp": 1592073485,
-  "sub": "e7fecbb2-af8c-47c9-a662-5b046e048bc5",
+  "sub": "`+userUUID+`",
   "iss": "https://iam-client-test.us-east.philips-healthsuite.com/oauth2/access_token",
   "organizations": {
     "managingOrganization": "`+hasOrgID+`",
@@ -172,6 +173,10 @@ func TestDebug(t *testing.T) {
 	if !assert.Nil(t, err) {
 		return
 	}
+
+	_, _, _ = hasClient.Resources.GetResources(&has.ResourceOptions{})
+	_, _, _ = hasClient.Resources.CreateResource(has.Resource{})
+	_, _, _ = hasClient.Resources.DeleteResources(&has.ResourceOptions{})
 
 	fi, err := tmpfile.Stat()
 	assert.Nil(t, err)

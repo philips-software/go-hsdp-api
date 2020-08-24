@@ -14,7 +14,7 @@ func TestResourcesCRUD(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	resourceID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc1"
+	resourceID := "i-0f23dfed98e55913c"
 	muxHAS.HandleFunc("/resource", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
@@ -70,6 +70,46 @@ func TestResourcesCRUD(t *testing.T) {
 }`)
 		}
 	})
+	muxHAS.HandleFunc("/resource/stop", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "results": [
+    {
+      "resourceId": "i-0f23dfed98e55913c",
+      "action": "STOP",
+      "resultCode": 200,
+      "resultMessage": "Success"
+    }
+  ]
+}`)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+
+	muxHAS.HandleFunc("/resource/start", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "results": [
+    {
+      "resourceId": "i-0f23dfed98e55913c",
+      "action": "START",
+      "resultCode": 200,
+      "resultMessage": "Success"
+    }
+  ]
+}`)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+
 	muxHAS.HandleFunc("/resource/"+resourceID, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
@@ -157,6 +197,27 @@ func TestResourcesCRUD(t *testing.T) {
 		return
 	}
 	assert.Equal(t, "has-image-j4iikl0ie7b3", resource.ImageID)
+
+	report, resp, err := hasClient.Resources.StopResource([]string{resourceID})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, report) {
+		return
+	}
+	report, resp, err = hasClient.Resources.StartResource([]string{resourceID})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, report) {
+		return
+	}
 
 	resources, resp, err = hasClient.Resources.GetResources(&has.ResourceOptions{
 		ResourceID: &resourceID,

@@ -1,7 +1,6 @@
 package has
 
 import (
-	"io"
 	"net/http"
 )
 
@@ -116,15 +115,9 @@ func (c *SessionsService) DeleteSession(userID string) (bool, *Response, error) 
 	req.Header.Set("Api-Version", HASAPIVersion)
 
 	var sr Sessions
-	resp, err := c.client.Do(req, &sr)
-	if err != nil && err != io.EOF {
-		return false, resp, err
-	}
-	if resp == nil {
+	resp, _ := c.client.Do(req, &sr)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, nil, ErrEmptyResults
-	}
-	if resp.StatusCode != http.StatusNoContent {
-		return false, resp, ErrEmptyResults
 	}
 	return true, resp, nil
 }
