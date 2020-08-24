@@ -91,7 +91,7 @@ func (c *Client) Close() {
 	}
 }
 
-// SetBaseTDRURL sets the base URL for API requests to a custom endpoint. urlStr
+// SetBaseHASURL sets the base URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseHASURL(urlStr string) error {
 	if urlStr == "" {
@@ -107,7 +107,7 @@ func (c *Client) SetBaseHASURL(urlStr string) error {
 	return err
 }
 
-// NewHASRequest creates an new TDR API request. A relative URL path can be provided in
+// NewHASRequest creates an new HAS API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
