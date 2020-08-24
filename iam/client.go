@@ -80,16 +80,16 @@ type Client struct {
 
 	debugFile *os.File
 
-	Organizations *OrganizationsService
-	Groups        *GroupsService
-	Permissions   *PermissionsService
-	Roles         *RolesService
-	Users         *UsersService
-	Applications  *ApplicationsService
-	Propositions  *PropositionsService
-	Clients       *ClientsService
-	Services      *ServicesService
-	MFAPolicies   *MFAPoliciesService
+	Organizations    *OrganizationsService
+	Groups           *GroupsService
+	Permissions      *PermissionsService
+	Roles            *RolesService
+	Users            *UsersService
+	Applications     *ApplicationsService
+	Propositions     *PropositionsService
+	Clients          *ClientsService
+	Services         *ServicesService
+	MFAPolicies      *MFAPoliciesService
 	PasswordPolicies *PasswordPoliciesService
 	Devices          *DevicesService
 

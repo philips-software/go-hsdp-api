@@ -24,6 +24,7 @@ var (
 
 	iamClient *iam.Client
 	hasClient *has.Client
+	hasOrgID  = "48a0183d-a588-41c2-9979-737d15e9e860"
 )
 
 func setup(t *testing.T) func() {
@@ -47,7 +48,6 @@ func setup(t *testing.T) func() {
 		t.Fatalf("Failed to create iamCleitn: %v", err)
 	}
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
-	orgID := "48a0183d-a588-41c2-9979-737d15e9e860"
 
 	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
@@ -82,10 +82,10 @@ func setup(t *testing.T) func() {
   "sub": "e7fecbb2-af8c-47c9-a662-5b046e048bc5",
   "iss": "https://iam-client-test.us-east.philips-healthsuite.com/oauth2/access_token",
   "organizations": {
-    "managingOrganization": "`+orgID+`",
+    "managingOrganization": "`+hasOrgID+`",
     "organizationList": [
       {
-        "organizationId": "`+orgID+`",
+        "organizationId": "`+hasOrgID+`",
         "permissions": [
           "ANALYZE_WORKFLOW.ALL",
           "ANALYZE_DATAPROC.ALL",
@@ -120,13 +120,14 @@ func setup(t *testing.T) func() {
 
 	hasClient, err = has.NewClient(iamClient, &has.Config{
 		HASURL: serverHAS.URL,
-		OrgID:  orgID,
+		OrgID:  hasOrgID,
 	})
 	assert.Nilf(t, err, "failed to create hasClient: %v", err)
 
 	return func() {
 		serverIAM.Close()
 		serverIDM.Close()
+		serverHAS.Close()
 	}
 }
 

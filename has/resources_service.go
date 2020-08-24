@@ -167,18 +167,18 @@ func (c *ResourcesService) DeleteResources(opt *ResourceOptions, options ...Opti
 // StartResource starts a resource in HAS
 // Start a resource to make sure it is in Running state.
 // This endpoint requires HAS_RESOURCE.ALL permission.
-func (c *ResourcesService) StartResource(resources []string, options ...OptionFunc) (*[]Resource, *Response, error) {
+func (c *ResourcesService) StartResource(resources []string, options ...OptionFunc) (*ResourcesReport, *Response, error) {
 	return c.startStopResource("start", resources, options...)
 }
 
 // StopResource stops a resource in HAS
 // Stop a resource to make sure it is in Stopped state.
 // This endpoint requires HAS_RESOURCE.ALL permission.
-func (c *ResourcesService) StopResource(resources []string, options ...OptionFunc) (*[]Resource, *Response, error) {
+func (c *ResourcesService) StopResource(resources []string, options ...OptionFunc) (*ResourcesReport, *Response, error) {
 	return c.startStopResource("stop", resources, options...)
 }
 
-func (c *ResourcesService) startStopResource(action string, resources []string, options ...OptionFunc) (*[]Resource, *Response, error) {
+func (c *ResourcesService) startStopResource(action string, resources []string, options ...OptionFunc) (*ResourcesReport, *Response, error) {
 	var resourceList = struct {
 		ResourceIDs []string `json:"resourceIds"`
 	}{
@@ -192,13 +192,13 @@ func (c *ResourcesService) startStopResource(action string, resources []string, 
 	req.Header.Set("organizationId", c.orgID)
 	req.Header.Set("Api-Version", HASAPIVersion)
 
-	var gr resourceResponse
+	var gr ResourcesReport
 
 	resp, err := c.client.Do(req, &gr)
 	if err != nil {
 		return nil, resp, err
 	}
-	return &gr.Resources, resp, nil
+	return &gr, resp, nil
 }
 
 // GetResource retrieves a resource in HAS
