@@ -10,7 +10,7 @@ A HSDP API client enabling Go programs to interact with various HSDP APIs in a s
 
 ## Supported APIs
 
-The current implement covers only a subset of HSDP APIs. Basically we implement functonality as needed.
+The current implement covers only a subset of HSDP APIs. Basically we implement functionality as needed.
 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
 - [x] IronIO tasks, codes and schedules management ([examples](iron/README.md))
