@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## v0.21.0
+- [NEW] Hosted appstream (HAS) support
+- [NEW] IAM Password policies management
+
 ## v0.20.0
 - Autoconfig support for IAM, Cartel and Logging
 - Add ap3 region
