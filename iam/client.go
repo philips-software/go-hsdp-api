@@ -110,6 +110,7 @@ type Client struct {
 	Services         *ServicesService
 	MFAPolicies      *MFAPoliciesService
 	PasswordPolicies *PasswordPoliciesService
+	Devices          *DevicesService
 }
 
 // NewClient returns a new HSDP IAM API client. If a nil httpClient is
@@ -161,6 +162,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Services = &ServicesService{client: c}
 	c.MFAPolicies = &MFAPoliciesService{client: c, validate: validator.New()}
 	c.PasswordPolicies = &PasswordPoliciesService{client: c, validate: validator.New()}
+	c.Devices = &DevicesService{client: c, validate: validator.New()}
 	return c, nil
 }
 
