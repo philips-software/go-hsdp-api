@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.20.0"
+	libraryVersion = "0.20.1"
 	userAgent      = "go-hsdp-api/iron/" + libraryVersion
 	IronBaseURL    = "https://worker-aws-us-east-1.iron.io/"
 )
