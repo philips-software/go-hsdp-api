@@ -16,6 +16,13 @@ type PasswordPoliciesService struct {
 	validate *validator.Validate
 }
 
+type ChallengePolicy struct {
+	DefaultQuestions     []string `json:"defaultQuestions"`
+	MinQuestionCount     int      `json:"minQuestionCount"`
+	MinAnswerCount       int      `json:"minAnswerCount"`
+	MaxIncorrectAttempts int      `json:"maxIncorrectAttempts"`
+}
+
 type PasswordPolicy struct {
 	ID                   string `json:"id,omitempty"`
 	ManagingOrganization string `json:"managingOrganization"`
@@ -29,14 +36,9 @@ type PasswordPolicy struct {
 		MinLowerCase    int `json:"minLowerCase"`
 		MinSpecialChars int `json:"minSpecialChars"`
 	} `json:"complexity"`
-	ChallengesEnabled bool `json:"challengesEnabled"`
-	ChallengePolicy   struct {
-		DefaultQuestions     []string `json:"defaultQuestions"`
-		MinQuestionCount     int      `json:"minQuestionCount"`
-		MinAnswerCount       int      `json:"minAnswerCount"`
-		MaxIncorrectAttempts int      `json:"maxIncorrectAttempts"`
-	} `json:"challengePolicy,omitempty"`
-	Meta *Meta `json:"meta,omitempty"`
+	ChallengesEnabled bool             `json:"challengesEnabled"`
+	ChallengePolicy   *ChallengePolicy `json:"challengePolicy,omitempty"`
+	Meta              *Meta            `json:"meta,omitempty"`
 }
 
 // GetPasswordPolicyByID retrieves a Password policy by ID
