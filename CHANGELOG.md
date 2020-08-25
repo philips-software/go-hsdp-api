@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## v0.21.1
+- Fix config URL
+
 ## v0.21.0
 - [NEW] Hosted appstream (HAS) support
 - [NEW] IAM Password policies management
