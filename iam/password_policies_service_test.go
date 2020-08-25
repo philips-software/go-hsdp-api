@@ -144,7 +144,7 @@ func TestPasswordPolicyCrud(t *testing.T) {
 	}
 	assert.Equal(t, 1, len(*policies))
 
-	updatedPolicy, resp, err := client.PasswordPolicies.UpdatePasswordPolicy(foundPolicy)
+	updatedPolicy, resp, err := client.PasswordPolicies.UpdatePasswordPolicy(*foundPolicy)
 	if !assert.NotNil(t, resp) {
 		return
 	}

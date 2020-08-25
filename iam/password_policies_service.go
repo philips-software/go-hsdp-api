@@ -63,7 +63,7 @@ func (p *PasswordPoliciesService) GetPasswordPolicyByID(id string) (*PasswordPol
 }
 
 // UpdatePasswordPolicy updates a password policy
-func (p *PasswordPoliciesService) UpdatePasswordPolicy(policy *PasswordPolicy) (*PasswordPolicy, *Response, error) {
+func (p *PasswordPoliciesService) UpdatePasswordPolicy(policy PasswordPolicy) (*PasswordPolicy, *Response, error) {
 
 	req, _ := p.client.NewRequest(IDM, "PUT", "authorize/identity/PasswordPolicy/"+policy.ID, policy, nil)
 	req.Header.Set("api-version", PasswordPolicyAPIVersion)
