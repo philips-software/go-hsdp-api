@@ -88,6 +88,16 @@ url = "https://console.sa1.hsdp.io"
 [region.apac3.service.console]
 url = "https://console.ap3.hsdp.io"
 
+# Service UAA
+[region.us-east.service.uaa]
+url = "https://uaa.cloud.pcftest.com"
+[region.eu-west.service.uaa]
+url = "https://uaa.eu1.phsdp.com"
+[region.sa1.service.uaa]
+url = "https://uaa.sys.sa1.hsdp.io"
+[region.apac3.service.uaa]
+url = "https://uaa.sys.ap3.hsdp.io"
+
 # Service IAM
 [region.us-east.env.client-test.service.iam]
 url = "https://iam-client-test.us-east.philips-healthsuite.com"
