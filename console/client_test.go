@@ -47,7 +47,7 @@ func setup(t *testing.T) (func(), error) {
 	token2 := "55d20214-7879-4e35-923d-f9d4e01c9746"
 	refreshToken = "31f1a449-ef8e-4bfc-a227-4f2353fde547"
 
-	muxUAA.HandleFunc("/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
+	muxUAA.HandleFunc("/oauth/token", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			assert.Equal(t, "POST", r.Method)
 		}
@@ -185,7 +185,7 @@ func TestTokenRefresh(t *testing.T) {
 	newToken := "90b208cd-aaf3-45bb-9410-ba3f42255b9d"
 	newRefreshToken := "9c45339e-38c8-4dac-b290-5c3ac571c369"
 
-	muxUAA.HandleFunc("/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
+	muxUAA.HandleFunc("/oauth/token", func(w http.ResponseWriter, r *http.Request) {
 		if !assert.Equal(t, "POST", r.Method) {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -244,8 +244,7 @@ func TestTokenRefresh(t *testing.T) {
 
 func TestAutoconfig(t *testing.T) {
 	cfg := &Config{
-		Region:      "us-east",
-		Environment: "client-test",
+		Region: "us-east",
 	}
 	// Explicit config always wins over autoconfig
 	foo := "https://foo.com"

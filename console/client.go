@@ -127,6 +127,8 @@ type Client struct {
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
 
+	Metrics *MetricsService
+
 	debugFile *os.File
 
 	sync.Mutex
@@ -166,16 +168,15 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 			c.debugFile = debugFile
 		}
 	}
-
+	c.Metrics = &MetricsService{client: c}
 	c.validate = validator.New()
 	return c, nil
 }
 
 func doAutoconf(config *Config) {
-	if config.Region != "" && config.Environment != "" {
+	if config.Region != "" {
 		c, err := autoconf.New(
-			autoconf.WithRegion(config.Region),
-			autoconf.WithEnv(config.Environment))
+			autoconf.WithRegion(config.Region))
 		if err == nil {
 			uaaService := c.Service("uaa")
 			consoleService := c.Service("console")
@@ -234,7 +235,7 @@ func (c *Client) tokenRefresh() error {
 	}
 
 	u := *c.baseUAAURL
-	u.Opaque = c.baseUAAURL.Path + "oauth2/token"
+	u.Opaque = c.baseUAAURL.Path + "oauth/token"
 
 	req := &http.Request{
 		Method:     "POST",

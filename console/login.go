@@ -11,7 +11,7 @@ import (
 
 // Login logs in a user with `username` and `password`
 func (c *Client) Login(username, password string) error {
-	req, err := c.NewRequest(UAA, "POST", "oauth2/token", nil, nil)
+	req, err := c.NewRequest(UAA, "POST", "oauth/token", nil, nil)
 	if err != nil {
 		return err
 	}
