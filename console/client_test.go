@@ -1,4 +1,4 @@
-package console
+package console_test
 
 import (
 	"fmt"
@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/philips-software/go-hsdp-api/console"
 
 	"github.com/stretchr/testify/assert"
 	errors "golang.org/x/xerrors"
@@ -22,7 +24,7 @@ var (
 	token         string
 	refreshToken  string
 
-	client *Client
+	client *console.Client
 )
 
 func setup(t *testing.T) (func(), error) {
@@ -34,7 +36,7 @@ func setup(t *testing.T) (func(), error) {
 
 	assert.Nil(t, err)
 
-	client, err = NewClient(nil, &Config{
+	client, err = console.NewClient(nil, &console.Config{
 		UAAURL:         serverUAA.URL,
 		BaseConsoleURL: serverCONSOLE.URL,
 	})
@@ -99,14 +101,14 @@ func TestConsoleRequest(t *testing.T) {
 	}
 	defer teardown()
 
-	req, err := client.NewRequest(CONSOLE, "GET", "/foo", nil, nil)
+	req, err := client.NewRequest(console.CONSOLE, "GET", "/foo", nil, nil)
 	if err != nil {
 		t.Errorf("Expected no no errors, got: %v", err)
 	}
 	if req == nil {
 		t.Errorf("Expected valid request")
 	}
-	req, _ = client.NewRequest(CONSOLE, "POST", "/foo", nil, []OptionFunc{
+	req, _ = client.NewRequest(console.CONSOLE, "POST", "/foo", nil, []console.OptionFunc{
 		func(r *http.Request) error {
 			r.Header.Set("Foo", "Bar")
 			return nil
@@ -116,7 +118,7 @@ func TestConsoleRequest(t *testing.T) {
 		t.Errorf("Expected OptionFuncs to be processed")
 	}
 	testErr := errors.New("test error")
-	req, err = client.NewRequest(CONSOLE, "POST", "/foo", nil, []OptionFunc{
+	req, err = client.NewRequest(console.CONSOLE, "POST", "/foo", nil, []console.OptionFunc{
 		func(r *http.Request) error {
 			return testErr
 		},
@@ -137,7 +139,7 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 
-	client, err = NewClient(nil, &Config{
+	client, err = console.NewClient(nil, &console.Config{
 		UAAURL:         serverUAA.URL,
 		BaseConsoleURL: serverCONSOLE.URL,
 		Debug:          true,
@@ -172,12 +174,12 @@ func TestTokenRefresh(t *testing.T) {
 	defer serverUAA.Close()
 	defer serverCONSOLE.Close()
 
-	cfg := &Config{
+	cfg := &console.Config{
 		UAAURL:         serverUAA.URL,
 		BaseConsoleURL: serverCONSOLE.URL,
-		Scopes:         []string{"introspect", "cn"},
+		Scopes:         []string{"clients.read", "openid"},
 	}
-	client, err := NewClient(nil, cfg)
+	client, err := console.NewClient(nil, cfg)
 	assert.Nil(t, err)
 
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
@@ -209,8 +211,10 @@ func TestTokenRefresh(t *testing.T) {
 				"scope": "`+strings.Join(cfg.Scopes, " ")+`",
 				"access_token": "`+newToken+`",
 				"refresh_token": "`+newRefreshToken+`",
-				"expires_in": 1799,
-				"token_type": "Bearer"
+				"expires_in": 599,
+                "id_token": "eyJhbGciOiJSUzI1NiIsbroken",
+				"token_type": "bearer",
+                "jti": "fakejtiwhateveritmaybe"
 			}`)
 		case "password":
 			err := r.ParseForm()
@@ -234,23 +238,27 @@ func TestTokenRefresh(t *testing.T) {
 	err = client.Login("username", "password")
 	assert.Nil(t, err)
 
-	err = client.tokenRefresh()
+	err = client.TokenRefresh()
 	assert.Nilf(t, err, fmt.Sprintf("Unexpected error: %v", err))
 	assert.Equal(t, newToken, client.Token())
 	assert.Equal(t, newRefreshToken, client.RefreshToken())
 	httpClient := client.HttpClient()
 	assert.NotNil(t, httpClient)
+	fetchedToken := client.IDToken()
+	assert.Equal(t, "eyJhbGciOiJSUzI1NiIsbroken", fetchedToken)
+	ttl := client.Expires()
+	assert.Less(t, 0, ttl)
 }
 
 func TestAutoconfig(t *testing.T) {
-	cfg := &Config{
+	cfg := &console.Config{
 		Region: "us-east",
 	}
 	// Explicit config always wins over autoconfig
 	foo := "https://foo.com"
 	cfg.BaseConsoleURL = foo
 	cfg.UAAURL = foo
-	_, _ = NewClient(nil, cfg)
+	_, _ = console.NewClient(nil, cfg)
 	assert.Equal(t, foo, cfg.BaseConsoleURL)
 	assert.Equal(t, foo, cfg.UAAURL)
 }

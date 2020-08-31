@@ -144,7 +144,7 @@ func (c *MetricsService) GetInstances(options ...OptionFunc) (*[]Instance, *Resp
 
 // GetInstanceByID looks up an instance by ID
 func (c *MetricsService) GetInstanceByID(id string, options ...OptionFunc) (*Instance, *Response, error) {
-	req, err := c.client.NewRequest(CONSOLE, "GET", "v3/metrics/intances/"+id, nil, options)
+	req, err := c.client.NewRequest(CONSOLE, "GET", "v3/metrics/instances/"+id, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}

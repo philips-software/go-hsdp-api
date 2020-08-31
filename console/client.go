@@ -203,16 +203,6 @@ func (c *Client) HttpClient() *http.Client {
 	return c.client
 }
 
-// WithLogin returns a cloned client with new login
-func (c *Client) WithLogin(username, password string) (*Client, error) {
-	client, err := NewClient(c.client, c.config)
-	if err != nil {
-		return nil, err
-	}
-	err = client.Login(username, password)
-	return client, err
-}
-
 // Token returns the current token
 func (c *Client) Token() string {
 	c.Lock()
@@ -222,14 +212,15 @@ func (c *Client) Token() string {
 	expires := c.expiresAt.Unix()
 
 	if expires-now < 60 {
-		if c.tokenRefresh() != nil {
+		if c.TokenRefresh() != nil {
 			return ""
 		}
 	}
 	return c.token
 }
 
-func (c *Client) tokenRefresh() error {
+// TokenRefresh refreshes the accessToken
+func (c *Client) TokenRefresh() error {
 	if c.refreshToken == "" {
 		return ErrMissingRefreshToken
 	}
