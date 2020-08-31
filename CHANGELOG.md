@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## v0.22.0
+- [NEW] Console API support: Autoscalers
+
 ## v0.21.1
 - Fix config URL
 
