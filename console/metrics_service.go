@@ -33,17 +33,22 @@ type RuleResponse struct {
 	Status string `json:"status"`
 }
 
+type Threshold struct {
+	Default int      `json:"default,omitempty"`
+	Enabled bool     `json:"enabled"`
+	Max     float64  `json:"max"`
+	Min     float64  `json:"min"`
+	Name    string   `json:"name"`
+	Type    string   `json:"type,omitempty"`
+	Unit    []string `json:"unit,omitempty"`
+}
+
 type Application struct {
-	Enabled      bool   `json:"enabled"`
-	MaxInstances int    `json:"maxInstances"`
-	MinInstances int    `json:"minInstances"`
-	Name         string `json:"name"`
-	Thresholds   []struct {
-		Enabled bool    `json:"enabled"`
-		Max     float64 `json:"max"`
-		Min     float64 `json:"min"`
-		Name    string  `json:"name"`
-	} `json:"thresholds,omitempty"`
+	Enabled      bool        `json:"enabled"`
+	MaxInstances int         `json:"maxInstances"`
+	MinInstances int         `json:"minInstances"`
+	Name         string      `json:"name"`
+	Thresholds   []Threshold `json:"thresholds,omitempty"`
 }
 
 type AutoscalersResponse struct {
@@ -75,15 +80,9 @@ type Rule struct {
 			Type         string   `json:"type"`
 			VariableName string   `json:"variableName"`
 		} `json:"extras"`
-		Operators []string `json:"operators"`
-		Subject   string   `json:"subject"`
-		Threshold struct {
-			Default int      `json:"default"`
-			Max     float64  `json:"max"`
-			Min     float64  `json:"min"`
-			Type    string   `json:"type"`
-			Unit    []string `json:"unit"`
-		} `json:"threshold"`
+		Operators []string  `json:"operators"`
+		Subject   string    `json:"subject"`
+		Threshold Threshold `json:"threshold"`
 	} `json:"rule"`
 	Template string `json:"template"`
 }
