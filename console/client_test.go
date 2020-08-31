@@ -247,7 +247,7 @@ func TestTokenRefresh(t *testing.T) {
 	fetchedToken := client.IDToken()
 	assert.Equal(t, "eyJhbGciOiJSUzI1NiIsbroken", fetchedToken)
 	ttl := client.Expires()
-	assert.Less(t, 0, ttl)
+	assert.Less(t, int64(0), ttl)
 }
 
 func TestAutoconfig(t *testing.T) {
