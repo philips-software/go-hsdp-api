@@ -14,23 +14,26 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
 - [x] IronIO tasks, codes and schedules management ([examples](iron/README.md))
 - [x] HSDP IAM/IDM management
-  - [x] Group management
-  - [x] Organization management
-  - [x] Permission management
-  - [x] Role managemnet
-  - [x] User management
-  - [x] Password management
-  - [x] Proposition management
-  - [x] Application management
-  - [x] Service management
-  - [x] Device management
-  - [x] MFA Policies management
-  - [x] Password Policies management
+  - [x] Groups
+  - [x] Organizations
+  - [x] Permissions
+  - [x] Roles
+  - [x] Users
+  - [x] Passwords
+  - [x] Propositions
+  - [x] Applications
+  - [x] Services
+  - [x] Devices
+  - [x] MFA Policies
+  - [x] Password Policies
 - [x] Logging ([examples](logging/README.md))
 - [ ] Auditing
 - [x] S3 Credentials Policy management
 - [x] Hosted Application Streaming (HAS) management
 - [x] Configuration
+- [x] Console settings
+  - [ ] Metrics Alerts
+  - [x] Metrics Autoscalers
 
 ## Usage
 
