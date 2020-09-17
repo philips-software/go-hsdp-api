@@ -80,12 +80,9 @@ func newResponse(r *http.Response) *Response {
 }
 
 func doAutoconf(config *Config) {
-	r := config.Region
-	e := config.Environment
-	if r != "" && e != "" {
+	if config.Region != "" {
 		ac, err := autoconf.New(
-			autoconf.WithRegion(r),
-			autoconf.WithEnv(e))
+			autoconf.WithRegion(config.Region))
 		if err == nil {
 			loggingService := ac.Service("cartel")
 			if host, err := loggingService.GetString("host"); err == nil && config.Host == "" {
@@ -117,7 +114,7 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	cartel.httpClient = httpClient
 	cartel.userAgent = userAgent
 
-	// Make sure the given URL end with a slash
+	// Make sure the given URL ends with a slash
 	host := fmt.Sprintf("https://%s", cartel.config.Host)
 	if config.NoTLS {
 		host = fmt.Sprintf("http://%s", cartel.config.Host)

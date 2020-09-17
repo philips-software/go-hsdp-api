@@ -40,6 +40,9 @@ type PropositionsService struct {
 // can be used to look for entities
 type GetPropositionsOptions struct {
 	ID                *string `url:"_id,omitempty"`
+	Count             *int    `url:"_count,omitempty"`
+	Page              *int    `url:"_page,omitempty"`
+	OrganizationID    *string `url:"organizationId,omitempty"`
 	PropositionID     *string `url:"propositionId,omitempty"`
 	GlobalReferenceID *string `url:"globalReferenceId,omitempty"`
 	Name              *string `url:"name,omitempty"`

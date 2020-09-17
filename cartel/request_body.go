@@ -11,10 +11,10 @@ type RequestBody struct {
 	Image         string            `json:"image,omitempty"`
 	LDAPGroups    []string          `json:"ldap_groups,omitempty"`
 	InstanceType  string            `json:"instance_type,omitempty"`
-	NumVolumes    int               `json:"num_vols,omitempty"`
-	VolSize       int               `json:"vol_size,omitempty"`
+	NumVolumes    int               `json:"num_vols,omitempty" validate:"max=6"`
+	VolSize       int               `json:"vol_size,omitempty" validate:"min=1,max=1000"`
 	VolumeType    string            `json:"vol_type,omitempty"`
-	IOPs          int               `json:"iops,omitempty"`
+	IOPs          int               `json:"iops,omitempty" validate:"min=1,max=4000"`
 	EncryptVols   bool              `json:"encrypt_vols"`
 	SubnetType    string            `json:"subnet_type,omitempty"`
 	Subnet        string            `json:"subnet,omitempty"`
