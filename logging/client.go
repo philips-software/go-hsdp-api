@@ -16,6 +16,8 @@ import (
 	"strconv"
 	"strings"
 
+	"go.elastic.co/apm/module/apmhttp"
+
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 
 	signer "github.com/philips-software/go-hsdp-signer"
@@ -109,7 +111,7 @@ type CustomIndexBody []struct {
 // NewClient returns an instance of the logger client with the given Config
 func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		httpClient = apmhttp.WrapClient(http.DefaultClient)
 	}
 	// Autoconfig
 	if config.Region != "" && config.Environment != "" {
