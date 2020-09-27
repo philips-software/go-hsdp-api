@@ -13,6 +13,8 @@ import (
 	"os"
 	"strings"
 
+	autoconf "github.com/philips-software/go-hsdp-api/config"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
 	"github.com/philips-software/go-hsdp-api/fhir"
@@ -29,9 +31,11 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
-	BaseURL  string
-	Debug    bool
-	DebugLog string
+	BaseURL     string
+	Region      string
+	Environment string
+	Debug       bool
+	DebugLog    string
 }
 
 // A Client manages communication with HSDP IAM API
@@ -58,8 +62,26 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	return newClient(iamClient, config)
 }
 
+func doAutoconf(config *Config) {
+	if config.Region != "" {
+		if config.Environment == "" {
+			return
+		}
+		ac, err := autoconf.New(
+			autoconf.WithRegion(config.Region),
+			autoconf.WithEnv(config.Environment))
+		if err == nil {
+			credsService := ac.Service("s3creds")
+			if url, err := credsService.GetString("url"); err == nil && config.BaseURL == "" {
+				config.BaseURL = url
+			}
+		}
+	}
+}
+
 func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
+	doAutoconf(config)
 	if err := c.SetBaseURL(c.config.BaseURL); err != nil {
 		return nil, err
 	}
