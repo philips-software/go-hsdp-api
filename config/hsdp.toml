@@ -61,12 +61,16 @@
 # Service Cloud foundry
 [region.us-east.service.cf]
 url = "https://api.cloud.pcftest.com"
+domain = "us-east.philips-healthsuite.com"
 [region.eu-west.service.cf]
 url = "https://api.eu1.phsdp.com"
+domain = "eu-west.philips-healthsuite.com"
 [region.sa1.service.cf]
 url = "https://api.sys.sa1.hsdp.io"
+domain = "sa1.hsdp.io"
 [region.apac3.service.cf]
 url = "https://api.sys.ap3.hsdp.io"
+domain = "ap3.hsdp.io"
 
 # Service DOCKER-REGISTRY
 [region.us-east.service.docker-registry]
