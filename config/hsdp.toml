@@ -166,12 +166,16 @@ host = "cartel-sa1.cloud.phsdp.com"
 # Service GATEWAY
 [region.us-east.service.gateway]
 host = "gw-na1.phsdp.com"
+domain = "na1.phsdp.com"
 [region.eu-west.service.gateway]
 host = "gw-eu1.phsdp.com"
+domain = "emea1.phsdp.com"
 [region.sa1.service.gateway]
 host = "gw-sa1.phsdp.com"
+domain = "sa1.phsdp.com"
 [region.apac3.service.gateway]
 host = "gw-apac3.phsdp.com"
+domain = "apac3.phsdp.com"
 
 # Service S3CREDS
 [region.us-east.env.client-test.service.s3creds]
