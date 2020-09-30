@@ -30,11 +30,8 @@ type GetRolesOptions struct {
 	RoleID         *string `url:"roleId,omitempty"`
 }
 
-// GetRolesByGroupID retrieves Roles based on group ID
-func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, error) {
-	opt := &GetRolesOptions{
-		GroupID: &groupID,
-	}
+// GetRoles retries based on GetRolesOptions
+func (p *RolesService) GetRoles(opt *GetRolesOptions) (*[]Role, *Response, error) {
 	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Role", opt, nil)
 	if err != nil {
 		return nil, nil, err
@@ -52,7 +49,14 @@ func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, er
 		return nil, resp, err
 	}
 	return &responseStruct.Entry, resp, err
+}
 
+// GetRolesByGroupID retrieves Roles based on group ID
+func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, error) {
+	opt := &GetRolesOptions{
+		GroupID: &groupID,
+	}
+	return p.GetRoles(opt)
 }
 
 // GetRoleByID retrieves a role by ID
