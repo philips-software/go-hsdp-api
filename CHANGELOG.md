@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## v0.23.0
+- Maintenance release
+- Add Tag() option for Cartel
 
 ## v0.22.0
 - [NEW] Console API support: Autoscalers
