@@ -51,4 +51,12 @@ func TestRequestBody(t *testing.T) {
 	err = VolumeEncryption(true)(&requestBody)
 	assert.Nil(t, err)
 	assert.Equal(t, true, requestBody.EncryptVols)
+
+	err = Tags(map[string]string{
+		"foo": "bar",
+		"bar": "baz",
+	})(&requestBody)
+	assert.Nil(t, err)
+	assert.Equal(t, "bar", requestBody.Tags["foo"])
+	assert.Equal(t, "baz", requestBody.Tags["bar"])
 }

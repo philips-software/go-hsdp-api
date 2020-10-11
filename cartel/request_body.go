@@ -119,10 +119,18 @@ func InSubnet(subnetID string) RequestOptionFunc {
 	}
 }
 
-// VPICID Sets the VPC ID to use
+// VPCID Sets the VPC ID to use
 func VPCID(vpcID string) RequestOptionFunc {
 	return func(body *RequestBody) error {
 		body.VpcId = vpcID
+		return nil
+	}
+}
+
+// Tags sets the Tags for the instance
+func Tags(tags map[string]string) RequestOptionFunc {
+	return func(body *RequestBody) error {
+		body.Tags = tags
 		return nil
 	}
 }
