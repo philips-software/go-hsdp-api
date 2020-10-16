@@ -173,14 +173,6 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 			_, _ = fmt.Fprintf(c.debugFile, "Error sending response: %s\n", err)
 		}
 	}
-
-	err = CheckResponse(resp)
-	if err != nil {
-		// even though there was an error, we still return the response
-		// in case the caller wants to inspect it further
-		return response, err
-	}
-
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
@@ -188,7 +180,10 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 			err = json.NewDecoder(resp.Body).Decode(v)
 		}
 	}
-
+	if err != nil {
+		return response, err
+	}
+	err = CheckResponse(resp)
 	return response, err
 }
 
