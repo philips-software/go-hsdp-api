@@ -52,8 +52,5 @@ func (c *Client) Create(tagName string, opts ...RequestOptionFunc) (*CreateRespo
 	var responseBody CreateResponse
 
 	resp, err := c.Do(req, &responseBody)
-	if err != nil {
-		return nil, resp, err
-	}
 	return &responseBody, resp, err
 }
