@@ -240,7 +240,6 @@ func (c *Client) tokenRefresh() error {
 		Host:       u.Host,
 	}
 	form := url.Values{}
-	form.Add("token", c.refreshToken)
 	form.Add("grant_type", "refresh_token")
 	form.Add("refresh_token", c.refreshToken)
 	if len(c.config.Scopes) > 0 {

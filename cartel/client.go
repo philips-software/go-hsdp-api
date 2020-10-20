@@ -29,15 +29,14 @@ const (
 
 // Config the client
 type Config struct {
-	Region      string `cloud:"-" json:"-"`
-	Environment string `cloud:"-" json:"-"`
-	Token       string `cloud:"token" json:"token"`
-	Secret      string `cloud:"secret" json:"secret"`
-	SkipVerify  bool   `cloud:"skip_verify" json:"skip_verify"`
-	NoTLS       bool   `cloud:"no_tls" json:"no_tls"`
-	Host        string `cloud:"host" json:"host"`
-	Debug       bool   `cloud:"-" json:"debug,omitempty"`
-	DebugLog    string `cloud:"-" json:"debug_log,omitempty"`
+	Region     string `cloud:"-" json:"-"`
+	Token      string `cloud:"token" json:"token"`
+	Secret     string `cloud:"secret" json:"secret"`
+	SkipVerify bool   `cloud:"skip_verify" json:"skip_verify"`
+	NoTLS      bool   `cloud:"no_tls" json:"no_tls"`
+	Host       string `cloud:"host" json:"host"`
+	Debug      bool   `cloud:"-" json:"debug,omitempty"`
+	DebugLog   string `cloud:"-" json:"debug_log,omitempty"`
 }
 
 // Valid returns if all required config fields are present, false otherwise

@@ -104,10 +104,9 @@ func TestDebug(t *testing.T) {
 
 func TestAutoconfig(t *testing.T) {
 	cfg := &Config{
-		Token:       "alice",
-		Secret:      "foo",
-		Region:      "us-east",
-		Environment: "client-test",
+		Token:  "alice",
+		Secret: "foo",
+		Region: "us-east",
 	}
 	_, err := NewClient(nil, cfg)
 	if !assert.Nil(t, err) {
