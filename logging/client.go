@@ -44,12 +44,13 @@ var (
 	entryRegex = regexp.MustCompile(`^entry\[(\d+)]`)
 
 	scaryMap = map[string]string{
-		";":   "[sc]",
-		"&":   "[amp]",
-		">":   "[gt]",
-		"<":   "[lt]",
-		"\\u": "[utf]",
-		"\\f": "[ff]",
+		";":    "[sc]",
+		"&":    "[amp]",
+		">":    "[gt]",
+		"<":    "[lt]",
+		"\\u":  "[utf]",
+		"\\f":  "[ff]",
+		"\\\"": "[qt]",
 	}
 )
 
