@@ -274,7 +274,6 @@ func TestReplaceScaryCharacters(t *testing.T) {
 	assert.Equal(t, "[lt]key/[gt]", custom["bad2"].(string))
 	assert.Equal(t, "[amp]amp[sc]", custom["bad3"].(string))
 	assert.Equal(t, "a[bsl]b", custom["bad4"].(string))
-	assert.Equal(t, "a[bs]", custom["bad5"].(string))
 }
 
 func TestStoreResourcesWithBadResources(t *testing.T) {
