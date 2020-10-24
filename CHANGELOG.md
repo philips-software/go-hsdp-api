@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.24.0
+- Logging fixes
+- [Cartel] Minor API tweaks for better error reporting
+
 ## v0.23.0
 - Maintenance release
 - Add Tag() option for Cartel
