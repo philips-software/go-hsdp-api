@@ -66,7 +66,7 @@ type Client struct {
 	Schedules *SchedulesServices
 }
 
-// NewClient returns a new HSDP HAS API client. If a nil httpClient is
+// NewClient returns a new HSDP Iron API client. If a nil httpClient is
 // provided, http.DefaultClient will be used. A configured IAM client must be provided
 // as well
 func NewClient(config *Config) (*Client, error) {
