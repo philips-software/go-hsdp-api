@@ -13,11 +13,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/philips-software/go-hsdp-api/iam"
+
+	"github.com/philips-software/go-hsdp-api/console"
+
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 
 	"github.com/google/go-querystring/query"
 	"github.com/philips-software/go-hsdp-api/fhir"
-	"github.com/philips-software/go-hsdp-api/iam"
 )
 
 const (
@@ -38,9 +41,11 @@ type Config struct {
 	DebugLog    string
 }
 
-// A Client manages communication with HSDP IAM API
+// A Client manages communication with HSDP PKI API
 type Client struct {
-	// HTTP client used to communicate with the API.
+	// HTTP client used to communicate with Console API
+	consoleClient *console.Client
+	// HTTP client used to communicate with IAM API
 	iamClient *iam.Client
 
 	config *Config
@@ -59,13 +64,13 @@ type Client struct {
 // NewClient returns a new HSDP HAS API client. If a nil httpClient is
 // provided, http.DefaultClient will be used. A configured IAM client must be provided
 // as well
-func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
-	return newClient(iamClient, config)
+func NewClient(consoleClient *console.Client, iamClient *iam.Client, config *Config) (*Client, error) {
+	return newClient(consoleClient, iamClient, config)
 }
 
-func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
+func newClient(consoleClient *console.Client, iamClient *iam.Client, config *Config) (*Client, error) {
 	doAutoconf(config)
-	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
+	c := &Client{consoleClient: consoleClient, iamClient: iamClient, config: config, UserAgent: userAgent}
 	if err := c.SetBasePKIURL(c.config.PKIURL); err != nil {
 		return nil, err
 	}
@@ -176,7 +181,7 @@ func (c *Client) NewPKIRequest(method, path string, opt interface{}, options []O
 	}
 
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
+	req.Header.Set("Authorization", "Bearer "+c.consoleClient.Token())
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
