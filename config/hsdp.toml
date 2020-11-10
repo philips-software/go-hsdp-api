@@ -226,3 +226,7 @@ url = "https://kibana-client-test.sa1.hsdp.io"
 url = "https://kibana.sa1.hsdp.io"
 [region.apac3.env.prod.service.kibana]
 url = "https://kibana.ap3.hsdp.io"
+
+# Service PKI
+[region.eu-west.env.client-test.service.pki]
+url = "https://pki-proxy-client-test.eu-west.philips-healthsuite.com"
