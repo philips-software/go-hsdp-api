@@ -56,21 +56,27 @@ type CertificateAuthority struct {
 	Province     string `json:"province"`
 }
 
+type ServiceParameters struct {
+	LogicalPath string               `json:"logical_path,omitempty"`
+	IAMOrgs     []string             `json:"iam_orgs" validate:"min=1,max=10,required"`
+	CA          CertificateAuthority `json:"ca" validate:"required"`
+	Roles       []Role               `json:"roles" validate:"min=1,max=10,required"`
+}
+
 type Tenant struct {
-	OrganizationName  string `json:"organization_name" validate:"required"`
-	SpaceName         string `json:"space_name" validate:"required"`
-	ServiceName       string `json:"service_name" validate:"required"`
-	PlanName          string `json:"plan_name" validate:"required"`
-	ServiceParameters struct {
-		LogicalPath string               `json:"omitempty,logical_path"`
-		IAMOrgs     []string             `json:"iam_orgs" validate:"min=1,max=10,required"`
-		CA          CertificateAuthority `json:"ca" validate:"required"`
-		Roles       []Role               `json:"roles" validate:"min=1,max=10,required"`
-	} `json:"service_parameters" validate:"required"`
+	OrganizationName  string            `json:"organization_name" validate:"required"`
+	SpaceName         string            `json:"space_name" validate:"required"`
+	ServiceName       string            `json:"service_name" validate:"required"`
+	PlanName          string            `json:"plan_name" validate:"required"`
+	ServiceParameters ServiceParameters `json:"service_parameters" validate:"required"`
 }
 
 type ErrorResponse struct {
-	Errors []string `json:"omitempty,errors"`
+	Errors []string `json:"errors,omitempty"`
+}
+
+type OnboardingResponse struct {
+	APIEndpoint string `json:"api_endpoint"`
 }
 
 func (t *TenantService) setCFAuth(req *http.Request) error {
@@ -85,30 +91,33 @@ func (t *TenantService) setCFAuth(req *http.Request) error {
 	return nil
 }
 
-func (t *TenantService) Onboard(tenant Tenant, options ...OptionFunc) (bool, *Response, error) {
+func (t *TenantService) Onboard(tenant Tenant, options ...OptionFunc) (*OnboardingResponse, *Response, error) {
 	if err := t.validate.Struct(tenant); err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
-	req, err := t.client.NewServiceRequest(http.MethodPost, "core/pki/tenant", &tenant, options)
+	req, err := t.client.NewTenantRequest(http.MethodPost, "core/pki/tenant", &tenant, options)
 	if err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
 	if err := t.setCFAuth(req); err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
-	var errorResponse ErrorResponse
-	resp, err := t.client.Do(req, &errorResponse)
+	var onboardResponse struct {
+		ErrorResponse
+		OnboardingResponse
+	}
+	resp, err := t.client.Do(req, &onboardResponse)
 	if err != nil && err != io.EOF {
-		return false, nil, err
+		return nil, nil, err
 	}
 	if resp == nil {
-		return false, nil, ErrEmptyResult
+		return nil, nil, ErrEmptyResult
 	}
-	return resp.StatusCode == http.StatusCreated, resp, nil
+	return &onboardResponse.OnboardingResponse, resp, nil
 }
 
 func (t *TenantService) Retrieve(logicalPath string, options ...OptionFunc) (*Tenant, *Response, error) {
-	req, err := t.client.NewServiceRequest(http.MethodGet, "core/pki/tenant/"+logicalPath, nil, options)
+	req, err := t.client.NewTenantRequest(http.MethodGet, "core/pki/tenant/"+logicalPath, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -127,7 +136,7 @@ func (t *TenantService) Update(tenant Tenant, options ...OptionFunc) (bool, *Res
 	if err := t.validate.Struct(tenant); err != nil {
 		return false, nil, err
 	}
-	req, err := t.client.NewServiceRequest(http.MethodPut, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
+	req, err := t.client.NewTenantRequest(http.MethodPut, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
 	if err != nil {
 		return false, nil, err
 	}
@@ -151,7 +160,7 @@ func (t *TenantService) Update(tenant Tenant, options ...OptionFunc) (bool, *Res
 }
 
 func (t *TenantService) Offboard(tenant Tenant, options ...OptionFunc) (bool, *Response, error) {
-	req, err := t.client.NewServiceRequest(http.MethodDelete, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
+	req, err := t.client.NewTenantRequest(http.MethodDelete, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
 	if err != nil {
 		return false, nil, err
 	}
