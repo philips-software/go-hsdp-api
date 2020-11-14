@@ -13,6 +13,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/philips-software/go-hsdp-api/iam"
 
 	"github.com/philips-software/go-hsdp-api/console"
@@ -26,6 +28,7 @@ import (
 const (
 	libraryVersion = "0.21.1"
 	userAgent      = "go-hsdp-api/pki/" + libraryVersion
+	PKIAPIVersion  = "1"
 )
 
 // OptionFunc is the function signature function for options
@@ -81,8 +84,8 @@ func newClient(consoleClient *console.Client, iamClient *iam.Client, config *Con
 			c.debugFile = nil
 		}
 	}
-	c.Tenants = &TenantService{client: c}
-	c.Services = &ServicesService{client: c}
+	c.Tenants = &TenantService{client: c, validate: validator.New()}
+	c.Services = &ServicesService{client: c, validate: validator.New()}
 	return c, nil
 }
 
@@ -108,7 +111,7 @@ func doAutoconf(config *Config) {
 // Close releases allocated resources of clients
 func (c *Client) Close() {
 	if c.debugFile != nil {
-		c.debugFile.Close()
+		_ = c.debugFile.Close()
 		c.debugFile = nil
 	}
 }
@@ -129,12 +132,72 @@ func (c *Client) SetBasePKIURL(urlStr string) error {
 	return err
 }
 
-// NewPKIRequest creates an new HAS API request. A relative URL path can be provided in
+// NewServiceRequest creates an new PKI Service API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewPKIRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+func (c *Client) NewServiceRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+	u := *c.basePKIURL
+	// Set the encoded opaque data
+	u.Opaque = c.basePKIURL.Path + path
+
+	if opt != nil {
+		q, err := query.Values(opt)
+		if err != nil {
+			return nil, err
+		}
+		u.RawQuery = q.Encode()
+	}
+
+	req := &http.Request{
+		Method:     method,
+		URL:        &u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Host:       u.Host,
+	}
+
+	for _, fn := range options {
+		if fn == nil {
+			continue
+		}
+
+		if err := fn(req); err != nil {
+			return nil, err
+		}
+	}
+
+	if method == "POST" || method == "PUT" {
+		bodyBytes, err := json.Marshal(opt)
+		if err != nil {
+			return nil, err
+		}
+		bodyReader := bytes.NewReader(bodyBytes)
+
+		u.RawQuery = ""
+		req.Body = ioutil.NopCloser(bodyReader)
+		req.ContentLength = int64(bodyReader.Len())
+	}
+
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
+	req.Header.Set("API-Version", PKIAPIVersion)
+
+	if c.UserAgent != "" {
+		req.Header.Set("User-Agent", c.UserAgent)
+	}
+	return req, nil
+}
+
+// NewTenantRequest creates an new PKI Tenant API request. A relative URL path can be provided in
+// urlStr, in which case it is resolved relative to the base URL of the Client.
+// Relative URL paths should always be specified without a preceding slash. If
+// specified, the value pointed to by body is JSON encoded and included as the
+// request body.
+func (c *Client) NewTenantRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
 	u := *c.basePKIURL
 	// Set the encoded opaque data
 	u.Opaque = c.basePKIURL.Path + path
@@ -180,8 +243,9 @@ func (c *Client) NewPKIRequest(method, path string, opt interface{}, options []O
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Authorization", "Bearer "+c.consoleClient.Token())
+	req.Header.Set("API-Version", PKIAPIVersion)
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
@@ -227,7 +291,6 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
 	response := newResponse(resp)
 
@@ -239,6 +302,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	if v != nil {
+		defer resp.Body.Close() // Only close if we plan to read it
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {
