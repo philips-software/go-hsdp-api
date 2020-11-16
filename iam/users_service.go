@@ -313,6 +313,34 @@ func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, er
 	return user.ID, resp, nil
 }
 
+// LegacyGetUserIDByLoginID looks up the UUID of a user by LoginID (email address)
+func (u *UsersService) LegacyGetUserIDByLoginID(loginID string) (string, *Response, error) {
+	opt := &GetUserOptions{
+		LoginID: &loginID,
+	}
+	req, _ := u.client.NewRequest(IDM, "GET", "security/users", opt, nil)
+	req.Header.Set("api-version", userAPIVersion)
+
+	var responseStruct struct {
+		Exchange struct {
+			Users []struct {
+				UserUUID string `json:"userUUID"`
+			} `json:"users"`
+		} `json:"exchange"`
+		ResponseCode    string `json:"responseCode"`
+		ResponseMessage string `json:"responseMessage"`
+	}
+
+	resp, err := u.client.Do(req, &responseStruct)
+	if err != nil {
+		return "", resp, err
+	}
+	if len(responseStruct.Exchange.Users) == 0 {
+		return "", resp, ErrEmptyResults
+	}
+	return responseStruct.Exchange.Users[0].UserUUID, resp, nil
+}
+
 // SetMFA activate Multi-Factor-Authentication for the given UUID. See also SetMFAByLoginID.
 func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, error) {
 	activateString := "true"

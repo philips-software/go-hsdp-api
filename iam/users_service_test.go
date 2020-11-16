@@ -207,11 +207,11 @@ func TestGetUsers(t *testing.T) {
 			return
 		}
 		qp := r.URL.Query()
-		if ps := qp.Get("pageSize"); ps != "5" {
+		if ps := qp.Get("pageSize"); ps != "" && ps != "5" {
 			t.Errorf("Expected pageSize to be 5, Got: %s", ps)
 			return
 		}
-		if pn := qp.Get("pageNumber"); pn != "1" {
+		if pn := qp.Get("pageNumber"); pn != "" && pn != "1" {
 			t.Errorf("Expected pageNumber to be 1, Got: %s", pn)
 			return
 		}
@@ -260,6 +260,15 @@ func TestGetUsers(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, 5, len(list.UserUUIDs))
 	assert.True(t, list.HasNextPage)
+
+	foundUser, resp, err := client.Users.LegacyGetUserIDByLoginID("foo")
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, "7dbfe5fc-1320-4bc6-92a7-2be5d7f07cac", foundUser)
 }
 
 func userIDByLoginIDHandler(t *testing.T, loginID, email, userUUID string) func(http.ResponseWriter, *http.Request) {
