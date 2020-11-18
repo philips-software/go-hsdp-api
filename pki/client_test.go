@@ -8,35 +8,74 @@ import (
 	"os"
 	"testing"
 
-	"github.com/philips-software/go-hsdp-api/has"
+	"github.com/philips-software/go-hsdp-api/console"
+
+	"github.com/philips-software/go-hsdp-api/pki"
 
 	"github.com/philips-software/go-hsdp-api/iam"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	muxIAM    *http.ServeMux
-	serverIAM *httptest.Server
-	muxIDM    *http.ServeMux
-	serverIDM *httptest.Server
-	muxHAS    *http.ServeMux
-	serverHAS *httptest.Server
+	muxUAA        *http.ServeMux
+	serverUAA     *httptest.Server
+	muxIAM        *http.ServeMux
+	serverIAM     *httptest.Server
+	muxIDM        *http.ServeMux
+	serverIDM     *httptest.Server
+	muxPKI        *http.ServeMux
+	serverPKI     *httptest.Server
+	muxCONSOLE    *http.ServeMux
+	serverCONSOLE *httptest.Server
 
-	iamClient *iam.Client
-	hasClient *has.Client
-	hasOrgID  = "48a0183d-a588-41c2-9979-737d15e9e860"
-	userUUID  = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
+	iamClient     *iam.Client
+	pkiClient     *pki.Client
+	consoleClient *console.Client
+	pkiOrgID      = "48a0183d-a588-41c2-9979-737d15e9e860"
+	userUUID      = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
+	token         string
+	refreshToken  string
 )
 
 func setup(t *testing.T) func() {
+	muxUAA = http.NewServeMux()
+	serverUAA = httptest.NewServer(muxUAA)
 	muxIAM = http.NewServeMux()
 	serverIAM = httptest.NewServer(muxIAM)
 	muxIDM = http.NewServeMux()
 	serverIDM = httptest.NewServer(muxIDM)
-	muxHAS = http.NewServeMux()
-	serverHAS = httptest.NewServer(muxHAS)
+	muxPKI = http.NewServeMux()
+	serverPKI = httptest.NewServer(muxPKI)
+	muxCONSOLE = http.NewServeMux()
+	serverCONSOLE = httptest.NewServer(muxCONSOLE)
 
 	var err error
+	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
+	token2 := "55d20214-7879-4e35-923d-f9d4e01c9746"
+	refreshToken = "31f1a449-ef8e-4bfc-a227-4f2353fde547"
+
+	muxUAA.HandleFunc("/oauth/token", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			assert.Equal(t, "POST", r.Method)
+		}
+		err := r.ParseForm()
+		assert.Nil(t, err)
+		username := r.Form.Get("username")
+		returnToken := token
+		if username == "username2" {
+			returnToken = token2
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{
+    		"scope": "auth_iam_introspect mail",
+    		"access_token": "`+returnToken+`",
+    		"refresh_token": "`+refreshToken+`",
+    		"expires_in": 1799,
+    		"token_type": "Bearer"
+		}`)
+	})
+
 	iamClient, err = iam.NewClient(nil, &iam.Config{
 		OAuth2ClientID: "TestClient",
 		OAuth2Secret:   "Secret",
@@ -83,20 +122,28 @@ func setup(t *testing.T) func() {
   "sub": "`+userUUID+`",
   "iss": "https://iam-client-test.us-east.philips-healthsuite.com/oauth2/access_token",
   "organizations": {
-    "managingOrganization": "`+hasOrgID+`",
+    "managingOrganization": "`+pkiOrgID+`",
     "organizationList": [
       {
-        "organizationId": "`+hasOrgID+`",
+        "organizationId": "`+pkiOrgID+`",
         "permissions": [
-          "ANALYZE_WORKFLOW.ALL",
-          "ANALYZE_DATAPROC.ALL",
           "USER.READ",
           "GROUP.WRITE",
           "DEVICE.READ",
           "CLIENT.SCOPES",
           "AMS_ACCESS.ALL",
-          "HAS_RESOURCE.ALL",
-          "HAS_SESSION.ALL"
+          "PKI_CRL_CONFIGURATION.READ",
+          "PKI_CERT.ISSUE",
+          "PKI_CERT.READ",
+          "PKI_CERTS.LIST",
+ 		  "PKI_CERTROLE.LIST",
+   		  "PKI_CERTROLE.READ",
+  		  "PKI_URLS.READ",
+		  "PKI_CRL.ROTATE",
+   		  "PKI_CRL.CONFIGURE",
+	      "PKI_CERT.SIGN",
+          "PKI_CERT.REVOKE",
+          "PKI_URLS.CONFIGURE"
         ],
         "organizationName": "PawneeOrg",
         "groups": [
@@ -104,7 +151,7 @@ func setup(t *testing.T) func() {
         ],
         "roles": [
           "ADMIN",
-          "HASROLE"
+          "PKIROLE"
         ]
       }
     ]
@@ -119,16 +166,30 @@ func setup(t *testing.T) func() {
 	err = iamClient.Login("username", "password")
 	assert.Nil(t, err)
 
-	hasClient, err = has.NewClient(iamClient, &has.Config{
-		HASURL: serverHAS.URL,
-		OrgID:  hasOrgID,
+	consoleClient, err = console.NewClient(nil, &console.Config{
+		UAAURL:         serverUAA.URL,
+		BaseConsoleURL: serverCONSOLE.URL,
 	})
-	assert.Nilf(t, err, "failed to create hasClient: %v", err)
+	if !assert.Nil(t, err) {
+		t.Fatalf("invalid client")
+	}
+	err = consoleClient.Login("foo", "bar")
+	if !assert.Nil(t, err) {
+		t.Fatalf("failed to login to consoleClient")
+	}
+
+	pkiClient, err = pki.NewClient(consoleClient, iamClient, &pki.Config{
+		PKIURL: serverPKI.URL,
+		UAAURL: serverUAA.URL,
+	})
+	assert.Nilf(t, err, "failed to create pkiClient: %v", err)
 
 	return func() {
+		serverUAA.Close()
 		serverIAM.Close()
 		serverIDM.Close()
-		serverHAS.Close()
+		serverPKI.Close()
+		serverCONSOLE.Close()
 	}
 }
 
@@ -149,24 +210,22 @@ func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	orgID := "48a0183d-a588-41c2-9979-737d15e9e860"
-
 	tmpfile, err := ioutil.TempFile("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
 
-	hasClient, err = has.NewClient(iamClient, &has.Config{
-		HASURL:   serverHAS.URL,
+	pkiClient, err = pki.NewClient(nil, iamClient, &pki.Config{
+		PKIURL:   serverPKI.URL,
+		UAAURL:   serverUAA.URL,
 		Debug:    true,
-		OrgID:    orgID,
 		DebugLog: tmpfile.Name(),
 	})
 	if !assert.Nil(t, err) {
 		return
 	}
 
-	defer hasClient.Close()
+	defer pkiClient.Close()
 	defer os.Remove(tmpfile.Name()) // clean up
 
 	err = iamClient.Login("username", "password")
@@ -174,9 +233,7 @@ func TestDebug(t *testing.T) {
 		return
 	}
 
-	_, _, _ = hasClient.Resources.GetResources(&has.ResourceOptions{})
-	_, _, _ = hasClient.Resources.CreateResource(has.Resource{})
-	_, _, _ = hasClient.Resources.DeleteResources(&has.ResourceOptions{})
+	_, _, _ = pkiClient.Services.GetRootCA()
 
 	fi, err := tmpfile.Stat()
 	assert.Nil(t, err)
