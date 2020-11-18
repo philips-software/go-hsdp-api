@@ -183,6 +183,9 @@ func (c *ServicesService) IssueCertificate(logicalPath, roleName string, request
 // GetCertificateBySerial
 func (c *ServicesService) GetCertificateBySerial(logicalPath, serial string, options ...OptionFunc) (*IssueResponse, *Response, error) {
 	req, err := c.client.NewServiceRequest(http.MethodGet, "core/pki/api/"+logicalPath+"/cert/"+serial, nil, options)
+	if err != nil {
+		return nil, nil, err
+	}
 	var responseStruct struct {
 		IssueResponse
 		ErrorResponse

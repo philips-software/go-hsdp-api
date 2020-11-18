@@ -180,5 +180,5 @@ func (t *TenantService) Offboard(tenant Tenant, options ...OptionFunc) (bool, *R
 	} else {
 		err = nil
 	}
-	return resp.StatusCode == http.StatusNoContent, resp, nil
+	return resp.StatusCode == http.StatusNoContent, resp, err
 }
