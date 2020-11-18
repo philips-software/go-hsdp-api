@@ -15,4 +15,6 @@ var (
 	ErrCRLExpected                    = errors.New("certificate revocation list expected")
 	ErrCFClientNotConfigured          = errors.New("CF client not configured")
 	ErrCFInvalidToken                 = errors.New("invalid CF token")
+	ErrInvalidPrivateKey              = errors.New("invalid private key")
+	ErrNotImplementedYet              = errors.New("not implemented yet")
 )

@@ -180,6 +180,7 @@ func (c *Client) NewServiceRequest(method, path string, opt interface{}, options
 		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
+		req.Header.Set("Content-Type", "application/json")
 	}
 
 	req.Header.Set("Accept", "*/*")
