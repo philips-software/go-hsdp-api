@@ -28,7 +28,7 @@ import (
 const (
 	libraryVersion = "0.21.1"
 	userAgent      = "go-hsdp-api/pki/" + libraryVersion
-	PKIAPIVersion  = "1"
+	APIVersion     = "1"
 )
 
 // OptionFunc is the function signature function for options
@@ -185,7 +185,7 @@ func (c *Client) NewServiceRequest(method, path string, opt interface{}, options
 
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
-	req.Header.Set("API-Version", PKIAPIVersion)
+	req.Header.Set("API-Version", APIVersion)
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
@@ -246,7 +246,7 @@ func (c *Client) NewTenantRequest(method, path string, opt interface{}, options 
 
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Authorization", "Bearer "+c.consoleClient.Token())
-	req.Header.Set("API-Version", PKIAPIVersion)
+	req.Header.Set("API-Version", APIVersion)
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)

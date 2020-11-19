@@ -227,3 +227,17 @@ func TestRetrieveAndUpdate(t *testing.T) {
 		return
 	}
 }
+
+func TestTenantErrors(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	_, _, err := pkiClient.Tenants.Update(pki.Tenant{})
+	assert.NotNil(t, err)
+	_, _, err = pkiClient.Tenants.Retrieve("logicalPath")
+	assert.NotNil(t, err)
+	_, _, err = pkiClient.Tenants.Offboard(pki.Tenant{})
+	assert.NotNil(t, err)
+	_, _, err = pkiClient.Tenants.Onboard(pki.Tenant{})
+	assert.NotNil(t, err)
+}

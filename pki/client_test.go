@@ -239,3 +239,17 @@ func TestDebug(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEqual(t, 0, fi.Size(), "Expected something to be written to DebugLog")
 }
+
+func TestAutoconfig(t *testing.T) {
+	cfg := &pki.Config{
+		Region:      "us-east",
+		Environment: "client-test",
+	}
+	// Explicit config always wins over autoconfig
+	foo := "https://foo.com"
+	cfg.PKIURL = foo
+	cfg.UAAURL = foo
+	_, _ = pki.NewClient(nil, nil, cfg)
+	assert.Equal(t, foo, cfg.PKIURL)
+	assert.Equal(t, foo, cfg.UAAURL)
+}
