@@ -13,6 +13,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
 - [x] IronIO tasks, codes and schedules management ([examples](iron/README.md))
+- [x] HSDP PKI services
 - [x] HSDP IAM/IDM management
   - [x] Groups
   - [x] Organizations
