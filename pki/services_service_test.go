@@ -152,7 +152,7 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	}
 }
 
-func TestIssueCertificate(t *testing.T) {
+func TestIssueAndSignCertificates(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
@@ -196,6 +196,7 @@ func TestIssueCertificate(t *testing.T) {
 	role := "ec384"
 	muxPKI.HandleFunc("/core/pki/api/"+logicalPath+"/cert/"+serial, returnCert(logicalPath, role))
 	muxPKI.HandleFunc("/core/pki/api/"+logicalPath+"/issue/"+role, returnCert(logicalPath, role))
+	muxPKI.HandleFunc("/core/pki/api/"+logicalPath+"/sign/"+role, returnCert(logicalPath, role))
 	cert, resp, err := pkiClient.Services.IssueCertificate(logicalPath, role, pki.CertificateRequest{
 		CommonName: "test",
 		TTL:        "4355h",
@@ -228,6 +229,21 @@ func TestIssueCertificate(t *testing.T) {
 	assert.IsType(t, &x509.Certificate{}, certificate)
 
 	cert, resp, err = pkiClient.Services.GetCertificateBySerial(logicalPath, serial)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, cert) {
+		return
+	}
+
+	cert, resp, err = pkiClient.Services.Sign(logicalPath, role, pki.SignRequest{
+		CSR:        "",
+		CommonName: "1e100.io",
+		Format:     "pem",
+	})
 	if !assert.Nil(t, err) {
 		return
 	}

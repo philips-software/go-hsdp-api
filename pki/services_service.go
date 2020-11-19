@@ -50,6 +50,19 @@ type IssueResponse struct {
 	Auth          *string   `json:"auth"`
 }
 
+// SignRequest
+type SignRequest struct {
+	CSR               string `json:"csr" validation:"required"`
+	CommonName        string `json:"common_name" validation:"required"`
+	AltNames          string `json:"alt_names"`
+	OtherSans         string `json:"other_sans"`
+	IPSans            string `json:"ip_sans"`
+	URISans           string `json:"uri_sans"`
+	TTL               string `json:"ttl,omitempty"`
+	Format            string `json:"format" validation:"required"  enum:"pem|der|pem_bundle"`
+	ExcludeCNFromSans bool   `json:"exclude_cn_from_sans"`
+}
+
 // ServiceOptions
 type ServiceOptions struct {
 }
@@ -158,6 +171,29 @@ func (d *IssueData) GetPrivateKey() (interface{}, error) {
 		return private, nil
 	}
 	return nil, ErrInvalidPrivateKey
+}
+
+// Sign
+func (c *ServicesService) Sign(logicalPath, roleName string, signRequest SignRequest, options ...OptionFunc) (*IssueResponse, *Response, error) {
+	if err := c.validate.Struct(signRequest); err != nil {
+		return nil, nil, err
+	}
+	req, err := c.client.NewServiceRequest(http.MethodPost, "core/pki/api/"+logicalPath+"/sign/"+roleName, &signRequest, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	var responseStruct struct {
+		IssueResponse
+		ErrorResponse
+	}
+	resp, err := c.client.Do(req, &responseStruct)
+	if err != nil {
+		return nil, nil, err
+	}
+	if resp == nil {
+		return nil, nil, ErrEmptyResult
+	}
+	return &responseStruct.IssueResponse, resp, nil
 }
 
 // IssueCertificate
