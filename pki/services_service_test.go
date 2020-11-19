@@ -16,12 +16,7 @@ func TestGetCAs(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	muxPKI.HandleFunc("/core/pki/api/root/ca/pem", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/pkix-cert")
-		switch r.Method {
-		case "GET":
-			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, `-----BEGIN CERTIFICATE-----
+	certificate := `-----BEGIN CERTIFICATE-----
 MIIHMzCCBRugAwIBAgIUB7awwVr04x/+xa1uFm7DAz85VdgwDQYJKoZIhvcNAQEL
 BQAwgbMxFDASBgNVBAYTC05ldGhlcmxhbmRzMRYwFAYDVQQIEw1Ob29yZC1CcmFi
 YW50MRIwEAYDVQQHEwlFaW5kaG92ZW4xKzApBgNVBAoTIlBoaWxpcHMgRWxlY3Ry
@@ -61,13 +56,33 @@ WSxEU8NbKQdbmM5WymUpTLZVx1JhPyl+DnAyWA9nfnlhU6IH+zpfkenphMsdmRSS
 0TX2lxsQe5i1DXRw2o+XZxsJx2JWLIf74nuNourXdQs/taaibkTj6Y1dmrpMeDKx
 GyUF/ncBCYaVXK+6DzS2kUCj9bPGVbGoXadaJxxGe9jGpOLcTR1xcQ/WSMAQuIZa
 wo3KBVGxGCMPQZ8FeqGowJ0yDB8GxZ0=
------END CERTIFICATE-----`)
+-----END CERTIFICATE-----`
+
+	returnCA := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/pkix-cert")
+		switch r.Method {
+		case "GET":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, certificate)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
-	})
+	}
+
+	muxPKI.HandleFunc("/core/pki/api/root/ca/pem", returnCA)
+	muxPKI.HandleFunc("/core/pki/api/policy/ca/pem", returnCA)
 
 	cert, resp, err := pkiClient.Services.GetRootCA()
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, cert) {
+		return
+	}
+	cert, resp, err = pkiClient.Services.GetPolicyCA()
 	if !assert.Nil(t, err) {
 		return
 	}
