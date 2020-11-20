@@ -6,7 +6,7 @@ import (
 
 // Errors
 var (
-	ErrBaseHASCannotBeEmpty           = errors.New("base PKI URL cannot be empty")
+	ErrBasePKICannotBeEmpty           = errors.New("base PKI URL cannot be empty")
 	ErrMissingPKIPermissions          = errors.New("missing PKI permissions")
 	ErrMissingIAMOrganization         = errors.New("missing IAM organization")
 	ErrEmptyResult                    = errors.New("empty result")

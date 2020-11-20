@@ -1,4 +1,4 @@
-// Package has provides support for HSDP PKI service
+// Package pki provides support for HSDP PKI service
 package pki
 
 import (
@@ -64,9 +64,8 @@ type Client struct {
 	Services *ServicesService // Sounds like something from Java!
 }
 
-// NewClient returns a new HSDP HAS API client. If a nil httpClient is
-// provided, http.DefaultClient will be used. A configured IAM client must be provided
-// as well
+// NewClient returns a new HSDP PKI API client. Configured console and IAM clients
+// must be provided as the underlying API requires tokens from respective services
 func NewClient(consoleClient *console.Client, iamClient *iam.Client, config *Config) (*Client, error) {
 	return newClient(consoleClient, iamClient, config)
 }
@@ -120,7 +119,7 @@ func (c *Client) Close() {
 // should always be specified with a trailing slash.
 func (c *Client) SetBasePKIURL(urlStr string) error {
 	if urlStr == "" {
-		return ErrBaseHASCannotBeEmpty
+		return ErrBasePKICannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
