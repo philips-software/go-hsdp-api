@@ -87,7 +87,7 @@ func New(opts ...OptionFunc) (*Config, error) {
 	return config, nil
 }
 
-// FromReader option specifies the toml source to read
+// FromReader option specifies the JSON source to read
 // If this option is not provided the canonical source
 // hosted on Github will be used. See CanonicalURL
 func FromReader(reader io.Reader) OptionFunc {
