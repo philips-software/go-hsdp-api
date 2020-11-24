@@ -116,9 +116,8 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 			autoconf.WithEnv(config.Environment))
 		if err == nil {
 			loggingService := c.Service("logging")
-			if ingestorURL, err := loggingService.GetString("url" +
-				""); err == nil && config.BaseURL == "" {
-				config.BaseURL = ingestorURL
+			if loggingService.URL != "" && config.BaseURL == "" {
+				config.BaseURL = loggingService.URL
 			}
 		}
 	}

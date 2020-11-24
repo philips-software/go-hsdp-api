@@ -157,11 +157,11 @@ func doAutoconf(config *Config) {
 		if err == nil {
 			iamService := c.Service("iam")
 			idmService := c.Service("idm")
-			if iamURL, err := iamService.GetString("url"); err == nil && config.IAMURL == "" {
-				config.IAMURL = iamURL
+			if iamService.URL != "" && config.IAMURL == "" {
+				config.IAMURL = iamService.URL
 			}
-			if idmURL, err := idmService.GetString("url"); err == nil && config.IDMURL == "" {
-				config.IDMURL = idmURL
+			if idmService.URL != "" && config.IDMURL == "" {
+				config.IDMURL = idmService.URL
 			}
 		}
 	}

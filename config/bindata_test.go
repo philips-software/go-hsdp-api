@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHsdpToml(t *testing.T) {
-	info, err := hsdpToml()
+func TestHsdpJson(t *testing.T) {
+	info, err := hsdpJson()
 	if !assert.Nil(t, err) {
 		return
 	}
 	fileInfo := info.info
-	assert.Equal(t, "hsdp.toml", fileInfo.Name())
+	assert.Equal(t, "hsdp.json", fileInfo.Name())
 	assert.Less(t, time.Now().Unix(), fileInfo.ModTime().AddDate(0, 0, 180).Unix())
 	assert.False(t, fileInfo.IsDir())
 	assert.Less(t, int64(0), fileInfo.Size())

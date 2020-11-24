@@ -1,0 +1,268 @@
+{
+  "region": {
+    "apac3": {
+      "env": {
+        "prod": {
+          "service": {
+            "iam": {
+              "iam_url": "https://iam-service.ap3.hsdp.io",
+              "idm_url": "https://idm-service.ap3.hsdp.io",
+              "url": "https://iam-service.ap3.hsdp.io"
+            },
+            "idm": {
+              "url": "https://idm-service.ap3.hsdp.io"
+            },
+            "kibana": {
+              "url": "https://kibana.ap3.hsdp.io"
+            },
+            "logging": {
+              "url": "https://logingestor2.ap3.hsdp.io"
+            }
+          }
+        }
+      },
+      "service": {
+        "cf": {
+          "domain": "ap3.hsdp.io",
+          "url": "https://api.sys.ap3.hsdp.io"
+        },
+        "console": {
+          "url": "https://console.ap3.hsdp.io"
+        },
+        "docker-registry": {
+          "host": "docker.ap3.hsdp.io"
+        },
+        "gateway": {
+          "domain": "apac3.phsdp.com",
+          "host": "gw-apac3.phsdp.com"
+        },
+        "uaa": {
+          "url": "https://uaa.sys.ap3.hsdp.io"
+        }
+      }
+    },
+    "eu-west": {
+      "env": {
+        "client-test": {
+          "service": {
+            "has": {
+              "url": "https://has-client-test.eu-west.philips-healthsuite.com"
+            },
+            "iam": {
+              "iam_url": "https://iam-service.eu-west.philips-healthsuite.com",
+              "idm_url": "https://idm-client-test.eu-west.philips-healthsuite.com",
+              "url": "https://iam-client-test.eu-west.philips-healthsuite.com"
+            },
+            "idm": {
+              "url": "https://idm-client-test.eu-west.philips-healthsuite.com"
+            },
+            "kibana": {
+              "url": "https://kibana-client-test.eu-west.philips-healthsuite.com"
+            },
+            "logging": {
+              "url": "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
+            },
+            "pki": {
+              "url": "https://pki-proxy-client-test.eu-west.philips-healthsuite.com"
+            },
+            "s3creds": {
+              "url": "https://s3creds-client-test.eu-west.philips-healthsuite.com"
+            }
+          }
+        },
+        "prod": {
+          "service": {
+            "iam": {
+              "iam_url": "https://iam-service.eu-west.philips-healthsuite.com",
+              "idm_url": "https://idm-service.eu-west.philips-healthsuite.com",
+              "url": "https://iam-service.eu-west.philips-healthsuite.com"
+            },
+            "idm": {
+              "url": "https://idm-service.eu-west.philips-healthsuite.com"
+            },
+            "kibana": {
+              "url": "https://kibana.eu-west.philips-healthsuite.com"
+            },
+            "logging": {
+              "url": "https://logingestor2.eu-west.philips-healthsuite.com"
+            },
+            "s3creds": {
+              "url": "https://s3creds-service.eu-west.philips-healthsuite.com"
+            }
+          }
+        }
+      },
+      "service": {
+        "cartel": {
+          "host": "cartel-eu1.cloud.phsdp.com"
+        },
+        "cf": {
+          "domain": "eu-west.philips-healthsuite.com",
+          "url": "https://api.eu1.phsdp.com"
+        },
+        "console": {
+          "url": "https://console.eu1.hsdp.io"
+        },
+        "docker-registry": {
+          "host": "docker.eu1.hsdp.io"
+        },
+        "gateway": {
+          "domain": "emea1.phsdp.com",
+          "host": "gw-eu1.phsdp.com"
+        },
+        "uaa": {
+          "url": "https://uaa.eu1.phsdp.com"
+        }
+      }
+    },
+    "sa1": {
+      "env": {
+        "client-test": {
+          "service": {
+            "iam": {
+              "iam_url": "https://iam-client-test.sa1.hsdp.io",
+              "idm_url": "https://idm-client-test.sa1.hsdp.io",
+              "url": "https://iam-client-test.sa1.hsdp.io"
+            },
+            "idm": {
+              "url": "https://idm-client-test.sa1.hsdp.io"
+            },
+            "kibana": {
+              "url": "https://kibana-client-test.sa1.hsdp.io"
+            },
+            "logging": {
+              "url": "https://logingestor2-client-test.sa1.hsdp.io"
+            }
+          }
+        },
+        "prod": {
+          "service": {
+            "iam": {
+              "iam_url": "https://iam-service.sa1.hsdp.io",
+              "idm_url": "https://idm-service.sa1.hsdp.io",
+              "url": "https://iam-service.sa1.hsdp.io"
+            },
+            "idm": {
+              "url": "https://idm-service.sa1.hsdp.io"
+            },
+            "kibana": {
+              "url": "https://kibana.sa1.hsdp.io"
+            },
+            "logging": {
+              "url": "https://logingestor2.sa1.hsdp.io"
+            }
+          }
+        }
+      },
+      "service": {
+        "cartel": {
+          "host": "cartel-sa1.cloud.phsdp.com"
+        },
+        "cf": {
+          "domain": "sa1.hsdp.io",
+          "url": "https://api.sys.sa1.hsdp.io"
+        },
+        "console": {
+          "url": "https://console.sa1.hsdp.io"
+        },
+        "docker-registry": {
+          "host": "docker.sa1.hsdp.io"
+        },
+        "gateway": {
+          "domain": "sa1.phsdp.com",
+          "host": "gw-sa1.phsdp.com"
+        },
+        "uaa": {
+          "url": "https://uaa.sys.sa1.hsdp.io"
+        }
+      }
+    },
+    "us-east": {
+      "env": {
+        "client-test": {
+          "service": {
+            "iam": {
+              "iam_url": "https://iam-client-test.us-east.philips-healthsuite.com",
+              "idm_url": "https://idm-client-test.us-east.philips-healthsuite.com",
+              "url": "https://iam-client-test.us-east.philips-healthsuite.com"
+            },
+            "idm": {
+              "url": "https://idm-client-test.us-east.philips-healthsuite.com"
+            },
+            "kibana": {
+              "url": "https://kibana-client-test.us-east.philips-healthsuite.com"
+            },
+            "logging": {
+              "url": "https://logingestor2-client-test.us-east.philips-healthsuite.com"
+            },
+            "s3creds": {
+              "url": "https://s3creds-client-test.us-east.philips-healthsuite.com"
+            }
+          }
+        },
+        "dev": {
+          "service": {
+            "iam": {
+              "iam_url": "https://iam-development.us-east.philips-healthsuite.com",
+              "idm_url": "https://idm-development.us-east.philips-healthsuite.com",
+              "url": "https://iam-development.us-east.philips-healthsuite.com"
+            },
+            "idm": {
+              "url": "https://idm-development.us-east.philips-healthsuite.com"
+            }
+          }
+        },
+        "prod": {
+          "service": {
+            "iam": {
+              "iam_url": "https://iam-service.us-east.philips-healthsuite.com",
+              "idm_url": "https://idm-service.us-east.philips-healthsuite.com",
+              "url": "https://iam-service.us-east.philips-healthsuite.com"
+            },
+            "idm": {
+              "url": "https://idm-service.us-east.philips-healthsuite.com"
+            },
+            "kibana": {
+              "url": "https://kibana.us-east.philips-healthsuite.com"
+            },
+            "logging": {
+              "url": "https://logingestor2.us-east.philips-healthsuite.com"
+            },
+            "s3creds": {
+              "url": "https://s3creds-service.us-east.philips-healthsuite.com"
+            }
+          }
+        },
+        "sandbox": {
+          "service": {
+            "cdr-stu3": {
+              "url": "https://cdr-stu3-sandbox.us-east.philips-healthsuite.com"
+            }
+          }
+        }
+      },
+      "service": {
+        "cartel": {
+          "host": "cartel-na1.cloud.phsdp.com"
+        },
+        "cf": {
+          "domain": "us-east.philips-healthsuite.com",
+          "url": "https://api.cloud.pcftest.com"
+        },
+        "console": {
+          "url": "https://console.na1.hsdp.io"
+        },
+        "docker-registry": {
+          "host": "docker.na1.hsdp.io"
+        },
+        "gateway": {
+          "domain": "na1.phsdp.com",
+          "host": "gw-na1.phsdp.com"
+        },
+        "uaa": {
+          "url": "https://uaa.cloud.pcftest.com"
+        }
+      }
+    }
+  }
+}

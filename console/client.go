@@ -181,10 +181,10 @@ func doAutoconf(config *Config) {
 			uaaService := c.Service("uaa")
 			consoleService := c.Service("console")
 			if config.UAAURL == "" {
-				config.UAAURL, _ = uaaService.GetString("url")
+				config.UAAURL = uaaService.URL
 			}
 			if config.BaseConsoleURL == "" {
-				config.BaseConsoleURL, _ = consoleService.GetString("url")
+				config.BaseConsoleURL = consoleService.URL
 			}
 		}
 	}

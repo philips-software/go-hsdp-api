@@ -12,13 +12,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHSDPTomlContent(t *testing.T) {
+func TestHSDPJSONContent(t *testing.T) {
 	_, filename, _, ok := runtime.Caller(0)
 	if !assert.True(t, ok) {
 		return
 	}
 	basePath := filepath.Dir(filename)
-	hsdpTomlFile := filepath.Join(basePath, "hsdp.toml")
+	hsdpTomlFile := filepath.Join(basePath, "hsdp.json")
 	data, err := ioutil.ReadFile(hsdpTomlFile)
 	if !assert.Nil(t, err) {
 		return

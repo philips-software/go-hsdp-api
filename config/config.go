@@ -1,19 +1,18 @@
-//go:generate go-bindata -pkg config -o bindata.go hsdp.toml
+//go:generate go-bindata -pkg config -o bindata.go hsdp.json
 package config
 
 import (
 	"bytes"
-	"fmt"
+	"encoding/json"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/pelletier/go-toml"
 )
 
 const (
 	// CanonicalURL is the source of truth
-	CanonicalURL = "https://raw.githubusercontent.com/philips-software/go-hsdp-api/master/config/hsdp.toml"
+	CanonicalURL = "https://raw.githubusercontent.com/philips-software/go-hsdp-api/master/config/hsdp.json"
 )
 
 // Config holds the state of a Config instance
@@ -21,12 +20,26 @@ type Config struct {
 	region      string
 	environment string
 	source      io.Reader
-	config      *toml.Tree
+	config      World
 }
 
-// Service holds the relevant toml data for a service
+type World struct {
+	Regions map[string]Region `json:"region"`
+}
+type Region struct {
+	Environments map[string]Environment `json:"env,omitempty"`
+	Services     map[string]Service     `json:"service,omitempty"`
+}
+
+type Environment struct {
+	Services map[string]Service `json:"service,omitempty"`
+}
+
+// Service holds the relevant data for a service
 type Service struct {
-	config *toml.Tree
+	URL    string `json:"url,omitempty"`
+	Domain string `json:"domain,omitempty"`
+	Host   string `json:"host,omitempty"`
 }
 
 type OptionFunc func(*Config) error
@@ -42,10 +55,10 @@ func New(opts ...OptionFunc) (*Config, error) {
 	}
 	if config.source == nil {
 		resp, err := http.Get(CanonicalURL)
-		if err != nil {
+		if err != nil || resp == nil || resp.StatusCode != http.StatusOK {
 			// Fallback to baked in copy in case github.com is down,
 			// but only if its not older than 180 days
-			if bakedInCopy, err := hsdpToml(); err != nil ||
+			if bakedInCopy, err := hsdpJson(); err != nil ||
 				bakedInCopy.info.ModTime().Before(time.Now().AddDate(0, 0, -180)) {
 				return nil, ErrUnreachableOrOutdatedConfigSource
 			} else {
@@ -61,11 +74,16 @@ func New(opts ...OptionFunc) (*Config, error) {
 			config.source = resp.Body
 		}
 	}
-	content, err := toml.LoadReader(config.source)
+	var world World
+	data, err := ioutil.ReadAll(config.source)
 	if err != nil {
 		return nil, err
 	}
-	config.config = content
+	err = json.Unmarshal(data, &world)
+	if err != nil {
+		return nil, err
+	}
+	config.config = world
 	return config, nil
 }
 
@@ -117,9 +135,8 @@ func (c *Config) Env(environment string) *Config {
 func (c *Config) Regions() []string {
 	regions := make([]string, 0)
 	// region level
-	regional, ok := c.config.Get("region").(*toml.Tree)
-	if ok && len(regional.Keys()) > 0 {
-		regions = append(regions, regional.Keys()...)
+	for k := range c.config.Regions {
+		regions = append(regions, k)
 	}
 	return regions
 }
@@ -128,14 +145,17 @@ func (c *Config) Regions() []string {
 func (c *Config) Services() []string {
 	services := make([]string, 0)
 	// region level
-	regional, ok := c.config.Get(fmt.Sprintf("region.%s.service", c.region)).(*toml.Tree)
-	if ok && len(regional.Keys()) > 0 {
-		services = append(services, regional.Keys()...)
+	if svcs, ok := c.config.Regions[c.region]; ok {
+		for s := range svcs.Services {
+			services = append(services, s)
+		}
 	}
+
 	// environment
-	environment, ok := c.config.Get(fmt.Sprintf("region.%s.env.%s.service", c.region, c.environment)).(*toml.Tree)
-	if ok && len(environment.Keys()) > 0 {
-		services = append(services, environment.Keys()...)
+	if svcs, ok := c.config.Regions[c.region].Environments[c.environment]; ok {
+		for s := range svcs.Services {
+			services = append(services, s)
+		}
 	}
 	return services
 }
@@ -143,60 +163,15 @@ func (c *Config) Services() []string {
 // Service returns an instance scoped to the service in the region and environment
 func (c *Config) Service(service string) *Service {
 	// Check if service is at region level
-	regionService, ok := c.config.Get(fmt.Sprintf("region.%s.service.%s", c.region, service)).(*toml.Tree)
-	if ok {
-		return &Service{
-			config: regionService,
+	if regionService, ok := c.config.Regions[c.region]; ok {
+		if service, ok := regionService.Services[service]; ok {
+			return &service
 		}
-	}
-	// Otherwise check at environment level
-	envService, ok := c.config.Get(fmt.Sprintf("region.%s.env.%s.service.%s", c.region, c.environment, service)).(*toml.Tree)
-	if ok {
-		return &Service{
-			config: envService,
+		if envService, ok := regionService.Environments[c.environment]; ok {
+			if service, ok := envService.Services[service]; ok {
+				return &service
+			}
 		}
 	}
 	return &Service{}
-}
-
-// String returns the string key of the Service
-func (s *Service) GetString(key string) (string, error) {
-	if s.config == nil {
-		return "", ErrMissingConfig
-	}
-	out, ok := s.config.Get(key).(string)
-	if ok {
-		return out, nil
-	}
-	return "", ErrNotFound
-}
-
-// GetInt returns the int key of the Service
-func (s *Service) GetInt(key string) (int, error) {
-	if s.config == nil {
-		return 0, ErrMissingConfig
-	}
-	out, ok := s.config.Get(key).(int)
-	if ok {
-		return out, nil
-	}
-	return 0, ErrNotFound
-}
-
-// Available returns true if the Service exists and has data
-func (s *Service) Available() bool {
-	if s == nil || s.config == nil {
-		return false
-	}
-	return len(s.config.Keys()) != 0
-}
-
-// Keys returns the list of available keys for Service
-func (s *Service) Keys() []string {
-	keys := make([]string, 0)
-	if s == nil || s.config == nil {
-		return keys
-	}
-	keys = append(keys, s.config.Keys()...)
-	return keys
 }
