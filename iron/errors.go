@@ -1,6 +1,6 @@
 package iron
 
-import errors "golang.org/x/xerrors"
+import "errors"
 
 var (
 	ErrBaseIRONURLCannotBeEmpty = errors.New("base IRON URL cannot be empty")

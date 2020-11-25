@@ -1,7 +1,7 @@
 package credentials
 
 import (
-	errors "golang.org/x/xerrors"
+	"errors"
 )
 
 // Exported Errors

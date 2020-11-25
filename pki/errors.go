@@ -1,7 +1,7 @@
 package pki
 
 import (
-	errors "golang.org/x/xerrors"
+	"errors"
 )
 
 // Errors
