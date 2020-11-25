@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.26.0
+- [Breaking] Refactored config API. Master data is stored as JSON
+- Remove toml dependency
+
+## v0.25.0
+- [NEW] HSDP PKI API support
+
 ## v0.24.0
 - Logging fixes
 - [Cartel] Minor API tweaks for better error reporting
