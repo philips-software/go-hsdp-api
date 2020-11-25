@@ -1,7 +1,7 @@
 package config
 
 import (
-	errors "golang.org/x/xerrors"
+	"errors"
 )
 
 var (

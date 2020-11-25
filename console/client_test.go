@@ -12,8 +12,8 @@ import (
 
 	"github.com/philips-software/go-hsdp-api/console"
 
+	"errors"
 	"github.com/stretchr/testify/assert"
-	errors "golang.org/x/xerrors"
 )
 
 var (

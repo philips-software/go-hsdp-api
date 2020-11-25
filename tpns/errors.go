@@ -1,7 +1,7 @@
 package tpns
 
 import (
-	errors "golang.org/x/xerrors"
+	"errors"
 )
 
 // Errors

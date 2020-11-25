@@ -1,7 +1,7 @@
 package has
 
 import (
-	errors "golang.org/x/xerrors"
+	"errors"
 )
 
 // Errors

@@ -1,6 +1,6 @@
 package cartel
 
-import errors "golang.org/x/xerrors"
+import "errors"
 
 var (
 	ErrMissingSecret      = errors.New("missing cartel secret")

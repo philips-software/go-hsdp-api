@@ -20,8 +20,8 @@ import (
 
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 
+	"errors"
 	signer "github.com/philips-software/go-hsdp-signer"
-	errors "golang.org/x/xerrors"
 )
 
 const (
