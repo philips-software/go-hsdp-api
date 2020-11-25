@@ -72,8 +72,8 @@ func doAutoconf(config *Config) {
 			autoconf.WithEnv(config.Environment))
 		if err == nil {
 			credsService := ac.Service("s3creds")
-			if url, err := credsService.GetString("url"); err == nil && config.BaseURL == "" {
-				config.BaseURL = url
+			if credsService.URL != "" && config.BaseURL == "" {
+				config.BaseURL = credsService.URL
 			}
 		}
 	}

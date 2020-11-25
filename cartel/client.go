@@ -83,9 +83,9 @@ func doAutoconf(config *Config) {
 		ac, err := autoconf.New(
 			autoconf.WithRegion(config.Region))
 		if err == nil {
-			loggingService := ac.Service("cartel")
-			if host, err := loggingService.GetString("host"); err == nil && config.Host == "" {
-				config.Host = host
+			cartelService := ac.Service("cartel")
+			if cartelService.Host != "" && config.Host == "" {
+				config.Host = cartelService.Host
 			}
 		}
 	}

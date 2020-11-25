@@ -95,12 +95,12 @@ func doAutoconf(config *Config) {
 			autoconf.WithEnv(config.Environment))
 		if err == nil {
 			pkiService := c.Service("pki")
-			if pkiURL, err := pkiService.GetString("url"); err == nil && config.PKIURL == "" {
-				config.PKIURL = pkiURL
+			if pkiService.URL != "" && config.PKIURL == "" {
+				config.PKIURL = pkiService.URL
 			}
 			uaaService := c.Service("uaa")
-			if uaaURL, err := uaaService.GetString("url"); err == nil && config.UAAURL == "" {
-				config.UAAURL = uaaURL
+			if uaaService.URL != "" && config.UAAURL == "" {
+				config.UAAURL = uaaService.URL
 			}
 
 		}
