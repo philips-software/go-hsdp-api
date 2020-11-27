@@ -1,5 +1,5 @@
 # Config
-Services have specific endpoints per region. Thisconfig API helps you
+Services have specific endpoints per region. This config API helps you
 discover the available services and their settings. Since the data is
 machine readable this enables auto configuration of endpoints.
 
