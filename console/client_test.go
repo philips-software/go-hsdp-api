@@ -13,6 +13,7 @@ import (
 	"github.com/philips-software/go-hsdp-api/console"
 
 	"errors"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -92,6 +93,26 @@ func TestLogin(t *testing.T) {
 	}
 	assert.Equal(t, token, client.Token())
 	assert.Equal(t, refreshToken, client.RefreshToken())
+}
+
+func TestWithLogin(t *testing.T) {
+	teardown, err := setup(t)
+	if !assert.Nil(t, err) {
+		return
+	}
+	defer teardown()
+
+	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
+
+	c, err := client.WithLogin("username", "password")
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, c) {
+		return
+	}
+	assert.Equal(t, token, c.Token())
+	assert.Equal(t, refreshToken, c.RefreshToken())
 }
 
 func TestConsoleRequest(t *testing.T) {

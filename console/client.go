@@ -145,7 +145,9 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
-	doAutoconf(config)
+	if config.UAAURL == "" && config.BaseConsoleURL == "" {
+		doAutoconf(config)
+	}
 	if config.UAAURL == "" {
 		return nil, ErrUAAURLCannotBeEmpty
 	}

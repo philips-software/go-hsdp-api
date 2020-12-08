@@ -30,6 +30,16 @@ func (c *Client) Login(username, password string) error {
 	return c.doTokenRequest(req)
 }
 
+// WithLogin returns a cloned client with new login
+func (c *Client) WithLogin(username, password string) (*Client, error) {
+	client, err := NewClient(c.client, c.config)
+	if err != nil {
+		return nil, err
+	}
+	err = client.Login(username, password)
+	return client, err
+}
+
 func (c *Client) doTokenRequest(req *http.Request) error {
 	var tokenResponse tokenResponse
 
