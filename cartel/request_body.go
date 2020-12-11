@@ -106,6 +106,9 @@ func IOPs(iops int) RequestOptionFunc {
 // SubnetType sets the subnet type
 func SubnetType(subnetType string) RequestOptionFunc {
 	return func(body *RequestBody) error {
+		if !(subnetType == "public" || subnetType == "private") {
+			return ErrInvalidSubnetType
+		}
 		body.SubnetType = subnetType
 		return nil
 	}
