@@ -17,4 +17,5 @@ var (
 	ErrMissingEtagInformation         = errors.New("missing etag information")
 	ErrMissingRefreshToken            = errors.New("missing refresh token")
 	ErrNotAuthorized                  = errors.New("not authorized")
+	ErrNonHttp20xResponse             = errors.New("non http 20x console response")
 )

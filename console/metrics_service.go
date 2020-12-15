@@ -19,7 +19,7 @@ type MetricsResponse struct {
 		Instances []Instance `json:"instances"`
 	} `json:"data"`
 	Status string `json:"status"`
-	ErrorMessage
+	Error  Error  `json:"error,omitempty"`
 }
 
 type Group struct {
@@ -27,11 +27,9 @@ type Group struct {
 	Rules []Rule `json:"rules"`
 }
 
-type ErrorMessage struct {
-	Error struct {
-		Code    string `json:"code"`
-		Message string `json:"message"`
-	} `json:"error"`
+type Error struct {
+	Code    string `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 type RuleResponse struct {
@@ -39,7 +37,7 @@ type RuleResponse struct {
 		Groups []Group `json:"groups"`
 	} `json:"data"`
 	Status string `json:"status"`
-	ErrorMessage
+	Error  Error  `json:"error,omitempty"`
 }
 
 type Threshold struct {
@@ -65,7 +63,7 @@ type AutoscalersResponse struct {
 		Applications []Application `json:"applications"`
 	} `json:"data"`
 	Status string `json:"status"`
-	ErrorMessage
+	Error  Error  `json:"error,omitempty"`
 }
 
 type Rule struct {
@@ -110,7 +108,7 @@ func (c *MetricsService) GetGroupedRules(options ...OptionFunc) (*[]Group, *Resp
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
 		if resp != nil {
-			resp.ErrorMessage = response.ErrorMessage
+			resp.Error = response.Error
 		}
 		return nil, resp, err
 	}
@@ -128,13 +126,13 @@ func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *
 	var response struct {
 		Data   Rule   `json:"data"`
 		Status string `json:"status"`
-		ErrorMessage
+		Error  Error  `json:"error,omitempty"`
 	}
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
 		if resp != nil {
-			resp.ErrorMessage = response.ErrorMessage
+			resp.Error = response.Error
 		}
 		return nil, resp, err
 	}
@@ -154,7 +152,7 @@ func (c *MetricsService) GetInstances(options ...OptionFunc) (*[]Instance, *Resp
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
 		if resp != nil {
-			resp.ErrorMessage = response.ErrorMessage
+			resp.Error = response.Error
 		}
 		return nil, resp, err
 	}
@@ -172,13 +170,13 @@ func (c *MetricsService) GetInstanceByID(id string, options ...OptionFunc) (*Ins
 	var response struct {
 		Data   Instance `json:"data"`
 		Status string   `json:"status"`
-		ErrorMessage
+		Error  Error    `json:"error,omitempty"`
 	}
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
 		if resp != nil {
-			resp.ErrorMessage = response.ErrorMessage
+			resp.Error = response.Error
 		}
 		return nil, resp, err
 	}
@@ -198,7 +196,7 @@ func (c *MetricsService) GetApplicationAutoscalers(id string, options ...OptionF
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
 		if resp != nil {
-			resp.ErrorMessage = response.ErrorMessage
+			resp.Error = response.Error
 		}
 		return nil, resp, err
 	}
@@ -218,13 +216,13 @@ func (c *MetricsService) GetApplicationAutoscaler(id, app string, options ...Opt
 			Application Application `json:"application"`
 		} `json:"data"`
 		Status string `json:"status"`
-		ErrorMessage
+		Error  Error  `json:"error,omitempty"`
 	}
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
 		if resp != nil {
-			resp.ErrorMessage = response.ErrorMessage
+			resp.Error = response.Error
 		}
 		return nil, resp, err
 	}
@@ -242,15 +240,15 @@ func (c *MetricsService) UpdateApplicationAutoscaler(id string, settings Applica
 	var response struct {
 		Data struct {
 			Application Application `json:"application"`
-		} `json:"data"`
-		Status string `json:"status"`
-		ErrorMessage
+		} `json:"data,omitempty"`
+		Status string `json:"status,omitempty"`
+		Error  Error  `json:"error,omitempty"`
 	}
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
 		if resp != nil {
-			resp.ErrorMessage = response.ErrorMessage
+			resp.Error = response.Error
 		}
 		return nil, resp, err
 	}

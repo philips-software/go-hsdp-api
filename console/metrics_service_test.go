@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/philips-software/go-hsdp-api/console"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -366,4 +368,48 @@ func TestAutoscalerCalls(t *testing.T) {
 		return
 	}
 	assert.Equal(t, "consul-app", app.Name)
+}
+
+func TestRetryableError(t *testing.T) {
+	teardown, err := setup(t)
+	if !assert.Nil(t, err) {
+		return
+	}
+	defer teardown()
+
+	instanceID := "c20c76b7-6622-4fc0-892b-92c0caff91a5"
+
+	muxCONSOLE.HandleFunc("/v3/metrics/"+instanceID+"/autoscalers", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "PUT":
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = io.WriteString(w, `{
+  "status": "error",
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "invalid character u003c looking for beginning of value"
+  }
+}`)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+	})
+	app, resp, err := client.Metrics.UpdateApplicationAutoscaler(instanceID, console.Application{
+		Enabled:      true,
+		MinInstances: 1,
+		MaxInstances: 10,
+		Name:         "foo",
+	})
+	assert.NotNil(t, err)
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.Nil(t, app) {
+		return
+	}
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, "BAD_REQUEST", resp.Error.Code)
+	assert.Contains(t, resp.Error.Message, "invalid character")
 }

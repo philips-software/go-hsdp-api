@@ -19,7 +19,6 @@ import (
 	"github.com/google/go-querystring/query"
 	"github.com/google/uuid"
 	autoconf "github.com/philips-software/go-hsdp-api/config"
-	"github.com/philips-software/go-hsdp-api/fhir"
 )
 
 type tokenType int
@@ -388,7 +387,7 @@ func (c *Client) NewRequest(endpoint, method, path string, opt interface{}, opti
 // returned from HSDP Console and provides convenient access to things like errors
 type Response struct {
 	*http.Response
-	ErrorMessage
+	Error
 }
 
 // newResponse creates a new Response for the provided http.Response.
@@ -431,21 +430,17 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	err = fhir.CheckResponse(resp)
-	if err != nil {
-		// even though there was an error, we still return the response
-		// in case the caller wants to inspect it further
-		return response, err
-	}
-
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {
 			err = json.NewDecoder(resp.Body).Decode(v)
 		}
+		if err != nil {
+			return response, err
+		}
 	}
-
+	err = CheckResponse(resp)
 	return response, err
 }
 
@@ -455,4 +450,13 @@ func WithContext(ctx context.Context) OptionFunc {
 		*req = *req.WithContext(ctx)
 		return nil
 	}
+}
+
+// CheckResponse checks the API response for errors, and returns them if present.
+func CheckResponse(r *http.Response) error {
+	switch r.StatusCode {
+	case 200, 201, 202, 204, 304:
+		return nil
+	}
+	return ErrNonHttp20xResponse
 }
