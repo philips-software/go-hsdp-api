@@ -19,6 +19,7 @@ type MetricsResponse struct {
 		Instances []Instance `json:"instances"`
 	} `json:"data"`
 	Status string `json:"status"`
+	ErrorMessage
 }
 
 type Group struct {
@@ -26,11 +27,19 @@ type Group struct {
 	Rules []Rule `json:"rules"`
 }
 
+type ErrorMessage struct {
+	Error struct {
+		Code    string `json:"code"`
+		Message string `json:"message"`
+	} `json:"error"`
+}
+
 type RuleResponse struct {
 	Data struct {
 		Groups []Group `json:"groups"`
 	} `json:"data"`
 	Status string `json:"status"`
+	ErrorMessage
 }
 
 type Threshold struct {
@@ -56,6 +65,7 @@ type AutoscalersResponse struct {
 		Applications []Application `json:"applications"`
 	} `json:"data"`
 	Status string `json:"status"`
+	ErrorMessage
 }
 
 type Rule struct {
@@ -99,6 +109,9 @@ func (c *MetricsService) GetGroupedRules(options ...OptionFunc) (*[]Group, *Resp
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
+		if resp != nil {
+			resp.ErrorMessage = response.ErrorMessage
+		}
 		return nil, resp, err
 	}
 	return &response.Data.Groups, resp, err
@@ -115,10 +128,14 @@ func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *
 	var response struct {
 		Data   Rule   `json:"data"`
 		Status string `json:"status"`
+		ErrorMessage
 	}
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
+		if resp != nil {
+			resp.ErrorMessage = response.ErrorMessage
+		}
 		return nil, resp, err
 	}
 	return &response.Data, resp, err
@@ -136,6 +153,9 @@ func (c *MetricsService) GetInstances(options ...OptionFunc) (*[]Instance, *Resp
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
+		if resp != nil {
+			resp.ErrorMessage = response.ErrorMessage
+		}
 		return nil, resp, err
 	}
 	return &response.Data.Instances, resp, err
@@ -152,10 +172,14 @@ func (c *MetricsService) GetInstanceByID(id string, options ...OptionFunc) (*Ins
 	var response struct {
 		Data   Instance `json:"data"`
 		Status string   `json:"status"`
+		ErrorMessage
 	}
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
+		if resp != nil {
+			resp.ErrorMessage = response.ErrorMessage
+		}
 		return nil, resp, err
 	}
 	return &response.Data, resp, err
@@ -173,6 +197,9 @@ func (c *MetricsService) GetApplicationAutoscalers(id string, options ...OptionF
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
+		if resp != nil {
+			resp.ErrorMessage = response.ErrorMessage
+		}
 		return nil, resp, err
 	}
 	return &response.Data.Applications, resp, err
@@ -191,10 +218,14 @@ func (c *MetricsService) GetApplicationAutoscaler(id, app string, options ...Opt
 			Application Application `json:"application"`
 		} `json:"data"`
 		Status string `json:"status"`
+		ErrorMessage
 	}
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
+		if resp != nil {
+			resp.ErrorMessage = response.ErrorMessage
+		}
 		return nil, resp, err
 	}
 	return &response.Data.Application, resp, err
@@ -213,10 +244,14 @@ func (c *MetricsService) UpdateApplicationAutoscaler(id string, settings Applica
 			Application Application `json:"application"`
 		} `json:"data"`
 		Status string `json:"status"`
+		ErrorMessage
 	}
 
 	resp, err := c.client.Do(req, &response)
 	if err != nil {
+		if resp != nil {
+			resp.ErrorMessage = response.ErrorMessage
+		}
 		return nil, resp, err
 	}
 	return &response.Data.Application, resp, err

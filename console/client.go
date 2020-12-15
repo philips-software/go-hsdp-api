@@ -388,6 +388,7 @@ func (c *Client) NewRequest(endpoint, method, path string, opt interface{}, opti
 // returned from HSDP Console and provides convenient access to things like errors
 type Response struct {
 	*http.Response
+	ErrorMessage
 }
 
 // newResponse creates a new Response for the provided http.Response.
@@ -454,12 +455,4 @@ func WithContext(ctx context.Context) OptionFunc {
 		*req = *req.WithContext(ctx)
 		return nil
 	}
-}
-
-// String is a helper routine that allocates a new string value
-// to store v and returns a pointer to it.
-func String(v string) *string {
-	p := new(string)
-	*p = v
-	return p
 }
