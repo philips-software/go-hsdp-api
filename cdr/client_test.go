@@ -26,6 +26,7 @@ var (
 	cdrClient    *cdr.Client
 	cdrOrgID     = "48a0183d-a588-41c2-9979-737d15e9e860"
 	userUUID     = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
+	timeZone     = "Europe/Amsterdam"
 	token        string
 	refreshToken string
 )
@@ -133,16 +134,13 @@ func setup(t *testing.T) func() {
 	assert.Nil(t, err)
 
 	cdrClient, err = cdr.NewClient(iamClient, &cdr.Config{
-		CDRURL: serverCDR.URL,
+		CDRURL:    serverCDR.URL,
+		RootOrgID: cdrOrgID,
+		TimeZone:  timeZone,
 	})
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
 	}
-
-	cdrClient, err = cdr.NewClient(iamClient, &cdr.Config{
-		CDRURL: serverCDR.URL,
-	})
-	assert.Nilf(t, err, "failed to create cdrClient: %v", err)
 
 	return func() {
 		serverIAM.Close()

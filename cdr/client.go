@@ -1,4 +1,6 @@
 // Package pki provides support for HSDP PKI service
+//
+// We only intent to support the CDR FHIR STU3 and newer with this library.
 package cdr
 
 import (
@@ -15,12 +17,7 @@ import (
 
 	"github.com/philips-software/go-hsdp-api/iam"
 
-	"github.com/philips-software/go-hsdp-api/console"
-
 	autoconf "github.com/philips-software/go-hsdp-api/config"
-
-	"github.com/google/go-querystring/query"
-	"github.com/philips-software/go-hsdp-api/fhir"
 )
 
 const (
@@ -36,14 +33,14 @@ type OptionFunc func(*http.Request) error
 type Config struct {
 	Region      string
 	Environment string
+	RootOrgID   string
 	CDRURL      string
+	TimeZone    string
 	DebugLog    string
 }
 
 // A Client manages communication with HSDP PKI API
 type Client struct {
-	// HTTP client used to communicate with Console API
-	consoleClient *console.Client
 	// HTTP client used to communicate with IAM API
 	iamClient *iam.Client
 
@@ -53,6 +50,8 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
+
+	TenantSTU3 *TenantSTU3Service
 
 	debugFile *os.File
 }
@@ -76,6 +75,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 			c.debugFile = nil
 		}
 	}
+	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, rootOrgID: config.RootOrgID}
 
 	return c, nil
 }
@@ -123,18 +123,10 @@ func (c *Client) SetBaseCDRURL(urlStr string) error {
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewCDRRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
 	u := *c.baseCDRURL
 	// Set the encoded opaque data
 	u.Opaque = c.baseCDRURL.Path + path
-
-	if opt != nil {
-		q, err := query.Values(opt)
-		if err != nil {
-			return nil, err
-		}
-		u.RawQuery = q.Encode()
-	}
 
 	req := &http.Request{
 		Method:     method,
@@ -157,10 +149,6 @@ func (c *Client) NewCDRRequest(method, path string, opt interface{}, options []O
 	}
 
 	if method == "POST" || method == "PUT" || method == "PATCH" {
-		bodyBytes, err := json.Marshal(opt)
-		if err != nil {
-			return nil, err
-		}
 		bodyReader := bytes.NewReader(bodyBytes)
 
 		u.RawQuery = ""
@@ -212,8 +200,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	// TODO: remove this
-	err = fhir.CheckResponse(resp)
+	err = CheckResponse(resp)
 	if err != nil {
 		// even though there was an error, we still return the response
 		// in case the caller wants to inspect it further
@@ -230,4 +217,13 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
+}
+
+// CheckResponse checks the API response for errors, and returns them if present.
+func CheckResponse(r *http.Response) error {
+	switch r.StatusCode {
+	case 200, 201, 202, 204, 304:
+		return nil
+	}
+	return ErrNonHttp20xResponse
 }
