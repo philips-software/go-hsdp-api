@@ -13,8 +13,8 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
 - [x] IronIO tasks, codes and schedules management ([examples](iron/README.md))
-- [x] HSDP PKI services
-- [x] HSDP IAM/IDM management
+- [x] PKI services
+- [x] IAM/IDM management
   - [x] Groups
   - [x] Organizations
   - [x] Permissions
@@ -29,6 +29,9 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Password Policies
 - [x] Logging ([examples](logging/README.md))
 - [ ] Auditing
+- [x] Clinical Data Repository (CDR)
+  - [x] Tenant Onboarding
+  - [ ] FHIR Operations
 - [x] S3 Credentials Policy management
 - [x] Hosted Application Streaming (HAS) management
 - [x] Configuration
