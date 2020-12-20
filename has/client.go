@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.21.1"
+	libraryVersion = "0.27.0"
 	userAgent      = "go-hsdp-api/has/" + libraryVersion
 )
 

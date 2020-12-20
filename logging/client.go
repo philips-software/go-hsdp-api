@@ -28,7 +28,7 @@ const (
 	// TimeFormat is the time format used for the LogTime field
 	TimeFormat = "2006-01-02T15:04:05.000Z07:00"
 
-	libraryVersion = "0.21.1"
+	libraryVersion = "0.27.0"
 	userAgent      = "go-hsdp-api/logging/" + libraryVersion
 )
 
