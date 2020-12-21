@@ -18,8 +18,6 @@ import (
 	"github.com/google/fhir/go/jsonformat"
 
 	"github.com/philips-software/go-hsdp-api/iam"
-
-	autoconf "github.com/philips-software/go-hsdp-api/config"
 )
 
 const (
@@ -65,7 +63,6 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 }
 
 func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
-	doAutoconf(config)
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseCDRURL(c.config.CDRURL); err != nil {
 		return nil, err
@@ -88,20 +85,6 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, rootOrgID: config.RootOrgID, ma: ma, um: um}
 
 	return c, nil
-}
-
-func doAutoconf(config *Config) {
-	if config.Region != "" && config.Environment != "" {
-		c, err := autoconf.New(
-			autoconf.WithRegion(config.Region),
-			autoconf.WithEnv(config.Environment))
-		if err == nil {
-			cdrService := c.Service("cdr")
-			if cdrService.URL != "" && config.CDRURL == "" {
-				config.CDRURL = cdrService.URL
-			}
-		}
-	}
 }
 
 // Close releases allocated resources of clients

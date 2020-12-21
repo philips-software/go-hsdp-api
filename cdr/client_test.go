@@ -193,15 +193,3 @@ func TestDebug(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEqual(t, 0, fi.Size(), "Expected something to be written to DebugLog")
 }
-
-func TestAutoconfig(t *testing.T) {
-	cfg := &cdr.Config{
-		Region:      "us-east",
-		Environment: "client-test",
-	}
-	// Explicit config always wins over autoconfig
-	foo := "https://foo.com"
-	cfg.CDRURL = foo
-	_, _ = cdr.NewClient(nil, cfg)
-	assert.Equal(t, foo, cfg.CDRURL)
-}
