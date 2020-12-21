@@ -2,6 +2,7 @@ package cdr
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -26,7 +27,7 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	}
 	orgID := organization.Identifier[0].GetValue().Value
 
-	req, err := t.client.NewCDRRequest(http.MethodPut, "store/fhir/"+t.rootOrgID+"/Organization/"+orgID, organizationJSON, options)
+	req, err := t.client.NewCDRRequest(http.MethodPut, fmt.Sprintf("store/fhir/%s/Organization/%s", t.rootOrgID, orgID), organizationJSON, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -48,7 +49,7 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 }
 
 func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organization, *Response, error) {
-	req, err := t.client.NewCDRRequest(http.MethodGet, "store/fhir/"+t.rootOrgID+"/Organization/"+orgID, nil, nil)
+	req, err := t.client.NewCDRRequest(http.MethodGet, fmt.Sprintf("store/fhir/%s/Organization/%s", t.rootOrgID, orgID), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
