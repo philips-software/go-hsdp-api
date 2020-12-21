@@ -35,6 +35,7 @@ type Config struct {
 	Environment string
 	RootOrgID   string
 	CDRURL      string
+	FHIRStore   string
 	TimeZone    string
 	DebugLog    string
 }
@@ -46,7 +47,7 @@ type Client struct {
 
 	config *Config
 
-	baseCDRURL *url.URL
+	fhirStoreURL *url.URL
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
@@ -64,7 +65,11 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
-	if err := c.SetBaseCDRURL(c.config.CDRURL); err != nil {
+	fhirStore := config.FHIRStore
+	if fhirStore == "" {
+		fhirStore = config.CDRURL + "/store/fhir/" + config.RootOrgID
+	}
+	if err := c.SetFHIRStoreURL(fhirStore); err != nil {
 		return nil, err
 	}
 	if config.DebugLog != "" {
@@ -82,7 +87,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, rootOrgID: config.RootOrgID, ma: ma, um: um}
+	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
 
 	return c, nil
 }
@@ -95,9 +100,9 @@ func (c *Client) Close() {
 	}
 }
 
-// SetBaseCDRURL sets the base URL for API requests to a custom endpoint. urlStr
+// SetFHIRStoreURL sets the base URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
-func (c *Client) SetBaseCDRURL(urlStr string) error {
+func (c *Client) SetFHIRStoreURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrCDRURLCannotBeEmpty
 	}
@@ -107,7 +112,7 @@ func (c *Client) SetBaseCDRURL(urlStr string) error {
 	}
 
 	var err error
-	c.baseCDRURL, err = url.Parse(urlStr)
+	c.fhirStoreURL, err = url.Parse(urlStr)
 	return err
 }
 
@@ -117,9 +122,9 @@ func (c *Client) SetBaseCDRURL(urlStr string) error {
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
 func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
-	u := *c.baseCDRURL
+	u := *c.fhirStoreURL
 	// Set the encoded opaque data
-	u.Opaque = c.baseCDRURL.Path + path
+	u.Opaque = c.fhirStoreURL.Path + path
 
 	req := &http.Request{
 		Method:     method,

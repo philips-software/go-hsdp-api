@@ -12,11 +12,10 @@ import (
 )
 
 type TenantSTU3Service struct {
-	rootOrgID string
-	client    *Client
-	timeZone  string
-	ma        *jsonformat.Marshaller
-	um        *jsonformat.Unmarshaller
+	client   *Client
+	timeZone string
+	ma       *jsonformat.Marshaller
+	um       *jsonformat.Unmarshaller
 }
 
 // Onboard onboards the organization on the CDR under the rootOrgID
@@ -27,7 +26,7 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	}
 	orgID := organization.Identifier[0].GetValue().Value
 
-	req, err := t.client.NewCDRRequest(http.MethodPut, fmt.Sprintf("store/fhir/%s/Organization/%s", t.rootOrgID, orgID), organizationJSON, options)
+	req, err := t.client.NewCDRRequest(http.MethodPut, fmt.Sprintf("Organization/%s", orgID), organizationJSON, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -49,7 +48,7 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 }
 
 func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organization, *Response, error) {
-	req, err := t.client.NewCDRRequest(http.MethodGet, fmt.Sprintf("store/fhir/%s/Organization/%s", t.rootOrgID, orgID), nil, nil)
+	req, err := t.client.NewCDRRequest(http.MethodGet, fmt.Sprintf("Organization/%s", orgID), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
