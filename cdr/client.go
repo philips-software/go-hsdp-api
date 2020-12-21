@@ -1,4 +1,4 @@
-// Package pki provides support for HSDP PKI service
+// Package pki provides support for HSDP CDR service
 //
 // We only intent to support the CDR FHIR STU3 and newer with this library.
 package cdr
@@ -41,7 +41,7 @@ type Config struct {
 	DebugLog    string
 }
 
-// A Client manages communication with HSDP PKI API
+// A Client manages communication with HSDP CDR API
 type Client struct {
 	// HTTP client used to communicate with IAM API
 	iamClient *iam.Client
@@ -58,7 +58,7 @@ type Client struct {
 	debugFile *os.File
 }
 
-// NewClient returns a new HSDP PKI API client. Configured console and IAM clients
+// NewClient returns a new HSDP CDR API client. Configured console and IAM clients
 // must be provided as the underlying API requires tokens from respective services
 func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	return newClient(iamClient, config)
@@ -128,7 +128,7 @@ func (c *Client) SetBaseCDRURL(urlStr string) error {
 	return err
 }
 
-// NewCDRRequest creates an new PKI Service API request. A relative URL path can be provided in
+// NewCDRRequest creates an new CDR Service API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
