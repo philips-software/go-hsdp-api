@@ -32,11 +32,11 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	}
 	var onboardResponse bytes.Buffer
 	resp, err := t.client.Do(req, &onboardResponse)
-	if err != nil && err != io.EOF {
+	if (err != nil && err != io.EOF) || resp == nil {
+		if resp == nil && err != nil {
+			err = ErrEmptyResult
+		}
 		return nil, resp, err
-	}
-	if resp == nil {
-		return nil, nil, ErrEmptyResult
 	}
 	unmarshalled, err := t.um.Unmarshal(onboardResponse.Bytes())
 	if err != nil {
