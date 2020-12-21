@@ -67,7 +67,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
 	fhirStore := config.FHIRStore
 	if fhirStore == "" {
-		fhirStore = config.CDRURL + "/store/fhir/" + config.RootOrgID
+		fhirStore = config.CDRURL + "/store/fhir/"
 	}
 	if err := c.SetFHIRStoreURL(fhirStore); err != nil {
 		return nil, err
@@ -132,7 +132,7 @@ func (c *Client) SetFHIRStoreURL(urlStr string) error {
 func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
 	u := *c.fhirStoreURL
 	// Set the encoded opaque data
-	u.Opaque = c.fhirStoreURL.Path + path
+	u.Opaque = c.fhirStoreURL.Path + c.config.RootOrgID + "/" + path
 
 	req := &http.Request{
 		Method:     method,
