@@ -100,6 +100,14 @@ func (c *Client) Close() {
 	}
 }
 
+// GetFHIRStoreURL returns the base FHIR Store URL as configured
+func (c *Client) GetFHirStoreURL() string {
+	if c.fhirStoreURL == nil {
+		return ""
+	}
+	return c.fhirStoreURL.String()
+}
+
 // SetFHIRStoreURL sets the base URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
 func (c *Client) SetFHIRStoreURL(urlStr string) error {
