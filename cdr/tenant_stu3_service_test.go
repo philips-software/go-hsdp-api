@@ -28,7 +28,25 @@ func TestTenantService(t *testing.T) {
 			w.WriteHeader(http.StatusCreated)
 			_, _ = io.WriteString(w, string(body))
 		case "GET":
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "resourceType": "Organization",
+  "id": "`+orgID+`",
+  "meta": {
+    "versionId": "6dfa7cc8-2000-11ea-91df-bb500f85c5e2",
+    "lastUpdated": "2019-12-16T12:34:40.544022+00:00"
+  },
+  "identifier": [
+    {
+      "use": "usual",
+      "system": "https://identity.philips-healthsuite.com/organization",
+      "value": "`+orgID+`"
+    }
+  ],
+  "active": true,
+  "name": "Hospital"
+}
+`)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -51,4 +69,16 @@ func TestTenantService(t *testing.T) {
 		return
 	}
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+
+	foundOrg, resp, err := cdrClient.TenantSTU3.GetOrganizationByID(orgID)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, foundOrg) {
+		return
+	}
+	assert.Equal(t, "Hospital", foundOrg.Name.Value)
 }

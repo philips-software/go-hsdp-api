@@ -15,6 +15,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/google/fhir/go/jsonformat"
+
 	"github.com/philips-software/go-hsdp-api/iam"
 
 	autoconf "github.com/philips-software/go-hsdp-api/config"
@@ -75,7 +77,15 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 			c.debugFile = nil
 		}
 	}
-	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, rootOrgID: config.RootOrgID}
+	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
+	if err != nil {
+		return nil, err
+	}
+	um, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
+	if err != nil {
+		return nil, err
+	}
+	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, rootOrgID: config.RootOrgID, ma: ma, um: um}
 
 	return c, nil
 }
@@ -154,7 +164,7 @@ func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []
 		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
-		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Content-Type", "application/json+fhir")
 	}
 
 	req.Header.Set("Accept", "*/*")

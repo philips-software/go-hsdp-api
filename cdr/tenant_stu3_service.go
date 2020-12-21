@@ -14,14 +14,13 @@ type TenantSTU3Service struct {
 	rootOrgID string
 	client    *Client
 	timeZone  string
+	ma        *jsonformat.Marshaller
+	um        *jsonformat.Unmarshaller
 }
 
+// Onboard onboards the organization on the CDR under the rootOrgID
 func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options ...OptionFunc) (*stu3pb.Organization, *Response, error) {
-	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
-	if err != nil {
-		return nil, nil, err
-	}
-	organizationJSON, err := ma.MarshalResource(organization)
+	organizationJSON, err := t.ma.MarshalResource(organization)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -39,15 +38,33 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	if resp == nil {
 		return nil, nil, ErrEmptyResult
 	}
-	um, err := jsonformat.NewUnmarshaller(t.timeZone, jsonformat.STU3)
-	if err != nil {
-		return nil, resp, err
-	}
-	unmarshalled, err := um.Unmarshal(onboardResponse.Bytes())
+	unmarshalled, err := t.um.Unmarshal(onboardResponse.Bytes())
 	if err != nil {
 		return nil, resp, err
 	}
 	contained := unmarshalled.(*stu3pb.ContainedResource)
 	onboardedOrg := contained.GetOrganization()
 	return onboardedOrg, resp, nil
+}
+
+func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organization, *Response, error) {
+	req, err := t.client.NewCDRRequest(http.MethodGet, "store/fhir/"+t.rootOrgID+"/Organization/"+orgID, nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	var getResponse bytes.Buffer
+	resp, err := t.client.Do(req, &getResponse)
+	if err != nil && err != io.EOF {
+		return nil, resp, err
+	}
+	if resp == nil {
+		return nil, nil, ErrEmptyResult
+	}
+	unmarshalled, err := t.um.Unmarshal(getResponse.Bytes())
+	if err != nil {
+		return nil, resp, err
+	}
+	contained := unmarshalled.(*stu3pb.ContainedResource)
+	cdrOrg := contained.GetOrganization()
+	return cdrOrg, resp, nil
 }
