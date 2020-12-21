@@ -103,11 +103,11 @@ func setup(t *testing.T) func() {
           "PKI_CERT.ISSUE",
           "PKI_CERT.READ",
           "PKI_CERTS.LIST",
-	  "PKI_CERTROLE.LIST",
-   	  "PKI_CERTROLE.READ",
-  	  "PKI_URLS.READ",
-	  "PKI_CRL.ROTATE",
-   	  "PKI_CRL.CONFIGURE",
+          "PKI_CERTROLE.LIST",
+          "PKI_CERTROLE.READ",
+          "PKI_URLS.READ",
+          "PKI_CRL.ROTATE",
+          "PKI_CRL.CONFIGURE",
           "PKI_CERT.SIGN",
           "PKI_CERT.REVOKE",
           "PKI_URLS.CONFIGURE"
@@ -186,8 +186,6 @@ func TestDebug(t *testing.T) {
 	if !assert.Nil(t, err) {
 		return
 	}
-
-	//_, _, _ = cdrClient.Services.GetRootCA()
 
 	fi, err := tmpfile.Stat()
 	assert.Nil(t, err)
