@@ -8,6 +8,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/google/fhir/go/jsonformat"
+
 	"github.com/philips-software/go-hsdp-api/cdr"
 
 	"github.com/philips-software/go-hsdp-api/iam"
@@ -29,6 +31,8 @@ var (
 	timeZone     = "Europe/Amsterdam"
 	token        string
 	refreshToken string
+	ma           *jsonformat.Marshaller
+	um           *jsonformat.Unmarshaller
 )
 
 func setup(t *testing.T) func() {
@@ -140,6 +144,14 @@ func setup(t *testing.T) func() {
 	})
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
+	}
+	ma, err = jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
+	if !assert.Nil(t, err) {
+		t.Fatalf("failed to create marshaller")
+	}
+	um, err = jsonformat.NewUnmarshaller("Europe/Amsterdam", jsonformat.STU3)
+	if !assert.Nil(t, err) {
+		t.Fatalf("failed to create unmarshaller")
 	}
 
 	return func() {

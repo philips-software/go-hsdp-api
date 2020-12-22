@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	stu3pb "github.com/google/fhir/go/proto/google/fhir/proto/stu3/resources_go_proto"
+
 	"github.com/philips-software/go-hsdp-api/cdr"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
@@ -75,4 +77,74 @@ func TestPatchOperation(t *testing.T) {
 		return
 	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+}
+
+func TestPostOperation(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+
+	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/fhir+json")
+		switch r.Method {
+		case "POST":
+			if !assert.Equal(t, "application/fhir+json", r.Header.Get("Content-Type")) {
+				w.WriteHeader(http.StatusUnsupportedMediaType)
+				return
+			}
+			if !assert.Equal(t, cdr.APIVersion, r.Header.Get("API-Version")) {
+				w.WriteHeader(http.StatusPreconditionFailed)
+				return
+			}
+			body, err := ioutil.ReadAll(r.Body)
+			if !assert.Nil(t, err) {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			unmarshalled, err := um.Unmarshal(body)
+			if !assert.Nil(t, err) {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				return
+			}
+			contained := unmarshalled.(*stu3pb.ContainedResource)
+			onboardedOrg := contained.GetOrganization()
+			jsonOrg, err := ma.MarshalResource(onboardedOrg)
+			if !assert.Nil(t, err) {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				return
+			}
+			w.WriteHeader(http.StatusCreated)
+			_, _ = io.WriteString(w, string(jsonOrg))
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	patched, resp, err := cdrClient.OperationsSTU3.Post("Organization/"+orgID, []byte(`{
+  "resourceType": "Organization",
+  "id": "dae89cf0-888d-4a26-8c1d-578e97365efc",
+  "meta": {
+    "versionId": "4cbb8588-444a-11eb-917c-1f1d96935807",
+    "lastUpdated": "2020-12-22T11:39:07.055441+00:00"
+  },
+  "identifier": [
+    {
+      "use": "official",
+      "system": "https://identity.philips-healthsuite.com/organization",
+      "value": "dae89cf0-888d-4a26-8c1d-578e97365efc"
+    }
+  ],
+  "name": "Hospital"
+}`))
+
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, patched) {
+		return
+	}
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 }

@@ -31,7 +31,11 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [ ] Auditing
 - [x] Clinical Data Repository (CDR)
   - [x] Tenant Onboarding
-  - [ ] FHIR Operations
+  - [ ] Subscriptions
+  - [x] FHIR Patch 
+  - [x] FHIR Post
+  - [ ] FHIR Put
+  - [ ] FHIR Delete
 - [x] S3 Credentials Policy management
 - [x] Hosted Application Streaming (HAS) management
 - [x] Configuration
