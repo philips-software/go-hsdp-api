@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.27.0
+- [NEW] Initial Clinical Data Repository (CDR) support
+
 ## v0.26.0
 - [Breaking] Refactored config API. Master data is stored as JSON
 - Remove toml dependency
