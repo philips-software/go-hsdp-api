@@ -104,7 +104,7 @@ func (c *Client) Close() {
 }
 
 // GetFHIRStoreURL returns the base FHIR Store URL as configured
-func (c *Client) GetFHirStoreURL() string {
+func (c *Client) GetFHIRStoreURL() string {
 	if c.fhirStoreURL == nil {
 		return ""
 	}
