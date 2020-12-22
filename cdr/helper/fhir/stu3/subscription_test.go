@@ -2,6 +2,7 @@ package stu3_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/google/fhir/go/jsonformat"
 
@@ -11,18 +12,22 @@ import (
 )
 
 func TestNewSubscription(t *testing.T) {
+	endTime := time.Date(2030, 12, 31, 23, 59, 59, 0, time.UTC)
+
 	sub, err := stu3.NewSubscription(
 		stu3.WithContact("phone", "(603) 203-2594", "work"),
 		stu3.WithCriteria("Patient?given=Ron"),
 		stu3.WithEndpoint("https://foo/notification"),
-		stu3.WithHeaders([]string{"Authorization: Bearer xxx"}),
-		stu3.WithReason("somereason"))
+		stu3.WithHeaders([]string{"Authorization: Bearer cm9uOnN3YW5zb24="}),
+		stu3.WithReason("some reason"),
+		stu3.WithEndtime(endTime))
 	if !assert.Nil(t, err) {
 		return
 	}
 	if !assert.NotNil(t, sub) {
 		return
 	}
+	assert.Equal(t, endTime.UnixNano()/1000, sub.End.ValueUs)
 	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
 	if !assert.Nil(t, err) {
 		return

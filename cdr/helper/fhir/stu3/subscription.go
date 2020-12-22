@@ -1,6 +1,8 @@
 package stu3
 
 import (
+	"time"
+
 	"github.com/google/fhir/go/proto/google/fhir/proto/stu3/codes_go_proto"
 
 	stu3dt "github.com/google/fhir/go/proto/google/fhir/proto/stu3/datatypes_go_proto"
@@ -102,6 +104,17 @@ func WithContact(system, value, use string) WithFunc {
 			Value:  &stu3dt.String{Value: value},
 			System: &stu3dt.ContactPointSystemCode{Value: useSystem},
 		})
+		return nil
+	}
+}
+
+// WithEndtime sets the end time of the subscription
+func WithEndtime(at time.Time) WithFunc {
+	return func(sub *stu3pb.Subscription) error {
+		sub.End = &stu3dt.Instant{
+			Precision: stu3dt.Instant_MICROSECOND,
+			ValueUs:   at.UnixNano() / 1000,
+		}
 		return nil
 	}
 }
