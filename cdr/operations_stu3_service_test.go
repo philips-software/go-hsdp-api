@@ -148,3 +148,59 @@ func TestPostOperation(t *testing.T) {
 	}
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 }
+
+func TestGetOperation(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+
+	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/fhir+json")
+		switch r.Method {
+		case "GET":
+			if !assert.Equal(t, "application/fhir+json", r.Header.Get("Content-Type")) {
+				w.WriteHeader(http.StatusUnsupportedMediaType)
+				return
+			}
+			if !assert.Equal(t, cdr.APIVersion, r.Header.Get("API-Version")) {
+				w.WriteHeader(http.StatusPreconditionFailed)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "resourceType": "Organization",
+  "id": "`+orgID+`",
+  "meta": {
+    "versionId": "6dfa7cc8-2000-11ea-91df-bb500f85c5e2",
+    "lastUpdated": "2019-12-16T12:34:40.544022+00:00"
+  },
+  "identifier": [
+    {
+      "use": "usual",
+      "system": "https://identity.philips-healthsuite.com/organization",
+      "value": "`+orgID+`"
+    }
+  ],
+  "active": true,
+  "name": "Hospital2"
+}
+`)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	retrieved, resp, err := cdrClient.OperationsSTU3.Get("Organization/" + orgID)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, retrieved) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	org := retrieved.GetOrganization()
+	assert.Equal(t, "Hospital2", org.Name.Value)
+}

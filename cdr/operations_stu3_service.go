@@ -61,3 +61,26 @@ func (o *OperationsSTU3Service) Post(resourceID string, jsonBody []byte, options
 	contained := unmarshalled.(*stu3pb.ContainedResource)
 	return contained, resp, nil
 }
+
+// Get returns a FHIR resource
+func (o *OperationsSTU3Service) Get(resourceID string, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
+	req, err := o.client.NewCDRRequest(http.MethodGet, resourceID, nil, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Content-Type", "application/fhir+json")
+	var operationResponse bytes.Buffer
+	resp, err := o.client.Do(req, &operationResponse)
+	if (err != nil && err != io.EOF) || resp == nil {
+		if resp == nil && err != nil {
+			err = ErrEmptyResult
+		}
+		return nil, resp, err
+	}
+	unmarshalled, err := o.um.Unmarshal(operationResponse.Bytes())
+	if err != nil {
+		return nil, resp, err
+	}
+	contained := unmarshalled.(*stu3pb.ContainedResource)
+	return contained, resp, nil
+}
