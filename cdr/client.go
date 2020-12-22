@@ -52,7 +52,8 @@ type Client struct {
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
 
-	TenantSTU3 *TenantSTU3Service
+	TenantSTU3     *TenantSTU3Service
+	OperationsSTU3 *OperationsSTU3Service
 
 	debugFile *os.File
 }
@@ -87,7 +88,9 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
+	c.OperationsSTU3 = &OperationsSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
 
 	return c, nil
 }
@@ -160,7 +163,6 @@ func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []
 		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
-		req.Header.Set("Content-Type", "application/fhir+json")
 	}
 
 	req.Header.Set("Accept", "*/*")

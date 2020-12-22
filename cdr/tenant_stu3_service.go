@@ -30,6 +30,8 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	if err != nil {
 		return nil, nil, err
 	}
+	req.Header.Set("Content-Type", "application/fhir+json")
+
 	var onboardResponse bytes.Buffer
 	resp, err := t.client.Do(req, &onboardResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
@@ -52,6 +54,8 @@ func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organizat
 	if err != nil {
 		return nil, nil, err
 	}
+	req.Header.Set("Content-Type", "application/fhir+json")
+
 	var getResponse bytes.Buffer
 	resp, err := t.client.Do(req, &getResponse)
 	if err != nil && err != io.EOF {
