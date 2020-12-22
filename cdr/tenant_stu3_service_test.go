@@ -18,11 +18,16 @@ func TestTenantService(t *testing.T) {
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
 
 	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json+fhir")
+		w.Header().Set("Content-Type", "application/fhir+json")
 		switch r.Method {
 		case "PUT":
+			if !assert.Equal(t, "application/fhir+json", r.Header.Get("Content-Type")) {
+				w.WriteHeader(http.StatusUnsupportedMediaType)
+				return
+			}
 			body, err := ioutil.ReadAll(r.Body)
 			if !assert.Nil(t, err) {
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			w.WriteHeader(http.StatusCreated)

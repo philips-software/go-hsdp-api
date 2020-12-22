@@ -160,7 +160,7 @@ func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []
 		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
-		req.Header.Set("Content-Type", "application/json+fhir")
+		req.Header.Set("Content-Type", "application/fhir+json")
 	}
 
 	req.Header.Set("Accept", "*/*")
