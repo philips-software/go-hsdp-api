@@ -29,6 +29,9 @@ func WithReason(reason string) WithFunc {
 // This is an extension supported by CDR
 func WithDeleteEndpoint(endpoint string) WithFunc {
 	return func(sub *stu3pb.Subscription) error {
+		if endpoint == "" {
+			return nil
+		}
 		if sub.Channel == nil {
 			sub.Channel = &stu3pb.Subscription_Channel{}
 		}
@@ -43,9 +46,6 @@ func WithDeleteEndpoint(endpoint string) WithFunc {
 				},
 			},
 		})
-		sub.Channel.Endpoint = &stu3dt.Uri{
-			Value: endpoint,
-		}
 		sub.Channel.Type = &codes_go_proto.SubscriptionChannelTypeCode{
 			Value: codes_go_proto.SubscriptionChannelTypeCode_REST_HOOK,
 		}
