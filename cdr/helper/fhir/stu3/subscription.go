@@ -9,7 +9,12 @@ import (
 	stu3pb "github.com/google/fhir/go/proto/google/fhir/proto/stu3/resources_go_proto"
 )
 
+const (
+	ExtDeleteURL = "http://hsdp.com/cdr/Subscription/deletionUri"
+)
+
 type WithFunc func(sub *stu3pb.Subscription) error
+type StringValue func(sub *stu3pb.Subscription) string
 
 func WithCriteria(critera string) WithFunc {
 	return func(sub *stu3pb.Subscription) error {
@@ -22,6 +27,33 @@ func WithReason(reason string) WithFunc {
 	return func(sub *stu3pb.Subscription) error {
 		sub.Reason = &stu3dt.String{Value: reason}
 		return nil
+	}
+}
+
+// DeleteEndpointValue returns the URI if set, empty string otherwise
+func DeleteEndpointValue() StringValue {
+	return func(sub *stu3pb.Subscription) string {
+		if sub.Channel == nil {
+			return ""
+		}
+		if sub.Channel.Extension == nil {
+			return ""
+		}
+		if len(sub.Channel.Extension) == 0 {
+			return ""
+		}
+		for _, e := range sub.Channel.Extension {
+			if e.Url.Value != ExtDeleteURL || e.Value == nil {
+				continue
+			}
+			uri := e.Value.GetUri()
+			if uri == nil {
+				continue
+			}
+			return uri.Value
+
+		}
+		return ""
 	}
 }
 
