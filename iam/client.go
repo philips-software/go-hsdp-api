@@ -492,24 +492,16 @@ func (c *Client) DoSigned(req *http.Request, v interface{}) (*Response, error) {
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	id := uuid.New()
 
-	if c.config.Debug {
+	if c.debugFile != nil {
 		dumped, _ := httputil.DumpRequest(req, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Request [%s] start ---\n%s\n[go-hsdp-api] --- Request [%s] end ---\n", id, string(dumped), id)
-		if c.debugFile != nil {
-			_, _ = c.debugFile.WriteString(out)
-		} else {
-			fmt.Println(out)
-		}
+		_, _ = c.debugFile.WriteString(out)
 	}
 	resp, err := c.client.Do(req)
-	if c.config.Debug && resp != nil {
+	if c.debugFile != nil && resp != nil {
 		dumped, _ := httputil.DumpResponse(resp, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Response [%s] start ---\n%s\n[go-hsdp-api] --- Response [%s] end ---\n", id, string(dumped), id)
-		if c.debugFile != nil {
-			_, _ = c.debugFile.WriteString(out)
-		} else {
-			fmt.Println(out)
-		}
+		_, _ = c.debugFile.WriteString(out)
 	}
 	if err != nil {
 		return nil, err

@@ -132,16 +132,14 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 }
 
 func configDebug(cartel *Client) {
-	if cartel.config.Debug {
-		if cartel.config.DebugLog != "" {
-			debugFile, err := os.OpenFile(cartel.config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-			if err == nil {
-				cartel.debugFile = debugFile
-			}
+	if cartel.config.DebugLog != "" {
+		debugFile, err := os.OpenFile(cartel.config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if err == nil {
+			cartel.debugFile = debugFile
 		}
-		if cartel.debugFile == nil {
-			cartel.debugFile = os.Stderr
-		}
+	}
+	if cartel.debugFile == nil {
+		cartel.debugFile = os.Stderr
 	}
 }
 
@@ -151,11 +149,10 @@ func configDebug(cartel *Client) {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
-	if c.config.Debug {
+	if c.debugFile != nil {
 		dumped, _ := httputil.DumpRequest(req, true)
 		fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
 	}
-
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -164,7 +161,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	if c.config.Debug {
+	if c.debugFile != nil {
 		if resp != nil {
 			dumped, _ := httputil.DumpResponse(resp, true)
 			_, _ = fmt.Fprintf(c.debugFile, "RESPONSE: %s\n", string(dumped))
