@@ -31,12 +31,12 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [ ] Auditing
 - [x] Clinical Data Repository (CDR)
   - [x] Tenant Onboarding
-  - [ ] Subscription management
+  - [x] Subscription management
   - [x] FHIR Patch 
   - [x] FHIR Post
   - [x] FHIR Get
-  - [ ] FHIR Put
-  - [ ] FHIR Delete
+  - [x] FHIR Put
+  - [x] FHIR Delete
 - [x] Telemetry Data Repository (TDR)
   - [x] Contract management
   - [x] Data Item management

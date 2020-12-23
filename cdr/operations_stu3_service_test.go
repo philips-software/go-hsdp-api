@@ -204,3 +204,32 @@ func TestGetOperation(t *testing.T) {
 	org := retrieved.GetOrganization()
 	assert.Equal(t, "Hospital2", org.Name.Value)
 }
+
+func TestDeleteOperation(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+
+	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/fhir+json")
+		switch r.Method {
+		case "DELETE":
+			if !assert.Equal(t, cdr.APIVersion, r.Header.Get("API-Version")) {
+				w.WriteHeader(http.StatusPreconditionFailed)
+				return
+			}
+			w.WriteHeader(http.StatusNoContent)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	ok, resp, err := cdrClient.OperationsSTU3.Delete("Organization/" + orgID)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.True(t, ok)
+}

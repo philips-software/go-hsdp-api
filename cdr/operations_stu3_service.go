@@ -41,7 +41,17 @@ func (o *OperationsSTU3Service) Patch(resourceID string, jsonPatch []byte, optio
 
 // Post creates new FHIR resources
 func (o *OperationsSTU3Service) Post(resourceID string, jsonBody []byte, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
-	req, err := o.client.NewCDRRequest(http.MethodPost, resourceID, jsonBody, options)
+	return o.postOrPut(http.MethodPost, resourceID, jsonBody, options...)
+}
+
+// Put creates or updates new FHIR resources
+func (o *OperationsSTU3Service) Put(resourceID string, jsonBody []byte, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
+	return o.postOrPut(http.MethodPut, resourceID, jsonBody, options...)
+}
+
+// Get returns a FHIR resource
+func (o *OperationsSTU3Service) Get(resourceID string, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
+	req, err := o.client.NewCDRRequest(http.MethodGet, resourceID, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -62,9 +72,26 @@ func (o *OperationsSTU3Service) Post(resourceID string, jsonBody []byte, options
 	return contained, resp, nil
 }
 
-// Get returns a FHIR resource
-func (o *OperationsSTU3Service) Get(resourceID string, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
-	req, err := o.client.NewCDRRequest(http.MethodGet, resourceID, nil, options)
+// Delete removes a FHIR resource
+func (o *OperationsSTU3Service) Delete(resourceID string, options ...OptionFunc) (bool, *Response, error) {
+	req, err := o.client.NewCDRRequest(http.MethodDelete, resourceID, nil, options)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("Content-Type", "application/fhir+json")
+	var operationResponse bytes.Buffer
+	resp, err := o.client.Do(req, &operationResponse)
+	if (err != nil && err != io.EOF) || resp == nil {
+		if resp == nil && err != nil {
+			err = ErrEmptyResult
+		}
+		return false, resp, err
+	}
+	return resp.StatusCode == http.StatusNoContent, resp, nil
+}
+
+func (o *OperationsSTU3Service) postOrPut(method, resourceID string, jsonBody []byte, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
+	req, err := o.client.NewCDRRequest(method, resourceID, jsonBody, options)
 	if err != nil {
 		return nil, nil, err
 	}
