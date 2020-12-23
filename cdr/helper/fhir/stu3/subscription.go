@@ -25,6 +25,35 @@ func WithReason(reason string) WithFunc {
 	}
 }
 
+// WithDeleteEndpoint adds an endpoint called a Resource is deleted
+// This is an extension supported by CDR
+func WithDeleteEndpoint(endpoint string) WithFunc {
+	return func(sub *stu3pb.Subscription) error {
+		if sub.Channel == nil {
+			sub.Channel = &stu3pb.Subscription_Channel{}
+		}
+		if sub.Channel.Extension == nil {
+			sub.Channel.Extension = make([]*stu3dt.Extension, 0)
+		}
+		sub.Channel.Extension = append(sub.Channel.Extension, &stu3dt.Extension{
+			Url: &stu3dt.Uri{Value: "http://hsdp.com/cdr/Subscription/deletionUri"},
+			Value: &stu3dt.Extension_ValueX{
+				Choice: &stu3dt.Extension_ValueX_Uri{
+					Uri: &stu3dt.Uri{Value: endpoint},
+				},
+			},
+		})
+		sub.Channel.Endpoint = &stu3dt.Uri{
+			Value: endpoint,
+		}
+		sub.Channel.Type = &codes_go_proto.SubscriptionChannelTypeCode{
+			Value: codes_go_proto.SubscriptionChannelTypeCode_REST_HOOK,
+		}
+		sub.Channel.Payload = &stu3dt.String{Value: "application/fhir+json"}
+		return nil
+	}
+}
+
 func WithEndpoint(endpoint string) WithFunc {
 	return func(sub *stu3pb.Subscription) error {
 		if sub.Channel == nil {
