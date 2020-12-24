@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.27.2
+- CDR: Add endpoint URL
+
+## v0.27.1
+- CDR: Bugfixes
+
 ## v0.27.0
 - [NEW] Initial Clinical Data Repository (CDR) support
 
