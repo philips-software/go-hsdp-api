@@ -36,6 +36,7 @@ type Config struct {
 	RootOrgID   string
 	CDRURL      string
 	FHIRStore   string
+	Type        string
 	TimeZone    string
 	DebugLog    string
 }
@@ -103,12 +104,17 @@ func (c *Client) Close() {
 	}
 }
 
-// GetFHIRStoreURL returns the base FHIR Store URL as configured
+// GetFHIRStoreURL returns the base FHIR Store base URL as configured
 func (c *Client) GetFHIRStoreURL() string {
 	if c.fhirStoreURL == nil {
 		return ""
 	}
 	return c.fhirStoreURL.String()
+}
+
+// GetEndpointURL returns the FHIR Store Endpoint URL as configured
+func (c *Client) GetEndpointURL() string {
+	return c.GetFHIRStoreURL() + c.config.RootOrgID
 }
 
 // SetFHIRStoreURL sets the base URL for API requests to a custom endpoint. urlStr

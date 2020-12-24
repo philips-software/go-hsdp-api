@@ -203,3 +203,23 @@ func TestDebug(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEqual(t, 0, fi.Size(), "Expected something to be written to DebugLog")
 }
+
+func TestEndpoints(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	rootOrgID := "foo"
+
+	cdrClient, err := cdr.NewClient(iamClient, &cdr.Config{
+		CDRURL:    serverCDR.URL,
+		RootOrgID: rootOrgID,
+	})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, cdrClient) {
+		return
+	}
+	assert.Equal(t, serverCDR.URL+"/store/fhir/", cdrClient.GetFHIRStoreURL())
+	assert.Equal(t, serverCDR.URL+"/store/fhir/"+rootOrgID, cdrClient.GetEndpointURL())
+}
