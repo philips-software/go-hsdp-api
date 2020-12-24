@@ -220,6 +220,11 @@ func TestEndpoints(t *testing.T) {
 	if !assert.NotNil(t, cdrClient) {
 		return
 	}
+	endpoint := cdrClient.GetEndpointURL()
 	assert.Equal(t, serverCDR.URL+"/store/fhir/", cdrClient.GetFHIRStoreURL())
+	assert.Equal(t, serverCDR.URL+"/store/fhir/"+rootOrgID, endpoint)
+
+	assert.Nil(t, cdrClient.SetEndpointURL(endpoint))
 	assert.Equal(t, serverCDR.URL+"/store/fhir/"+rootOrgID, cdrClient.GetEndpointURL())
+
 }

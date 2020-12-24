@@ -117,7 +117,7 @@ func (c *Client) GetEndpointURL() string {
 	return c.GetFHIRStoreURL() + c.config.RootOrgID
 }
 
-// SetFHIRStoreURL sets the base URL for API requests to a custom endpoint. urlStr
+// SetFHIRStoreURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
 func (c *Client) SetFHIRStoreURL(urlStr string) error {
 	if urlStr == "" {
@@ -127,10 +127,34 @@ func (c *Client) SetFHIRStoreURL(urlStr string) error {
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
-
 	var err error
 	c.fhirStoreURL, err = url.Parse(urlStr)
 	return err
+}
+
+// SetEndpointURL sets the FHIR endpoint URL for API requests to a custom endpoint. urlStr
+// should always be specified with a trailing slash.
+func (c *Client) SetEndpointURL(urlStr string) error {
+	if urlStr == "" {
+		return ErrCDRURLCannotBeEmpty
+	}
+	// Make sure the given URL end with a slash
+	if !strings.HasSuffix(urlStr, "/") {
+		urlStr += "/"
+	}
+	var err error
+	c.fhirStoreURL, err = url.Parse(urlStr)
+	if err != nil {
+		return err
+	}
+	parts := strings.Split(c.fhirStoreURL.Path, "/")
+	if len(parts) == 0 {
+		return ErrCDRURLCannotBeEmpty
+	}
+	c.config.RootOrgID = parts[len(parts)-1]
+	newParts := parts[:len(parts)-1]
+	c.fhirStoreURL.Path = strings.Join(newParts, "/")
+	return nil
 }
 
 // NewCDRRequest creates an new CDR Service API request. A relative URL path can be provided in
