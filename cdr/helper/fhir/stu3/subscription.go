@@ -57,7 +57,7 @@ func DeleteEndpointValue() StringValue {
 	}
 }
 
-// WithDeleteEndpoint adds an endpoint called a Resource is deleted
+// WithDeleteEndpoint adds an endpoint which is called a Resource is deleted
 // This is an extension supported by CDR
 func WithDeleteEndpoint(endpoint string) WithFunc {
 	return func(sub *stu3pb.Subscription) error {
