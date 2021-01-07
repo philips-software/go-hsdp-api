@@ -83,11 +83,11 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	}
 	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
 	}
 	um, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
 
 	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
