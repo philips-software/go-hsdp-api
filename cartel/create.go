@@ -45,12 +45,12 @@ func (c *Client) Create(tagName string, opts ...RequestOptionFunc) (*CreateRespo
 			}
 		}
 	}
+	var responseBody CreateResponse
+
 	req, err := c.NewRequest("POST", "v3/api/create", &body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	var responseBody CreateResponse
-
 	resp, err := c.Do(req, &responseBody)
 	return &responseBody, resp, err
 }

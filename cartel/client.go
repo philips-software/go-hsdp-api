@@ -63,7 +63,7 @@ type Client struct {
 	debugFile *os.File
 }
 
-// Response holds a LogEvent response
+// Response holds a Cartel response
 type Response struct {
 	*http.Response
 	Message string
@@ -181,14 +181,6 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 	err = CheckResponse(resp)
 	return response, err
-}
-
-// ErrorResponse holds an error response from the server
-type ErrorResponse struct {
-	Response    *http.Response `json:"-"`
-	Message     string         `json:"-"`
-	Code        int            `json:"code"`
-	Description string         `json:"description"`
 }
 
 // CheckResponse checks the API response for errors, and returns them if present.
