@@ -200,13 +200,13 @@ func (e *ErrorResponse) Error() string {
 // the complete batch should be considered as not persisted and the LogEvents should
 // be resubmitted for storage
 func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, error) {
-	var b Bundle
+	b := Bundle{
+		ResourceType: "Bundle",
+		Entry:        make([]Element, count),
+		Type:         "transaction",
+		ProductKey:   c.config.ProductKey,
+	}
 	invalid := make(map[int]Resource)
-
-	b.ResourceType = "Bundle"
-	b.Entry = make([]Element, count)
-	b.Type = "transaction"
-	b.ProductKey = c.config.ProductKey
 
 	j := 0
 	for i := 0; i < count; i++ {
