@@ -46,7 +46,7 @@ func (c *Client) ServiceLogin(service Service) error {
 		scopes := strings.Join(c.config.Scopes, " ")
 		form.Add("scope", scopes)
 	}
-	// HSDP IAM currently croakes on URL encoded grant_type value. INC0038532
+	// HSDP IAM currently croaks on URL encoded grant_type value. INC0038532
 	body := "assertion=" + token
 	body += "&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer"
 	body += "&"
@@ -68,6 +68,26 @@ func (c *Client) Login(username, password string) error {
 	form.Add("username", username)
 	form.Add("password", password)
 	form.Add("grant_type", "password")
+	if len(c.config.Scopes) > 0 {
+		scopes := strings.Join(c.config.Scopes, " ")
+		form.Add("scope", scopes)
+	}
+	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
+	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.ContentLength = int64(len(form.Encode()))
+
+	return c.doTokenRequest(req)
+}
+
+// ClientCredentialsLogin logs in using client credentials
+// The client credentials and scopes are expected to passed during configuration of the client
+func (c *Client) ClientCredentialsLogin() error {
+	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
+	if err != nil {
+		return err
+	}
+	form := url.Values{}
+	form.Add("grant_type", "client_credentials")
 	if len(c.config.Scopes) > 0 {
 		scopes := strings.Join(c.config.Scopes, " ")
 		form.Add("scope", scopes)
