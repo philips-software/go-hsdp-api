@@ -16,11 +16,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/philips-software/go-hsdp-api/iam"
+
 	"go.elastic.co/apm/module/apmhttp"
 
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 
-	"errors"
 	signer "github.com/philips-software/go-hsdp-signer"
 )
 
@@ -33,14 +34,6 @@ const (
 )
 
 var (
-	ErrNothingToPost       = errors.New("nothing to post")
-	ErrMissingSharedKey    = errors.New("missing shared key")
-	ErrMissingSharedSecret = errors.New("missing shared secret")
-	ErrMissingBaseURL      = errors.New("missing base URL")
-	ErrMissingProductKey   = errors.New("missing ProductKey")
-	ErrBatchErrors         = errors.New("batch errors. check Invalid map for details")
-	ErrResponseError       = errors.New("unexpected HSDP response error")
-
 	entryRegex = regexp.MustCompile(`^entry\[(\d+)]`)
 
 	scaryMap = map[string]string{
@@ -61,6 +54,7 @@ type Config struct {
 	Environment  string
 	SharedKey    string
 	SharedSecret string
+	IAMClient    *iam.Client
 	BaseURL      string
 	ProductKey   string
 	Debug        bool
@@ -68,10 +62,10 @@ type Config struct {
 
 // Valid returns if all required config fields are present, false otherwise
 func (c *Config) Valid() (bool, error) {
-	if c.SharedKey == "" {
+	if c.SharedKey == "" && c.IAMClient == nil {
 		return false, ErrMissingSharedKey
 	}
-	if c.SharedSecret == "" {
+	if c.SharedSecret == "" && c.IAMClient == nil {
 		return false, ErrMissingSharedSecret
 	}
 	if c.BaseURL == "" {
@@ -88,6 +82,7 @@ type Client struct {
 	config     *Config
 	url        *url.URL
 	httpClient *http.Client
+	iamClient  *iam.Client
 	httpSigner *signer.Signer
 }
 
@@ -136,7 +131,10 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 
 	logger.httpSigner, err = signer.New(logger.config.SharedKey, logger.config.SharedSecret)
 	if err != nil {
-		return nil, err
+		if config.IAMClient == nil {
+			return nil, ErrMissingCredentialsOrIAMClient
+		}
+		logger.iamClient = config.IAMClient
 	}
 
 	logger.url = parsedURL
@@ -263,10 +261,13 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Api-Version", "1")
 	req.Header.Set("User-Agent", userAgent)
-	if err := c.httpSigner.SignRequest(req); err != nil {
-		return nil, err
+	if c.httpSigner != nil {
+		if err := c.httpSigner.SignRequest(req); err != nil {
+			return nil, err
+		}
+	} else {
+		req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
 	}
-
 	return c.performAndParseResponse(req, msgs)
 }
 
