@@ -234,11 +234,6 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 		}
 		return &resp, ErrBatchErrors
 	}
-
-	if j == 0 { // No payload
-		return nil, ErrNothingToPost
-	}
-
 	b.Total = j
 
 	req := &http.Request{
