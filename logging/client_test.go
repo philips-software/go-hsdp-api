@@ -9,15 +9,18 @@ import (
 	"os"
 	"testing"
 
+	"github.com/philips-software/go-hsdp-api/iam"
+
 	"github.com/stretchr/testify/assert"
 
 	signer "github.com/philips-software/go-hsdp-signer"
 )
 
 var (
-	muxLogger     *http.ServeMux
-	serverLogger  *httptest.Server
-	client        *Client
+	muxLogger    *http.ServeMux
+	serverLogger *httptest.Server
+	client       *Client
+
 	validResource = Resource{
 		ID:                  "deb545e2-ccea-4868-99fe-b9dfbf5ce56e",
 		ResourceType:        "LogEvent",
@@ -85,10 +88,12 @@ func setup(t *testing.T, config *Config, method string, statusCode int, response
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
-		s, _ := signer.New(sharedKey, sharedSecret)
-		if ok, _ := s.ValidateRequest(r); !ok {
-			w.WriteHeader(http.StatusForbidden)
-			return
+		if bearer := r.Header.Get("Authorization"); bearer == "" {
+			s, _ := signer.New(sharedKey, sharedSecret)
+			if ok, _ := s.ValidateRequest(r); !ok {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
 		}
 
 		body, _ := ioutil.ReadAll(r.Body)
@@ -356,4 +361,86 @@ func TestAutoconfig(t *testing.T) {
 	cfg.BaseURL = foo
 	_, _ = NewClient(nil, cfg)
 	assert.Equal(t, foo, cfg.BaseURL)
+}
+
+func TestStoreResourceWithBearerToken(t *testing.T) {
+	var (
+		muxIAM       *http.ServeMux
+		serverIAM    *httptest.Server
+		token        string
+		refreshToken string
+	)
+
+	muxIAM = http.NewServeMux()
+	serverIAM = httptest.NewServer(muxIAM)
+
+	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
+	token2 := "55d20214-7879-4e35-923d-f9d4e01c9746"
+	refreshToken = "31f1a449-ef8e-4bfc-a227-4f2353fde547"
+
+	iamClient, err := iam.NewClient(nil, &iam.Config{
+		OAuth2ClientID: "TestClient",
+		OAuth2Secret:   "Secret",
+		IAMURL:         serverIAM.URL,
+		IDMURL:         serverIAM.URL, // No IDM calls expected, so OK
+	})
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	muxIAM.HandleFunc("/authorize/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			assert.Equal(t, "POST", r.Method)
+		}
+		err := r.ParseForm()
+		assert.Nil(t, err)
+		username := r.Form.Get("username")
+		returnToken := token
+		if username == "username2" {
+			returnToken = token2
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{
+    		"scope": "auth_iam_introspect mail tdr.contract tdr.dataitem",
+    		"access_token": "`+returnToken+`",
+    		"refresh_token": "`+refreshToken+`",
+    		"expires_in": 1799,
+    		"token_type": "Bearer"
+		}`)
+	})
+
+	err = iamClient.Login("foo", "bar")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	teardown, err := setup(t, &Config{
+		IAMClient:  iamClient,
+		ProductKey: productKey,
+		BaseURL:    "http://foo",
+	}, "POST", http.StatusCreated, "")
+	if teardown != nil {
+		defer teardown()
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var resource = []Resource{
+		validResource,
+	}
+
+	resp, err := client.StoreResources(resource, len(resource))
+	if err != nil {
+		t.Errorf("Unexpected response: %v", err)
+		return
+	}
+	if resp == nil {
+		t.Errorf("Unexpected nil value for response")
+		return
+	}
+	if resp.StatusCode != http.StatusCreated {
+		t.Errorf("Expected HTTP 201, Got: %d", resp.StatusCode)
+	}
 }
