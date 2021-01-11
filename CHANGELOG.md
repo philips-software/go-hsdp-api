@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.28.0
+- Logging: suppport bearer token auth (client credentials / service identities)
+- Tweaking of CDR client
+
 ## v0.27.2
 - CDR: Add endpoint URL
 
