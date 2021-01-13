@@ -15,7 +15,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/philips-software/go-hsdp-api/iam"
+	"go.elastic.co/apm/module/apmhttp"
+
+	signer "github.com/philips-software/go-hsdp-signer"
+
+	"github.com/google/fhir/go/jsonformat"
 )
 
 const (
@@ -33,34 +37,42 @@ type Config struct {
 	Environment  string
 	RootOrgID    string
 	AuditBaseURL string
-	Type         string
+	SharedKey    string
+	SharedSecret string
 	TimeZone     string
 	DebugLog     string
 }
 
 // A Client manages communication with HSDP CDR API
 type Client struct {
-	// HTTP client used to communicate with IAM API
-	iamClient *iam.Client
-
-	config *Config
-
-	fhirStoreURL *url.URL
+	config        *Config
+	httpClient    *http.Client
+	auditStoreURL *url.URL
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
+
+	ma         *jsonformat.Marshaller
+	um         *jsonformat.Unmarshaller
+	httpSigner *signer.Signer
 
 	debugFile *os.File
 }
 
 // NewClient returns a new HSDP Audit API client. Configured console and IAM clients
 // must be provided as the underlying API requires tokens from respective services
-func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
-	return newClient(iamClient, config)
+func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
+	return newClient(httpClient, config)
 }
 
-func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
-	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
+func newClient(httpClient *http.Client, config *Config) (*Client, error) {
+	var err error
+
+	if httpClient == nil {
+		httpClient = apmhttp.WrapClient(http.DefaultClient)
+	}
+
+	c := &Client{httpClient: httpClient, config: config, UserAgent: userAgent}
 	if config.DebugLog != "" {
 		var err error
 		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
@@ -68,6 +80,22 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 			c.debugFile = nil
 		}
 	}
+	c.httpSigner, err = signer.New(c.config.SharedKey, c.config.SharedSecret)
+	if err != nil {
+		return nil, fmt.Errorf("signer.New: %w", err)
+	}
+	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
+	if err != nil {
+		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
+	}
+	c.ma = ma
+	um, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
+	if err != nil {
+		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
+	}
+	c.um = um
+	c.SetAuditBaseURL(c.config.AuditBaseURL)
+
 	return c, nil
 }
 
@@ -77,19 +105,6 @@ func (c *Client) Close() {
 		_ = c.debugFile.Close()
 		c.debugFile = nil
 	}
-}
-
-// GetFHIRStoreURL returns the base FHIR Store base URL as configured
-func (c *Client) GetFHIRStoreURL() string {
-	if c.fhirStoreURL == nil {
-		return ""
-	}
-	return c.fhirStoreURL.String()
-}
-
-// GetEndpointURL returns the FHIR Store Endpoint URL as configured
-func (c *Client) GetEndpointURL() string {
-	return c.GetFHIRStoreURL() + c.config.RootOrgID
 }
 
 // SetAuditBaseURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
@@ -103,44 +118,19 @@ func (c *Client) SetAuditBaseURL(urlStr string) error {
 		urlStr += "/"
 	}
 	var err error
-	c.fhirStoreURL, err = url.Parse(urlStr)
+	c.auditStoreURL, err = url.Parse(urlStr)
 	return err
 }
 
-// SetEndpointURL sets the FHIR endpoint URL for API requests to a custom endpoint. urlStr
-// should always be specified with a trailing slash.
-func (c *Client) SetEndpointURL(urlStr string) error {
-	if urlStr == "" {
-		return ErrBaseURLCannotBeEmpty
-	}
-	// Make sure the given URL end with a slash
-	if !strings.HasSuffix(urlStr, "/") {
-		urlStr += "/"
-	}
-	var err error
-	c.fhirStoreURL, err = url.Parse(urlStr)
-	if err != nil {
-		return err
-	}
-	parts := strings.Split(c.fhirStoreURL.Path, "/")
-	if len(parts) == 0 {
-		return ErrBaseURLCannotBeEmpty
-	}
-	c.config.RootOrgID = parts[len(parts)-1]
-	newParts := parts[:len(parts)-1]
-	c.fhirStoreURL.Path = strings.Join(newParts, "/")
-	return nil
-}
-
-// NewCDRRequest creates an new CDR Service API request. A relative URL path can be provided in
+// NewAuditRequest creates an new CDR Service API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
-	u := *c.fhirStoreURL
+func (c *Client) NewAuditRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
+	u := *c.auditStoreURL
 	// Set the encoded opaque data
-	u.Opaque = c.fhirStoreURL.Path + c.config.RootOrgID + "/" + path
+	u.Path = c.auditStoreURL.Path + path
 
 	req := &http.Request{
 		Method:     method,
@@ -171,7 +161,6 @@ func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []
 	}
 
 	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
 	req.Header.Set("API-Version", APIVersion)
 
 	if c.UserAgent != "" {
@@ -201,7 +190,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
 		_, _ = c.debugFile.WriteString(out)
 	}
-	resp, err := c.iamClient.HttpClient().Do(req)
+	resp, err := c.httpClient.Do(req)
 	if c.debugFile != nil && resp != nil {
 		dumped, _ := httputil.DumpResponse(resp, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
