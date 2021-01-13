@@ -18,9 +18,7 @@ func (c *Client) CreateAuditEvent(event *dstu2pb.AuditEvent) (*dstu2pb.Contained
 	if err != nil {
 		return nil, nil, fmt.Errorf("audit.CreateAuditEvent: %w", err)
 	}
-	if err := c.httpSigner.SignRequest(req); err != nil {
-		return nil, nil, err
-	}
+	_ = c.httpSigner.SignRequest(req)
 	var operationResponse bytes.Buffer
 	resp, err := c.Do(req, &operationResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
@@ -30,14 +28,14 @@ func (c *Client) CreateAuditEvent(event *dstu2pb.AuditEvent) (*dstu2pb.Contained
 		return nil, resp, err
 	}
 	// Success
+	contained := &dstu2pb.ContainedResource{}
 	if resp.StatusCode == http.StatusCreated {
-		return &dstu2pb.ContainedResource{}, resp, nil
+		return contained, resp, nil
 	}
 	// OperationOutcome
 	unmarshalled, err := c.um.Unmarshal(operationResponse.Bytes())
-	if err != nil {
-		return nil, resp, err
+	if err == nil {
+		contained = unmarshalled.(*dstu2pb.ContainedResource)
 	}
-	contained := unmarshalled.(*dstu2pb.ContainedResource)
-	return contained, resp, nil
+	return contained, resp, err
 }
