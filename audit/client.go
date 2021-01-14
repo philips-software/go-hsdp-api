@@ -33,11 +33,17 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
-	Region       string
-	Environment  string
-	RootOrgID    string
+	Region      string
+	Environment string
+	// ProductKey is provided as part of Auditing onboarding
+	ProductKey string
+	// Tenant value is used to support multi tenancy with a single ProductKey
+	Tenant string
+	// AuditBaseURL is provided as part of Auditing onboarding
 	AuditBaseURL string
-	SharedKey    string
+	// SharedKey is the IAM API signing key
+	SharedKey string
+	// SharedSecret is the IAM API signing secret
 	SharedSecret string
 	TimeZone     string
 	DebugLog     string
