@@ -55,6 +55,56 @@ func TestCreate(t *testing.T) {
 				Requestor: &dstu2dt.Boolean{Value: true},
 			},
 		},
+		Source: &dstu2pb.AuditEvent_Source{
+			Identifier: &dstu2dt.Identifier{
+				Type: &dstu2dt.CodeableConcept{
+					Coding: []*dstu2dt.Coding{
+						{
+							System:  &dstu2dt.Uri{Value: "http://hl7.org/fhir/ValueSet/identifier-type"},
+							Code:    &dstu2dt.Code{Value: "4"},
+							Display: &dstu2dt.String{Value: "Application Server"},
+						},
+					},
+				},
+			},
+			Extension: []*dstu2dt.Extension{
+				{
+					Url: &dstu2dt.Uri{Value: "/fhir/device"},
+					Extension: []*dstu2dt.Extension{
+						{
+							Url: &dstu2dt.Uri{
+								Value: "applicationName",
+							},
+							Value: &dstu2dt.Extension_ValueX{
+								Choice: &dstu2dt.Extension_ValueX_StringValue{
+									StringValue: &dstu2dt.String{Value: "someApp"},
+								},
+							},
+						},
+						{
+							Url: &dstu2dt.Uri{
+								Value: "productKey",
+							},
+							Value: &dstu2dt.Extension_ValueX{
+								Choice: &dstu2dt.Extension_ValueX_StringValue{
+									StringValue: &dstu2dt.String{Value: "fake608b-91d2-4b20-ad46-634e81e9b2aa"},
+								},
+							},
+						},
+						{
+							Url: &dstu2dt.Uri{
+								Value: "tenant",
+							},
+							Value: &dstu2dt.Extension_ValueX{
+								Choice: &dstu2dt.Extension_ValueX_StringValue{
+									StringValue: &dstu2dt.String{Value: "fake609b-91d2-4b20-ad46-634e81e9b2aa"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		Extension: []*dstu2dt.Extension{
 			{
 				Url: &dstu2dt.Uri{Value: "http://foo.bar/com"},
