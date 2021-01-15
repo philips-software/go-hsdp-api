@@ -168,6 +168,7 @@ func (c *Client) NewAuditRequest(method, path string, bodyBytes []byte, options 
 
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("API-Version", APIVersion)
+	req.Header.Set("Content-Type", "application/json")
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)

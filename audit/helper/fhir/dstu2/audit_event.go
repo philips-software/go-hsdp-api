@@ -1,22 +1,24 @@
 package dstu2
 
 import (
+	"time"
+
 	dstu2dt "github.com/google/fhir/go/proto/google/fhir/proto/dstu2/datatypes_go_proto"
 	dstu2pb "github.com/google/fhir/go/proto/google/fhir/proto/dstu2/resources_go_proto"
 )
 
-type WithFunc func(sub *dstu2pb.AuditEvent) error
+type OptionFunc func(sub *dstu2pb.AuditEvent) error
 
 // NewAuditEvent creates a new audit event. It takes
 // productKey and tenant as arguments as these are required
 // for publishing to to Host Auditing service
-func NewAuditEvent(productKey, tenant string, options ...WithFunc) (*dstu2pb.AuditEvent, error) {
+func NewAuditEvent(productKey, tenant string, options ...OptionFunc) (*dstu2pb.AuditEvent, error) {
 	event := &dstu2pb.AuditEvent{}
 
-	if err := WithSourceExtensionUriValue("productKey", productKey)(event); err != nil {
+	if err := AddSourceExtensionUriValue("productKey", productKey)(event); err != nil {
 		return nil, err
 	}
-	if err := WithSourceExtensionUriValue("tenant", tenant)(event); err != nil {
+	if err := AddSourceExtensionUriValue("tenant", tenant)(event); err != nil {
 		return nil, err
 	}
 	for _, w := range options {
@@ -27,8 +29,35 @@ func NewAuditEvent(productKey, tenant string, options ...WithFunc) (*dstu2pb.Aud
 	return event, nil
 }
 
-// WithObject adds the passed object to the AuditEvent
-func WithObject(object *dstu2pb.AuditEvent_Object) WithFunc {
+// WithEvent sets the event
+func WithEvent(e *dstu2pb.AuditEvent_Event) OptionFunc {
+	return func(event *dstu2pb.AuditEvent) error {
+		event.Event = e
+		return nil
+	}
+}
+
+// DateTime returns DateTime
+func DateTime(at time.Time) *dstu2dt.Instant {
+	return &dstu2dt.Instant{
+		Precision: dstu2dt.Instant_MICROSECOND,
+		ValueUs:   at.UnixNano() / 1000,
+	}
+}
+
+// AddParticipant adds the participant
+func AddParticipant(participant *dstu2pb.AuditEvent_Participant) OptionFunc {
+	return func(event *dstu2pb.AuditEvent) error {
+		if event.Participant == nil {
+			event.Participant = []*dstu2pb.AuditEvent_Participant{}
+		}
+		event.Participant = append(event.Participant, participant)
+		return nil
+	}
+}
+
+// AddObject adds the passed object to the AuditEvent
+func AddObject(object *dstu2pb.AuditEvent_Object) OptionFunc {
 	return func(event *dstu2pb.AuditEvent) error {
 		if event.Object == nil {
 			event.Object = []*dstu2pb.AuditEvent_Object{}
@@ -38,9 +67,20 @@ func WithObject(object *dstu2pb.AuditEvent_Object) WithFunc {
 	}
 }
 
-// WithExtensionUriValue sets extension Uri/Value tuples, some of which are mandatory
+// WithSourceIdentifier sets the source identifier
+func WithSourceIdentifier(identifier *dstu2dt.Identifier) OptionFunc {
+	return func(event *dstu2pb.AuditEvent) error {
+		if event.Source == nil {
+			event.Source = &dstu2pb.AuditEvent_Source{}
+		}
+		event.Source.Identifier = identifier
+		return nil
+	}
+}
+
+// AddSourceExtensionUriValue sets extension Uri/Value tuples, some of which are mandatory
 // for successfully posting to HSDP Audit
-func WithSourceExtensionUriValue(extensionUri, extensionValue string) WithFunc {
+func AddSourceExtensionUriValue(extensionUri, extensionValue string) OptionFunc {
 	return func(event *dstu2pb.AuditEvent) error {
 		if event.Source == nil {
 			event.Source = &dstu2pb.AuditEvent_Source{}
@@ -58,7 +98,7 @@ func WithSourceExtensionUriValue(extensionUri, extensionValue string) WithFunc {
 		}
 		if ext == nil {
 			ext = &dstu2dt.Extension{
-				Url: &dstu2dt.Uri{},
+				Url: &dstu2dt.Uri{Value: "/fhir/device"},
 			}
 			event.Source.Extension = append(event.Source.Extension, ext)
 		}
