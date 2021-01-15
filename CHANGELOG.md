@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.29.0
+- [NEW] HSDP Audit support
+
 ## v0.28.0
 - Logging: support bearer token auth (client credentials / service identities)
 - Tweaking of CDR client
