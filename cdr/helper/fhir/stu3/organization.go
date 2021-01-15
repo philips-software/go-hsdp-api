@@ -1,3 +1,4 @@
+// Package dstu3 contains helper methods for use with CDR
 package stu3
 
 import (

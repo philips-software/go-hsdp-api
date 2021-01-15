@@ -1,3 +1,4 @@
+// Package dstu2 contains helper methods to construct AuditEvent resources
 package dstu2
 
 import (

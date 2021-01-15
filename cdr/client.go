@@ -1,4 +1,4 @@
-// Package pki provides support for HSDP CDR service
+// Package cdr provides support for HSDP CDR services
 //
 // We only intent to support the CDR FHIR STU3 and newer with this library.
 package cdr

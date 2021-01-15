@@ -15,13 +15,13 @@ func (c *Client) CreateAuditEvent(event *dstu2pb.AuditEvent) (*stu3pb.ContainedR
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.NewAuditRequest("POST", "core/audit/AuditEvent", eventJSON, nil)
+	req, err := c.newAuditRequest("POST", "core/audit/AuditEvent", eventJSON, nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("audit.CreateAuditEvent: %w", err)
 	}
 	_ = c.httpSigner.SignRequest(req)
 	var operationResponse bytes.Buffer
-	resp, doErr := c.Do(req, &operationResponse)
+	resp, doErr := c.do(req, &operationResponse)
 	if (doErr != nil && !(doErr == io.EOF || doErr == ErrBadRequest)) || resp == nil {
 		if resp == nil && doErr != nil {
 			doErr = ErrEmptyResult

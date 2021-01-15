@@ -1,6 +1,4 @@
-// Package pki provides support for HSDP CDR service
-//
-// We only intent to support the CDR FHIR STU3 and newer with this library.
+// Package audit provides support for HSDP Audit service
 package audit
 
 import (
@@ -100,7 +98,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
 	c.um = um
-	c.SetAuditBaseURL(c.config.AuditBaseURL)
+	c.setAuditBaseURL(c.config.AuditBaseURL)
 
 	return c, nil
 }
@@ -113,9 +111,9 @@ func (c *Client) Close() {
 	}
 }
 
-// SetAuditBaseURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
+// setAuditBaseURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
-func (c *Client) SetAuditBaseURL(urlStr string) error {
+func (c *Client) setAuditBaseURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrBaseURLCannotBeEmpty
 	}
@@ -128,12 +126,12 @@ func (c *Client) SetAuditBaseURL(urlStr string) error {
 	return err
 }
 
-// NewAuditRequest creates an new CDR Service API request. A relative URL path can be provided in
+// newAuditRequest creates an new CDR Service API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewAuditRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
+func (c *Client) newAuditRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
 	u := *c.auditStoreURL
 	// Set the encoded opaque data
 	u.Path = c.auditStoreURL.Path + path
@@ -188,10 +186,10 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
-// Do executes a http request. If v implements the io.Writer
+// do executes a http request. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
-func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if c.debugFile != nil {
 		dumped, _ := httputil.DumpRequest(req, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
