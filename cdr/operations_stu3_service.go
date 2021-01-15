@@ -18,7 +18,7 @@ type OperationsSTU3Service struct {
 
 // Patch makes changes to a FHIR resources accepting the JSONPatch format set
 func (o *OperationsSTU3Service) Patch(resourceID string, jsonPatch []byte, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
-	req, err := o.client.NewCDRRequest(http.MethodPatch, resourceID, jsonPatch, options)
+	req, err := o.client.newCDRRequest(http.MethodPatch, resourceID, jsonPatch, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -51,7 +51,7 @@ func (o *OperationsSTU3Service) Put(resourceID string, jsonBody []byte, options 
 
 // Get returns a FHIR resource
 func (o *OperationsSTU3Service) Get(resourceID string, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
-	req, err := o.client.NewCDRRequest(http.MethodGet, resourceID, nil, options)
+	req, err := o.client.newCDRRequest(http.MethodGet, resourceID, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -74,7 +74,7 @@ func (o *OperationsSTU3Service) Get(resourceID string, options ...OptionFunc) (*
 
 // Delete removes a FHIR resource
 func (o *OperationsSTU3Service) Delete(resourceID string, options ...OptionFunc) (bool, *Response, error) {
-	req, err := o.client.NewCDRRequest(http.MethodDelete, resourceID, nil, options)
+	req, err := o.client.newCDRRequest(http.MethodDelete, resourceID, nil, options)
 	if err != nil {
 		return false, nil, err
 	}
@@ -91,7 +91,7 @@ func (o *OperationsSTU3Service) Delete(resourceID string, options ...OptionFunc)
 }
 
 func (o *OperationsSTU3Service) postOrPut(method, resourceID string, jsonBody []byte, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {
-	req, err := o.client.NewCDRRequest(method, resourceID, jsonBody, options)
+	req, err := o.client.newCDRRequest(method, resourceID, jsonBody, options)
 	if err != nil {
 		return nil, nil, err
 	}

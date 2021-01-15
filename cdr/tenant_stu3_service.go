@@ -26,7 +26,7 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	}
 	orgID := organization.Identifier[0].GetValue().Value
 
-	req, err := t.client.NewCDRRequest(http.MethodPut, fmt.Sprintf("Organization/%s", orgID), organizationJSON, options)
+	req, err := t.client.newCDRRequest(http.MethodPut, fmt.Sprintf("Organization/%s", orgID), organizationJSON, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -50,7 +50,7 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 }
 
 func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organization, *Response, error) {
-	req, err := t.client.NewCDRRequest(http.MethodGet, fmt.Sprintf("Organization/%s", orgID), nil, nil)
+	req, err := t.client.newCDRRequest(http.MethodGet, fmt.Sprintf("Organization/%s", orgID), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
