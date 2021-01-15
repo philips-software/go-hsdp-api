@@ -105,12 +105,12 @@ func (c *Client) SetBaseTDRURL(urlStr string) error {
 	return err
 }
 
-// NewTDRRequest creates an new TDR API request. A relative URL path can be provided in
+// newTDRRequest creates an new TDR API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewTDRRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+func (c *Client) newTDRRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
 	u := *c.baseTDRURL
 	// Set the encoded opaque data
 	u.Opaque = c.baseTDRURL.Path + path

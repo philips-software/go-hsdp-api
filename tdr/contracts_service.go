@@ -29,7 +29,7 @@ type GetContractOptions struct {
 func (c *ContractsService) GetContract(opt *GetContractOptions, options ...OptionFunc) ([]*Contract, *Response, error) {
 	var contracts []*Contract
 
-	req, err := c.client.NewTDRRequest("GET", "store/tdr/Contract", opt, options)
+	req, err := c.client.newTDRRequest("GET", "store/tdr/Contract", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -57,7 +57,7 @@ func (c *ContractsService) GetContract(opt *GetContractOptions, options ...Optio
 
 // CreateContract creates a new contract in TDR
 func (c *ContractsService) CreateContract(contract Contract) (bool, *Response, error) {
-	req, err := c.client.NewTDRRequest("POST", "store/tdr/Contract", &contract, nil)
+	req, err := c.client.newTDRRequest("POST", "store/tdr/Contract", &contract, nil)
 	if err != nil {
 		return false, nil, err
 	}

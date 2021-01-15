@@ -45,7 +45,7 @@ func DataSearch(kv KeyValue) OptionFunc {
 func (d *DataItemsService) GetDataItem(opt *GetDataItemOptions, options ...OptionFunc) ([]*DataItem, *Response, error) {
 	var dataItems []*DataItem
 
-	req, err := d.client.NewTDRRequest("GET", "store/tdr/DataItem", opt, options)
+	req, err := d.client.newTDRRequest("GET", "store/tdr/DataItem", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
