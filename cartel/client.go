@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.27.0"
+	libraryVersion = "0.29.0"
 	userAgent      = "go-hsdp-api/cartel/" + libraryVersion
 )
 

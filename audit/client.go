@@ -1,7 +1,7 @@
 // Package pki provides support for HSDP CDR service
 //
 // We only intent to support the CDR FHIR STU3 and newer with this library.
-package cdr
+package audit
 
 import (
 	"bytes"
@@ -15,15 +15,17 @@ import (
 	"os"
 	"strings"
 
-	"github.com/google/fhir/go/jsonformat"
+	"go.elastic.co/apm/module/apmhttp"
 
-	"github.com/philips-software/go-hsdp-api/iam"
+	signer "github.com/philips-software/go-hsdp-signer"
+
+	"github.com/google/fhir/go/jsonformat"
 )
 
 const (
 	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/cdr/" + libraryVersion
-	APIVersion     = "1"
+	userAgent      = "go-hsdp-api/audit/" + libraryVersion
+	APIVersion     = "2"
 )
 
 // OptionFunc is the function signature function for options
@@ -33,47 +35,50 @@ type OptionFunc func(*http.Request) error
 type Config struct {
 	Region      string
 	Environment string
-	RootOrgID   string
-	CDRURL      string
-	FHIRStore   string
-	Type        string
-	TimeZone    string
-	DebugLog    string
+	// ProductKey is provided as part of Auditing onboarding
+	ProductKey string
+	// Tenant value is used to support multi tenancy with a single ProductKey
+	Tenant string
+	// AuditBaseURL is provided as part of Auditing onboarding
+	AuditBaseURL string
+	// SharedKey is the IAM API signing key
+	SharedKey string
+	// SharedSecret is the IAM API signing secret
+	SharedSecret string
+	TimeZone     string
+	DebugLog     string
 }
 
 // A Client manages communication with HSDP CDR API
 type Client struct {
-	// HTTP client used to communicate with IAM API
-	iamClient *iam.Client
-
-	config *Config
-
-	fhirStoreURL *url.URL
+	config        *Config
+	httpClient    *http.Client
+	auditStoreURL *url.URL
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
 
-	TenantSTU3     *TenantSTU3Service
-	OperationsSTU3 *OperationsSTU3Service
+	ma         *jsonformat.Marshaller
+	um         *jsonformat.Unmarshaller
+	httpSigner *signer.Signer
 
 	debugFile *os.File
 }
 
-// NewClient returns a new HSDP CDR API client. Configured console and IAM clients
+// NewClient returns a new HSDP Audit API client. Configured console and IAM clients
 // must be provided as the underlying API requires tokens from respective services
-func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
-	return newClient(iamClient, config)
+func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
+	return newClient(httpClient, config)
 }
 
-func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
-	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
-	fhirStore := config.FHIRStore
-	if fhirStore == "" {
-		fhirStore = config.CDRURL + "/store/fhir/"
+func newClient(httpClient *http.Client, config *Config) (*Client, error) {
+	var err error
+
+	if httpClient == nil {
+		httpClient = apmhttp.WrapClient(http.DefaultClient)
 	}
-	if err := c.SetFHIRStoreURL(fhirStore); err != nil {
-		return nil, err
-	}
+
+	c := &Client{httpClient: httpClient, config: config, UserAgent: userAgent}
 	if config.DebugLog != "" {
 		var err error
 		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
@@ -81,17 +86,21 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 			c.debugFile = nil
 		}
 	}
+	c.httpSigner, err = signer.New(c.config.SharedKey, c.config.SharedSecret)
+	if err != nil {
+		return nil, fmt.Errorf("signer.New: %w", err)
+	}
 	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
 	}
+	c.ma = ma
 	um, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
-
-	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
-	c.OperationsSTU3 = &OperationsSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
+	c.um = um
+	c.SetAuditBaseURL(c.config.AuditBaseURL)
 
 	return c, nil
 }
@@ -104,68 +113,30 @@ func (c *Client) Close() {
 	}
 }
 
-// GetFHIRStoreURL returns the base FHIR Store base URL as configured
-func (c *Client) GetFHIRStoreURL() string {
-	if c.fhirStoreURL == nil {
-		return ""
-	}
-	return c.fhirStoreURL.String()
-}
-
-// GetEndpointURL returns the FHIR Store Endpoint URL as configured
-func (c *Client) GetEndpointURL() string {
-	return c.GetFHIRStoreURL() + c.config.RootOrgID
-}
-
-// SetFHIRStoreURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
+// SetAuditBaseURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
-func (c *Client) SetFHIRStoreURL(urlStr string) error {
+func (c *Client) SetAuditBaseURL(urlStr string) error {
 	if urlStr == "" {
-		return ErrCDRURLCannotBeEmpty
+		return ErrBaseURLCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
 	var err error
-	c.fhirStoreURL, err = url.Parse(urlStr)
+	c.auditStoreURL, err = url.Parse(urlStr)
 	return err
 }
 
-// SetEndpointURL sets the FHIR endpoint URL for API requests to a custom endpoint. urlStr
-// should always be specified with a trailing slash.
-func (c *Client) SetEndpointURL(urlStr string) error {
-	if urlStr == "" {
-		return ErrCDRURLCannotBeEmpty
-	}
-	// Make sure the given URL end with a slash
-	if !strings.HasSuffix(urlStr, "/") {
-		urlStr += "/"
-	}
-	var err error
-	c.fhirStoreURL, err = url.Parse(urlStr)
-	if err != nil {
-		return err
-	}
-	parts := strings.Split(c.fhirStoreURL.Path, "/")
-	if len(parts) == 0 {
-		return ErrCDRURLCannotBeEmpty
-	}
-	c.config.RootOrgID = parts[len(parts)-1]
-	newParts := parts[:len(parts)-1]
-	c.fhirStoreURL.Path = strings.Join(newParts, "/")
-	return nil
-}
-
-// NewCDRRequest creates an new CDR Service API request. A relative URL path can be provided in
+// NewAuditRequest creates an new CDR Service API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
-	u := *c.fhirStoreURL
+func (c *Client) NewAuditRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
+	u := *c.auditStoreURL
 	// Set the encoded opaque data
-	u.Opaque = c.fhirStoreURL.Path + c.config.RootOrgID + "/" + path
+	u.Path = c.auditStoreURL.Path + path
 
 	req := &http.Request{
 		Method:     method,
@@ -196,8 +167,8 @@ func (c *Client) NewCDRRequest(method, path string, bodyBytes []byte, options []
 	}
 
 	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
 	req.Header.Set("API-Version", APIVersion)
+	req.Header.Set("Content-Type", "application/json")
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
@@ -226,7 +197,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
 		_, _ = c.debugFile.WriteString(out)
 	}
-	resp, err := c.iamClient.HttpClient().Do(req)
+	resp, err := c.httpClient.Do(req)
 	if c.debugFile != nil && resp != nil {
 		dumped, _ := httputil.DumpResponse(resp, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
@@ -238,12 +209,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	err = CheckResponse(resp)
-	if err != nil {
-		// even though there was an error, we still return the response
-		// in case the caller wants to inspect it further
-		return response, err
-	}
+	doErr := CheckResponse(resp)
 
 	if v != nil {
 		defer resp.Body.Close() // Only close if we plan to read it
@@ -252,9 +218,12 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		} else {
 			err = json.NewDecoder(resp.Body).Decode(v)
 		}
+		if err != nil {
+			return response, err
+		}
 	}
 
-	return response, err
+	return response, doErr
 }
 
 // CheckResponse checks the API response for errors, and returns them if present.
@@ -262,6 +231,8 @@ func CheckResponse(r *http.Response) error {
 	switch r.StatusCode {
 	case 200, 201, 202, 204, 304:
 		return nil
+	case 400:
+		return ErrBadRequest
 	}
 	return ErrNonHttp20xResponse
 }
