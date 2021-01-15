@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## v0.29.1
 - Fix HSDP Audit documentation
+- Unexport many methods
 
 ## v0.29.0
 - [NEW] HSDP Audit support
