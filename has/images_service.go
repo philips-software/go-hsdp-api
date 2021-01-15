@@ -18,7 +18,7 @@ type imageResult struct {
 
 // GetImages retrieves images in HAS
 func (c *ImagesService) GetImages(options ...OptionFunc) (*[]Image, *Response, error) {
-	req, err := c.client.NewHASRequest("GET", "has/image", nil, options)
+	req, err := c.client.newHASRequest("GET", "has/image", nil, options)
 	if err != nil {
 		return nil, nil, err
 	}

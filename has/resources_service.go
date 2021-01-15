@@ -89,7 +89,7 @@ type ResourcesReport struct {
 // This is an operational action, and requires elevated permissions to operate.
 // This endpoint requires HAS_RESOURCE.ALL permission.
 func (c *ResourcesService) CreateResource(resource Resource) (*[]Resource, *Response, error) {
-	req, err := c.client.NewHASRequest("POST", "resource", &resource, nil)
+	req, err := c.client.newHASRequest("POST", "resource", &resource, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -123,7 +123,7 @@ type ResourceOptions struct {
 // All fields are case-sensitive.
 // This endpoint requires HAS_RESOURCE.ALL permission.
 func (c *ResourcesService) GetResources(opt *ResourceOptions, options ...OptionFunc) (*[]Resource, *Response, error) {
-	req, err := c.client.NewHASRequest("GET", "resource", opt, options)
+	req, err := c.client.newHASRequest("GET", "resource", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -145,7 +145,7 @@ func (c *ResourcesService) GetResources(opt *ResourceOptions, options ...OptionF
 // be deleted by adding the force option.
 // This endpoint requires HAS_RESOURCE.ALL permission.
 func (c *ResourcesService) DeleteResources(opt *ResourceOptions, options ...OptionFunc) (*ResourcesReport, *Response, error) {
-	req, err := c.client.NewHASRequest("DELETE", "resource", opt, options)
+	req, err := c.client.newHASRequest("DELETE", "resource", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -182,7 +182,7 @@ func (c *ResourcesService) startStopResource(action string, resources []string, 
 		ResourceIDs: resources,
 	}
 
-	req, err := c.client.NewHASRequest("POST", "resource/"+action, &resourceList, options)
+	req, err := c.client.newHASRequest("POST", "resource/"+action, &resourceList, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -202,7 +202,7 @@ func (c *ResourcesService) startStopResource(action string, resources []string, 
 // Get overview of the requested resource.
 // This endpoint requires HAS_RESOURCE.ALL permission.
 func (c *ResourcesService) GetResource(resourceID string, options ...OptionFunc) (*Resource, *Response, error) {
-	req, err := c.client.NewHASRequest("GET", "resource/"+resourceID, nil, options)
+	req, err := c.client.newHASRequest("GET", "resource/"+resourceID, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -224,7 +224,7 @@ func (c *ResourcesService) GetResource(resourceID string, options ...OptionFunc)
 // deleted by adding the force option.
 // This endpoint requires HAS_RESOURCE.ALL permission.
 func (c *ResourcesService) DeleteResource(resourceID string, options ...OptionFunc) (*ResourcesReport, *Response, error) {
-	req, err := c.client.NewHASRequest("DELETE", "resource/"+resourceID, nil, options)
+	req, err := c.client.newHASRequest("DELETE", "resource/"+resourceID, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}

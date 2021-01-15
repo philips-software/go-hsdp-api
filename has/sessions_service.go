@@ -50,7 +50,7 @@ type ResponseError struct {
 
 // CreateSession creates a new user session in HAS
 func (c *SessionsService) CreateSession(userID string, session Session) (*Sessions, *Response, error) {
-	req, err := c.client.NewHASRequest("POST", "user/"+userID+"/session", &session, nil)
+	req, err := c.client.newHASRequest("POST", "user/"+userID+"/session", &session, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -73,7 +73,7 @@ type SessionOptions struct {
 
 // GetSession gets a user session in HAS
 func (c *SessionsService) GetSession(userID string, opt *SessionOptions) (*Sessions, *Response, error) {
-	req, err := c.client.NewHASRequest("GET", "user/"+userID+"/session", &opt, nil)
+	req, err := c.client.newHASRequest("GET", "user/"+userID+"/session", &opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -90,7 +90,7 @@ func (c *SessionsService) GetSession(userID string, opt *SessionOptions) (*Sessi
 
 // GetSessions gets all sessions in HAS
 func (c *SessionsService) GetSessions() (*Sessions, *Response, error) {
-	req, err := c.client.NewHASRequest("GET", "session", nil, nil)
+	req, err := c.client.newHASRequest("GET", "session", nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -107,7 +107,7 @@ func (c *SessionsService) GetSessions() (*Sessions, *Response, error) {
 
 // DeleteSession deletes a user session in HAS
 func (c *SessionsService) DeleteSession(userID string) (bool, *Response, error) {
-	req, err := c.client.NewHASRequest("DELETE", "user/"+userID+"/session", nil, nil)
+	req, err := c.client.newHASRequest("DELETE", "user/"+userID+"/session", nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
