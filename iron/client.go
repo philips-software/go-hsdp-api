@@ -127,12 +127,12 @@ func (c *Client) SetBaseIronURL(urlStr string) error {
 	return err
 }
 
-// NewRequest creates an API request. A relative URL Path can be provided in
+// newRequest creates an API request. A relative URL Path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+func (c *Client) newRequest(method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
 	u := *c.baseIRONURL
 	u.Opaque = c.baseIRONURL.Path + path
 

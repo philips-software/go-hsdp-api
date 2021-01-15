@@ -33,7 +33,7 @@ func (s *SchedulesServices) CreateSchedules(schedules []Schedule) (*[]Schedule, 
 	createSchedules.Schedules = schedules
 
 	path := s.client.Path("projects", s.projectID, "schedules")
-	req, err := s.client.NewRequest(
+	req, err := s.client.newRequest(
 		"POST",
 		path,
 		&createSchedules,
@@ -66,7 +66,7 @@ func (s *SchedulesServices) GetSchedules() (*[]Schedule, *Response, error) {
 		Schedules []Schedule `json:"schedules"`
 	}
 	path := s.client.Path("projects", s.projectID, "schedules")
-	req, err := s.client.NewRequest(
+	req, err := s.client.newRequest(
 		"GET",
 		path,
 		nil,
@@ -81,7 +81,7 @@ func (s *SchedulesServices) GetSchedules() (*[]Schedule, *Response, error) {
 // GetSchedule gets info on a schedule
 func (s *SchedulesServices) GetSchedule(scheduleID string) (*Schedule, *Response, error) {
 	path := s.client.Path("projects", s.projectID, "schedules", scheduleID)
-	req, err := s.client.NewRequest(
+	req, err := s.client.newRequest(
 		"GET",
 		path,
 		nil,
@@ -97,7 +97,7 @@ func (s *SchedulesServices) GetSchedule(scheduleID string) (*Schedule, *Response
 // CancelSchedule cancels a schedule
 func (s *SchedulesServices) CancelSchedule(scheduleID string) (bool, *Response, error) {
 	path := s.client.Path("projects", s.projectID, "schedules", scheduleID, "cancel")
-	req, err := s.client.NewRequest(
+	req, err := s.client.newRequest(
 		"POST",
 		path,
 		nil,

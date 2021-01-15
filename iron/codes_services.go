@@ -81,7 +81,7 @@ func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) 
 
 func (c *CodesServices) GetCodes() (*[]Code, *Response, error) {
 	getPath := c.client.Path("projects", c.projectID, "codes")
-	req, err := c.client.NewRequest(
+	req, err := c.client.newRequest(
 		"GET",
 		getPath,
 		nil,
@@ -97,7 +97,7 @@ func (c *CodesServices) GetCodes() (*[]Code, *Response, error) {
 }
 
 func (c *CodesServices) GetCode(codeID string) (*Code, *Response, error) {
-	req, err := c.client.NewRequest(
+	req, err := c.client.newRequest(
 		"GET",
 		c.client.Path("projects", c.projectID, "codes", codeID),
 		nil,
@@ -112,7 +112,7 @@ func (c *CodesServices) GetCode(codeID string) (*Code, *Response, error) {
 
 // DeleteCode deletes a code from Iron
 func (c *CodesServices) DeleteCode(codeID string) (bool, *Response, error) {
-	req, err := c.client.NewRequest(
+	req, err := c.client.newRequest(
 		"DELETE",
 		c.client.Path("projects", c.projectID, "codes", codeID),
 		nil,
@@ -144,7 +144,7 @@ func (c *CodesServices) DockerLogin(creds DockerCredentials) (bool, *Response, e
 		Auth string `json:"auth"`
 	}
 	authRequest.Auth = authString
-	req, err := c.client.NewRequest(
+	req, err := c.client.newRequest(
 		"POST",
 		c.client.Path("projects", c.projectID, "credentials"),
 		&authRequest,
