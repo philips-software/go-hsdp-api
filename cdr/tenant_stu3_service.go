@@ -33,7 +33,7 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	req.Header.Set("Content-Type", "application/fhir+json")
 
 	var onboardResponse bytes.Buffer
-	resp, err := t.client.Do(req, &onboardResponse)
+	resp, err := t.client.do(req, &onboardResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = ErrEmptyResult
@@ -57,7 +57,7 @@ func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organizat
 	req.Header.Set("Content-Type", "application/fhir+json")
 
 	var getResponse bytes.Buffer
-	resp, err := t.client.Do(req, &getResponse)
+	resp, err := t.client.do(req, &getResponse)
 	if err != nil && err != io.EOF {
 		return nil, resp, err
 	}

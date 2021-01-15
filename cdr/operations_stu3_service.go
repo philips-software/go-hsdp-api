@@ -24,7 +24,7 @@ func (o *OperationsSTU3Service) Patch(resourceID string, jsonPatch []byte, optio
 	}
 	req.Header.Set("Content-Type", "application/json-patch+json")
 	var patchResponse bytes.Buffer
-	resp, err := o.client.Do(req, &patchResponse)
+	resp, err := o.client.do(req, &patchResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = ErrEmptyResult
@@ -57,7 +57,7 @@ func (o *OperationsSTU3Service) Get(resourceID string, options ...OptionFunc) (*
 	}
 	req.Header.Set("Content-Type", "application/fhir+json")
 	var operationResponse bytes.Buffer
-	resp, err := o.client.Do(req, &operationResponse)
+	resp, err := o.client.do(req, &operationResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = ErrEmptyResult
@@ -80,7 +80,7 @@ func (o *OperationsSTU3Service) Delete(resourceID string, options ...OptionFunc)
 	}
 	req.Header.Set("Content-Type", "application/fhir+json")
 	var operationResponse bytes.Buffer
-	resp, err := o.client.Do(req, &operationResponse)
+	resp, err := o.client.do(req, &operationResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = ErrEmptyResult
@@ -97,7 +97,7 @@ func (o *OperationsSTU3Service) postOrPut(method, resourceID string, jsonBody []
 	}
 	req.Header.Set("Content-Type", "application/fhir+json")
 	var operationResponse bytes.Buffer
-	resp, err := o.client.Do(req, &operationResponse)
+	resp, err := o.client.do(req, &operationResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = ErrEmptyResult
