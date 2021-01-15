@@ -127,3 +127,56 @@ func TestCreate(t *testing.T) {
 		return
 	}
 }
+
+func TestBadRequest(t *testing.T) {
+	operationOutcome := `{
+  "issue": [
+    {
+      "severity": "error",
+      "code": "invalid",
+      "details": {
+        "coding": [
+          {
+            "system": "https://www.hl7.org/fhir/valueset-operation-outcome.html",
+            "code": "MSG_ERROR_PARSING"
+          }
+        ],
+        "text": "Not complaint with AuditEvent specification"
+      },
+      "diagnostics": "Not complaint with AuditEvent specification"
+    }
+  ],
+  "resourceType": "OperationOutcome"
+}`
+	teardown := setup(t)
+	defer teardown()
+
+	muxAudit.HandleFunc("/core/audit/AuditEvent", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			if !assert.Equal(t, audit.APIVersion, r.Header.Get("API-Version")) {
+				w.WriteHeader(http.StatusPreconditionFailed)
+				return
+			}
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(operationOutcome))
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	event := &dstu2pb.AuditEvent{
+		Id: &dstu2dt.Id{Value: "someID"},
+	}
+	contained, resp, err := auditClient.CreateAuditEvent(event)
+	if !assert.Equal(t, audit.ErrBadRequest, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, contained) {
+		return
+	}
+
+}

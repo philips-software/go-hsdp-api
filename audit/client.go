@@ -209,12 +209,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	err = CheckResponse(resp)
-	if err != nil {
-		// even though there was an error, we still return the response
-		// in case the caller wants to inspect it further
-		return response, err
-	}
+	doErr := CheckResponse(resp)
 
 	if v != nil {
 		defer resp.Body.Close() // Only close if we plan to read it
@@ -223,9 +218,12 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		} else {
 			err = json.NewDecoder(resp.Body).Decode(v)
 		}
+		if err != nil {
+			return response, err
+		}
 	}
 
-	return response, err
+	return response, doErr
 }
 
 // CheckResponse checks the API response for errors, and returns them if present.
@@ -233,6 +231,8 @@ func CheckResponse(r *http.Response) error {
 	switch r.StatusCode {
 	case 200, 201, 202, 204, 304:
 		return nil
+	case 400:
+		return ErrBadRequest
 	}
 	return ErrNonHttp20xResponse
 }
