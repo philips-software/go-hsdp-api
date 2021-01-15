@@ -37,7 +37,7 @@ type IntrospectResponse struct {
 func (c *Client) Introspect() (*IntrospectResponse, *Response, error) {
 	var val IntrospectResponse
 
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/introspect", nil, nil)
+	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/introspect", nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}

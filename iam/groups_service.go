@@ -23,7 +23,7 @@ type GroupsService struct {
 
 // GetGroupByID retrieves a Group based on the ID
 func (g *GroupsService) GetGroupByID(id string) (*Group, *Response, error) {
-	req, err := g.client.NewRequest(IDM, "GET", "authorize/identity/Group/"+id, nil, nil)
+	req, err := g.client.newRequest(IDM, "GET", "authorize/identity/Group/"+id, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -40,7 +40,7 @@ func (g *GroupsService) GetGroupByID(id string) (*Group, *Response, error) {
 
 // GetGroup retrieves a Group entity based on the values passed in GetGroupOptions
 func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*Group, *Response, error) {
-	req, err := g.client.NewRequest(IDM, "GET", "authorize/identity/Group", opt, options)
+	req, err := g.client.newRequest(IDM, "GET", "authorize/identity/Group", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -70,7 +70,7 @@ func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
 	if err := g.client.validate.Struct(group); err != nil {
 		return nil, nil, err
 	}
-	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group", &group, nil)
+	req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group", &group, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -92,7 +92,7 @@ func (g *GroupsService) UpdateGroup(group Group) (*Group, *Response, error) {
 		Description string `json:"description"`
 	}
 	updateRequest.Description = group.Description
-	req, err := g.client.NewRequest(IDM, "PUT", "authorize/identity/Group/"+group.ID, &updateRequest, nil)
+	req, err := g.client.newRequest(IDM, "PUT", "authorize/identity/Group/"+group.ID, &updateRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -110,7 +110,7 @@ func (g *GroupsService) UpdateGroup(group Group) (*Group, *Response, error) {
 
 // DeleteGroup deletes the given Group
 func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
-	req, err := g.client.NewRequest(IDM, "DELETE", "authorize/identity/Group/"+group.ID, nil, nil)
+	req, err := g.client.newRequest(IDM, "DELETE", "authorize/identity/Group/"+group.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -131,7 +131,7 @@ func (g *GroupsService) GetRoles(group Group) (*[]Role, *Response, error) {
 	opt := &GetRolesOptions{
 		GroupID: &group.ID,
 	}
-	req, err := g.client.NewRequest(IDM, "GET", "authorize/identity/Role", opt, nil)
+	req, err := g.client.newRequest(IDM, "GET", "authorize/identity/Role", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -154,7 +154,7 @@ func (g *GroupsService) roleAction(group Group, role Role, action string) (bool,
 	var assignRequest = groupRequest{
 		Roles: []string{role.ID},
 	}
-	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, assignRequest, nil)
+	req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, assignRequest, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -206,7 +206,7 @@ type groupRequest struct {
 }
 
 func (g *GroupsService) memberAction(group Group, action string, opt interface{}, options []OptionFunc) (bool, *Response, error) {
-	req, err := g.client.NewRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, options)
+	req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, options)
 	if err != nil {
 		return false, nil, err
 	}

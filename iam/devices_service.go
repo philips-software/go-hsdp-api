@@ -75,7 +75,7 @@ type DevicesService struct {
 // GetDevices looks up Devices based on GetDevicesOptions
 // A user with DEVICE.READ permission can read device information under the user organization.
 func (p *DevicesService) GetDevices(opt *GetDevicesOptions, options ...OptionFunc) (*[]Device, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Device", opt, options)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Device", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -111,7 +111,7 @@ func (p *DevicesService) CreateDevice(device Device) (*Device, *Response, error)
 	if err := p.validate.Struct(device); err != nil {
 		return nil, nil, err
 	}
-	req, _ := p.client.NewRequest(IDM, "POST", "authorize/identity/Device", device, nil)
+	req, _ := p.client.newRequest(IDM, "POST", "authorize/identity/Device", device, nil)
 	req.Header.Set("api-version", deviceAPIVersion)
 
 	var createdDevice Device
@@ -137,7 +137,7 @@ func (p *DevicesService) CreateDevice(device Device) (*Device, *Response, error)
 // The entire resource data must be passed as request body to update a device.
 // If read-only attributes (such as id, loginId, password, meta, organizationId) are passed, that will be ignored.
 func (p *DevicesService) UpdateDevice(device Device) (*Device, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "PUT", "authorize/identity/Device/"+device.ID, &device, nil)
+	req, err := p.client.newRequest(IDM, "PUT", "authorize/identity/Device/"+device.ID, &device, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -158,7 +158,7 @@ func (p *DevicesService) UpdateDevice(device Device) (*Device, *Response, error)
 // Any user with DEVICE.WRITE or DEVICE.DELETE permission within
 // the organization can delete a device from an organization.
 func (p *DevicesService) DeleteDevice(device Device) (bool, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "DELETE", "authorize/identity/Device/"+device.ID, nil, nil)
+	req, err := p.client.newRequest(IDM, "DELETE", "authorize/identity/Device/"+device.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -190,7 +190,7 @@ func (p *DevicesService) ChangePassword(deviceID, oldPassword, newPassword strin
 }
 
 func (p *DevicesService) deviceActionV(deviceID string, body interface{}, action, apiVersion string) (bool, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Device/"+deviceID+"/"+action, body, nil)
+	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Device/"+deviceID+"/"+action, body, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -198,7 +198,7 @@ func (p *DevicesService) deviceActionV(deviceID string, body interface{}, action
 
 	var bundleResponse interface{}
 
-	resp, err := p.client.DoSigned(req, &bundleResponse)
+	resp, err := p.client.doSigned(req, &bundleResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, err
 	}

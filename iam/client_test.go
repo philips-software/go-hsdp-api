@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"errors"
+
 	signer "github.com/philips-software/go-hsdp-signer"
 	"github.com/stretchr/testify/assert"
 )
@@ -99,7 +100,7 @@ func TestWithMissingSigner(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, client)
 	assert.Nil(t, client.signer)
-	resp, err := client.DoSigned(&http.Request{}, nil)
+	resp, err := client.doSigned(&http.Request{}, nil)
 	assert.Nil(t, resp)
 	assert.Equal(t, ErrNoValidSignerAvailable, err)
 }
@@ -318,14 +319,14 @@ func TestIAMRequest(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	req, err := client.NewRequest(IAM, "GET", "/foo", nil, nil)
+	req, err := client.newRequest(IAM, "GET", "/foo", nil, nil)
 	if err != nil {
 		t.Errorf("Expected no no errors, got: %v", err)
 	}
 	if req == nil {
 		t.Errorf("Expected valid request")
 	}
-	req, _ = client.NewRequest(IAM, "POST", "/foo", nil, []OptionFunc{
+	req, _ = client.newRequest(IAM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			r.Header.Set("Foo", "Bar")
 			return nil
@@ -335,7 +336,7 @@ func TestIAMRequest(t *testing.T) {
 		t.Errorf("Expected OptionFuncs to be processed")
 	}
 	testErr := errors.New("test error")
-	req, err = client.NewRequest(IAM, "POST", "/foo", nil, []OptionFunc{
+	req, err = client.newRequest(IAM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			return testErr
 		},
@@ -350,7 +351,7 @@ func TestIDMRequest(t *testing.T) {
 
 	client.SetToken("xxx")
 	client.SetTokens("xxx", "yyy", "zzz", time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC).Unix())
-	req, err := client.NewRequest(IDM, "GET", "/foo", nil, nil)
+	req, err := client.newRequest(IDM, "GET", "/foo", nil, nil)
 
 	if err != nil {
 		t.Errorf("Expected no no errors, got: %v", err)
@@ -358,7 +359,7 @@ func TestIDMRequest(t *testing.T) {
 	if req == nil {
 		t.Errorf("Expected valid request")
 	}
-	req, _ = client.NewRequest(IDM, "POST", "/foo", nil, []OptionFunc{
+	req, _ = client.newRequest(IDM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			r.Header.Set("Foo", "Bar")
 			return nil
@@ -367,7 +368,7 @@ func TestIDMRequest(t *testing.T) {
 	assert.Equal(t, "Bar", req.Header.Get("Foo"))
 
 	testErr := errors.New("test error")
-	req, err = client.NewRequest(IDM, "POST", "/foo", nil, []OptionFunc{
+	req, err = client.newRequest(IDM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			return testErr
 		},

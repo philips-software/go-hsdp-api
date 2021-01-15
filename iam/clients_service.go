@@ -67,7 +67,7 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 	ac.Scopes = []string{}            // Defaults to ["mail", "sn"]
 	ac.DefaultScopes = []string{}
 
-	req, _ := c.client.NewRequest(IDM, "POST", "authorize/identity/Client", ac, nil)
+	req, _ := c.client.newRequest(IDM, "POST", "authorize/identity/Client", ac, nil)
 	req.Header.Set("api-version", clientAPIVersion)
 
 	var createdClient ApplicationClient
@@ -92,7 +92,7 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 
 // DeleteClient deletes the given Client
 func (c *ClientsService) DeleteClient(ac ApplicationClient) (bool, *Response, error) {
-	req, err := c.client.NewRequest(IDM, "DELETE", "authorize/identity/Client/"+ac.ID, nil, nil)
+	req, err := c.client.newRequest(IDM, "DELETE", "authorize/identity/Client/"+ac.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -127,7 +127,7 @@ func (c *ClientsService) GetClientByID(id string) (*ApplicationClient, *Response
 
 // GetClients looks up clients based on GetClientsOptions
 func (c *ClientsService) GetClients(opt *GetClientsOptions, options ...OptionFunc) (*[]ApplicationClient, *Response, error) {
-	req, err := c.client.NewRequest(IDM, "GET", "authorize/identity/Client", opt, options)
+	req, err := c.client.newRequest(IDM, "GET", "authorize/identity/Client", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -155,7 +155,7 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 		scopes,
 		defaultScopes,
 	}
-	req, err := c.client.NewRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ID+"/$scopes", requestBody, nil)
+	req, err := c.client.newRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ID+"/$scopes", requestBody, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -178,7 +178,7 @@ func (c *ClientsService) UpdateClient(ac ApplicationClient) (*ApplicationClient,
 	if err := c.validate.Struct(ac); err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.NewRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ID, ac, nil)
+	req, err := c.client.newRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ID, ac, nil)
 	if err != nil {
 		return nil, nil, err
 	}

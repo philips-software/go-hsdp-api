@@ -43,7 +43,7 @@ type PasswordPolicy struct {
 
 // GetPasswordPolicyByID retrieves a Password policy by ID
 func (p *PasswordPoliciesService) GetPasswordPolicyByID(id string) (*PasswordPolicy, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/PasswordPolicy/"+id, nil, nil)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/PasswordPolicy/"+id, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -65,7 +65,7 @@ func (p *PasswordPoliciesService) GetPasswordPolicyByID(id string) (*PasswordPol
 // UpdatePasswordPolicy updates a password policy
 func (p *PasswordPoliciesService) UpdatePasswordPolicy(policy PasswordPolicy) (*PasswordPolicy, *Response, error) {
 
-	req, _ := p.client.NewRequest(IDM, "PUT", "authorize/identity/PasswordPolicy/"+policy.ID, policy, nil)
+	req, _ := p.client.newRequest(IDM, "PUT", "authorize/identity/PasswordPolicy/"+policy.ID, policy, nil)
 	req.Header.Set("api-version", PasswordPolicyAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 	if policy.Meta == nil {
@@ -88,7 +88,7 @@ func (p *PasswordPoliciesService) CreatePasswordPolicy(policy PasswordPolicy) (*
 	if err := p.validate.Struct(policy); err != nil {
 		return nil, nil, err
 	}
-	req, _ := p.client.NewRequest(IDM, "POST", "authorize/identity/PasswordPolicy", &policy, nil)
+	req, _ := p.client.newRequest(IDM, "POST", "authorize/identity/PasswordPolicy", &policy, nil)
 	req.Header.Set("api-version", PasswordPolicyAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
@@ -104,7 +104,7 @@ func (p *PasswordPoliciesService) CreatePasswordPolicy(policy PasswordPolicy) (*
 
 // DeletePasswordPolicy deletes the given password policy
 func (p *PasswordPoliciesService) DeletePasswordPolicy(policy PasswordPolicy) (bool, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "DELETE", "authorize/identity/PasswordPolicy/"+policy.ID, nil, nil)
+	req, err := p.client.newRequest(IDM, "DELETE", "authorize/identity/PasswordPolicy/"+policy.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -127,7 +127,7 @@ type GetPasswordPolicyOptions struct {
 
 // GetPasswordPolicies looks up clients based on GetClientsOptions
 func (p *PasswordPoliciesService) GetPasswordPolicies(opt *GetPasswordPolicyOptions, options ...OptionFunc) (*[]PasswordPolicy, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/PasswordPolicy", opt, options)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/PasswordPolicy", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}

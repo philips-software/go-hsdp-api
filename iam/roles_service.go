@@ -32,7 +32,7 @@ type GetRolesOptions struct {
 
 // GetRoles retries based on GetRolesOptions
 func (p *RolesService) GetRoles(opt *GetRolesOptions) (*[]Role, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Role", opt, nil)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Role", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -61,7 +61,7 @@ func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, er
 
 // GetRoleByID retrieves a role by ID
 func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Role/"+roleID, nil, nil)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Role/"+roleID, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -87,7 +87,7 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 		Description:          description,
 		ManagingOrganization: managingOrganization,
 	}
-	req, _ := p.client.NewRequest(IDM, "POST", "authorize/identity/Role", role, nil)
+	req, _ := p.client.newRequest(IDM, "POST", "authorize/identity/Role", role, nil)
 	req.Header.Set("api-version", roleAPIVersion)
 
 	var createdRole Role
@@ -101,7 +101,7 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 
 // DeleteRole deletes the given Role
 func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "DELETE", "authorize/identity/Role/"+role.ID, nil, nil)
+	req, err := p.client.newRequest(IDM, "DELETE", "authorize/identity/Role/"+role.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -120,7 +120,7 @@ func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
 func (p *RolesService) GetRolePermissions(role Role) (*[]string, *Response, error) {
 	opt := &GetRolesOptions{RoleID: &role.ID}
 
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Permission", opt, nil)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Permission", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -150,7 +150,7 @@ func (p *RolesService) rolePermissionAction(role Role, permission string, action
 	}
 	permissionRequest.Permissions = []string{permission}
 
-	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/"+action, &permissionRequest, nil)
+	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/"+action, &permissionRequest, nil)
 	if err != nil {
 		return false, nil, err
 	}

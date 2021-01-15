@@ -67,7 +67,7 @@ func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, option
 
 // GetPropositions search for an Proposition entity based on the GetPropositions values
 func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, options ...OptionFunc) (*[]Proposition, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Proposition", opt, options)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Proposition", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -91,7 +91,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	if err := prop.validate(); err != nil {
 		return nil, nil, err
 	}
-	req, err := p.client.NewRequest(IDM, "POST", "authorize/identity/Proposition", &prop, nil)
+	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Proposition", &prop, nil)
 	if err != nil {
 		return nil, nil, err
 	}

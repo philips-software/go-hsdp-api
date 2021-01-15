@@ -92,7 +92,7 @@ func (p *ServicesService) GetServicesByApplicationID(applicationID string) (*[]S
 	opt := &GetServiceOptions{
 		ApplicationID: String(applicationID),
 	}
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Service", opt, nil)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Service", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -112,7 +112,7 @@ func (p *ServicesService) GetServicesByApplicationID(applicationID string) (*[]S
 
 // CreateService creates a Service
 func (p *ServicesService) CreateService(service Service) (*Service, *Response, error) {
-	req, _ := p.client.NewRequest(IDM, "POST", "authorize/identity/Service", &service, nil)
+	req, _ := p.client.newRequest(IDM, "POST", "authorize/identity/Service", &service, nil)
 	req.Header.Set("api-version", servicesAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -136,7 +136,7 @@ func (p *ServicesService) GetService(opt *GetServiceOptions, options ...OptionFu
 
 // GetServices looks up services based on GetServiceOptions
 func (p *ServicesService) GetServices(opt *GetServiceOptions, options ...OptionFunc) (*[]Service, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", "authorize/identity/Service", opt, options)
+	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Service", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -157,7 +157,7 @@ func (p *ServicesService) GetServices(opt *GetServiceOptions, options ...OptionF
 
 // DeleteService deletes the given Service
 func (p *ServicesService) DeleteService(service Service) (bool, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "DELETE", "authorize/identity/Service/"+service.ID, nil, nil)
+	req, err := p.client.newRequest(IDM, "DELETE", "authorize/identity/Service/"+service.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -193,7 +193,7 @@ func (p *ServicesService) updateScopes(service Service, action string, scopes []
 		scopes,
 		defaultScopes,
 	}
-	req, err := p.client.NewRequest(IDM, "PUT", "authorize/identity/Service/"+service.ID+"/$scopes", requestBody, nil)
+	req, err := p.client.newRequest(IDM, "PUT", "authorize/identity/Service/"+service.ID+"/$scopes", requestBody, nil)
 	if err != nil {
 		return false, nil, err
 	}

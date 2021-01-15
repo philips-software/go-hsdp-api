@@ -78,11 +78,11 @@ func (c *ServicesService) GetPolicyCA(options ...OptionFunc) (*x509.Certificate,
 }
 
 func (c *ServicesService) getCA(path string, options ...OptionFunc) (*x509.Certificate, *Response, error) {
-	req, err := c.client.NewServiceRequest(http.MethodGet, path, nil, options)
+	req, err := c.client.newServiceRequest(http.MethodGet, path, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
-	resp, err := c.client.Do(req, nil)
+	resp, err := c.client.do(req, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -113,11 +113,11 @@ func (c *ServicesService) GetPolicyCRL(options ...OptionFunc) (*pkix.Certificate
 }
 
 func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.CertificateList, *Response, error) {
-	req, err := c.client.NewServiceRequest(http.MethodGet, path, nil, options)
+	req, err := c.client.newServiceRequest(http.MethodGet, path, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
-	resp, err := c.client.Do(req, nil)
+	resp, err := c.client.do(req, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -178,7 +178,7 @@ func (c *ServicesService) Sign(logicalPath, roleName string, signRequest SignReq
 	if err := c.validate.Struct(signRequest); err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.NewServiceRequest(http.MethodPost, "core/pki/api/"+logicalPath+"/sign/"+roleName, &signRequest, options)
+	req, err := c.client.newServiceRequest(http.MethodPost, "core/pki/api/"+logicalPath+"/sign/"+roleName, &signRequest, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -186,7 +186,7 @@ func (c *ServicesService) Sign(logicalPath, roleName string, signRequest SignReq
 		IssueResponse
 		ErrorResponse
 	}
-	resp, err := c.client.Do(req, &responseStruct)
+	resp, err := c.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -198,7 +198,7 @@ func (c *ServicesService) Sign(logicalPath, roleName string, signRequest SignReq
 
 // IssueCertificate
 func (c *ServicesService) IssueCertificate(logicalPath, roleName string, request CertificateRequest, options ...OptionFunc) (*IssueResponse, *Response, error) {
-	req, err := c.client.NewServiceRequest(http.MethodPost, "core/pki/api/"+logicalPath+"/issue/"+roleName, &request, options)
+	req, err := c.client.newServiceRequest(http.MethodPost, "core/pki/api/"+logicalPath+"/issue/"+roleName, &request, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -206,7 +206,7 @@ func (c *ServicesService) IssueCertificate(logicalPath, roleName string, request
 		IssueResponse
 		ErrorResponse
 	}
-	resp, err := c.client.Do(req, &responseStruct)
+	resp, err := c.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -218,7 +218,7 @@ func (c *ServicesService) IssueCertificate(logicalPath, roleName string, request
 
 // GetCertificateBySerial
 func (c *ServicesService) GetCertificateBySerial(logicalPath, serial string, options ...OptionFunc) (*IssueResponse, *Response, error) {
-	req, err := c.client.NewServiceRequest(http.MethodGet, "core/pki/api/"+logicalPath+"/cert/"+serial, nil, options)
+	req, err := c.client.newServiceRequest(http.MethodGet, "core/pki/api/"+logicalPath+"/cert/"+serial, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -226,7 +226,7 @@ func (c *ServicesService) GetCertificateBySerial(logicalPath, serial string, opt
 		IssueResponse
 		ErrorResponse
 	}
-	resp, err := c.client.Do(req, &responseStruct)
+	resp, err := c.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, nil, err
 	}

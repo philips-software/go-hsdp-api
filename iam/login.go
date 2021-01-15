@@ -12,7 +12,7 @@ import (
 // CodeLogin
 func (c *Client) CodeLogin(code string, redirectURI string) error {
 	// Authorize
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
+	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func (c *Client) ServiceLogin(service Service) error {
 		return err
 	}
 	// Authorize
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
+	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (c *Client) ServiceLogin(service Service) error {
 
 // Login logs in a user with `username` and `password`
 func (c *Client) Login(username, password string) error {
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
+	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (c *Client) Login(username, password string) error {
 // ClientCredentialsLogin logs in using client credentials
 // The client credentials and scopes are expected to passed during configuration of the client
 func (c *Client) ClientCredentialsLogin() error {
-	req, err := c.NewRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
+	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
 	if err != nil {
 		return err
 	}

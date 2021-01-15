@@ -387,12 +387,12 @@ const (
 	IDM = "IDM"
 )
 
-// NewRequest creates an API request. A relative URL path can be provided in
+// newRequest creates an API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewRequest(endpoint, method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+func (c *Client) newRequest(endpoint, method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
 	var u url.URL
 	switch endpoint {
 	case IDM:
@@ -473,8 +473,8 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
-// DoSigned performs a signed API request
-func (c *Client) DoSigned(req *http.Request, v interface{}) (*Response, error) {
+// doSigned performs a signed API request
+func (c *Client) doSigned(req *http.Request, v interface{}) (*Response, error) {
 	if c.signer == nil {
 		return nil, ErrNoValidSignerAvailable
 	}

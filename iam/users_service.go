@@ -71,7 +71,7 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 	if err := u.validate.Struct(person); err != nil {
 		return nil, nil, err
 	}
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User", &person, nil)
+	req, err := u.client.newRequest(IDM, "POST", "authorize/identity/User", &person, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -81,7 +81,7 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 
 	doFunc := u.client.Do
 	if person.ManagingOrganization == "" { // Self registration
-		doFunc = u.client.DoSigned
+		doFunc = u.client.doSigned
 	}
 	resp, err := doFunc(req, &bundleResponse)
 
@@ -106,7 +106,7 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 
 // DeleteUser deletes the  IAM user.
 func (u *UsersService) DeleteUser(person Person) (bool, *Response, error) {
-	req, err := u.client.NewRequest(IDM, "DELETE", "authorize/identity/User/"+person.ID, nil, nil)
+	req, err := u.client.newRequest(IDM, "DELETE", "authorize/identity/User/"+person.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -114,7 +114,7 @@ func (u *UsersService) DeleteUser(person Person) (bool, *Response, error) {
 
 	var bundleResponse interface{}
 
-	doFunc := u.client.DoSigned
+	doFunc := u.client.doSigned
 	if !u.client.validSigner() {
 		doFunc = u.client.Do
 	}
@@ -150,14 +150,14 @@ func (u *UsersService) ChangeLoginID(user Person, newLoginID string) (bool, *Res
 	body := &ChangeLoginIDRequest{
 		LoginID: newLoginID,
 	}
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+user.ID+"/$change-loginid", body, nil)
+	req, err := u.client.newRequest(IDM, "POST", "authorize/identity/User/"+user.ID+"/$change-loginid", body, nil)
 	if err != nil {
 		return false, nil, err
 	}
 	req.Header.Set("api-version", userAPIVersion)
 
 	var bundleResponse interface{}
-	doFunc := u.client.DoSigned
+	doFunc := u.client.doSigned
 	if !u.client.validSigner() {
 		doFunc = u.client.Do
 	}
@@ -183,7 +183,7 @@ func (u *UsersService) ResendActivation(loginID string) (bool, *Response, error)
 }
 
 func (u *UsersService) userActionV(body *Parameters, action, apiVersion string) (bool, *Response, error) {
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+action, body, nil)
+	req, err := u.client.newRequest(IDM, "POST", "authorize/identity/User/"+action, body, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -191,7 +191,7 @@ func (u *UsersService) userActionV(body *Parameters, action, apiVersion string) 
 
 	var bundleResponse interface{}
 
-	resp, err := u.client.DoSigned(req, &bundleResponse)
+	resp, err := u.client.doSigned(req, &bundleResponse)
 	if err != nil {
 		return false, resp, err
 	}
@@ -238,7 +238,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 
 // GetUsers looks up users by search criteria specified in GetUserOptions
 func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*UserList, *Response, error) {
-	req, err := u.client.NewRequest(IDM, "GET", "security/users", opts, options)
+	req, err := u.client.newRequest(IDM, "GET", "security/users", opts, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -254,7 +254,7 @@ func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*U
 		ResponseMessage string `json:"responseMessage"`
 	}
 
-	doFunc := u.client.DoSigned
+	doFunc := u.client.doSigned
 	if !u.client.validSigner() {
 		doFunc = u.client.Do
 	}
@@ -283,7 +283,7 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 		UserID:      &uuid,
 		ProfileType: String("all"),
 	}
-	req, _ := u.client.NewRequest(IDM, "GET", "authorize/identity/User", opt, nil)
+	req, _ := u.client.newRequest(IDM, "GET", "authorize/identity/User", opt, nil)
 	req.Header.Set("api-version", userAPIVersion)
 
 	var responseStruct struct {
@@ -318,7 +318,7 @@ func (u *UsersService) LegacyGetUserIDByLoginID(loginID string) (string, *Respon
 	opt := &GetUserOptions{
 		LoginID: &loginID,
 	}
-	req, _ := u.client.NewRequest(IDM, "GET", "security/users", opt, nil)
+	req, _ := u.client.newRequest(IDM, "GET", "security/users", opt, nil)
 	req.Header.Set("api-version", userAPIVersion)
 
 	var responseStruct struct {
@@ -350,7 +350,7 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 	body := &struct {
 		Activate string `json:"activate"`
 	}{activateString}
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+userID+"/$mfa", body, nil)
+	req, err := u.client.newRequest(IDM, "POST", "authorize/identity/User/"+userID+"/$mfa", body, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -365,7 +365,7 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 
 // Unlock unlocks a user account with the given UserID
 func (u *UsersService) Unlock(userID string) (bool, *Response, error) {
-	req, err := u.client.NewRequest(IDM, "POST", "authorize/identity/User/"+userID+"/$unlock", nil, nil)
+	req, err := u.client.newRequest(IDM, "POST", "authorize/identity/User/"+userID+"/$unlock", nil, nil)
 	if err != nil {
 		return false, nil, err
 	}

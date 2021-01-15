@@ -20,7 +20,7 @@ type MFAPoliciesService struct {
 
 // GetMFAPolicyByID retrieves a MFAPolicy by ID
 func (p *MFAPoliciesService) GetMFAPolicyByID(MFAPolicyID string) (*MFAPolicy, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "GET", SCIMBasePath+"MFAPolicies/"+MFAPolicyID, nil, nil)
+	req, err := p.client.newRequest(IDM, "GET", SCIMBasePath+"MFAPolicies/"+MFAPolicyID, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -42,7 +42,7 @@ func (p *MFAPoliciesService) GetMFAPolicyByID(MFAPolicyID string) (*MFAPolicy, *
 // UpdateMFAPolicy updates a MFAPolicy
 func (p *MFAPoliciesService) UpdateMFAPolicy(policy *MFAPolicy) (*MFAPolicy, *Response, error) {
 
-	req, _ := p.client.NewRequest(IDM, "PUT", SCIMBasePath+"MFAPolicies/"+policy.ID, policy, nil)
+	req, _ := p.client.newRequest(IDM, "PUT", SCIMBasePath+"MFAPolicies/"+policy.ID, policy, nil)
 	req.Header.Set("api-version", MFAPoliciesAPIVersion)
 	req.Header.Set("Content-Type", "application/scim+json")
 	if policy.Meta == nil {
@@ -68,7 +68,7 @@ func (p *MFAPoliciesService) CreateMFAPolicy(policy MFAPolicy) (*MFAPolicy, *Res
 	if err := p.validate.Struct(policy); err != nil {
 		return nil, nil, err
 	}
-	req, _ := p.client.NewRequest(IDM, "POST", SCIMBasePath+"MFAPolicies", &policy, nil)
+	req, _ := p.client.newRequest(IDM, "POST", SCIMBasePath+"MFAPolicies", &policy, nil)
 	req.Header.Set("api-version", MFAPoliciesAPIVersion)
 	req.Header.Set("Content-Type", "application/scim+json")
 	req.Header.Set("Accept", "application/scim+json")
@@ -84,7 +84,7 @@ func (p *MFAPoliciesService) CreateMFAPolicy(policy MFAPolicy) (*MFAPolicy, *Res
 
 // DeleteMFAPolicy deletes the given MFAPolicy
 func (p *MFAPoliciesService) DeleteMFAPolicy(policy MFAPolicy) (bool, *Response, error) {
-	req, err := p.client.NewRequest(IDM, "DELETE", SCIMBasePath+"MFAPolicies/"+policy.ID, nil, nil)
+	req, err := p.client.newRequest(IDM, "DELETE", SCIMBasePath+"MFAPolicies/"+policy.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}

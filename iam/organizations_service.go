@@ -69,7 +69,7 @@ func (o *OrganizationsService) CreateOrganization(organization Organization) (*O
 		"urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:Organization",
 	}
 
-	req, err := o.client.NewRequest(IDM, "POST", "authorize/scim/v2/Organizations", &organization, nil)
+	req, err := o.client.newRequest(IDM, "POST", "authorize/scim/v2/Organizations", &organization, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -90,7 +90,7 @@ func (o *OrganizationsService) CreateOrganization(organization Organization) (*O
 
 // DeleteOrganization deletes the organization
 func (o *OrganizationsService) DeleteOrganization(org Organization) (bool, *Response, error) {
-	req, err := o.client.NewRequest(IDM, "DELETE", "authorize/scim/v2/Organizations/"+org.ID, nil, nil)
+	req, err := o.client.newRequest(IDM, "DELETE", "authorize/scim/v2/Organizations/"+org.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -109,7 +109,7 @@ func (o *OrganizationsService) DeleteOrganization(org Organization) (bool, *Resp
 
 // UpdateOrganization updates the description of the organization.
 func (o *OrganizationsService) UpdateOrganization(org Organization) (*Organization, *Response, error) {
-	req, err := o.client.NewRequest(IDM, "PUT", "authorize/scim/v2/Organizations/"+org.ID, &org, nil)
+	req, err := o.client.newRequest(IDM, "PUT", "authorize/scim/v2/Organizations/"+org.ID, &org, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -131,7 +131,7 @@ func (o *OrganizationsService) UpdateOrganization(org Organization) (*Organizati
 func (o *OrganizationsService) GetOrganizationByID(id string) (*Organization, *Response, error) {
 	var foundOrg Organization
 
-	req, err := o.client.NewRequest(IDM, "GET", "authorize/scim/v2/Organizations/"+id, nil, nil)
+	req, err := o.client.newRequest(IDM, "GET", "authorize/scim/v2/Organizations/"+id, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -147,7 +147,7 @@ func (o *OrganizationsService) GetOrganizationByID(id string) (*Organization, *R
 
 // GetOrganization retrieves an organization based on the GetOrganizationOptions parameters.
 func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, options ...OptionFunc) (*Organization, *Response, error) {
-	req, err := o.client.NewRequest(IDM, "GET", "authorize/scim/v2/Organizations", opt, options)
+	req, err := o.client.newRequest(IDM, "GET", "authorize/scim/v2/Organizations", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -171,7 +171,7 @@ func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, opti
 
 // DeleteStatus returns the status of a delete operation on an organization
 func (o *OrganizationsService) DeleteStatus(id string) (*OrganizationStatus, *Response, error) {
-	req, err := o.client.NewRequest(IDM, "GET", "authorize/scim/v2/Organizations/"+id+"/deleteStatus", nil, nil)
+	req, err := o.client.newRequest(IDM, "GET", "authorize/scim/v2/Organizations/"+id+"/deleteStatus", nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}

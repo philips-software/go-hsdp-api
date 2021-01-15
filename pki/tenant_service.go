@@ -95,7 +95,7 @@ func (t *TenantService) Onboard(tenant Tenant, options ...OptionFunc) (*Onboardi
 	if err := t.validate.Struct(tenant); err != nil {
 		return nil, nil, err
 	}
-	req, err := t.client.NewTenantRequest(http.MethodPost, "core/pki/tenant", &tenant, options)
+	req, err := t.client.newTenantRequest(http.MethodPost, "core/pki/tenant", &tenant, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -106,7 +106,7 @@ func (t *TenantService) Onboard(tenant Tenant, options ...OptionFunc) (*Onboardi
 		ErrorResponse
 		OnboardingResponse
 	}
-	resp, err := t.client.Do(req, &onboardResponse)
+	resp, err := t.client.do(req, &onboardResponse)
 	if err != nil && err != io.EOF {
 		return nil, nil, err
 	}
@@ -117,7 +117,7 @@ func (t *TenantService) Onboard(tenant Tenant, options ...OptionFunc) (*Onboardi
 }
 
 func (t *TenantService) Retrieve(logicalPath string, options ...OptionFunc) (*Tenant, *Response, error) {
-	req, err := t.client.NewTenantRequest(http.MethodGet, "core/pki/tenant/"+logicalPath, nil, options)
+	req, err := t.client.newTenantRequest(http.MethodGet, "core/pki/tenant/"+logicalPath, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -125,7 +125,7 @@ func (t *TenantService) Retrieve(logicalPath string, options ...OptionFunc) (*Te
 		return nil, nil, err
 	}
 	var tenant Tenant
-	resp, err := t.client.Do(req, &tenant)
+	resp, err := t.client.do(req, &tenant)
 	if err != nil && err != io.EOF {
 		return nil, nil, err
 	}
@@ -136,7 +136,7 @@ func (t *TenantService) Update(tenant Tenant, options ...OptionFunc) (bool, *Res
 	if err := t.validate.Struct(tenant); err != nil {
 		return false, nil, err
 	}
-	req, err := t.client.NewTenantRequest(http.MethodPut, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
+	req, err := t.client.newTenantRequest(http.MethodPut, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
 	if err != nil {
 		return false, nil, err
 	}
@@ -144,7 +144,7 @@ func (t *TenantService) Update(tenant Tenant, options ...OptionFunc) (bool, *Res
 		return false, nil, err
 	}
 	var errorResponse ErrorResponse
-	resp, err := t.client.Do(req, &errorResponse)
+	resp, err := t.client.do(req, &errorResponse)
 	if err != nil && err != io.EOF {
 		return false, nil, err
 	}
@@ -160,7 +160,7 @@ func (t *TenantService) Update(tenant Tenant, options ...OptionFunc) (bool, *Res
 }
 
 func (t *TenantService) Offboard(tenant Tenant, options ...OptionFunc) (bool, *Response, error) {
-	req, err := t.client.NewTenantRequest(http.MethodDelete, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
+	req, err := t.client.newTenantRequest(http.MethodDelete, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
 	if err != nil {
 		return false, nil, err
 	}
@@ -168,7 +168,7 @@ func (t *TenantService) Offboard(tenant Tenant, options ...OptionFunc) (bool, *R
 		return false, nil, err
 	}
 	var errorResponse ErrorResponse
-	resp, err := t.client.Do(req, &errorResponse)
+	resp, err := t.client.do(req, &errorResponse)
 	if err != nil && err != io.EOF {
 		return false, nil, err
 	}

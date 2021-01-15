@@ -34,7 +34,7 @@ func (a *ApplicationsService) GetApplicationByID(id string) (*Application, *Resp
 
 // GetApplication search for an Application entity based on the GetApplicationsOptions values
 func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, options ...OptionFunc) ([]*Application, *Response, error) {
-	req, err := a.client.NewRequest(IDM, "GET", "authorize/identity/Application", opt, options)
+	req, err := a.client.newRequest(IDM, "GET", "authorize/identity/Application", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -62,7 +62,7 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 	if err := a.client.validate.Struct(app); err != nil {
 		return nil, nil, err
 	}
-	req, err := a.client.NewRequest(IDM, "POST", "authorize/identity/Application", &app, nil)
+	req, err := a.client.newRequest(IDM, "POST", "authorize/identity/Application", &app, nil)
 	if err != nil {
 		return nil, nil, err
 	}
