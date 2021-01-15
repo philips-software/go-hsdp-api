@@ -47,10 +47,10 @@ func (c *Client) Create(tagName string, opts ...RequestOptionFunc) (*CreateRespo
 	}
 	var responseBody CreateResponse
 
-	req, err := c.NewRequest("POST", "v3/api/create", &body, nil)
+	req, err := c.newRequest("POST", "v3/api/create", &body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	resp, err := c.Do(req, &responseBody)
+	resp, err := c.do(req, &responseBody)
 	return &responseBody, resp, err
 }

@@ -19,13 +19,13 @@ func (c *Client) Destroy(tagName string) (*DestroyResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = []string{tagName}
 
-	req, err := c.NewRequest("POST", "v3/api/destroy", &body, nil)
+	req, err := c.newRequest("POST", "v3/api/destroy", &body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 	var responseBody DestroyResponse
 
-	resp, err := c.Do(req, &responseBody)
+	resp, err := c.do(req, &responseBody)
 	if err != nil {
 		return nil, resp, err
 	}

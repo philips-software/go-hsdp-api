@@ -50,14 +50,14 @@ func (c *Client) GetDetailsMulti(tags ...string) (*DetailsResponse, *Response, e
 	var body RequestBody
 	body.NameTag = tags
 
-	req, err := c.NewRequest("POST", "v3/api/instance_details", &body, nil)
+	req, err := c.newRequest("POST", "v3/api/instance_details", &body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	var detailResponse []map[string]InstanceDetails
 
-	resp, err := c.Do(req, &detailResponse)
+	resp, err := c.do(req, &detailResponse)
 	response := make(DetailsResponse, len(detailResponse))
 	for _, r := range detailResponse {
 		for k, v := range r {

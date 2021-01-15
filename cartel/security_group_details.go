@@ -12,12 +12,12 @@ func (c *Client) GetSecurityGroupDetails(group string) (*SecurityGroupDetails, *
 	var body RequestBody
 	body.SecurityGroup = []string{group}
 
-	req, err := c.NewRequest("POST", "v3/api/security_group_details", &body, nil)
+	req, err := c.newRequest("POST", "v3/api/security_group_details", &body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 	var responseBody map[string]SecurityGroupDetails
-	resp, err := c.Do(req, &responseBody)
+	resp, err := c.do(req, &responseBody)
 	details := responseBody[group]
 	return &details, resp, err
 }

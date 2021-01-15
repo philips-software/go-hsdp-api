@@ -19,12 +19,12 @@ func (c *Client) Start(nameTag string) (*StartResponse, *Response, error) {
 	var body RequestBody
 	body.NameTag = []string{nameTag}
 
-	req, err := c.NewRequest("POST", "v3/api/start", &body, nil)
+	req, err := c.newRequest("POST", "v3/api/start", &body, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 	var responseBody StartResponse
-	resp, err := c.Do(req, &responseBody)
+	resp, err := c.do(req, &responseBody)
 	if resp != nil {
 		responseBody.Code = resp.StatusCode
 	}
