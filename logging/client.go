@@ -144,12 +144,12 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	return &logger, nil
 }
 
-// Do sends an API request and returns the API response. The API response is
+// do sends an API request and returns the API response. The API response is
 // JSON decoded and stored in the value pointed to by v, or returned as an
 // error if an API error has occurred. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
-func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
+func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	if c.config.Debug {
 		dumped, _ := httputil.DumpRequest(req, true)
 		_, _ = fmt.Fprintf(os.Stderr, "REQUEST: %s\n", string(dumped))
@@ -271,7 +271,7 @@ func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*S
 
 	var serverResponse bytes.Buffer
 
-	resp, err := c.Do(req, &serverResponse)
+	resp, err := c.do(req, &serverResponse)
 	if resp == nil {
 		return nil, err
 	}
