@@ -97,7 +97,7 @@ func (c *ResourcesService) CreateResource(resource Resource) (*[]Resource, *Resp
 	req.Header.Set("Api-Version", HASAPIVersion)
 
 	var cr resourceResponse
-	resp, err := c.client.Do(req, &cr)
+	resp, err := c.client.do(req, &cr)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -132,7 +132,7 @@ func (c *ResourcesService) GetResources(opt *ResourceOptions, options ...OptionF
 
 	var gr resourceResponse
 
-	resp, err := c.client.Do(req, &gr)
+	resp, err := c.client.do(req, &gr)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -154,7 +154,7 @@ func (c *ResourcesService) DeleteResources(opt *ResourceOptions, options ...Opti
 
 	var dr ResourcesReport
 
-	resp, err := c.client.Do(req, &dr)
+	resp, err := c.client.do(req, &dr)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -191,7 +191,7 @@ func (c *ResourcesService) startStopResource(action string, resources []string, 
 
 	var gr ResourcesReport
 
-	resp, err := c.client.Do(req, &gr)
+	resp, err := c.client.do(req, &gr)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -211,7 +211,7 @@ func (c *ResourcesService) GetResource(resourceID string, options ...OptionFunc)
 
 	var gr Resource
 
-	resp, err := c.client.Do(req, &gr)
+	resp, err := c.client.do(req, &gr)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -233,7 +233,7 @@ func (c *ResourcesService) DeleteResource(resourceID string, options ...OptionFu
 
 	var dr ResourcesReport
 
-	resp, err := c.client.Do(req, &dr)
+	resp, err := c.client.do(req, &dr)
 	if err != nil {
 		return nil, resp, err
 	}

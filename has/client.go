@@ -179,10 +179,10 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
-// Do executes a http request. If v implements the io.Writer
+// do executes a http request. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
-func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if c.debugFile != nil {
 		dumped, _ := httputil.DumpRequest(req, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))

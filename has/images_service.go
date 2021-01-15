@@ -27,7 +27,7 @@ func (c *ImagesService) GetImages(options ...OptionFunc) (*[]Image, *Response, e
 
 	var ir imageResult
 
-	resp, err := c.client.Do(req, &ir)
+	resp, err := c.client.do(req, &ir)
 	if err != nil {
 		return nil, resp, err
 	}
