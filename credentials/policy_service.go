@@ -29,7 +29,7 @@ type GetPolicyOptions struct {
 // GetPolicy searches for polices
 func (c *PolicyService) GetPolicy(opt *GetPolicyOptions, options ...OptionFunc) ([]*Policy, *Response, error) {
 
-	req, err := c.client.NewRequest("GET", "core/credentials/Policy", opt, options)
+	req, err := c.client.newRequest("GET", "core/credentials/Policy", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -59,7 +59,7 @@ func (c *PolicyService) CreatePolicy(policy Policy) (*Policy, *Response, error) 
 		return nil, nil, err
 	}
 
-	req, err := c.client.NewRequest("POST", "core/credentials/Policy", &policy, nil)
+	req, err := c.client.newRequest("POST", "core/credentials/Policy", &policy, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -87,7 +87,7 @@ func (c *PolicyService) CreatePolicy(policy Policy) (*Policy, *Response, error) 
 
 // DeleteGroup deletes the given Group
 func (c *PolicyService) DeletePolicy(policy Policy) (bool, *Response, error) {
-	req, err := c.client.NewRequest("DELETE", "core/credentials/Policy/"+policy.StringID(), nil, nil)
+	req, err := c.client.newRequest("DELETE", "core/credentials/Policy/"+policy.StringID(), nil, nil)
 	if err != nil {
 		return false, nil, err
 	}

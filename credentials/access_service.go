@@ -12,7 +12,7 @@ type GetAccessOptions struct {
 // GetPolicy searches for polices
 func (c *AccessService) GetAccess(opt *GetAccessOptions, options ...OptionFunc) ([]*Access, *Response, error) {
 
-	req, err := c.client.NewRequest("GET", "core/credentials/Access", opt, options)
+	req, err := c.client.newRequest("GET", "core/credentials/Access", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
