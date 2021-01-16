@@ -26,9 +26,8 @@ type tokenType int
 type ContextKey string
 
 const (
-	libraryVersion    = "0.21.1"
-	userAgent         = "go-hsdp-api/console/" + libraryVersion
-	consoleAPIVersion = "3"
+	libraryVersion = "0.29.0"
+	userAgent      = "go-hsdp-api/console/" + libraryVersion
 )
 
 type tokenResponse struct {
@@ -310,12 +309,7 @@ const (
 	CONSOLE = "CONSOLE"
 )
 
-// NewRequest creates an API request. A relative URL path can be provided in
-// urlStr, in which case it is resolved relative to the base URL of the Client.
-// Relative URL paths should always be specified without a preceding slash. If
-// specified, the value pointed to by body is JSON encoded and included as the
-// request body.
-func (c *Client) NewRequest(endpoint, method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
+func (c *Client) newRequest(endpoint, method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
 	var u url.URL
 	switch endpoint {
 	case UAA:
@@ -397,12 +391,12 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
-// Do sends an API request and returns the API response. The API response is
+// do sends an API request and returns the API response. The API response is
 // JSON decoded and stored in the value pointed to by v, or returned as an
 // error if an API error has occurred. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
-func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	id := uuid.New()
 
 	if c.debugFile != nil {
@@ -441,7 +435,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 			return response, err
 		}
 	}
-	err = CheckResponse(resp)
+	err = checkResponse(resp)
 	return response, err
 }
 
@@ -454,7 +448,7 @@ func WithContext(ctx context.Context) OptionFunc {
 }
 
 // CheckResponse checks the API response for errors, and returns them if present.
-func CheckResponse(r *http.Response) error {
+func checkResponse(r *http.Response) error {
 	switch r.StatusCode {
 	case 200, 201, 202, 204, 304:
 		return nil

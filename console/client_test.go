@@ -12,8 +12,6 @@ import (
 
 	"github.com/philips-software/go-hsdp-api/console"
 
-	"errors"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -113,39 +111,6 @@ func TestWithLogin(t *testing.T) {
 	}
 	assert.Equal(t, token, c.Token())
 	assert.Equal(t, refreshToken, c.RefreshToken())
-}
-
-func TestConsoleRequest(t *testing.T) {
-	teardown, err := setup(t)
-	if !assert.Nil(t, err) {
-		return
-	}
-	defer teardown()
-
-	req, err := client.NewRequest(console.CONSOLE, "GET", "/foo", nil, nil)
-	if err != nil {
-		t.Errorf("Expected no no errors, got: %v", err)
-	}
-	if req == nil {
-		t.Errorf("Expected valid request")
-	}
-	req, _ = client.NewRequest(console.CONSOLE, "POST", "/foo", nil, []console.OptionFunc{
-		func(r *http.Request) error {
-			r.Header.Set("Foo", "Bar")
-			return nil
-		},
-	})
-	if req.Header.Get("Foo") != "Bar" {
-		t.Errorf("Expected OptionFuncs to be processed")
-	}
-	testErr := errors.New("test error")
-	req, err = client.NewRequest(console.CONSOLE, "POST", "/foo", nil, []console.OptionFunc{
-		func(r *http.Request) error {
-			return testErr
-		},
-	})
-	assert.Nil(t, req)
-	assert.Equal(t, testErr, err)
 }
 
 func TestDebug(t *testing.T) {

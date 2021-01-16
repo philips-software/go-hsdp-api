@@ -11,7 +11,7 @@ import (
 
 // Login logs in a user with `username` and `password`
 func (c *Client) Login(username, password string) error {
-	req, err := c.NewRequest(UAA, "POST", "oauth/token", nil, nil)
+	req, err := c.newRequest(UAA, "POST", "oauth/token", nil, nil)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	resp, err := c.Do(req, &tokenResponse)
+	resp, err := c.do(req, &tokenResponse)
 
 	if err != nil {
 		return err

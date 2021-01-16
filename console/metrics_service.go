@@ -97,7 +97,7 @@ type Rule struct {
 
 // GetGroupedRules looks up available rules
 func (c *MetricsService) GetGroupedRules(options ...OptionFunc) (*[]Group, *Response, error) {
-	req, err := c.client.NewRequest(CONSOLE, "GET", "v3/metrics/rules", nil, options)
+	req, err := c.client.newRequest(CONSOLE, "GET", "v3/metrics/rules", nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -105,7 +105,7 @@ func (c *MetricsService) GetGroupedRules(options ...OptionFunc) (*[]Group, *Resp
 
 	var response RuleResponse
 
-	resp, err := c.client.Do(req, &response)
+	resp, err := c.client.do(req, &response)
 	if err != nil {
 		if resp != nil {
 			resp.Error = response.Error
@@ -117,7 +117,7 @@ func (c *MetricsService) GetGroupedRules(options ...OptionFunc) (*[]Group, *Resp
 
 // GetRuleByID looks up available instances
 func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *Response, error) {
-	req, err := c.client.NewRequest(CONSOLE, "GET", "v3/metrics/rules/"+id, nil, options)
+	req, err := c.client.newRequest(CONSOLE, "GET", "v3/metrics/rules/"+id, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -129,7 +129,7 @@ func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *
 		Error  Error  `json:"error,omitempty"`
 	}
 
-	resp, err := c.client.Do(req, &response)
+	resp, err := c.client.do(req, &response)
 	if err != nil {
 		if resp != nil {
 			resp.Error = response.Error
@@ -141,7 +141,7 @@ func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *
 
 // GetInstances looks up available instances
 func (c *MetricsService) GetInstances(options ...OptionFunc) (*[]Instance, *Response, error) {
-	req, err := c.client.NewRequest(CONSOLE, "GET", "v3/metrics/instances", nil, options)
+	req, err := c.client.newRequest(CONSOLE, "GET", "v3/metrics/instances", nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -149,7 +149,7 @@ func (c *MetricsService) GetInstances(options ...OptionFunc) (*[]Instance, *Resp
 
 	var response MetricsResponse
 
-	resp, err := c.client.Do(req, &response)
+	resp, err := c.client.do(req, &response)
 	if err != nil {
 		if resp != nil {
 			resp.Error = response.Error
@@ -161,7 +161,7 @@ func (c *MetricsService) GetInstances(options ...OptionFunc) (*[]Instance, *Resp
 
 // GetInstanceByID looks up an instance by ID
 func (c *MetricsService) GetInstanceByID(id string, options ...OptionFunc) (*Instance, *Response, error) {
-	req, err := c.client.NewRequest(CONSOLE, "GET", "v3/metrics/instances/"+id, nil, options)
+	req, err := c.client.newRequest(CONSOLE, "GET", "v3/metrics/instances/"+id, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -173,7 +173,7 @@ func (c *MetricsService) GetInstanceByID(id string, options ...OptionFunc) (*Ins
 		Error  Error    `json:"error,omitempty"`
 	}
 
-	resp, err := c.client.Do(req, &response)
+	resp, err := c.client.do(req, &response)
 	if err != nil {
 		if resp != nil {
 			resp.Error = response.Error
@@ -185,7 +185,7 @@ func (c *MetricsService) GetInstanceByID(id string, options ...OptionFunc) (*Ins
 
 // GetApplicationAutoscalers looks up all available autoscalers
 func (c *MetricsService) GetApplicationAutoscalers(id string, options ...OptionFunc) (*[]Application, *Response, error) {
-	req, err := c.client.NewRequest(CONSOLE, "GET", "v3/metrics/"+id+"/autoscalers", nil, options)
+	req, err := c.client.newRequest(CONSOLE, "GET", "v3/metrics/"+id+"/autoscalers", nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -193,7 +193,7 @@ func (c *MetricsService) GetApplicationAutoscalers(id string, options ...OptionF
 
 	var response AutoscalersResponse
 
-	resp, err := c.client.Do(req, &response)
+	resp, err := c.client.do(req, &response)
 	if err != nil {
 		if resp != nil {
 			resp.Error = response.Error
@@ -205,7 +205,7 @@ func (c *MetricsService) GetApplicationAutoscalers(id string, options ...OptionF
 
 // GetApplicationAutoscaler looks up a specific application autoscaler settings
 func (c *MetricsService) GetApplicationAutoscaler(id, app string, options ...OptionFunc) (*Application, *Response, error) {
-	req, err := c.client.NewRequest(CONSOLE, "GET", "v3/metrics/"+id+"/autoscalers/"+app, nil, options)
+	req, err := c.client.newRequest(CONSOLE, "GET", "v3/metrics/"+id+"/autoscalers/"+app, nil, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -219,7 +219,7 @@ func (c *MetricsService) GetApplicationAutoscaler(id, app string, options ...Opt
 		Error  Error  `json:"error,omitempty"`
 	}
 
-	resp, err := c.client.Do(req, &response)
+	resp, err := c.client.do(req, &response)
 	if err != nil {
 		if resp != nil {
 			resp.Error = response.Error
@@ -231,7 +231,7 @@ func (c *MetricsService) GetApplicationAutoscaler(id, app string, options ...Opt
 
 // GetApplicationAutoscaler looks up a specific application autoscaler settings
 func (c *MetricsService) UpdateApplicationAutoscaler(id string, settings Application, options ...OptionFunc) (*Application, *Response, error) {
-	req, err := c.client.NewRequest(CONSOLE, "PUT", "v3/metrics/"+id+"/autoscalers", &settings, options)
+	req, err := c.client.newRequest(CONSOLE, "PUT", "v3/metrics/"+id+"/autoscalers", &settings, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -245,7 +245,7 @@ func (c *MetricsService) UpdateApplicationAutoscaler(id string, settings Applica
 		Error  Error  `json:"error,omitempty"`
 	}
 
-	resp, err := c.client.Do(req, &response)
+	resp, err := c.client.do(req, &response)
 	if err != nil {
 		if resp != nil {
 			resp.Error = response.Error
