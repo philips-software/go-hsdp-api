@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-
-	"github.com/philips-software/go-hsdp-api/fhir"
 )
 
 // ContractsService provides operations on TDR contracts
@@ -15,7 +13,7 @@ type ContractsService struct {
 
 // Constants
 const (
-	TDRAPIVersion = "4"
+	APIVersion = "4"
 )
 
 // GetContractOptions describes the fields on which you can search for contracts
@@ -33,9 +31,9 @@ func (c *ContractsService) GetContract(opt *GetContractOptions, options ...Optio
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("Api-Version", TDRAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
-	var bundleResponse fhir.Bundle
+	var bundleResponse Bundle
 
 	resp, err := c.client.Do(req, &bundleResponse)
 	if err != nil {
@@ -61,7 +59,7 @@ func (c *ContractsService) CreateContract(contract Contract) (bool, *Response, e
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("Api-Version", TDRAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var createResponse bytes.Buffer
 	resp, err := c.client.Do(req, &createResponse)

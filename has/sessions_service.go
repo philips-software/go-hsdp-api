@@ -55,7 +55,7 @@ func (c *SessionsService) CreateSession(userID string, session Session) (*Sessio
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var sr Sessions
 	resp, err := c.client.do(req, &sr)
@@ -78,7 +78,7 @@ func (c *SessionsService) GetSession(userID string, opt *SessionOptions) (*Sessi
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var sr Sessions
 	resp, err := c.client.do(req, &sr)
@@ -95,7 +95,7 @@ func (c *SessionsService) GetSessions() (*Sessions, *Response, error) {
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var sr Sessions
 	resp, err := c.client.do(req, &sr)
@@ -112,7 +112,7 @@ func (c *SessionsService) DeleteSession(userID string) (bool, *Response, error) 
 		return false, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var sr Sessions
 	resp, _ := c.client.do(req, &sr)

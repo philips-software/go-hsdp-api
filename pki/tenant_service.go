@@ -71,10 +71,6 @@ type Tenant struct {
 	ServiceParameters ServiceParameters `json:"service_parameters" validate:"required"`
 }
 
-type ErrorResponse struct {
-	Errors []string `json:"errors,omitempty"`
-}
-
 type OnboardingResponse struct {
 	APIEndpoint string `json:"api_endpoint"`
 }

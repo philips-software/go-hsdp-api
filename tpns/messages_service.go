@@ -1,7 +1,5 @@
 package tpns
 
-import "github.com/philips-software/go-hsdp-api/fhir"
-
 // MessagesService provides operations on TPNS messages
 type MessagesService struct {
 	client *Client
@@ -24,7 +22,7 @@ func (m *MessagesService) Push(msg *Message) (bool, *Response, error) {
 		return false, nil, err
 	}
 
-	var responseStruct fhir.IssueResponse
+	var responseStruct IssueResponse
 
 	resp, err := m.client.Do(req, &responseStruct)
 	if err != nil {

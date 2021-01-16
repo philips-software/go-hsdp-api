@@ -44,7 +44,7 @@ func main() {
 		Count:        1,
 		ClusterTag:   "andytest",
 		EBS: has.EBS{
-                        DeleteOnTermination: true,
+			DeleteOnTermination: true,
 			VolumeSize: 50,
 			VolumeType: "standard",
 		},

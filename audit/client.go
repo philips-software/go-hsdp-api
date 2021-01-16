@@ -1,4 +1,4 @@
-// Package audit provides support for HSDP Audit service
+// Package audit provides support for interacting with the HSDP Audit service
 package audit
 
 import (
@@ -33,10 +33,6 @@ type OptionFunc func(*http.Request) error
 type Config struct {
 	Region      string
 	Environment string
-	// ProductKey is provided as part of Auditing onboarding
-	ProductKey string
-	// Tenant value is used to support multi tenancy with a single ProductKey
-	Tenant string
 	// AuditBaseURL is provided as part of Auditing onboarding
 	AuditBaseURL string
 	// SharedKey is the IAM API signing key
@@ -98,7 +94,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
 	c.um = um
-	c.setAuditBaseURL(c.config.AuditBaseURL)
+	_ = c.setAuditBaseURL(c.config.AuditBaseURL)
 
 	return c, nil
 }
@@ -207,7 +203,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	doErr := CheckResponse(resp)
+	doErr := checkResponse(resp)
 
 	if v != nil {
 		defer resp.Body.Close() // Only close if we plan to read it
@@ -224,8 +220,8 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	return response, doErr
 }
 
-// CheckResponse checks the API response for errors, and returns them if present.
-func CheckResponse(r *http.Response) error {
+// checkResponse checks the API response for errors, and returns them if present.
+func checkResponse(r *http.Response) error {
 	switch r.StatusCode {
 	case 200, 201, 202, 204, 304:
 		return nil

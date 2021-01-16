@@ -1,4 +1,4 @@
-package fhir
+package tpns
 
 import (
 	"testing"
@@ -12,15 +12,15 @@ func TestParseError(t *testing.T) {
 	var err3 = map[string]interface{}{
 		"Foo": "Bar",
 	}
-	parsed := ParseError(err1)
+	parsed := parseError(err1)
 	if parsed != `[Foo, Bar]` {
 		t.Errorf("Unexpected parse output: `%s`", parsed)
 	}
-	parsed = ParseError("err2")
+	parsed = parseError("err2")
 	if parsed != `err2` {
 		t.Errorf("Unexpected parse output: `%s`", parsed)
 	}
-	parsed = ParseError(err3)
+	parsed = parseError(err3)
 	if parsed != `{Foo: Bar}` {
 		t.Errorf("Unexpected parse output: `%s`", parsed)
 	}

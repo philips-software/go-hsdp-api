@@ -1,4 +1,4 @@
-package fhir
+package tdr
 
 import "encoding/json"
 

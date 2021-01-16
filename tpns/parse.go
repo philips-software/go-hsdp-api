@@ -1,4 +1,4 @@
-package fhir
+package tpns
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// ParseError returns a string representation of an error struct
-func ParseError(raw interface{}) string {
+// parseError returns a string representation of an error struct
+func parseError(raw interface{}) string {
 	switch raw := raw.(type) {
 	case string:
 		return raw
@@ -15,14 +15,14 @@ func ParseError(raw interface{}) string {
 	case []interface{}:
 		var errs []string
 		for _, v := range raw {
-			errs = append(errs, ParseError(v))
+			errs = append(errs, parseError(v))
 		}
 		return fmt.Sprintf("[%s]", strings.Join(errs, ", "))
 
 	case map[string]interface{}:
 		var errs []string
 		for k, v := range raw {
-			errs = append(errs, fmt.Sprintf("{%s: %s}", k, ParseError(v)))
+			errs = append(errs, fmt.Sprintf("{%s: %s}", k, parseError(v)))
 		}
 		sort.Strings(errs)
 		return strings.Join(errs, ", ")

@@ -1,4 +1,4 @@
-package fhir
+package tpns
 
 type Coding struct {
 	System       string `json:"system,omitempty"`

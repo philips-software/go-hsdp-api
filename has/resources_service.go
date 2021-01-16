@@ -19,7 +19,7 @@ type ResourcesService struct {
 
 // Constants
 const (
-	HASAPIVersion = "1"
+	APIVersion = "1"
 )
 
 // Resource
@@ -94,7 +94,7 @@ func (c *ResourcesService) CreateResource(resource Resource) (*[]Resource, *Resp
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var cr resourceResponse
 	resp, err := c.client.do(req, &cr)
@@ -128,7 +128,7 @@ func (c *ResourcesService) GetResources(opt *ResourceOptions, options ...OptionF
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var gr resourceResponse
 
@@ -150,7 +150,7 @@ func (c *ResourcesService) DeleteResources(opt *ResourceOptions, options ...Opti
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var dr ResourcesReport
 
@@ -187,7 +187,7 @@ func (c *ResourcesService) startStopResource(action string, resources []string, 
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var gr ResourcesReport
 
@@ -207,7 +207,7 @@ func (c *ResourcesService) GetResource(resourceID string, options ...OptionFunc)
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var gr Resource
 
@@ -229,7 +229,7 @@ func (c *ResourcesService) DeleteResource(resourceID string, options ...OptionFu
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var dr ResourcesReport
 

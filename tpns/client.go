@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	"github.com/google/go-querystring/query"
-	"github.com/philips-software/go-hsdp-api/fhir"
 )
 
 const (
@@ -199,7 +198,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	err = fhir.CheckResponse(resp)
+	err = checkResponse(resp)
 	if err != nil {
 		// even though there was an error, we still return the response
 		// in case the caller wants to inspect it further
@@ -215,4 +214,39 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
+}
+
+// ErrorResponse represents an IAM errors response
+// containing a code and a human readable message
+type ErrorResponse struct {
+	Response *http.Response `json:"-"`
+	Code     string         `json:"responseCode"`
+	Message  string         `json:"responseMessage"`
+}
+
+func (e *ErrorResponse) Error() string {
+	path, _ := url.QueryUnescape(e.Response.Request.URL.Opaque)
+	u := fmt.Sprintf("%s://%s%s", e.Response.Request.URL.Scheme, e.Response.Request.URL.Host, path)
+	return fmt.Sprintf("%s %s: %d %s", e.Response.Request.Method, u, e.Response.StatusCode, e.Message)
+}
+
+// checkResponse checks the API response for errors, and returns them if present.
+func checkResponse(r *http.Response) error {
+	switch r.StatusCode {
+	case 200, 201, 202, 204, 304:
+		return nil
+	}
+
+	errorResponse := &ErrorResponse{Response: r}
+	data, err := ioutil.ReadAll(r.Body)
+	if err == nil && data != nil {
+		var raw interface{}
+		if err := json.Unmarshal(data, &raw); err != nil {
+			errorResponse.Message = "failed to parse unknown error format"
+		}
+
+		errorResponse.Message = parseError(raw)
+	}
+
+	return errorResponse
 }

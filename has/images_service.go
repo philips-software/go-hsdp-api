@@ -23,7 +23,7 @@ func (c *ImagesService) GetImages(options ...OptionFunc) (*[]Image, *Response, e
 		return nil, nil, err
 	}
 	req.Header.Set("organizationId", c.orgID)
-	req.Header.Set("Api-Version", HASAPIVersion)
+	req.Header.Set("Api-Version", APIVersion)
 
 	var ir imageResult
 
