@@ -43,7 +43,7 @@ type Config struct {
 	DebugLog     string
 }
 
-// A Client manages communication with HSDP CDR API
+// Client holds state of a HSDP Audit client
 type Client struct {
 	config        *Config
 	httpClient    *http.Client
@@ -107,8 +107,6 @@ func (c *Client) Close() {
 	}
 }
 
-// setAuditBaseURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
-// should always be specified with a trailing slash.
 func (c *Client) setAuditBaseURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrBaseURLCannotBeEmpty
@@ -122,11 +120,6 @@ func (c *Client) setAuditBaseURL(urlStr string) error {
 	return err
 }
 
-// newAuditRequest creates an new CDR Service API request. A relative URL path can be provided in
-// urlStr, in which case it is resolved relative to the base URL of the Client.
-// Relative URL paths should always be specified without a preceding slash. If
-// specified, the value pointed to by body is JSON encoded and included as the
-// request body.
 func (c *Client) newAuditRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
 	u := *c.auditStoreURL
 	// Set the encoded opaque data
@@ -170,21 +163,17 @@ func (c *Client) newAuditRequest(method, path string, bodyBytes []byte, options 
 	return req, nil
 }
 
-// Response is a HSDP IAM API response. This wraps the standard http.Response
-// returned from HSDP IAM and provides convenient access to things like errors
+// Response is a HSDP Audit API response. This wraps the standard http.Response
+// returned from HSDP Audit and provides convenient access to things like errors
 type Response struct {
 	*http.Response
 }
 
-// newResponse creates a new Response for the provided http.Response.
 func newResponse(r *http.Response) *Response {
 	response := &Response{Response: r}
 	return response
 }
 
-// do executes a http request. If v implements the io.Writer
-// interface, the raw response body will be written to v, without attempting to
-// first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if c.debugFile != nil {
 		dumped, _ := httputil.DumpRequest(req, true)
@@ -220,7 +209,6 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	return response, doErr
 }
 
-// checkResponse checks the API response for errors, and returns them if present.
 func checkResponse(r *http.Response) error {
 	switch r.StatusCode {
 	case 200, 201, 202, 204, 304:
