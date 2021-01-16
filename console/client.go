@@ -1,3 +1,4 @@
+// Package console provides support for HSDP Console APIs
 package console
 
 import (
