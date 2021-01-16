@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.30.0
+- Remove fhir package
+
 ## v0.29.1
 - Fix HSDP Audit documentation
 - Unexport many methods
