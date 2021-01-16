@@ -1,5 +1,4 @@
 // Package tdr provides support for HSDP TDR operations
-// Contract management and DataItem creation and retrieval are supported
 package tdr
 
 import (

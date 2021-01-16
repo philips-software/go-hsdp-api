@@ -1,4 +1,4 @@
-// Package tpns provides an interface for HSDP TPNS (Third Party Notification Service)
+// Package tpns provides an interface for HSDP Third Party Notification Service (TPNS)
 package tpns
 
 import (

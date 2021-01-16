@@ -1,4 +1,4 @@
-// Package iam provides support for interacting with HSDP IAM/IDM services
+// Package iam provides support for interacting with HSDP IAM and IDM services
 package iam
 
 import (
