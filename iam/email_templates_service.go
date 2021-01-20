@@ -35,7 +35,7 @@ type EmailTemplate struct {
 	Format string `json:"format" validate:"required" enum:"HTML"`
 
 	// Locale is the locale for the email template. The locale is case insensitive
-	Locale string `json:"locale" validate:"required"`
+	Locale string `json:"locale,omitempty"`
 
 	// Subject is the email subject
 	Subject string `json:"subject" validate:"required,min=1,max=256"`

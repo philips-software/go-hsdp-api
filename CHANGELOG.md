@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.31.2
+- Email template: change locale handling
+
+## v0.31.1
+- Bug fixes
+
 ## v0.31.0
 - [NEW] IDM Email Templates support
 
