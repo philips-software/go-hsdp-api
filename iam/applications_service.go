@@ -46,7 +46,7 @@ func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, option
 		Entry []*Application
 	}
 
-	resp, err := a.client.Do(req, &bundleResponse)
+	resp, err := a.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -71,7 +71,7 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 
 	var bundleResponse interface{}
 
-	resp, err := a.client.Do(req, &bundleResponse)
+	resp, err := a.client.do(req, &bundleResponse)
 
 	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
 	if !ok {

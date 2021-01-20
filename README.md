@@ -27,6 +27,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Devices
   - [x] MFA Policies
   - [x] Password Policies
+  - [x] Email Temapltes
 - [x] Logging ([examples](logging/README.md))
 - [x] Auditing ([examples](audit/README.md))
 - [x] Clinical Data Repository (CDR)

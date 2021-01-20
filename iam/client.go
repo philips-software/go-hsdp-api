@@ -28,10 +28,9 @@ type tokenType int
 type ContextKey string
 
 const (
-	libraryVersion                 = "0.21.1"
-	userAgent                      = "go-hsdp-api/iam/" + libraryVersion
-	loginAPIVersion                = "2"
-	ContextKeyRequestID ContextKey = "requestID"
+	libraryVersion  = "0.29.0"
+	userAgent       = "go-hsdp-api/iam/" + libraryVersion
+	loginAPIVersion = "2"
 )
 
 type tokenResponse struct {
@@ -92,6 +91,7 @@ type Client struct {
 	MFAPolicies      *MFAPoliciesService
 	PasswordPolicies *PasswordPoliciesService
 	Devices          *DevicesService
+	EmailTemplates   *EmailTemplatesService
 
 	sync.Mutex
 }
@@ -146,6 +146,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.MFAPolicies = &MFAPoliciesService{client: c, validate: validator.New()}
 	c.PasswordPolicies = &PasswordPoliciesService{client: c, validate: validator.New()}
 	c.Devices = &DevicesService{client: c, validate: validator.New()}
+	c.EmailTemplates = &EmailTemplatesService{client: c, validate: validator.New()}
 	return c, nil
 }
 
@@ -481,15 +482,15 @@ func (c *Client) doSigned(req *http.Request, v interface{}) (*Response, error) {
 	if err := c.signer.SignRequest(req); err != nil {
 		return nil, err
 	}
-	return c.Do(req, v)
+	return c.do(req, v)
 }
 
-// Do sends an API request and returns the API response. The API response is
+// do sends an API request and returns the API response. The API response is
 // JSON decoded and stored in the value pointed to by v, or returned as an
 // error if an API error has occurred. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
-func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
+func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	id := uuid.New()
 
 	if c.debugFile != nil {

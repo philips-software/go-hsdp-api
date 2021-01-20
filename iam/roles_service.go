@@ -44,7 +44,7 @@ func (p *RolesService) GetRoles(opt *GetRolesOptions) (*[]Role, *Response, error
 		Entry []Role `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &responseStruct)
+	resp, err := p.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -70,7 +70,7 @@ func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
 
 	var role Role
 
-	resp, err := p.client.Do(req, &role)
+	resp, err := p.client.do(req, &role)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -92,7 +92,7 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 
 	var createdRole Role
 
-	resp, err := p.client.Do(req, &createdRole)
+	resp, err := p.client.do(req, &createdRole)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -109,7 +109,7 @@ func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
 
 	var deleteResponse bytes.Buffer
 
-	resp, err := p.client.Do(req, &deleteResponse)
+	resp, err := p.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, nil
 	}
@@ -131,7 +131,7 @@ func (p *RolesService) GetRolePermissions(role Role) (*[]string, *Response, erro
 		Entry []Permission `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &permissionResponse)
+	resp, err := p.client.do(req, &permissionResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -158,7 +158,7 @@ func (p *RolesService) rolePermissionAction(role Role, permission string, action
 
 	var bundleResponse bytes.Buffer
 
-	resp, err := p.client.Do(req, &bundleResponse)
+	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
 		return false, resp, err
 	}

@@ -49,7 +49,7 @@ func (p *PermissionsService) GetPermissionsByRoleID(roleID string) (*[]Permissio
 		Entry []Permission `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &responseStruct)
+	resp, err := p.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -81,7 +81,7 @@ func (p *PermissionsService) GetPermissions(opt *GetPermissionOptions, options .
 		Entry []Permission `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &responseStruct)
+	resp, err := p.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}

@@ -31,7 +31,7 @@ func (g *GroupsService) GetGroupByID(id string) (*Group, *Response, error) {
 
 	var group Group
 
-	resp, err := g.client.Do(req, &group)
+	resp, err := g.client.do(req, &group)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -55,7 +55,7 @@ func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*
 		} `json:"entry"`
 	}
 
-	resp, err := g.client.Do(req, &bundleResponse)
+	resp, err := g.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -78,7 +78,7 @@ func (g *GroupsService) CreateGroup(group Group) (*Group, *Response, error) {
 
 	var createdGroup Group
 
-	resp, err := g.client.Do(req, &createdGroup)
+	resp, err := g.client.do(req, &createdGroup)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -100,7 +100,7 @@ func (g *GroupsService) UpdateGroup(group Group) (*Group, *Response, error) {
 
 	var updatedGroup Group
 
-	resp, err := g.client.Do(req, &updatedGroup)
+	resp, err := g.client.do(req, &updatedGroup)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -118,7 +118,7 @@ func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
 
 	var deleteResponse interface{}
 
-	resp, err := g.client.Do(req, &deleteResponse)
+	resp, err := g.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, err
 	}
@@ -143,7 +143,7 @@ func (g *GroupsService) GetRoles(group Group) (*[]Role, *Response, error) {
 		Entry []Role `json:"entry"`
 	}
 
-	resp, err := g.client.Do(req, &responseStruct)
+	resp, err := g.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -163,7 +163,7 @@ func (g *GroupsService) roleAction(group Group, role Role, action string) (bool,
 
 	var assignResponse interface{}
 
-	resp, err := g.client.Do(req, &assignResponse)
+	resp, err := g.client.do(req, &assignResponse)
 	if err != nil {
 		return false, resp, err
 	}
@@ -215,7 +215,7 @@ func (g *GroupsService) memberAction(group Group, action string, opt interface{}
 
 	var memberResponse interface{}
 
-	resp, err := g.client.Do(req, &memberResponse)
+	resp, err := g.client.do(req, &memberResponse)
 
 	if err != nil && err != io.EOF { // EOF is valid
 		return false, resp, err

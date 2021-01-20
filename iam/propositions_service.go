@@ -79,7 +79,7 @@ func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, optio
 		Entry []Proposition `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &bundleResponse)
+	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -100,7 +100,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 
 	var bundleResponse interface{}
 
-	resp, err := p.client.Do(req, &bundleResponse)
+	resp, err := p.client.do(req, &bundleResponse)
 
 	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
 	if !ok {

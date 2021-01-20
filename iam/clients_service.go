@@ -72,7 +72,7 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 
 	var createdClient ApplicationClient
 
-	resp, err := c.client.Do(req, &createdClient)
+	resp, err := c.client.do(req, &createdClient)
 
 	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
 	if !ok {
@@ -100,7 +100,7 @@ func (c *ClientsService) DeleteClient(ac ApplicationClient) (bool, *Response, er
 
 	var deleteResponse interface{}
 
-	resp, err := c.client.Do(req, &deleteResponse)
+	resp, err := c.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, err
 	}
@@ -139,7 +139,7 @@ func (c *ClientsService) GetClients(opt *GetClientsOptions, options ...OptionFun
 		Entry []ApplicationClient `json:"entry"`
 	}
 
-	resp, err := c.client.Do(req, &bundleResponse)
+	resp, err := c.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -163,7 +163,7 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 
 	var putResponse bytes.Buffer
 
-	resp, err := c.client.Do(req, &putResponse)
+	resp, err := c.client.do(req, &putResponse)
 	if err != nil {
 		return false, resp, err
 	}
@@ -186,7 +186,7 @@ func (c *ClientsService) UpdateClient(ac ApplicationClient) (*ApplicationClient,
 
 	var updatedClient ApplicationClient
 
-	resp, err := c.client.Do(req, &updatedClient)
+	resp, err := c.client.do(req, &updatedClient)
 	if err != nil {
 		return nil, resp, err
 	}

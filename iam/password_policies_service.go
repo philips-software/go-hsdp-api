@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	PasswordPolicyAPIVersion = "1"
+	passwordPolicyAPIVersion = "1"
 )
 
+// PasswordPoliciesService keeps the state of the service
 type PasswordPoliciesService struct {
 	client   *Client
 	validate *validator.Validate
@@ -47,12 +48,12 @@ func (p *PasswordPoliciesService) GetPasswordPolicyByID(id string) (*PasswordPol
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", PasswordPolicyAPIVersion)
+	req.Header.Set("api-version", passwordPolicyAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
 	var policy PasswordPolicy
 
-	resp, err := p.client.Do(req, &policy)
+	resp, err := p.client.do(req, &policy)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -66,7 +67,7 @@ func (p *PasswordPoliciesService) GetPasswordPolicyByID(id string) (*PasswordPol
 func (p *PasswordPoliciesService) UpdatePasswordPolicy(policy PasswordPolicy) (*PasswordPolicy, *Response, error) {
 
 	req, _ := p.client.newRequest(IDM, "PUT", "authorize/identity/PasswordPolicy/"+policy.ID, policy, nil)
-	req.Header.Set("api-version", PasswordPolicyAPIVersion)
+	req.Header.Set("api-version", passwordPolicyAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 	if policy.Meta == nil {
 		return nil, nil, ErrMissingEtagInformation
@@ -74,7 +75,7 @@ func (p *PasswordPoliciesService) UpdatePasswordPolicy(policy PasswordPolicy) (*
 	req.Header.Set("If-Match", policy.Meta.Version)
 
 	var updatedPolicy PasswordPolicy
-	resp, err := p.client.Do(req, &updatedPolicy)
+	resp, err := p.client.do(req, &updatedPolicy)
 
 	if err != nil {
 		return nil, resp, err
@@ -89,13 +90,13 @@ func (p *PasswordPoliciesService) CreatePasswordPolicy(policy PasswordPolicy) (*
 		return nil, nil, err
 	}
 	req, _ := p.client.newRequest(IDM, "POST", "authorize/identity/PasswordPolicy", &policy, nil)
-	req.Header.Set("api-version", PasswordPolicyAPIVersion)
+	req.Header.Set("api-version", passwordPolicyAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
 	var createdPolicy PasswordPolicy
 
-	resp, err := p.client.Do(req, &createdPolicy)
+	resp, err := p.client.do(req, &createdPolicy)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -108,12 +109,12 @@ func (p *PasswordPoliciesService) DeletePasswordPolicy(policy PasswordPolicy) (b
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", PasswordPolicyAPIVersion)
+	req.Header.Set("api-version", passwordPolicyAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
 	var deleteResponse bytes.Buffer
 
-	resp, err := p.client.Do(req, &deleteResponse)
+	resp, err := p.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, nil
 	}
@@ -131,7 +132,7 @@ func (p *PasswordPoliciesService) GetPasswordPolicies(opt *GetPasswordPolicyOpti
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", PasswordPolicyAPIVersion)
+	req.Header.Set("api-version", passwordPolicyAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
 	var bundleResponse struct {
@@ -139,7 +140,7 @@ func (p *PasswordPoliciesService) GetPasswordPolicies(opt *GetPasswordPolicyOpti
 		Entry []PasswordPolicy `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &bundleResponse)
+	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
