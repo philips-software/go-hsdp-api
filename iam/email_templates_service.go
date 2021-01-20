@@ -28,6 +28,9 @@ type EmailTemplate struct {
 	// ManagingOrganization is the Unique UUID of the organization under which the email template needs to be created.
 	ManagingOrganization string `json:"managingOrganization" validate:"required"`
 
+	// From is the sender field
+	From string `json:"from,omitempty"`
+
 	// Format is the template format. Must be HTML at this time
 	Format string `json:"format" validate:"required" enum:"HTML"`
 
