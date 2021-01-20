@@ -28,10 +28,9 @@ type tokenType int
 type ContextKey string
 
 const (
-	libraryVersion                 = "0.21.1"
-	userAgent                      = "go-hsdp-api/iam/" + libraryVersion
-	loginAPIVersion                = "2"
-	ContextKeyRequestID ContextKey = "requestID"
+	libraryVersion  = "0.21.1"
+	userAgent       = "go-hsdp-api/iam/" + libraryVersion
+	loginAPIVersion = "2"
 )
 
 type tokenResponse struct {
@@ -92,6 +91,7 @@ type Client struct {
 	MFAPolicies      *MFAPoliciesService
 	PasswordPolicies *PasswordPoliciesService
 	Devices          *DevicesService
+	EmailTemplates   *EmailTemplatesService
 
 	sync.Mutex
 }
@@ -146,6 +146,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.MFAPolicies = &MFAPoliciesService{client: c, validate: validator.New()}
 	c.PasswordPolicies = &PasswordPoliciesService{client: c, validate: validator.New()}
 	c.Devices = &DevicesService{client: c, validate: validator.New()}
+	c.EmailTemplates = &EmailTemplatesService{client: c, validate: validator.New()}
 	return c, nil
 }
 
