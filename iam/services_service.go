@@ -103,7 +103,7 @@ func (p *ServicesService) GetServicesByApplicationID(applicationID string) (*[]S
 		Entry []Service `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &responseStruct)
+	resp, err := p.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -118,7 +118,7 @@ func (p *ServicesService) CreateService(service Service) (*Service, *Response, e
 
 	var createdService Service
 
-	resp, err := p.client.Do(req, &createdService)
+	resp, err := p.client.do(req, &createdService)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -148,7 +148,7 @@ func (p *ServicesService) GetServices(opt *GetServiceOptions, options ...OptionF
 		Entry []Service `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &bundleResponse)
+	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -166,7 +166,7 @@ func (p *ServicesService) DeleteService(service Service) (bool, *Response, error
 
 	var deleteResponse interface{}
 
-	resp, err := p.client.Do(req, &deleteResponse)
+	resp, err := p.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, err
 	}
@@ -202,7 +202,7 @@ func (p *ServicesService) updateScopes(service Service, action string, scopes []
 
 	var putResponse bytes.Buffer
 
-	resp, err := p.client.Do(req, &putResponse)
+	resp, err := p.client.do(req, &putResponse)
 	if err != nil {
 		return false, resp, err
 	}

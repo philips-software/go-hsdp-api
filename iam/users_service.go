@@ -79,7 +79,7 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 
 	var bundleResponse interface{}
 
-	doFunc := u.client.Do
+	doFunc := u.client.do
 	if person.ManagingOrganization == "" { // Self registration
 		doFunc = u.client.doSigned
 	}
@@ -116,7 +116,7 @@ func (u *UsersService) DeleteUser(person Person) (bool, *Response, error) {
 
 	doFunc := u.client.doSigned
 	if !u.client.validSigner() {
-		doFunc = u.client.Do
+		doFunc = u.client.do
 	}
 	resp, err := doFunc(req, &bundleResponse)
 
@@ -159,7 +159,7 @@ func (u *UsersService) ChangeLoginID(user Person, newLoginID string) (bool, *Res
 	var bundleResponse interface{}
 	doFunc := u.client.doSigned
 	if !u.client.validSigner() {
-		doFunc = u.client.Do
+		doFunc = u.client.do
 	}
 	resp, _ := doFunc(req, &bundleResponse)
 	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
@@ -256,7 +256,7 @@ func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*U
 
 	doFunc := u.client.doSigned
 	if !u.client.validSigner() {
-		doFunc = u.client.Do
+		doFunc = u.client.do
 	}
 	resp, err := doFunc(req, &bundleResponse)
 
@@ -291,7 +291,7 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 		Entry []User `json:"entry"`
 	}
 
-	resp, err := u.client.Do(req, &responseStruct)
+	resp, err := u.client.do(req, &responseStruct)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -331,7 +331,7 @@ func (u *UsersService) LegacyGetUserIDByLoginID(loginID string) (string, *Respon
 		ResponseMessage string `json:"responseMessage"`
 	}
 
-	resp, err := u.client.Do(req, &responseStruct)
+	resp, err := u.client.do(req, &responseStruct)
 	if err != nil {
 		return "", resp, err
 	}
@@ -358,7 +358,7 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 
 	var bundleResponse interface{}
 
-	resp, _ := u.client.Do(req, &bundleResponse)
+	resp, _ := u.client.do(req, &bundleResponse)
 	ok := resp != nil && (resp.StatusCode == http.StatusAccepted)
 	return ok, resp, nil
 }
@@ -373,7 +373,7 @@ func (u *UsersService) Unlock(userID string) (bool, *Response, error) {
 
 	var bundleResponse interface{}
 
-	resp, _ := u.client.Do(req, &bundleResponse)
+	resp, _ := u.client.do(req, &bundleResponse)
 	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
 	return ok, resp, nil
 }

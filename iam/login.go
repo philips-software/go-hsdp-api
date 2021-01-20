@@ -105,7 +105,7 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Api-Version", loginAPIVersion)
-	resp, err := c.Do(req, &tokenResponse)
+	resp, err := c.do(req, &tokenResponse)
 
 	if err != nil {
 		return err

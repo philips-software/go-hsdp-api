@@ -52,9 +52,9 @@ type GetDevicesOptions struct {
 	ID                *string `url:"_id,omitempty"`
 	Count             *int    `url:"_count,omitempty"`
 	Page              *int    `url:"_page,omitempty"`
-	DeviceExtIdValue  *string `url:"deviceExtId.value,omitempty"`
-	DeviceExtIdType   *string `url:"deviceExtId.value,omitempty"`
-	DeviceExtIdSystem *string `url:"deviceExtId.system,omitempty"`
+	DeviceExtIDValue  *string `url:"deviceExtId.value,omitempty"`
+	DeviceExtIDType   *string `url:"deviceExtId.value,omitempty"`
+	DeviceExtIDSystem *string `url:"deviceExtId.system,omitempty"`
 	LoginID           *string `url:"loginId,omitempty" validate:""`
 	ForTest           *bool   `url:"forTest,omitempty"`
 	IsActive          *bool   `url:"isActive,omitempty"`
@@ -87,7 +87,7 @@ func (p *DevicesService) GetDevices(opt *GetDevicesOptions, options ...OptionFun
 		Entry []Device `json:"entry"`
 	}
 
-	resp, err := p.client.Do(req, &bundleResponse)
+	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -116,7 +116,7 @@ func (p *DevicesService) CreateDevice(device Device) (*Device, *Response, error)
 
 	var createdDevice Device
 
-	resp, err := p.client.Do(req, &createdDevice)
+	resp, err := p.client.do(req, &createdDevice)
 	if resp == nil {
 		return nil, nil, ErrOperationFailed
 	}
@@ -145,7 +145,7 @@ func (p *DevicesService) UpdateDevice(device Device) (*Device, *Response, error)
 
 	var updatedDevice Device
 
-	resp, err := p.client.Do(req, &updatedDevice)
+	resp, err := p.client.do(req, &updatedDevice)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -166,7 +166,7 @@ func (p *DevicesService) DeleteDevice(device Device) (bool, *Response, error) {
 
 	var deleteResponse bytes.Buffer
 
-	resp, err := p.client.Do(req, &deleteResponse)
+	resp, err := p.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, nil
 	}

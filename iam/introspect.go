@@ -49,7 +49,7 @@ func (c *Client) Introspect() (*IntrospectResponse, *Response, error) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Api-Version", introspectAPIVersion)
 
-	resp, err := c.Do(req, &val)
+	resp, err := c.do(req, &val)
 
 	return &val, resp, err
 }

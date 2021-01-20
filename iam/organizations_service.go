@@ -78,7 +78,7 @@ func (o *OrganizationsService) CreateOrganization(organization Organization) (*O
 
 	var newOrg Organization
 
-	resp, err := o.client.Do(req, &newOrg)
+	resp, err := o.client.do(req, &newOrg)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -100,7 +100,7 @@ func (o *OrganizationsService) DeleteOrganization(org Organization) (bool, *Resp
 
 	var deleteResponse bytes.Buffer
 
-	resp, err := o.client.Do(req, &deleteResponse)
+	resp, err := o.client.do(req, &deleteResponse)
 	if err != nil {
 		return false, resp, err
 	}
@@ -119,7 +119,7 @@ func (o *OrganizationsService) UpdateOrganization(org Organization) (*Organizati
 
 	var updatedOrg Organization
 
-	resp, err := o.client.Do(req, &updatedOrg)
+	resp, err := o.client.do(req, &updatedOrg)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -138,7 +138,7 @@ func (o *OrganizationsService) GetOrganizationByID(id string) (*Organization, *R
 	req.Header.Set("api-version", organizationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := o.client.Do(req, &foundOrg)
+	resp, err := o.client.do(req, &foundOrg)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -158,7 +158,7 @@ func (o *OrganizationsService) GetOrganization(opt *GetOrganizationOptions, opti
 			ID string `json:"id"`
 		}
 	}
-	resp, err := o.client.Do(req, &bundleResponse)
+	resp, err := o.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -180,6 +180,6 @@ func (o *OrganizationsService) DeleteStatus(id string) (*OrganizationStatus, *Re
 
 	var deleteResponse OrganizationStatus
 
-	resp, err := o.client.Do(req, &deleteResponse)
+	resp, err := o.client.do(req, &deleteResponse)
 	return &deleteResponse, resp, err
 }

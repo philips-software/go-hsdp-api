@@ -17,6 +17,7 @@ type EmailTemplatesService struct {
 	validate *validator.Validate
 }
 
+// EmailTemplate describes an email template
 type EmailTemplate struct {
 	ID                   string `json:"id,omitempty"`
 	Type                 string `json:"type" validate:"required" enum:"ACCOUNT_ALREADY_VERIFIED|ACCOUNT_UNLOCKED|ACCOUNT_VERIFICATION|MFA_DISABLED|MFA_ENABLED|PASSWORD_CHANGED|PASSWORD_EXPIRY|PASSWORD_FAILED_ATTEMPTS|PASSWORD_RECOVERY"`
@@ -42,7 +43,7 @@ func (e *EmailTemplatesService) CreateTemplate(template EmailTemplate) (*EmailTe
 
 	var createdTemplate EmailTemplate
 
-	resp, err := e.client.Do(req, &createdTemplate)
+	resp, err := e.client.do(req, &createdTemplate)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -59,7 +60,7 @@ func (g *GroupsService) DeleteTemplate(template EmailTemplate) (bool, *Response,
 
 	var deleteResponse interface{}
 
-	resp, err := g.client.Do(req, &deleteResponse)
+	resp, err := g.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, err
 	}
@@ -92,7 +93,7 @@ func (e *EmailTemplatesService) GetTemplate(opt *GetEmailTemplatesOptions, optio
 		} `json:"entry"`
 	}
 
-	resp, err := e.client.Do(req, &bundleResponse)
+	resp, err := e.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -111,7 +112,7 @@ func (e *EmailTemplatesService) GetTemplateByID(ID string) (*EmailTemplate, *Res
 
 	var template EmailTemplate
 
-	resp, err := e.client.Do(req, &template)
+	resp, err := e.client.do(req, &template)
 	if err != nil {
 		return nil, resp, err
 	}
