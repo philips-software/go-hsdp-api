@@ -44,7 +44,7 @@ type EmailTemplate struct {
 	Link string `json:"link,omitempty"`
 
 	// Meta contains additional metadata
-	Meta Meta `json:"meta,omitempty"`
+	Meta *Meta `json:"meta,omitempty"`
 }
 
 // CreateTemplate creates an EmailTemplate
@@ -69,8 +69,8 @@ func (e *EmailTemplatesService) CreateTemplate(template EmailTemplate) (*EmailTe
 }
 
 // DeleteTemplate deletes the given EmailTemplate
-func (g *GroupsService) DeleteTemplate(template EmailTemplate) (bool, *Response, error) {
-	req, err := g.client.newRequest(IDM, "DELETE", "authorize/identity/EmailTemplate/"+template.ID, nil, nil)
+func (e *EmailTemplatesService) DeleteTemplate(template EmailTemplate) (bool, *Response, error) {
+	req, err := e.client.newRequest(IDM, "DELETE", "authorize/identity/EmailTemplate/"+template.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
@@ -78,7 +78,7 @@ func (g *GroupsService) DeleteTemplate(template EmailTemplate) (bool, *Response,
 
 	var deleteResponse interface{}
 
-	resp, err := g.client.do(req, &deleteResponse)
+	resp, err := e.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, err
 	}
@@ -103,9 +103,7 @@ func (e *EmailTemplatesService) GetTemplate(opt *GetEmailTemplatesOptions, optio
 	var bundleResponse struct {
 		Total int `json:"total"`
 		Entry []struct {
-			Resource struct {
-				ID string `json:"_id"`
-			} `json:"resource"`
+			ID string `json:"id"`
 		} `json:"entry"`
 	}
 
@@ -116,7 +114,7 @@ func (e *EmailTemplatesService) GetTemplate(opt *GetEmailTemplatesOptions, optio
 	if bundleResponse.Total == 0 {
 		return nil, resp, ErrNotFound
 	}
-	return e.GetTemplateByID(bundleResponse.Entry[0].Resource.ID)
+	return e.GetTemplateByID(bundleResponse.Entry[0].ID)
 }
 
 func (e *EmailTemplatesService) GetTemplateByID(ID string) (*EmailTemplate, *Response, error) {
