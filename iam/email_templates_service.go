@@ -19,14 +19,32 @@ type EmailTemplatesService struct {
 
 // EmailTemplate describes an email template
 type EmailTemplate struct {
-	ID                   string `json:"id,omitempty"`
-	Type                 string `json:"type" validate:"required" enum:"ACCOUNT_ALREADY_VERIFIED|ACCOUNT_UNLOCKED|ACCOUNT_VERIFICATION|MFA_DISABLED|MFA_ENABLED|PASSWORD_CHANGED|PASSWORD_EXPIRY|PASSWORD_FAILED_ATTEMPTS|PASSWORD_RECOVERY"`
+	// ID is the UUID generated for a stored email template
+	ID string `json:"id,omitempty"`
+
+	// Type is the type of the email template
+	Type string `json:"type" validate:"required" enum:"ACCOUNT_ALREADY_VERIFIED|ACCOUNT_UNLOCKED|ACCOUNT_VERIFICATION|MFA_DISABLED|MFA_ENABLED|PASSWORD_CHANGED|PASSWORD_EXPIRY|PASSWORD_FAILED_ATTEMPTS|PASSWORD_RECOVERY"`
+
+	// ManagingOrganization is the Unique UUID of the organization under which the email template needs to be created.
 	ManagingOrganization string `json:"managingOrganization" validate:"required"`
-	Format               string `json:"format" validate:"required" enum:"HTML"`
-	Locale               string `json:"locale"  validate:"required"`
-	Subject              string `json:"subject"`
-	Message              string `json:"message" validate:"required"`
-	Link                 string `json:"link"`
+
+	// Format is the template format. Must be HTML at this time
+	Format string `json:"format" validate:"required" enum:"HTML"`
+
+	// Locale is the locale for the email template. The locale is case insensitive
+	Locale string `json:"locale" validate:"required"`
+
+	// Subject is the email subject
+	Subject string `json:"subject" validate:"required,min=1,max=256"`
+
+	// Message should contain the base64 encoded body of the email
+	Message string `json:"message" validate:"required"`
+
+	// Link is a clickable link according to the template type
+	Link string `json:"link,omitempty"`
+
+	// Meta contains additional metadata
+	Meta Meta `json:"meta,omitempty"`
 }
 
 // CreateTemplate creates an EmailTemplate
@@ -68,11 +86,9 @@ func (g *GroupsService) DeleteTemplate(template EmailTemplate) (bool, *Response,
 }
 
 type GetEmailTemplatesOptions struct {
-	ID             *string `url:"_id,omitempty"`
-	Name           *string `url:"name,omitempty"`
-	ApplicationID  *string `url:"applicationId,omitempty"`
+	Type           *string `url:"type,omitempty"`
 	OrganizationID *string `url:"organizationId,omitempty"`
-	ServiceID      *string `url:"serviceId,omitempty"`
+	Locale         *string `url:"locale,omitempty"`
 }
 
 // GetTemplate finds EmailTemplate based on search criteria

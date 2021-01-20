@@ -28,7 +28,7 @@ type tokenType int
 type ContextKey string
 
 const (
-	libraryVersion  = "0.21.1"
+	libraryVersion  = "0.29.0"
 	userAgent       = "go-hsdp-api/iam/" + libraryVersion
 	loginAPIVersion = "2"
 )
