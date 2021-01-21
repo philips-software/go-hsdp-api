@@ -102,7 +102,12 @@ type CustomIndexBody []struct {
 // NewClient returns an instance of the logger client with the given Config
 func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
-		httpClient = apmhttp.WrapClient(http.DefaultClient)
+		c := &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyFromEnvironment,
+			},
+		}
+		httpClient = apmhttp.WrapClient(c)
 	}
 	// Autoconfig
 	if config.Region != "" && config.Environment != "" {

@@ -142,7 +142,11 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 
 func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		httpClient = &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyFromEnvironment,
+			},
+		}
 	}
 	if config.UAAURL == "" && config.BaseConsoleURL == "" {
 		doAutoconf(config)

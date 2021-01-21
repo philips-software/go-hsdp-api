@@ -95,7 +95,9 @@ func doAutoconf(config *Config) {
 func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
 		httpClient = &http.Client{}
-		tr := &http.Transport{}
+		tr := &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+		}
 		if config.SkipVerify {
 			tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		} else {
@@ -151,7 +153,7 @@ func configDebug(cartel *Client) {
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if c.debugFile != nil {
 		dumped, _ := httputil.DumpRequest(req, true)
-		fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
+		_, _ = fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
 	}
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
