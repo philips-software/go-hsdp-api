@@ -74,7 +74,12 @@ func NewClient(config *Config) (*Client, error) {
 }
 
 func newClient(config *Config) (*Client, error) {
-	c := &Client{config: config, UserAgent: userAgent, client: http.DefaultClient}
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+		},
+	}
+	c := &Client{config: config, UserAgent: userAgent, client: httpClient}
 	useURL := IronBaseURL
 	if config.BaseURL != "" {
 		useURL = config.BaseURL

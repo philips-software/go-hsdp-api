@@ -69,7 +69,12 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	var err error
 
 	if httpClient == nil {
-		httpClient = apmhttp.WrapClient(http.DefaultClient)
+		c := &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyFromEnvironment,
+			},
+		}
+		httpClient = apmhttp.WrapClient(c)
 	}
 
 	c := &Client{httpClient: httpClient, config: config, UserAgent: userAgent}

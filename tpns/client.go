@@ -60,7 +60,11 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 
 func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		httpClient = &http.Client{
+			Transport: &http.Transport{
+				Proxy: http.ProxyFromEnvironment,
+			},
+		}
 	}
 	c := &Client{client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseTPNSURL(c.config.TPNSURL); err != nil {
@@ -82,7 +86,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 // Close releases allocated resources of clients
 func (c *Client) Close() {
 	if c.debugFile != nil {
-		c.debugFile.Close()
+		_ = c.debugFile.Close()
 		c.debugFile = nil
 	}
 }
