@@ -1,5 +1,5 @@
-// Package cdr provides support for HSDP CDR services
-package cdr
+// Package dicom provides support for HSDP DICOM services
+package dicom
 
 import (
 	"bytes"
@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	userAgent  = "go-hsdp-api/cdr/" + internal.LibraryVersion
+	userAgent  = "go-hsdp-api/dicom/" + internal.LibraryVersion
 	APIVersion = "1"
 )
 
@@ -32,29 +32,28 @@ type Config struct {
 	Region      string
 	Environment string
 	RootOrgID   string
-	CDRURL      string
-	FHIRStore   string
+	DICOMURL    string
+	DICOMStore  string
 	Type        string
 	TimeZone    string
 	DebugLog    string
 }
 
-// A Client manages communication with HSDP CDR API
+// A Client manages communication with HSDP DICOM API
 type Client struct {
 	// HTTP client used to communicate with IAM API
 	iamClient *iam.Client
 
 	config *Config
 
-	fhirStoreURL *url.URL
+	dicomStoreURL *url.URL
 
-	// User agent used when communicating with the HSDP CDR API
+	// User agent used when communicating with the HSDP DICOM API.
 	UserAgent string
 
-	TenantSTU3     *TenantSTU3Service
-	OperationsSTU3 *OperationsSTU3Service
-
 	debugFile *os.File
+
+	Config *ConfigService
 }
 
 // NewClient returns a new HSDP CDR API client. Configured console and IAM clients
@@ -65,11 +64,11 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
-	fhirStore := config.FHIRStore
-	if fhirStore == "" {
-		fhirStore = config.CDRURL + "/store/fhir/"
+	dicomStore := config.DICOMStore
+	if dicomStore == "" {
+		dicomStore = config.DICOMURL + "/store/dicom/"
 	}
-	if err := c.SetFHIRStoreURL(fhirStore); err != nil {
+	if err := c.SetDICOMStoreURL(dicomStore); err != nil {
 		return nil, err
 	}
 	if config.DebugLog != "" {
@@ -88,8 +87,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
 
-	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
-	c.OperationsSTU3 = &OperationsSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
+	c.Config = &ConfigService{client: c, ma: ma, um: um, profile: "production"}
 
 	return c, nil
 }
@@ -104,10 +102,10 @@ func (c *Client) Close() {
 
 // GetFHIRStoreURL returns the base FHIR Store base URL as configured
 func (c *Client) GetFHIRStoreURL() string {
-	if c.fhirStoreURL == nil {
+	if c.dicomStoreURL == nil {
 		return ""
 	}
-	return c.fhirStoreURL.String()
+	return c.dicomStoreURL.String()
 }
 
 // GetEndpointURL returns the FHIR Store Endpoint URL as configured
@@ -115,18 +113,18 @@ func (c *Client) GetEndpointURL() string {
 	return c.GetFHIRStoreURL() + c.config.RootOrgID
 }
 
-// SetFHIRStoreURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
+// SetDICOMStoreURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
-func (c *Client) SetFHIRStoreURL(urlStr string) error {
+func (c *Client) SetDICOMStoreURL(urlStr string) error {
 	if urlStr == "" {
-		return ErrCDRURLCannotBeEmpty
+		return ErrDICOMURLCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
 	var err error
-	c.fhirStoreURL, err = url.Parse(urlStr)
+	c.dicomStoreURL, err = url.Parse(urlStr)
 	return err
 }
 
@@ -134,36 +132,36 @@ func (c *Client) SetFHIRStoreURL(urlStr string) error {
 // should always be specified with a trailing slash.
 func (c *Client) SetEndpointURL(urlStr string) error {
 	if urlStr == "" {
-		return ErrCDRURLCannotBeEmpty
+		return ErrDICOMURLCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
 	var err error
-	c.fhirStoreURL, err = url.Parse(urlStr)
+	c.dicomStoreURL, err = url.Parse(urlStr)
 	if err != nil {
 		return err
 	}
-	parts := strings.Split(c.fhirStoreURL.Path, "/")
+	parts := strings.Split(c.dicomStoreURL.Path, "/")
 	if len(parts) == 0 {
-		return ErrCDRURLCannotBeEmpty
+		return ErrDICOMURLCannotBeEmpty
 	}
 	c.config.RootOrgID = parts[len(parts)-1]
 	newParts := parts[:len(parts)-1]
-	c.fhirStoreURL.Path = strings.Join(newParts, "/")
+	c.dicomStoreURL.Path = strings.Join(newParts, "/")
 	return nil
 }
 
-// newCDRRequest creates an new CDR Service API request. A relative URL path can be provided in
+// newDICOMRequest creates an new DICOM Service API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) newCDRRequest(method, path string, bodyBytes []byte, options []OptionFunc) (*http.Request, error) {
-	u := *c.fhirStoreURL
+func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, options ...OptionFunc) (*http.Request, error) {
+	u := *c.dicomStoreURL
 	// Set the encoded opaque data
-	u.Opaque = c.fhirStoreURL.Path + c.config.RootOrgID + "/" + path
+	u.Opaque = c.dicomStoreURL.Path + path
 
 	req := &http.Request{
 		Method:     method,
