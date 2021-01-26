@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -23,8 +24,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/cartel/" + libraryVersion
+	userAgent = "go-hsdp-api/cartel/" + internal.LibraryVersion
 )
 
 // Config the client

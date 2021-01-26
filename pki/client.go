@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -26,9 +27,8 @@ import (
 )
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/pki/" + libraryVersion
-	APIVersion     = "1"
+	userAgent  = "go-hsdp-api/pki/" + internal.LibraryVersion
+	APIVersion = "1"
 )
 
 // OptionFunc is the function signature function for options

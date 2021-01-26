@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -29,8 +30,7 @@ const (
 	// TimeFormat is the time format used for the LogTime field
 	TimeFormat = "2006-01-02T15:04:05.000Z07:00"
 
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/logging/" + libraryVersion
+	userAgent = "go-hsdp-api/logging/" + internal.LibraryVersion
 )
 
 var (

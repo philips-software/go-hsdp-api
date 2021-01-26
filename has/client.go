@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -19,8 +20,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/has/" + libraryVersion
+	userAgent = "go-hsdp-api/has/" + internal.LibraryVersion
 )
 
 // OptionFunc is the function signature function for options
@@ -86,7 +86,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 // Close releases allocated resources of clients
 func (c *Client) Close() {
 	if c.debugFile != nil {
-		c.debugFile.Close()
+		_ = c.debugFile.Close()
 		c.debugFile = nil
 	}
 }

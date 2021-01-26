@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -17,9 +18,8 @@ import (
 )
 
 const (
-	libraryVersion = "0.20.1"
-	userAgent      = "go-hsdp-api/iron/" + libraryVersion
-	IronBaseURL    = "https://worker-aws-us-east-1.iron.io/"
+	userAgent   = "go-hsdp-api/iron/" + internal.LibraryVersion
+	IronBaseURL = "https://worker-aws-us-east-1.iron.io/"
 )
 
 // OptionFunc is the function signature function for options
