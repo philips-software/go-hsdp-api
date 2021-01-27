@@ -28,27 +28,29 @@ type ApplicationEntity struct {
 	} `json:"additionalSettings"`
 }
 
-// StoreService
-type StoreService struct {
+// SCPConfig
+type SCPConfig struct {
 	ID                        string                     `json:"id,omitempty"`
 	Title                     string                     `json:"title"`
+	Description               string                     `json:"description,omitempty"`
 	UnSecureNetworkConnection UnsecuredNetworkConnection `json:"unSecureNetworkConnection"`
 	SecureNetworkConnection   json.RawMessage            `json:"secureNetworkConnection"`
 	ApplicationEntities       []ApplicationEntity        `json:"applicationEntities"`
+	// TODO: TransferCapability
 }
 
 // SetStoreService
-func (c *ConfigService) SetStoreService(svc StoreService, options ...OptionFunc) (*StoreService, *Response, error) {
+func (c *ConfigService) SetStoreService(svc SCPConfig, options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/fhirStore", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/storeService", bodyBytes, options...)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	var createdService StoreService
+	var createdService SCPConfig
 	resp, err := c.client.do(req, &createdService)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
@@ -61,14 +63,14 @@ func (c *ConfigService) SetStoreService(svc StoreService, options ...OptionFunc)
 }
 
 // GetStoreService
-func (c *ConfigService) GetStoreService(options ...OptionFunc) (*StoreService, *Response, error) {
+func (c *ConfigService) GetStoreService(options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/fhirStore", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/storeService", bodyBytes, options...)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	var service StoreService
+	var service SCPConfig
 	resp, err := c.client.do(req, &service)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
