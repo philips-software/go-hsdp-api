@@ -156,8 +156,8 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		_, _ = fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
 	}
 	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
+	if err != nil && err != io.EOF {
+		return nil, fmt.Errorf("client.do: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -177,9 +177,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		} else {
 			err = json.NewDecoder(resp.Body).Decode(v)
 		}
-	}
-	if err != nil {
-		return response, err
+		if err != nil && err != io.EOF {
+			return response, fmt.Errorf("client.do decode body: %w", err)
+		}
 	}
 	err = checkResponse(resp)
 	return response, err
