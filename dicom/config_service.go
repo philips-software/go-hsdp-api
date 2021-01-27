@@ -52,7 +52,7 @@ type StaticAccess struct {
 // ObjectStore
 type ObjectStore struct {
 	ID                string              `json:"id,omitempty"`
-	Description       string              `json:"description"`
+	Description       string              `json:"description,omitempty"`
 	AccessType        string              `json:"accessType"`
 	CredServiceAccess *CredsServiceAccess `json:"credServiceAccess,omitempty"`
 	StaticAccess      *StaticAccess       `json:"staticAccess,omitempty"`

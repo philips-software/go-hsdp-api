@@ -100,8 +100,8 @@ func (c *Client) Close() {
 	}
 }
 
-// GetFHIRStoreURL returns the base FHIR Store base URL as configured
-func (c *Client) GetFHIRStoreURL() string {
+// GetDICOMStoreURL returns the base FHIR Store base URL as configured
+func (c *Client) GetDICOMStoreURL() string {
 	if c.dicomStoreURL == nil {
 		return ""
 	}
@@ -110,7 +110,7 @@ func (c *Client) GetFHIRStoreURL() string {
 
 // GetEndpointURL returns the FHIR Store Endpoint URL as configured
 func (c *Client) GetEndpointURL() string {
-	return c.GetFHIRStoreURL() + c.config.RootOrgID
+	return c.GetDICOMStoreURL() + c.config.RootOrgID
 }
 
 // SetDICOMStoreURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
