@@ -33,6 +33,14 @@ type GetOptions struct {
 	OrganizationID *string `url:"organizationId,omitempty"`
 }
 
+func (c CDRServiceAccount) Valid() bool {
+	return c.PrivateKey != "" && c.ServiceID != ""
+}
+
+func (f FHIRStore) Valid() bool {
+	return f.MPIEndpoint != ""
+}
+
 // SetCDRServiceAccount
 func (c *ConfigService) SetCDRServiceAccount(svc CDRServiceAccount, options ...OptionFunc) (*CDRServiceAccount, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)
