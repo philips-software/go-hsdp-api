@@ -33,8 +33,7 @@ type Config struct {
 	Region         string
 	Environment    string
 	OrganizationID string
-	DICOMURL       string
-	DICOMStore     string
+	DICOMConfigURL string
 	Type           string
 	TimeZone       string
 	DebugLog       string
@@ -65,10 +64,8 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
-	dicomStore := config.DICOMStore
-	if dicomStore == "" {
-		dicomStore = config.DICOMURL + "/store/dicom/"
-	}
+	dicomStore := config.DICOMConfigURL + "/store/dicom/"
+
 	if err := c.SetDICOMStoreURL(dicomStore); err != nil {
 		return nil, err
 	}
@@ -99,6 +96,22 @@ func (c *Client) Close() {
 		_ = c.debugFile.Close()
 		c.debugFile = nil
 	}
+}
+
+func (o *Client) GetSTOWURL() string {
+	return o.replaceConfigWith("stow")
+}
+
+func (o *Client) GetWADOURL() string {
+	return o.replaceConfigWith("wado")
+}
+
+func (o *Client) GetQIDOURL() string {
+	return o.replaceConfigWith("qido")
+}
+
+func (o *Client) replaceConfigWith(svc string) string {
+	return strings.Replace(o.config.DICOMConfigURL, "config", svc, 1)
 }
 
 // GetDICOMStoreURL returns the base FHIR Store base URL as configured

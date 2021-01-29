@@ -136,7 +136,7 @@ func setup(t *testing.T) func() {
 	assert.Nil(t, err)
 
 	dicomClient, err = dicom.NewClient(iamClient, &dicom.Config{
-		DICOMURL: serverDICOM.URL,
+		DICOMConfigURL: serverDICOM.URL,
 	})
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
@@ -180,8 +180,8 @@ func TestDebug(t *testing.T) {
 	}
 
 	dicomClient, err = dicom.NewClient(iamClient, &dicom.Config{
-		DICOMURL: serverDICOM.URL,
-		DebugLog: tmpfile.Name(),
+		DICOMConfigURL: serverDICOM.URL,
+		DebugLog:       tmpfile.Name(),
 	})
 	if !assert.Nil(t, err) {
 		return
@@ -207,7 +207,7 @@ func TestEndpoints(t *testing.T) {
 	defer teardown()
 
 	dicomClient, err := dicom.NewClient(iamClient, &dicom.Config{
-		DICOMURL: serverDICOM.URL,
+		DICOMConfigURL: serverDICOM.URL,
 	})
 	if !assert.Nil(t, err) {
 		return
@@ -217,4 +217,22 @@ func TestEndpoints(t *testing.T) {
 	}
 	assert.Equal(t, serverDICOM.URL+"/store/dicom/", dicomClient.GetDICOMStoreURL())
 
+}
+
+func TestGeneratedURLs(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	dicomClient, err := dicom.NewClient(iamClient, &dicom.Config{
+		DICOMConfigURL: "https: //dss-config-share-tst.foo.io",
+	})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, dicomClient) {
+		return
+	}
+	assert.Equal(t, "https: //dss-qido-share-tst.foo.io", dicomClient.GetQIDOURL())
+	assert.Equal(t, "https: //dss-stow-share-tst.foo.io", dicomClient.GetSTOWURL())
+	assert.Equal(t, "https: //dss-wado-share-tst.foo.io", dicomClient.GetWADOURL())
 }
