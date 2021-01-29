@@ -14,12 +14,12 @@ type Repository struct {
 }
 
 // CreateRepository
-func (c *ConfigService) CreateRepository(repo Repository, options ...OptionFunc) (*Repository, *Response, error) {
+func (c *ConfigService) CreateRepository(repo Repository, opt *GetOptions, options ...OptionFunc) (*Repository, *Response, error) {
 	bodyBytes, err := json.Marshal(repo)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/dicomRepositories", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/dicomRepositories", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -58,9 +58,9 @@ func (c *ConfigService) GetRepositories(opt *GetOptions, options ...OptionFunc) 
 }
 
 // GetObjectStore
-func (c *ConfigService) GetRepository(id string, options ...OptionFunc) (*Repository, *Response, error) {
+func (c *ConfigService) GetRepository(id string, opt *GetOptions, options ...OptionFunc) (*Repository, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories/"+id, bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories/"+id, bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -77,9 +77,9 @@ func (c *ConfigService) GetRepository(id string, options ...OptionFunc) (*Reposi
 }
 
 // DeleteObjectStore
-func (c *ConfigService) DeleteRepository(repo Repository, options ...OptionFunc) (bool, *Response, error) {
+func (c *ConfigService) DeleteRepository(repo Repository, opt *GetOptions, options ...OptionFunc) (bool, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/dicomRepositories/"+repo.ID, bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/dicomRepositories/"+repo.ID, bodyBytes, opt, options...)
 	if err != nil {
 		return false, nil, err
 	}

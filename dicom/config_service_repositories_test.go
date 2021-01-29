@@ -87,7 +87,7 @@ func TestRepositoriesCRUD(t *testing.T) {
 	created, resp, err := dicomClient.Config.CreateRepository(dicom.Repository{
 		OrganizationID:      orgID,
 		ActiveObjectStoreID: storeID,
-	}, nil)
+	}, &dicom.GetOptions{OrganizationID: &orgID})
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -110,7 +110,7 @@ func TestRepositoriesCRUD(t *testing.T) {
 		return
 	}
 	assert.Equal(t, (*repos)[0].ID, storeID)
-	ok, resp, err := dicomClient.Config.DeleteRepository(dicom.Repository{ID: storeID}, nil)
+	ok, resp, err := dicomClient.Config.DeleteRepository(dicom.Repository{ID: storeID}, &dicom.GetOptions{OrganizationID: &orgID})
 	if !assert.Nil(t, err) {
 		return
 	}
