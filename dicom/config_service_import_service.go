@@ -16,7 +16,7 @@ func (c *ConfigService) SetImportService(svc ImportService, options ...OptionFun
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/importService", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/importService", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -36,7 +36,7 @@ func (c *ConfigService) SetImportService(svc ImportService, options ...OptionFun
 // GetImportService
 func (c *ConfigService) GetImportService(options ...OptionFunc) (*ImportService, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/importService", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/importService", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}

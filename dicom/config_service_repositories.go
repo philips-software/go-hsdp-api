@@ -19,7 +19,7 @@ func (c *ConfigService) CreateRepository(repo Repository, options ...OptionFunc)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/dicomRepositories", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/dicomRepositories", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -38,7 +38,7 @@ func (c *ConfigService) CreateRepository(repo Repository, options ...OptionFunc)
 // GetRepositories
 func (c *ConfigService) GetRepositories(opt *GetOptions, options ...OptionFunc) (*[]Repository, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -60,7 +60,7 @@ func (c *ConfigService) GetRepositories(opt *GetOptions, options ...OptionFunc) 
 // GetObjectStore
 func (c *ConfigService) GetRepository(id string, options ...OptionFunc) (*Repository, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories/"+id, bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories/"+id, bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -79,7 +79,7 @@ func (c *ConfigService) GetRepository(id string, options ...OptionFunc) (*Reposi
 // DeleteObjectStore
 func (c *ConfigService) DeleteRepository(repo Repository, options ...OptionFunc) (bool, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/dicomRepositories/"+repo.ID, bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/dicomRepositories/"+repo.ID, bodyBytes, nil, options...)
 	if err != nil {
 		return false, nil, err
 	}

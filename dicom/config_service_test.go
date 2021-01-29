@@ -1,1 +1,0 @@
-package dicom_test

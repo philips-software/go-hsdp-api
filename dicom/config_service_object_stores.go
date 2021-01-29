@@ -7,13 +7,43 @@ import (
 	"net/http"
 )
 
+// CredsServiceAccess
+type CredsServiceAccess struct {
+	ProductKey     string `json:"productKey"`
+	BucketName     string `json:"bucketName"`
+	FolderPath     string `json:"folderPath"`
+	ServiceAccount struct {
+		ServiceID           string `json:"serviceId"`
+		PrivateKey          string `json:"privateKey"`
+		AccessTokenEndPoint string `json:"accessTokenEndPoint"`
+		TokenEndPoint       string `json:"tokenEndPoint"`
+	} `json:"serviceAccount"`
+}
+
+// StaticAccess
+type StaticAccess struct {
+	Endpoint   string `json:"endPoint"`
+	BucketName string `json:"bucketName"`
+	AccessKey  string `json:"accessKey"`
+	SecretKey  string `json:"secretKey"`
+}
+
+// ObjectStore
+type ObjectStore struct {
+	ID                string              `json:"id,omitempty"`
+	Description       string              `json:"description,omitempty"`
+	AccessType        string              `json:"accessType" validate:"required,enum" enum:"direct,s3Creds"`
+	CredServiceAccess *CredsServiceAccess `json:"credServiceAccess,omitempty"`
+	StaticAccess      *StaticAccess       `json:"staticAccess,omitempty"`
+}
+
 // CreateObjectStore
-func (c *ConfigService) CreateObjectStore(store ObjectStore, options ...OptionFunc) (*ObjectStore, *Response, error) {
+func (c *ConfigService) CreateObjectStore(store ObjectStore, opt *GetOptions, options ...OptionFunc) (*ObjectStore, *Response, error) {
 	bodyBytes, err := json.Marshal(store)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/objectStores", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/objectStores", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -32,12 +62,9 @@ func (c *ConfigService) CreateObjectStore(store ObjectStore, options ...OptionFu
 // GetObjectStores
 func (c *ConfigService) GetObjectStores(opt *GetOptions, options ...OptionFunc) (*[]ObjectStore, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/objectStores", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/objectStores", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
-	}
-	if opt != nil && opt.OrganizationID != nil {
-		req.Header.Set("OrganizationID", *opt.OrganizationID)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	var objectStores []ObjectStore
@@ -52,9 +79,9 @@ func (c *ConfigService) GetObjectStores(opt *GetOptions, options ...OptionFunc) 
 }
 
 // GetObjectStore
-func (c *ConfigService) GetObjectStore(id string, options ...OptionFunc) (*ObjectStore, *Response, error) {
+func (c *ConfigService) GetObjectStore(id string, opt *GetOptions, options ...OptionFunc) (*ObjectStore, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/objectStores/"+id, bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/objectStores/"+id, bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -71,9 +98,9 @@ func (c *ConfigService) GetObjectStore(id string, options ...OptionFunc) (*Objec
 }
 
 // DeleteObjectStore
-func (c *ConfigService) DeleteObjectStore(store ObjectStore, options ...OptionFunc) (bool, *Response, error) {
+func (c *ConfigService) DeleteObjectStore(store ObjectStore, opt *GetOptions, options ...OptionFunc) (bool, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/objectStores/"+store.ID, bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/objectStores/"+store.ID, bodyBytes, opt, options...)
 	if err != nil {
 		return false, nil, err
 	}

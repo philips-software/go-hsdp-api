@@ -36,7 +36,7 @@ func (c *ConfigService) CreateRemoteNode(node RemoteNode, options ...OptionFunc)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -55,7 +55,7 @@ func (c *ConfigService) CreateRemoteNode(node RemoteNode, options ...OptionFunc)
 // GetRemoteNodes
 func (c *ConfigService) GetRemoteNodes(opt *GetOptions, options ...OptionFunc) (*[]RemoteNode, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -77,7 +77,7 @@ func (c *ConfigService) GetRemoteNodes(opt *GetOptions, options ...OptionFunc) (
 // GetRemoteNode
 func (c *ConfigService) GetRemoteNode(id string, options ...OptionFunc) (*RemoteNode, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes/"+id, bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes/"+id, bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -96,7 +96,7 @@ func (c *ConfigService) GetRemoteNode(id string, options ...OptionFunc) (*Remote
 // DeleteRemoteNode
 func (c *ConfigService) DeleteRemoteNode(node RemoteNode, options ...OptionFunc) (bool, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/dicomRepositories/"+node.ID, bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/dicomRepositories/"+node.ID, bodyBytes, nil, options...)
 	if err != nil {
 		return false, nil, err
 	}

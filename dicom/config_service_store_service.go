@@ -24,7 +24,7 @@ type ApplicationEntity struct {
 	AeTitle            string `json:"aeTitle"`
 	OrganizationID     string `json:"organizationId"`
 	AdditionalSettings struct {
-		serviceTimeout int `json:"serviceTimeout"`
+		ServiceTimeout int `json:"serviceTimeout"`
 	} `json:"additionalSettings"`
 }
 
@@ -45,7 +45,7 @@ func (c *ConfigService) SetStoreService(svc SCPConfig, options ...OptionFunc) (*
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/storeService", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/storeService", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -65,7 +65,7 @@ func (c *ConfigService) SetStoreService(svc SCPConfig, options ...OptionFunc) (*
 // GetStoreService
 func (c *ConfigService) GetStoreService(options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/storeService", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/storeService", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}

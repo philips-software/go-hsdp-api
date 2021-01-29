@@ -11,7 +11,7 @@ func (c *ConfigService) SetFHIRStore(svc FHIRStore, options ...OptionFunc) (*FHI
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/fhirStore", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/fhirStore", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -31,7 +31,7 @@ func (c *ConfigService) SetFHIRStore(svc FHIRStore, options ...OptionFunc) (*FHI
 // GetFHIRStore
 func (c *ConfigService) GetFHIRStore(options ...OptionFunc) (*FHIRStore, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/fhirStore", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/fhirStore", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}

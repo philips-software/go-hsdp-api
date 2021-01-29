@@ -11,7 +11,7 @@ func (c *ConfigService) SetQueryService(svc SCPConfig, options ...OptionFunc) (*
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/queryService", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/queryService", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -31,7 +31,7 @@ func (c *ConfigService) SetQueryService(svc SCPConfig, options ...OptionFunc) (*
 // GetQueryService
 func (c *ConfigService) GetQueryService(options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/queryService", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/queryService", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}

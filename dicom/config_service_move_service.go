@@ -11,7 +11,7 @@ func (c *ConfigService) SetMoveService(svc SCPConfig, options ...OptionFunc) (*S
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/moveService", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/moveService", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -31,7 +31,7 @@ func (c *ConfigService) SetMoveService(svc SCPConfig, options ...OptionFunc) (*S
 // GetMoveService
 func (c *ConfigService) GetMoveService(options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/moveService", bodyBytes, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/moveService", bodyBytes, nil, options...)
 	if err != nil {
 		return nil, nil, err
 	}

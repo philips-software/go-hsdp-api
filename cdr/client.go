@@ -187,8 +187,6 @@ func (c *Client) newCDRRequest(method, path string, bodyBytes []byte, options []
 
 	if method == "POST" || method == "PUT" || method == "PATCH" {
 		bodyReader := bytes.NewReader(bodyBytes)
-
-		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 	}

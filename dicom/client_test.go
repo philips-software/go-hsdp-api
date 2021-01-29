@@ -1,6 +1,7 @@
 package dicom_test
 
 import (
+	"github.com/philips-software/go-hsdp-api/dicom"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -10,25 +11,22 @@ import (
 
 	"github.com/google/fhir/go/jsonformat"
 
-	"github.com/philips-software/go-hsdp-api/cdr"
-
 	"github.com/philips-software/go-hsdp-api/iam"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	muxIAM    *http.ServeMux
-	serverIAM *httptest.Server
-	muxIDM    *http.ServeMux
-	serverIDM *httptest.Server
-	muxCDR    *http.ServeMux
-	serverCDR *httptest.Server
+	muxIAM      *http.ServeMux
+	serverIAM   *httptest.Server
+	muxIDM      *http.ServeMux
+	serverIDM   *httptest.Server
+	muxDICOM    *http.ServeMux
+	serverDICOM *httptest.Server
 
 	iamClient    *iam.Client
-	cdrClient    *cdr.Client
+	dicomClient  *dicom.Client
 	cdrOrgID     = "48a0183d-a588-41c2-9979-737d15e9e860"
 	userUUID     = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
-	timeZone     = "Europe/Amsterdam"
 	token        string
 	refreshToken string
 	ma           *jsonformat.Marshaller
@@ -40,8 +38,8 @@ func setup(t *testing.T) func() {
 	serverIAM = httptest.NewServer(muxIAM)
 	muxIDM = http.NewServeMux()
 	serverIDM = httptest.NewServer(muxIDM)
-	muxCDR = http.NewServeMux()
-	serverCDR = httptest.NewServer(muxCDR)
+	muxDICOM = http.NewServeMux()
+	serverDICOM = httptest.NewServer(muxDICOM)
 
 	var err error
 	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
@@ -133,14 +131,12 @@ func setup(t *testing.T) func() {
 }`)
 	})
 
-	// Login immediately so we can create cdrClient
+	// Login immediately so we can create dicomClient
 	err = iamClient.Login("username", "password")
 	assert.Nil(t, err)
 
-	cdrClient, err = cdr.NewClient(iamClient, &cdr.Config{
-		CDRURL:    serverCDR.URL,
-		RootOrgID: cdrOrgID,
-		TimeZone:  timeZone,
+	dicomClient, err = dicom.NewClient(iamClient, &dicom.Config{
+		DICOMURL: serverDICOM.URL,
 	})
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
@@ -157,7 +153,7 @@ func setup(t *testing.T) func() {
 	return func() {
 		serverIAM.Close()
 		serverIDM.Close()
-		serverCDR.Close()
+		serverDICOM.Close()
 	}
 }
 
@@ -183,16 +179,18 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 
-	cdrClient, err = cdr.NewClient(iamClient, &cdr.Config{
-		CDRURL:   serverCDR.URL,
+	dicomClient, err = dicom.NewClient(iamClient, &dicom.Config{
+		DICOMURL: serverDICOM.URL,
 		DebugLog: tmpfile.Name(),
 	})
 	if !assert.Nil(t, err) {
 		return
 	}
 
-	defer cdrClient.Close()
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer dicomClient.Close()
+	defer func() {
+		_ = os.Remove(tmpfile.Name())
+	}() // clean up
 
 	err = iamClient.Login("username", "password")
 	if !assert.Nil(t, err) {
@@ -208,23 +206,15 @@ func TestEndpoints(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	rootOrgID := "foo"
-
-	cdrClient, err := cdr.NewClient(iamClient, &cdr.Config{
-		CDRURL:    serverCDR.URL,
-		RootOrgID: rootOrgID,
+	dicomClient, err := dicom.NewClient(iamClient, &dicom.Config{
+		DICOMURL: serverDICOM.URL,
 	})
 	if !assert.Nil(t, err) {
 		return
 	}
-	if !assert.NotNil(t, cdrClient) {
+	if !assert.NotNil(t, dicomClient) {
 		return
 	}
-	endpoint := cdrClient.GetEndpointURL()
-	assert.Equal(t, serverCDR.URL+"/store/fhir/", cdrClient.GetFHIRStoreURL())
-	assert.Equal(t, serverCDR.URL+"/store/fhir/"+rootOrgID, endpoint)
-
-	assert.Nil(t, cdrClient.SetEndpointURL(endpoint))
-	assert.Equal(t, serverCDR.URL+"/store/fhir/"+rootOrgID, cdrClient.GetEndpointURL())
+	assert.Equal(t, serverDICOM.URL+"/store/dicom/", dicomClient.GetDICOMStoreURL())
 
 }

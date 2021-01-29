@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/google/go-querystring/query"
 	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
@@ -29,14 +30,14 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
-	Region      string
-	Environment string
-	RootOrgID   string
-	DICOMURL    string
-	DICOMStore  string
-	Type        string
-	TimeZone    string
-	DebugLog    string
+	Region         string
+	Environment    string
+	OrganizationID string
+	DICOMURL       string
+	DICOMStore     string
+	Type           string
+	TimeZone       string
+	DebugLog       string
 }
 
 // A Client manages communication with HSDP DICOM API
@@ -110,7 +111,7 @@ func (c *Client) GetDICOMStoreURL() string {
 
 // GetEndpointURL returns the FHIR Store Endpoint URL as configured
 func (c *Client) GetEndpointURL() string {
-	return c.GetDICOMStoreURL() + c.config.RootOrgID
+	return c.GetDICOMStoreURL() + c.config.OrganizationID
 }
 
 // SetDICOMStoreURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
@@ -147,7 +148,7 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 	if len(parts) == 0 {
 		return ErrDICOMURLCannotBeEmpty
 	}
-	c.config.RootOrgID = parts[len(parts)-1]
+	c.config.OrganizationID = parts[len(parts)-1]
 	newParts := parts[:len(parts)-1]
 	c.dicomStoreURL.Path = strings.Join(newParts, "/")
 	return nil
@@ -158,7 +159,7 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, options ...OptionFunc) (*http.Request, error) {
+func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, opt interface{}, options ...OptionFunc) (*http.Request, error) {
 	u := *c.dicomStoreURL
 	// Set the encoded opaque data
 	u.Opaque = c.dicomStoreURL.Path + path
@@ -171,6 +172,13 @@ func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, options 
 		ProtoMinor: 1,
 		Header:     make(http.Header),
 		Host:       u.Host,
+	}
+	if opt != nil {
+		q, err := query.Values(opt)
+		if err != nil {
+			return nil, err
+		}
+		u.RawQuery = q.Encode()
 	}
 
 	for _, fn := range options {
@@ -185,8 +193,6 @@ func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, options 
 
 	if method == "POST" || method == "PUT" || method == "PATCH" {
 		bodyReader := bytes.NewReader(bodyBytes)
-
-		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 	}
@@ -194,6 +200,9 @@ func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, options 
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
 	req.Header.Set("API-Version", APIVersion)
+	if c.config.OrganizationID != "" {
+		req.Header.Set("OrganizationID", c.config.OrganizationID)
+	}
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
