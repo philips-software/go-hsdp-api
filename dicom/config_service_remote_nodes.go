@@ -27,7 +27,7 @@ type RemoteNode struct {
 	ID                string            `json:"id,omitempty"`
 	Title             string            `json:"title"`
 	NetworkConnection NetworkConnection `json:"networkConnection"`
-	AeTitle           string            `json:"aeTitle"`
+	AETitle           string            `json:"aeTitle"`
 }
 
 // CreateRemoteNode
@@ -96,7 +96,7 @@ func (c *ConfigService) GetRemoteNode(id string, options ...OptionFunc) (*Remote
 // DeleteRemoteNode
 func (c *ConfigService) DeleteRemoteNode(node RemoteNode, options ...OptionFunc) (bool, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/dicomRepositories/"+node.ID, bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/remoteNodes/"+node.ID, bodyBytes, nil, options...)
 	if err != nil {
 		return false, nil, err
 	}
