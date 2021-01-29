@@ -210,7 +210,7 @@ func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, opt inte
 		req.ContentLength = int64(bodyReader.Len())
 	}
 
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
 	req.Header.Set("API-Version", APIVersion)
 	if c.config.OrganizationID != "" {
