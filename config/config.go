@@ -1,18 +1,10 @@
-//go:generate go-bindata -pkg config -o bindata.go hsdp.json
 package config
 
 import (
-	"bytes"
+	"embed"
+	_ "embed"
 	"encoding/json"
 	"io"
-	"io/ioutil"
-	"net/http"
-	"time"
-)
-
-const (
-	// CanonicalURL is the source of truth
-	CanonicalURL = "https://raw.githubusercontent.com/philips-software/go-hsdp-api/master/config/hsdp.json"
 )
 
 // Config holds the state of a Config instance
@@ -53,29 +45,10 @@ func New(opts ...OptionFunc) (*Config, error) {
 			return nil, err
 		}
 	}
-	if config.source == nil {
-		resp, err := http.Get(CanonicalURL)
-		if err != nil || resp == nil || resp.StatusCode != http.StatusOK {
-			// Fallback to baked in copy in case github.com is down,
-			// but only if its not older than 180 days
-			if bakedInCopy, err := hsdpJson(); err != nil ||
-				bakedInCopy.info.ModTime().Before(time.Now().AddDate(0, 0, -180)) {
-				return nil, ErrUnreachableOrOutdatedConfigSource
-			} else {
-				data, err := Asset(bakedInCopy.info.Name())
-				if err != nil {
-					return nil, err
-					// Asset was not found.
-				}
-				config.source = bytes.NewReader(data)
-			}
-		} else {
-			defer resp.Body.Close()
-			config.source = resp.Body
-		}
-	}
+	//go:embed hsdp.json
+	var f embed.FS
 	var world World
-	data, err := ioutil.ReadAll(config.source)
+	data, err := f.ReadFile("hsdp.json")
 	if err != nil {
 		return nil, err
 	}
