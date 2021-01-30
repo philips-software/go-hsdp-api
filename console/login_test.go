@@ -4,6 +4,7 @@ import (
 	"github.com/philips-software/go-hsdp-api/console"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func TestSetToken(t *testing.T) {
@@ -18,5 +19,8 @@ func TestSetToken(t *testing.T) {
 		return
 	}
 	token := "MyToken"
+	token2 := "TokenMy"
 	assert.Equal(t, token, client.SetToken(token).Token())
+	client.SetTokens(token, token2, token, time.Now().Add(10*time.Minute).Unix())
+	assert.Equal(t, token2, client.RefreshToken())
 }
