@@ -1,4 +1,4 @@
-package credentials
+package s3creds
 
 type Access struct {
 	Allowed struct {

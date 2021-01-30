@@ -1,4 +1,4 @@
-package credentials
+package s3creds
 
 // difference returns the elements in a that aren't in b
 func difference(a, b []string) []string {

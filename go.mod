@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.5.1
 	go.elastic.co/apm/module/apmhttp v1.8.0
 	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
-	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
+	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
 

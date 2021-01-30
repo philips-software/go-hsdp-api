@@ -1,4 +1,4 @@
-package credentials
+package s3creds
 
 import (
 	"encoding/json"

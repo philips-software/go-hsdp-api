@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -26,8 +27,7 @@ type tokenType int
 type ContextKey string
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/console/" + libraryVersion
+	userAgent = "go-hsdp-api/console/" + internal.LibraryVersion
 )
 
 type tokenResponse struct {

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.33.0
+- NEW: DICOM Config API support
+- Create internal package for consistent better versioning
+- S3Creds renaming (breaking change!)
+
 ## v0.32.3
 - Disable keep-alive for Cartel
 

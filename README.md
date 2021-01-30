@@ -39,6 +39,8 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Contract management
   - [x] Data Item management
 - [x] S3 Credentials Policy management
+- [x] DICOM Store
+  - [x] Config management
 - [x] Hosted Application Streaming (HAS) management
 - [x] Configuration
 - [x] Console settings

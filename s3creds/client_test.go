@@ -1,4 +1,4 @@
-package credentials
+package s3creds
 
 import (
 	"io"
@@ -108,7 +108,9 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 	defer credsClient.Close()
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer func() {
+		_ = os.Remove(tmpfile.Name())
+	}() // clean up
 
 	err = iamClient.Login("username", "password")
 	assert.Nil(t, err)
