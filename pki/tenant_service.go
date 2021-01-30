@@ -21,24 +21,24 @@ type Role struct {
 	AllowAnyName         bool     `json:"allow_any_name" validate:"required"`
 	AllowIPSans          bool     `json:"allow_ip_sans" validate:"required"`
 	AllowSubdomains      bool     `json:"allow_subdomains" validate:"required"`
-	AllowedDomains       []string `json:"allowed_domains"`
-	AllowedOtherSans     []string `json:"allowed_other_sans"`
-	AllowedSerialNumbers []string `json:"allowed_serial_numbers"`
-	AllowedURISans       []string `json:"allowed_uri_sans"`
+	AllowedDomains       []string `json:"allowed_domains,omitempty"`
+	AllowedOtherSans     []string `json:"allowed_other_sans,omitempty"`
+	AllowedSerialNumbers []string `json:"allowed_serial_numbers,omitempty"`
+	AllowedURISans       []string `json:"allowed_uri_sans,omitempty"`
 	ClientFlag           bool     `json:"client_flag" validate:"required"`
 	Country              []string `json:"country"`
 	EnforceHostnames     bool     `json:"enforce_hostnames" validate:"required"`
 	KeyBits              int      `json:"key_bits"`
 	KeyType              string   `json:"key_type"`
-	Locality             []string `json:"locality"`
+	Locality             []string `json:"locality,omitempty"`
 	MaxTTL               string   `json:"max_ttl"`
 	NotBeforeDuration    string   `json:"not_before_duration"`
-	Organization         []string `json:"organization"`
-	OU                   []string `json:"ou"`
-	PostalCode           []string `json:"postal_code"`
-	Province             []string `json:"province"`
+	Organization         []string `json:"organization,omitempty"`
+	OU                   []string `json:"ou,omitempty"`
+	PostalCode           []string `json:"postal_code,omitempty"`
+	Province             []string `json:"province,omitempty"`
 	ServerFlag           bool     `json:"server_flag"`
-	StreetAddress        []string `json:"street_address"`
+	StreetAddress        []string `json:"street_address,omitempty"`
 	TTL                  string   `json:"ttl"`
 	UseCSRCommonName     bool     `json:"use_csr_common_name"`
 	UseCSRSans           bool     `json:"use_csr_sans"`
