@@ -56,7 +56,7 @@ type Client struct {
 	Config *ConfigService
 }
 
-// NewClient returns a new HSDP CDR API client. Configured console and IAM clients
+// NewClient returns a new HSDP DICOM API client. Configured console and IAM clients
 // must be provided as the underlying API requires tokens from respective services
 func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	return newClient(iamClient, config)
@@ -78,11 +78,11 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	}
 	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
 	if err != nil {
-		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
+		return nil, fmt.Errorf("dicom.NewClient create FHIR STU3 marshaller: %w", err)
 	}
 	um, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
 	if err != nil {
-		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
+		return nil, fmt.Errorf("dicom.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
 
 	c.Config = &ConfigService{client: c, ma: ma, um: um, profile: "production"}
