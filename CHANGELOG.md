@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.34.1
+- Fix minimum version in go.mod
+
 ## v0.34.0
 - Remove online config refresh code
 - Use Go 1.16 embed to bundle hsdp.json
