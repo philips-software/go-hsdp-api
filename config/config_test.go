@@ -2,7 +2,6 @@ package config_test
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"runtime"
@@ -12,23 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func localConfig(t *testing.T) (*config.Config, error) {
-	_, filename, _, ok := runtime.Caller(0)
-	if !assert.True(t, ok) {
-		return nil, fmt.Errorf("runtime.Caller(0) error")
-	}
-	basePath := filepath.Dir(filename)
-	hsdpJsonFile := filepath.Join(basePath, "hsdp.json")
-	data, err := ioutil.ReadFile(hsdpJsonFile)
-	if !assert.Nil(t, err) {
-		return nil, err
-	}
-	configReader := bytes.NewReader(data)
-	return config.New(config.FromReader(configReader))
-}
-
 func TestNew(t *testing.T) {
-	c, err := localConfig(t)
+	c, err := config.New()
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -47,7 +31,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestCartel(t *testing.T) {
-	c, err := localConfig(t)
+	c, err := config.New()
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -91,7 +75,7 @@ func TestOpts(t *testing.T) {
 }
 
 func TestMissing(t *testing.T) {
-	c, err := localConfig(t)
+	c, err := config.New()
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -105,7 +89,7 @@ func TestMissing(t *testing.T) {
 }
 
 func TestRegions(t *testing.T) {
-	c, err := localConfig(t)
+	c, err := config.New()
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -118,7 +102,7 @@ func TestRegions(t *testing.T) {
 }
 
 func TestServices(t *testing.T) {
-	c, err := localConfig(t)
+	c, err := config.New()
 	if !assert.Nil(t, err) {
 		return
 	}
