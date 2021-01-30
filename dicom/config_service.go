@@ -28,8 +28,8 @@ type FHIRStore struct {
 	MPIEndpoint string `json:"mpiEndPoint"`
 }
 
-// GetOptions describes the fields on which you can search for Groups
-type GetOptions struct {
+// QueryOptions holds optional query options for requests
+type QueryOptions struct {
 	OrganizationID *string `url:"organizationId,omitempty"`
 }
 
@@ -42,12 +42,12 @@ func (f FHIRStore) Valid() bool {
 }
 
 // SetCDRServiceAccount
-func (c *ConfigService) SetCDRServiceAccount(svc CDRServiceAccount, options ...OptionFunc) (*CDRServiceAccount, *Response, error) {
+func (c *ConfigService) SetCDRServiceAccount(svc CDRServiceAccount, opt *QueryOptions, options ...OptionFunc) (*CDRServiceAccount, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/cdrServiceAccount", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/cdrServiceAccount", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -65,9 +65,9 @@ func (c *ConfigService) SetCDRServiceAccount(svc CDRServiceAccount, options ...O
 }
 
 // GetCDRServiceAccount
-func (c *ConfigService) GetCDRServiceAccount(options ...OptionFunc) (*CDRServiceAccount, *Response, error) {
+func (c *ConfigService) GetCDRServiceAccount(opt *QueryOptions, options ...OptionFunc) (*CDRServiceAccount, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/cdrServiceAccount", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/cdrServiceAccount", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}

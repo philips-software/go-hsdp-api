@@ -80,7 +80,7 @@ func TestMoveServiceGetSet(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, created.ID, serviceID)
 
-	services, resp, err := dicomClient.Config.GetMoveService()
+	services, resp, err := dicomClient.Config.GetMoveService(nil)
 	if !assert.Nil(t, err) {
 		return
 	}

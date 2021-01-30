@@ -72,7 +72,7 @@ func TestImportServiceGetSet(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, created.ID, serviceID)
 
-	store, resp, err := dicomClient.Config.GetImportService()
+	store, resp, err := dicomClient.Config.GetImportService(nil)
 	if !assert.Nil(t, err) {
 		return
 	}

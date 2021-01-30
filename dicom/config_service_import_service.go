@@ -11,12 +11,12 @@ type ImportService struct {
 }
 
 // SetImportService
-func (c *ConfigService) SetImportService(svc ImportService, options ...OptionFunc) (*ImportService, *Response, error) {
+func (c *ConfigService) SetImportService(svc ImportService, opt *QueryOptions, options ...OptionFunc) (*ImportService, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/importService", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/importService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -34,9 +34,9 @@ func (c *ConfigService) SetImportService(svc ImportService, options ...OptionFun
 }
 
 // GetImportService
-func (c *ConfigService) GetImportService(options ...OptionFunc) (*ImportService, *Response, error) {
+func (c *ConfigService) GetImportService(opt *QueryOptions, options ...OptionFunc) (*ImportService, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/importService", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/importService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}

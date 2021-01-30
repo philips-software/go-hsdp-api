@@ -72,7 +72,7 @@ func TestFHIRStoreGetSet(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, created.ID, storeID)
 
-	store, resp, err := dicomClient.Config.GetFHIRStore()
+	store, resp, err := dicomClient.Config.GetFHIRStore(nil)
 	if !assert.Nil(t, err) {
 		return
 	}

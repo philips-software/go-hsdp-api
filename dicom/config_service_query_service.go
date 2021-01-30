@@ -6,12 +6,12 @@ import (
 )
 
 // SetQueryService
-func (c *ConfigService) SetQueryService(svc SCPConfig, options ...OptionFunc) (*SCPConfig, *Response, error) {
+func (c *ConfigService) SetQueryService(svc SCPConfig, opt *QueryOptions, options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/queryService", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/queryService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -29,9 +29,9 @@ func (c *ConfigService) SetQueryService(svc SCPConfig, options ...OptionFunc) (*
 }
 
 // GetQueryService
-func (c *ConfigService) GetQueryService(options ...OptionFunc) (*SCPConfig, *Response, error) {
+func (c *ConfigService) GetQueryService(opt *QueryOptions, options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/queryService", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/queryService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}

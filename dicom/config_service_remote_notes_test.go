@@ -106,7 +106,7 @@ func TestRemoteNodesCRUD(t *testing.T) {
 	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, created.ID, nodeID)
-	repos, resp, err := dicomClient.Config.GetRemoteNodes(&dicom.GetOptions{OrganizationID: &orgID}, nil)
+	repos, resp, err := dicomClient.Config.GetRemoteNodes(&dicom.QueryOptions{OrganizationID: &orgID}, nil)
 	if !assert.Nil(t, err) {
 		return
 	}

@@ -53,7 +53,7 @@ func (c *ConfigService) CreateRemoteNode(node RemoteNode, options ...OptionFunc)
 }
 
 // GetRemoteNodes
-func (c *ConfigService) GetRemoteNodes(opt *GetOptions, options ...OptionFunc) (*[]RemoteNode, *Response, error) {
+func (c *ConfigService) GetRemoteNodes(opt *QueryOptions, options ...OptionFunc) (*[]RemoteNode, *Response, error) {
 	bodyBytes := []byte("")
 	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, nil, options...)
 	if err != nil {
@@ -75,9 +75,9 @@ func (c *ConfigService) GetRemoteNodes(opt *GetOptions, options ...OptionFunc) (
 }
 
 // GetRemoteNode
-func (c *ConfigService) GetRemoteNode(id string, options ...OptionFunc) (*RemoteNode, *Response, error) {
+func (c *ConfigService) GetRemoteNode(id string, opt *QueryOptions, options ...OptionFunc) (*RemoteNode, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes/"+id, bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes/"+id, bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}

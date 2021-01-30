@@ -6,12 +6,12 @@ import (
 )
 
 // SetMoveService
-func (c *ConfigService) SetMoveService(svc SCPConfig, options ...OptionFunc) (*SCPConfig, *Response, error) {
+func (c *ConfigService) SetMoveService(svc SCPConfig, opt *QueryOptions, options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/moveService", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/moveService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -29,9 +29,9 @@ func (c *ConfigService) SetMoveService(svc SCPConfig, options ...OptionFunc) (*S
 }
 
 // GetMoveService
-func (c *ConfigService) GetMoveService(options ...OptionFunc) (*SCPConfig, *Response, error) {
+func (c *ConfigService) GetMoveService(opt *QueryOptions, options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/moveService", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/moveService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -38,7 +38,7 @@ type ObjectStore struct {
 }
 
 // CreateObjectStore
-func (c *ConfigService) CreateObjectStore(store ObjectStore, opt *GetOptions, options ...OptionFunc) (*ObjectStore, *Response, error) {
+func (c *ConfigService) CreateObjectStore(store ObjectStore, opt *QueryOptions, options ...OptionFunc) (*ObjectStore, *Response, error) {
 	bodyBytes, err := json.Marshal(store)
 	if err != nil {
 		return nil, nil, err
@@ -60,7 +60,7 @@ func (c *ConfigService) CreateObjectStore(store ObjectStore, opt *GetOptions, op
 }
 
 // GetObjectStores
-func (c *ConfigService) GetObjectStores(opt *GetOptions, options ...OptionFunc) (*[]ObjectStore, *Response, error) {
+func (c *ConfigService) GetObjectStores(opt *QueryOptions, options ...OptionFunc) (*[]ObjectStore, *Response, error) {
 	bodyBytes := []byte("")
 	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/objectStores", bodyBytes, opt, options...)
 	if err != nil {
@@ -79,7 +79,7 @@ func (c *ConfigService) GetObjectStores(opt *GetOptions, options ...OptionFunc) 
 }
 
 // GetObjectStore
-func (c *ConfigService) GetObjectStore(id string, opt *GetOptions, options ...OptionFunc) (*ObjectStore, *Response, error) {
+func (c *ConfigService) GetObjectStore(id string, opt *QueryOptions, options ...OptionFunc) (*ObjectStore, *Response, error) {
 	bodyBytes := []byte("")
 	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/objectStores/"+id, bodyBytes, opt, options...)
 	if err != nil {
@@ -98,7 +98,7 @@ func (c *ConfigService) GetObjectStore(id string, opt *GetOptions, options ...Op
 }
 
 // DeleteObjectStore
-func (c *ConfigService) DeleteObjectStore(store ObjectStore, opt *GetOptions, options ...OptionFunc) (bool, *Response, error) {
+func (c *ConfigService) DeleteObjectStore(store ObjectStore, opt *QueryOptions, options ...OptionFunc) (bool, *Response, error) {
 	bodyBytes := []byte("")
 	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/objectStores/"+store.ID, bodyBytes, opt, options...)
 	if err != nil {

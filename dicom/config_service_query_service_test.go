@@ -80,7 +80,7 @@ func TestQueryServiceGetSet(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, created.ID, serviceID)
 
-	services, resp, err := dicomClient.Config.GetQueryService()
+	services, resp, err := dicomClient.Config.GetQueryService(nil)
 	if !assert.Nil(t, err) {
 		return
 	}
