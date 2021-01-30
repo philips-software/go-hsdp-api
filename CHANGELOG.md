@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Create internal package for consistent better versioning
 - S3Creds renaming (breaking change!)
 
+## v0.32.3
+- Disable keep-alive for Cartel
+
 ## v0.32.2
 - Better error reporting in Cartel
 

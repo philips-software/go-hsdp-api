@@ -155,6 +155,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		dumped, _ := httputil.DumpRequest(req, true)
 		_, _ = fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
 	}
+	req.Close = true // Always close request
 	resp, err := c.httpClient.Do(req)
 	if err != nil && err != io.EOF {
 		return nil, fmt.Errorf("client.do: %w", err)
