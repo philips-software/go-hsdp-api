@@ -36,6 +36,9 @@ type Service struct {
 
 type OptionFunc func(*Config) error
 
+//go:embed hsdp.json
+var cfg embed.FS
+
 // New returns a Config Instance. You can pass
 // a list OptionFunc to cater the Config to your needs
 func New(opts ...OptionFunc) (*Config, error) {
@@ -45,10 +48,8 @@ func New(opts ...OptionFunc) (*Config, error) {
 			return nil, err
 		}
 	}
-	//go:embed hsdp.json
-	var f embed.FS
 	var world World
-	data, err := f.ReadFile("hsdp.json")
+	data, err := cfg.ReadFile("hsdp.json")
 	if err != nil {
 		return nil, err
 	}

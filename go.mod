@@ -1,5 +1,7 @@
 module github.com/philips-software/go-hsdp-api
 
+go 1.16
+
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/evanphx/json-patch/v5 v5.1.0
@@ -14,5 +16,3 @@ require (
 	golang.org/x/tools v0.1.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
-
-go 1.13
