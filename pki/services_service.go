@@ -78,6 +78,10 @@ func (c *ServicesService) GetRootCA(options ...OptionFunc) (*x509.Certificate, *
 
 // GetPolicyCA
 func (c *ServicesService) GetPolicyCA(options ...OptionFunc) (*x509.Certificate, *Response, error) {
+	options = append(options, func(req *http.Request) error {
+		req.Header.Del("Authorization") // Remove authorizaton header
+		return nil
+	})
 	return c.getCA("core/pki/api/policy/ca/pem", options...)
 }
 
@@ -117,6 +121,10 @@ func (c *ServicesService) GetRootCRL(options ...OptionFunc) (*pkix.CertificateLi
 
 // GetPolicyCRL
 func (c *ServicesService) GetPolicyCRL(options ...OptionFunc) (*pkix.CertificateList, *Response, error) {
+	options = append(options, func(req *http.Request) error {
+		req.Header.Del("Authorization") // Remove authorizaton header
+		return nil
+	})
 	return c.getCRL("core/pki/api/policy/crl/pem", options...)
 }
 
