@@ -108,6 +108,10 @@ func (c *ServicesService) getCA(path string, options ...OptionFunc) (*x509.Certi
 
 // GetRootCRL
 func (c *ServicesService) GetRootCRL(options ...OptionFunc) (*pkix.CertificateList, *Response, error) {
+	options = append(options, func(req *http.Request) error {
+		req.Header.Del("Authorization") // Remove authorizaton header
+		return nil
+	})
 	return c.getCRL("core/pki/api/root/crl/pem", options...)
 }
 
