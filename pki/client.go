@@ -158,7 +158,13 @@ func (c *Client) newServiceRequest(method, path string, opt interface{}, options
 		Header:     make(http.Header),
 		Host:       u.Host,
 	}
-
+	if opt != nil {
+		q, err := query.Values(opt)
+		if err != nil {
+			return nil, err
+		}
+		u.RawQuery = q.Encode()
+	}
 	for _, fn := range options {
 		if fn == nil {
 			continue

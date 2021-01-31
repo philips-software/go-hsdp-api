@@ -235,3 +235,71 @@ func (c *ServicesService) GetCertificateBySerial(logicalPath, serial string, opt
 	}
 	return &responseStruct.IssueResponse, resp, nil
 }
+
+type QueryOptions struct {
+	OrganizationID     *string `url:"organizationId,omitempty"`
+	CommonName         *string `url:"commonName,omitempty"`
+	CommonNameExact    *string `url:"commonName:exact,omitempty"`
+	CommonNameContains *string `url:"commonName:contains,omitempty"`
+	CommonNameMissing  *bool   `url:"commonName:missing,omitempty"`
+	CommonNameExists   *bool   `url:"commonName:exists,omitempty"`
+
+	AltName         *string `url:"altName,omitempty"`
+	AltNameExact    *string `url:"altName:exact,omitempty"`
+	AltNameContains *string `url:"altName:contains,omitempty"`
+	AltNameMissing  *bool   `url:"altName:missing,omitempty"`
+	AltNameExists   *bool   `url:"altName:exists,omitempty"`
+
+	SerialNumber *string `url:"serialNumber,omitempty"`
+
+	IssuedAt       *string `url:"issuedAt,omitempty"`
+	ExpiresAt      *string `url:"expiresAt,omitempty"`
+	KeyType        *string `url:"keyType,omitempty"`
+	KeyLength      *string `url:"keyLength,omitempty"`
+	KeyUsage       *string `url:"keyUsage,omitempty"`
+	ExtKeyUsage    *string `url:"extKeyUsage,omitempty"`
+	SubjectKeyId   *string `url:"subjectKeyId,omitempty"`
+	AuthorityKeyId *string `url:"authorityKeyId,omitempty"`
+
+	Status    *string `url:"_status,omitempty"`
+	RevokedAt *string `url:"revokedAt,omitempty"`
+
+	Operation *string `url:"_operation,omitempty"`
+	Count     *string `url:"_count,omitempty"`
+	Page      *string `url:"_page,omitempty"`
+	Sort      *string `url:"_sort,omitempty"`
+}
+
+// CertificateList list serial numbers of non-revoked certificates including the Issuing CA
+type CertificateList struct {
+	RequestID     string `json:"request_id"`
+	LeaseID       string `json:"lease_id"`
+	Renewable     bool   `json:"renewable"`
+	LeaseDuration int    `json:"lease_duration"`
+	Data          struct {
+		Keys []string `json:"keys"`
+	} `json:"data"`
+	WrapInfo string `json:"wrap_info,omitempty"`
+	Warnings string `json:"warnings,omitempty"`
+	Auth     string `json:"auth,omitempty"`
+}
+
+// GetCertificates
+func (c *ServicesService) GetCertificates(logicalPath string, opt *QueryOptions, options ...OptionFunc) (*CertificateList, *Response, error) {
+	req, err := c.client.newServiceRequest(http.MethodGet, "core/pki/api/"+logicalPath+"/certs", opt, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	var responseStruct struct {
+		CertificateList
+		ErrorResponse
+	}
+	resp, err := c.client.do(req, &responseStruct)
+	if err != nil {
+		return nil, nil, err
+	}
+	if resp == nil {
+		return nil, nil, ErrEmptyResult
+	}
+	return &responseStruct.CertificateList, resp, nil
+}
