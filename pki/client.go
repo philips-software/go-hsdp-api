@@ -165,15 +165,6 @@ func (c *Client) newServiceRequest(method, path string, opt interface{}, options
 		}
 		u.RawQuery = q.Encode()
 	}
-	for _, fn := range options {
-		if fn == nil {
-			continue
-		}
-
-		if err := fn(req); err != nil {
-			return nil, err
-		}
-	}
 
 	if method == "POST" || method == "PUT" {
 		bodyBytes, err := json.Marshal(opt)
@@ -187,14 +178,22 @@ func (c *Client) newServiceRequest(method, path string, opt interface{}, options
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}
-
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
 	req.Header.Set("API-Version", APIVersion)
-
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
 	}
+	for _, fn := range options {
+		if fn == nil {
+			continue
+		}
+
+		if err := fn(req); err != nil {
+			return nil, err
+		}
+	}
+
 	return req, nil
 }
 

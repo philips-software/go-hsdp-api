@@ -69,6 +69,10 @@ type ServiceOptions struct {
 
 // GetRootCA
 func (c *ServicesService) GetRootCA(options ...OptionFunc) (*x509.Certificate, *Response, error) {
+	options = append(options, func(req *http.Request) error {
+		req.Header.Del("Authorization") // Remove authorizaton header
+		return nil
+	})
 	return c.getCA("core/pki/api/root/ca/pem", options...)
 }
 
