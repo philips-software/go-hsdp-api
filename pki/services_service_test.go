@@ -72,18 +72,24 @@ wo3KBVGxGCMPQZ8FeqGowJ0yDB8GxZ0=
 	muxPKI.HandleFunc("/core/pki/api/root/ca/pem", returnCA)
 	muxPKI.HandleFunc("/core/pki/api/policy/ca/pem", returnCA)
 
-	cert, resp, err := pkiClient.Services.GetRootCA()
+	cert, block, resp, err := pkiClient.Services.GetRootCA()
 	if !assert.Nil(t, err) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
 		return
 	}
+	if !assert.NotNil(t, block) {
+		return
+	}
 	if !assert.NotNil(t, cert) {
 		return
 	}
-	cert, resp, err = pkiClient.Services.GetPolicyCA()
+	cert, block, resp, err = pkiClient.Services.GetPolicyCA()
 	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, block) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
@@ -130,8 +136,11 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	muxPKI.HandleFunc("/core/pki/api/root/crl/pem", getCrl)
 	muxPKI.HandleFunc("/core/pki/api/policy/crl/pem", getCrl)
 
-	crl, resp, err := pkiClient.Services.GetRootCRL()
+	crl, block, resp, err := pkiClient.Services.GetRootCRL()
 	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, block) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
@@ -140,8 +149,11 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	if !assert.NotNil(t, crl) {
 		return
 	}
-	crl, resp, err = pkiClient.Services.GetPolicyCRL()
+	crl, block, resp, err = pkiClient.Services.GetPolicyCRL()
 	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, block) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
@@ -263,11 +275,11 @@ func TestServicesErrors(t *testing.T) {
 	assert.NotNil(t, err)
 	_, _, err = pkiClient.Services.IssueCertificate("logicalPath", "role", pki.CertificateRequest{})
 	assert.NotNil(t, err)
-	_, _, err = pkiClient.Services.GetPolicyCRL()
+	_, _, _, err = pkiClient.Services.GetPolicyCRL()
 	assert.NotNil(t, err)
-	_, _, err = pkiClient.Services.GetRootCRL()
+	_, _, _, err = pkiClient.Services.GetRootCRL()
 	assert.NotNil(t, err)
-	_, _, err = pkiClient.Services.GetRootCA()
+	_, _, _, err = pkiClient.Services.GetRootCA()
 	assert.NotNil(t, err)
 	_, _, err = pkiClient.Services.GetCertificates("logicalPath", nil)
 	assert.NotNil(t, err)

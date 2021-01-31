@@ -68,89 +68,89 @@ type ServiceOptions struct {
 }
 
 // GetRootCA
-func (c *ServicesService) GetRootCA(options ...OptionFunc) (*x509.Certificate, *Response, error) {
+func (c *ServicesService) GetRootCA(options ...OptionFunc) (*x509.Certificate, *pem.Block, *Response, error) {
 	options = append(options, func(req *http.Request) error {
-		req.Header.Del("Authorization") // Remove authorizaton header
+		req.Header.Del("Authorization") // Remove authorization header
 		return nil
 	})
 	return c.getCA("core/pki/api/root/ca/pem", options...)
 }
 
 // GetPolicyCA
-func (c *ServicesService) GetPolicyCA(options ...OptionFunc) (*x509.Certificate, *Response, error) {
+func (c *ServicesService) GetPolicyCA(options ...OptionFunc) (*x509.Certificate, *pem.Block, *Response, error) {
 	options = append(options, func(req *http.Request) error {
-		req.Header.Del("Authorization") // Remove authorizaton header
+		req.Header.Del("Authorization") // Remove authorization header
 		return nil
 	})
 	return c.getCA("core/pki/api/policy/ca/pem", options...)
 }
 
-func (c *ServicesService) getCA(path string, options ...OptionFunc) (*x509.Certificate, *Response, error) {
+func (c *ServicesService) getCA(path string, options ...OptionFunc) (*x509.Certificate, *pem.Block, *Response, error) {
 	req, err := c.client.newServiceRequest(http.MethodGet, path, nil, options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	resp, err := c.client.do(req, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, ErrEmptyResult
+		return nil, nil, nil, ErrEmptyResult
 	}
 	defer resp.Body.Close()
 	pemData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, resp, err
+		return nil, nil, resp, err
 	}
 	block, _ := pem.Decode(pemData)
 	if block == nil || block.Type != "CERTIFICATE" {
-		return nil, resp, ErrCertificateExpected
+		return nil, nil, resp, ErrCertificateExpected
 	}
 	pub, err := x509.ParseCertificate(block.Bytes)
-	return pub, resp, err
+	return pub, block, resp, err
 }
 
 // GetRootCRL
-func (c *ServicesService) GetRootCRL(options ...OptionFunc) (*pkix.CertificateList, *Response, error) {
+func (c *ServicesService) GetRootCRL(options ...OptionFunc) (*pkix.CertificateList, *pem.Block, *Response, error) {
 	options = append(options, func(req *http.Request) error {
-		req.Header.Del("Authorization") // Remove authorizaton header
+		req.Header.Del("Authorization") // Remove authorization header
 		return nil
 	})
 	return c.getCRL("core/pki/api/root/crl/pem", options...)
 }
 
 // GetPolicyCRL
-func (c *ServicesService) GetPolicyCRL(options ...OptionFunc) (*pkix.CertificateList, *Response, error) {
+func (c *ServicesService) GetPolicyCRL(options ...OptionFunc) (*pkix.CertificateList, *pem.Block, *Response, error) {
 	options = append(options, func(req *http.Request) error {
-		req.Header.Del("Authorization") // Remove authorizaton header
+		req.Header.Del("Authorization") // Remove authorization header
 		return nil
 	})
 	return c.getCRL("core/pki/api/policy/crl/pem", options...)
 }
 
-func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.CertificateList, *Response, error) {
+func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.CertificateList, *pem.Block, *Response, error) {
 	req, err := c.client.newServiceRequest(http.MethodGet, path, nil, options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	resp, err := c.client.do(req, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, ErrEmptyResult
+		return nil, nil, nil, ErrEmptyResult
 	}
 	defer resp.Body.Close()
 	pemData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, resp, err
+		return nil, nil, resp, err
 	}
 	block, _ := pem.Decode(pemData)
 	if block == nil || block.Type != "X509 CRL" {
-		return nil, resp, ErrCRLExpected
+		return nil, nil, resp, ErrCRLExpected
 	}
 	pub, err := x509.ParseCRL(block.Bytes)
-	return pub, resp, err
+	return pub, block, resp, err
 }
 
 func (d *IssueData) GetCertificate() (*x509.Certificate, error) {
