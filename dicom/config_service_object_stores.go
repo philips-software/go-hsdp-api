@@ -9,10 +9,12 @@ import (
 
 // CredsServiceAccess
 type CredsServiceAccess struct {
+	Endpoint       string `json:"endPoint"`
 	ProductKey     string `json:"productKey"`
 	BucketName     string `json:"bucketName"`
 	FolderPath     string `json:"folderPath"`
 	ServiceAccount struct {
+		Name                string `json:"name,omitempty"`
 		ServiceID           string `json:"serviceId"`
 		PrivateKey          string `json:"privateKey"`
 		AccessTokenEndPoint string `json:"accessTokenEndPoint"`
