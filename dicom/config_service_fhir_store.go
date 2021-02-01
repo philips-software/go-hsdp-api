@@ -5,6 +5,17 @@ import (
 	"io"
 )
 
+// FHIRStore
+type FHIRStore struct {
+	ID          string `json:"id,omitempty"`
+	MPIEndpoint string `json:"mpiEndPoint"`
+}
+
+// Valid
+func (f FHIRStore) Valid() bool {
+	return f.MPIEndpoint != ""
+}
+
 // SetFHIRStore
 func (c *ConfigService) SetFHIRStore(svc FHIRStore, opt *QueryOptions, options ...OptionFunc) (*FHIRStore, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)

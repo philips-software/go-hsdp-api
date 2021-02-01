@@ -9,13 +9,13 @@ import (
 	"testing"
 )
 
-func TestFHIRStoreGetSet(t *testing.T) {
+func TestCDRServiceAccountGetSet(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	storeID := "f5a1e608-6787-4af1-a94a-4cbda7677a9c"
+	serviceAccountID := "f5a1e608-6787-4af1-a94a-4cbda7677a9c"
 
-	muxDICOM.HandleFunc("/store/dicom/config/dicom/production/fhirStore", func(w http.ResponseWriter, r *http.Request) {
+	muxDICOM.HandleFunc("/store/dicom/config/dicom/production/cdrServiceAccount", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
@@ -27,25 +27,25 @@ func TestFHIRStoreGetSet(t *testing.T) {
 				w.WriteHeader(http.StatusPreconditionFailed)
 				return
 			}
-			var receivedStore dicom.FHIRStore
-			err := json.NewDecoder(r.Body).Decode(&receivedStore)
+			var received dicom.CDRServiceAccount
+			err := json.NewDecoder(r.Body).Decode(&received)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			receivedStore.ID = storeID
-			resp, err := json.Marshal(&receivedStore)
+			received.ID = serviceAccountID
+			resp, err := json.Marshal(&received)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			_, _ = io.WriteString(w, string(resp))
 		case "GET":
-			store := dicom.FHIRStore{
-				ID: storeID,
+			account := dicom.CDRServiceAccount{
+				ID: serviceAccountID,
 			}
-			resp, err := json.Marshal(&store)
+			resp, err := json.Marshal(&account)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -57,8 +57,9 @@ func TestFHIRStoreGetSet(t *testing.T) {
 		}
 	})
 
-	created, resp, err := dicomClient.Config.SetFHIRStore(dicom.FHIRStore{
-		MPIEndpoint: "https://foo.bar/mpi",
+	created, resp, err := dicomClient.Config.SetCDRServiceAccount(dicom.CDRServiceAccount{
+		ServiceID:  "my@service.id.host",
+		PrivateKey: "APrivateKeyHere",
 	}, nil)
 	if !assert.Nil(t, err) {
 		return
@@ -70,17 +71,17 @@ func TestFHIRStoreGetSet(t *testing.T) {
 		return
 	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.Equal(t, created.ID, storeID)
+	assert.Equal(t, created.ID, serviceAccountID)
 
-	store, resp, err := dicomClient.Config.GetFHIRStore(nil)
+	account, resp, err := dicomClient.Config.GetCDRServiceAccount(nil)
 	if !assert.Nil(t, err) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.NotNil(t, store) {
+	if !assert.NotNil(t, account) {
 		return
 	}
-	assert.Equal(t, store.ID, storeID)
+	assert.Equal(t, serviceAccountID, account.ID)
 }
