@@ -23,9 +23,9 @@ type Role struct {
 	AllowIPSans          bool     `json:"allow_ip_sans" validate:"required"`
 	AllowSubdomains      bool     `json:"allow_subdomains" validate:"required"`
 	AllowedDomains       []string `json:"allowed_domains,omitempty"`
-	AllowedOtherSans     []string `json:"allowed_other_sans,omitempty"`
+	AllowedOtherSans     []string `json:"allowed_other_sans" validate:"required"`
 	AllowedSerialNumbers []string `json:"allowed_serial_numbers,omitempty"`
-	AllowedURISans       []string `json:"allowed_uri_sans,omitempty"`
+	AllowedURISans       []string `json:"allowed_uri_sans" validate:"required"`
 	ClientFlag           bool     `json:"client_flag" validate:"required"`
 	Country              []string `json:"country"`
 	EnforceHostnames     bool     `json:"enforce_hostnames" validate:"required"`
