@@ -94,7 +94,7 @@ func TestOnboarding(t *testing.T) {
 	if !assert.NotNil(t, onboarding) {
 		return
 	}
-	assert.True(t, strings.Contains(onboarding.APIEndpoint, logicalPath))
+	assert.True(t, strings.Contains(string(onboarding.APIEndpoint), logicalPath))
 }
 
 func TestOffboarding(t *testing.T) {
@@ -125,6 +125,15 @@ func TestOffboarding(t *testing.T) {
 	}
 	assert.True(t, ok)
 
+}
+
+func TestLogicalPath(t *testing.T) {
+	endpoint := pki.APIEndpoint("https://foo.bar/core/pki/tenant/andy")
+	logicalPath, err := endpoint.LogicalPath()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, "andy", logicalPath)
 }
 
 func TestRetrieveAndUpdate(t *testing.T) {

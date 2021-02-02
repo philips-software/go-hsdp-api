@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -72,7 +73,20 @@ type Tenant struct {
 }
 
 type OnboardingResponse struct {
-	APIEndpoint string `json:"api_endpoint"`
+	APIEndpoint APIEndpoint `json:"api_endpoint"`
+}
+
+type APIEndpoint string
+
+// LogicalPath returns the logical path component from the APIEndpoint
+func (a APIEndpoint) LogicalPath() (string, error) {
+	var logicalPath string
+	u, err := url.Parse(string(a))
+	if err != nil {
+		return "", err
+	}
+	_, err = fmt.Sscanf(u.Path, "/core/pki/tenant/%s", &logicalPath)
+	return logicalPath, err
 }
 
 func (t *TenantService) setCFAuth(req *http.Request) error {
