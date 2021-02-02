@@ -128,7 +128,7 @@ func TestOffboarding(t *testing.T) {
 }
 
 func TestLogicalPath(t *testing.T) {
-	endpoint := pki.APIEndpoint("https://foo.bar/core/pki/tenant/andy")
+	endpoint := pki.APIEndpoint("https://foo.bar/core/pki/api/andy")
 	logicalPath, err := endpoint.LogicalPath()
 	if !assert.Nil(t, err) {
 		return

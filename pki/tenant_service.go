@@ -85,7 +85,7 @@ func (a APIEndpoint) LogicalPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	_, err = fmt.Sscanf(u.Path, "/core/pki/tenant/%s", &logicalPath)
+	_, err = fmt.Sscanf(u.Path, "/core/pki/api/%s", &logicalPath)
 	return logicalPath, err
 }
 
