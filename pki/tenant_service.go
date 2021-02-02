@@ -48,7 +48,7 @@ type Role struct {
 type CertificateAuthority struct {
 	TTL          string `json:"ttl"`
 	CommonName   string `json:"common_name" validate:"required"`
-	KeyType      string `json:"key_type" validate:"required" enum:"rsa|ec"`
+	KeyType      string `json:"key_type"` // rsa|ec
 	KeyBits      int    `json:"key_bits"`
 	OU           string `json:"ou"`
 	Organization string `json:"organization"`
