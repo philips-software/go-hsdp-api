@@ -14,8 +14,6 @@ import (
 	"os"
 	"strings"
 
-	"go.elastic.co/apm/module/apmhttp"
-
 	signer "github.com/philips-software/go-hsdp-signer"
 
 	"github.com/google/fhir/go/jsonformat"
@@ -74,7 +72,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 				Proxy: http.ProxyFromEnvironment,
 			},
 		}
-		httpClient = apmhttp.WrapClient(c)
+		httpClient = c
 	}
 
 	c := &Client{httpClient: httpClient, config: config, UserAgent: userAgent}

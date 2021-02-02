@@ -19,8 +19,6 @@ import (
 
 	"github.com/philips-software/go-hsdp-api/iam"
 
-	"go.elastic.co/apm/module/apmhttp"
-
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 
 	signer "github.com/philips-software/go-hsdp-signer"
@@ -107,7 +105,7 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 				Proxy: http.ProxyFromEnvironment,
 			},
 		}
-		httpClient = apmhttp.WrapClient(c)
+		httpClient = c
 	}
 	// Autoconfig
 	if config.Region != "" && config.Environment != "" {
