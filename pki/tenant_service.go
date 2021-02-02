@@ -29,32 +29,32 @@ type Role struct {
 	ClientFlag           bool     `json:"client_flag" validate:"required"`
 	Country              []string `json:"country"`
 	EnforceHostnames     bool     `json:"enforce_hostnames" validate:"required"`
-	KeyBits              int      `json:"key_bits"`
-	KeyType              string   `json:"key_type"`
+	KeyBits              int      `json:"key_bits,omitempty"`
+	KeyType              string   `json:"key_type,omitempty"`
 	Locality             []string `json:"locality,omitempty"`
-	MaxTTL               string   `json:"max_ttl"`
-	NotBeforeDuration    string   `json:"not_before_duration"`
+	MaxTTL               string   `json:"max_ttl,omitempty"`
+	NotBeforeDuration    string   `json:"not_before_duration,omitempty"`
 	Organization         []string `json:"organization,omitempty"`
 	OU                   []string `json:"ou,omitempty"`
 	PostalCode           []string `json:"postal_code,omitempty"`
 	Province             []string `json:"province,omitempty"`
 	ServerFlag           bool     `json:"server_flag"`
 	StreetAddress        []string `json:"street_address,omitempty"`
-	TTL                  string   `json:"ttl"`
+	TTL                  string   `json:"ttl,omitempty"`
 	UseCSRCommonName     bool     `json:"use_csr_common_name"`
 	UseCSRSans           bool     `json:"use_csr_sans"`
 }
 
 type CertificateAuthority struct {
-	TTL          string `json:"ttl"`
+	TTL          string `json:"ttl,omitempty"`
 	CommonName   string `json:"common_name" validate:"required"`
-	KeyType      string `json:"key_type"` // rsa|ec
-	KeyBits      int    `json:"key_bits"`
-	OU           string `json:"ou"`
-	Organization string `json:"organization"`
-	Country      string `json:"country"`
-	Locality     string `json:"locality"`
-	Province     string `json:"province"`
+	KeyType      string `json:"key_type,omitempty"` // rsa|ec
+	KeyBits      int    `json:"key_bits,omitempty"`
+	OU           string `json:"ou,omitempty"`
+	Organization string `json:"organization,omitempty"`
+	Country      string `json:"country,omitempty"`
+	Locality     string `json:"locality,omitempty"`
+	Province     string `json:"province,omitempty"`
 }
 
 type ServiceParameters struct {
