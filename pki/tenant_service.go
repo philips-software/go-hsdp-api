@@ -170,7 +170,7 @@ func (t *TenantService) Update(tenant Tenant, options ...OptionFunc) (bool, *Res
 }
 
 func (t *TenantService) Offboard(tenant Tenant, options ...OptionFunc) (bool, *Response, error) {
-	req, err := t.client.newTenantRequest(http.MethodDelete, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
+	req, err := t.client.newTenantRequest(http.MethodDelete, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, nil, options)
 	if err != nil {
 		return false, nil, err
 	}

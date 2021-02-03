@@ -224,6 +224,13 @@ func TestRetrieveAndUpdate(t *testing.T) {
 		return
 	}
 	assert.Equal(t, logicalPath, tenant.ServiceParameters.LogicalPath)
+	if !assert.Equal(t, 1, len(tenant.ServiceParameters.Roles)) {
+		return
+	}
+	if !assert.Equal(t, 1, len(tenant.ServiceParameters.Roles[0].AllowedURISans)) {
+		return
+	}
+	assert.Equal(t, "*", tenant.ServiceParameters.Roles[0].AllowedURISans[0])
 
 	ok, resp, err := pkiClient.Tenants.Update(*tenant)
 	if !assert.Nil(t, err) {
