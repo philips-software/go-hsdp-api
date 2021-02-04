@@ -72,6 +72,15 @@ type Tenant struct {
 	ServiceParameters ServiceParameters `json:"service_parameters" validate:"required"`
 }
 
+func (t Tenant) GetRoleOk(role string) (Role, bool) {
+	for _, r := range t.ServiceParameters.Roles {
+		if r.Name == role {
+			return r, true
+		}
+	}
+	return Role{}, false
+}
+
 type OnboardingResponse struct {
 	APIEndpoint APIEndpoint `json:"api_endpoint"`
 }

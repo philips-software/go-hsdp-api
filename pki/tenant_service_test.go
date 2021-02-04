@@ -231,8 +231,10 @@ func TestRetrieveAndUpdate(t *testing.T) {
 		return
 	}
 	assert.Equal(t, "*", tenant.ServiceParameters.Roles[0].AllowedURISans[0])
+	_, ok := tenant.GetRoleOk("ec384")
+	assert.True(t, ok)
 
-	ok, resp, err := pkiClient.Tenants.Update(*tenant)
+	ok, resp, err = pkiClient.Tenants.Update(*tenant)
 	if !assert.Nil(t, err) {
 		return
 	}
