@@ -6,6 +6,7 @@ import (
 	"encoding/pem"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -30,24 +31,40 @@ type CertificateRequest struct {
 }
 
 type IssueData struct {
-	CaChain        []string `json:"ca_chain"`
-	Certificate    string   `json:"certificate"`
-	Expiration     int      `json:"expiration"`
-	IssuingCa      string   `json:"issuing_ca"`
-	PrivateKey     string   `json:"private_key"`
-	PrivateKeyType string   `json:"private_key_type"`
-	SerialNumber   string   `json:"serial_number"`
+	CaChain        []string `json:"ca_chain,omitempty"`
+	Certificate    string   `json:"certificate,omitempty"`
+	Expiration     int      `json:"expiration,omitempty"`
+	IssuingCa      string   `json:"issuing_ca,omitempty"`
+	PrivateKey     string   `json:"private_key,omitempty"`
+	PrivateKeyType string   `json:"private_key_type,omitempty"`
+	SerialNumber   string   `json:"serial_number,omitempty"`
 }
 
+// IssueResponse
 type IssueResponse struct {
 	RequestID     string    `json:"request_id"`
 	LeaseID       string    `json:"lease_id"`
 	Renewable     bool      `json:"renewable"`
 	LeaseDuration int       `json:"lease_duration"`
 	Data          IssueData `json:"data"`
-	WrapInfo      *string   `json:"wrap_info"`
-	Warnings      *string   `json:"warnings"`
-	Auth          *string   `json:"auth"`
+	WrapInfo      *string   `json:"wrap_info,omitempty"`
+	Warnings      *string   `json:"warnings,omitempty"`
+	Auth          *string   `json:"auth,omitempty"`
+}
+
+// RevokeResponse
+type RevokeResponse struct {
+	RequestID     string `json:"request_id"`
+	LeaseID       string `json:"lease_id"`
+	Renewable     bool   `json:"renewable"`
+	LeaseDuration int    `json:"lease_duration"`
+	Data          struct {
+		RevocationTime        int       `json:"revocation_time"`
+		RevocationTimeRfc3339 time.Time `json:"revocation_time_rfc3339"`
+	} `json:"data"`
+	WrapInfo *string `json:"wrap_info,omitempty"`
+	Warnings *string `json:"warnings,omitempty"`
+	Auth     *string `json:"auth,omitempty"`
 }
 
 // SignRequest
@@ -230,6 +247,31 @@ func (c *ServicesService) IssueCertificate(logicalPath, roleName string, request
 		return nil, nil, ErrEmptyResult
 	}
 	return &responseStruct.IssueResponse, resp, nil
+}
+
+// RevokeCertificateBySerial
+func (c *ServicesService) RevokeCertificateBySerial(logicalPath, serial string, options ...OptionFunc) (*RevokeResponse, *Response, error) {
+	revokeRequest := struct {
+		SerialNumber string `json:"serial_number"`
+	}{
+		SerialNumber: serial,
+	}
+	req, err := c.client.newServiceRequest(http.MethodPost, "core/pki/api/"+logicalPath+"/revoke", revokeRequest, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	var responseStruct struct {
+		RevokeResponse
+		ErrorResponse
+	}
+	resp, err := c.client.do(req, &responseStruct)
+	if err != nil {
+		return nil, nil, err
+	}
+	if resp == nil {
+		return nil, nil, ErrEmptyResult
+	}
+	return &responseStruct.RevokeResponse, resp, nil
 }
 
 // GetCertificateBySerial

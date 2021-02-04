@@ -164,6 +164,51 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	}
 }
 
+func TestRevokeCertificate(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	response := `{
+  "request_id": "6236ee66-1876-5580-6a48-99c3305366f5",
+  "lease_id": "",
+  "renewable": false,
+  "lease_duration": 0,
+  "data": {
+    "revocation_time": 1612418059,
+    "revocation_time_rfc3339": "2021-02-04T05:54:19.844392339Z"
+  },
+  "wrap_info": null,
+  "warnings": null,
+  "auth": null
+}`
+	revokeCert := func(logicalPath, serial string) func(http.ResponseWriter, *http.Request) {
+		return func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			switch r.Method {
+			case "POST":
+				w.WriteHeader(http.StatusOK)
+				_, _ = io.WriteString(w, response)
+			default:
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
+		}
+	}
+	serial := "21:53:d0:64:28:6f:52:80:ac:7e:ff:9e:fb:ed:73:aa:e6:48:11:0d"
+	logicalPath := "ron-swanson"
+	muxPKI.HandleFunc("/core/pki/api/"+logicalPath+"/revoke", revokeCert(logicalPath, serial))
+	revoke, resp, err := pkiClient.Services.RevokeCertificateBySerial(logicalPath, serial)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, revoke) {
+		return
+	}
+	assert.Equal(t, 1612418059, revoke.Data.RevocationTime)
+}
+
 func TestIssueAndSignCertificates(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
@@ -282,6 +327,8 @@ func TestServicesErrors(t *testing.T) {
 	_, _, _, err = pkiClient.Services.GetRootCA()
 	assert.NotNil(t, err)
 	_, _, err = pkiClient.Services.GetCertificates("logicalPath", nil)
+	assert.NotNil(t, err)
+	_, _, err = pkiClient.Services.RevokeCertificateBySerial("logicalPath", "serial")
 	assert.NotNil(t, err)
 }
 
