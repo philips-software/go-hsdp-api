@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.34.4
+- Fix some PKI methods
+- Add IAM token revoke calls
+
+
 ## v0.34.3
 - Remove elastic due to license change
 
