@@ -101,6 +101,8 @@ url = "https://uaa.eu1.phsdp.com"
 url = "https://uaa.sys.sa1.hsdp.io"
 [region.apac3.service.uaa]
 url = "https://uaa.sys.ap3.hsdp.io"
+[region.dev.service.uaa]
+url = "https://uaa.cloud.phsdp.com"
 
 # Service IAM
 [region.us-east.env.client-test.service.iam]

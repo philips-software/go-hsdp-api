@@ -128,7 +128,8 @@ type Client struct {
 
 	Metrics *MetricsService
 
-	debugFile *os.File
+	debugFile  *os.File
+	consoleErr error
 
 	sync.Mutex
 }
@@ -154,15 +155,12 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if config.UAAURL == "" {
 		return nil, ErrUAAURLCannotBeEmpty
 	}
-	if config.BaseConsoleURL == "" {
-		return nil, ErrConsoleURLCannotBeEmpty
-	}
 	c := &Client{client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseUAAURL(c.config.UAAURL); err != nil {
 		return nil, err
 	}
 	if err := c.SetBaseConsoleURL(c.config.BaseConsoleURL); err != nil {
-		return nil, err
+		c.consoleErr = err
 	}
 
 	if config.DebugLog != "" {
@@ -324,6 +322,9 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		u = *c.baseUAAURL
 		u.Opaque = c.baseUAAURL.Path + path
 	case CONSOLE:
+		if c.consoleErr != nil {
+			return nil, c.consoleErr
+		}
 		u = *c.baseConsoleURL
 		u.Opaque = c.baseConsoleURL.Path + path
 	default:

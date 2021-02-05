@@ -41,6 +41,13 @@
         }
       }
     },
+    "dev": {
+      "service": {
+        "uaa": {
+          "url": "https://uaa.cloud.phsdp.com"
+        }
+      }
+    },
     "eu-west": {
       "env": {
         "client-test": {

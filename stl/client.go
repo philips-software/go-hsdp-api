@@ -1,8 +1,11 @@
 package stl
 
 import (
+	"context"
+	"github.com/hasura/go-graphql-client"
 	"github.com/philips-software/go-hsdp-api/console"
 	"github.com/philips-software/go-hsdp-api/internal"
+	"golang.org/x/oauth2"
 	"net/http"
 	"os"
 )
@@ -27,6 +30,8 @@ type Client struct {
 	// HTTP client used to communicate with IAM API
 	consoleClient *console.Client
 
+	gql *graphql.Client
+
 	config *Config
 
 	// User agent used when communicating with the HSDP DICOM API.
@@ -45,16 +50,28 @@ func NewClient(consoleClient *console.Client, config *Config) (*Client, error) {
 
 func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	c := &Client{consoleClient: consoleClient, config: config, UserAgent: userAgent}
+	httpClient := oauth2.NewClient(context.Background(), consoleClient)
+
 	if config.DebugLog != "" {
 		var err error
 		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err != nil {
-			c.debugFile = nil
+		if err == nil {
+			httpClient.Transport = newLoggingRoundTripper(httpClient.Transport, c.debugFile)
 		}
 	}
+	header := make(http.Header)
+	header.Set("User-Agent", userAgent)
+	httpClient.Transport = newHeaderRoundTripper(httpClient.Transport, header)
+
+	c.gql = graphql.NewClient("https://console.na3.hsdp.io/api/stl/user/v1/graphql", httpClient)
 	c.Devices = &DevicesService{client: c}
 
 	return c, nil
+}
+
+// Query is a generic GraphQL query
+func (c *Client) Query(ctx context.Context, q interface{}, variables map[string]interface{}) error {
+	return c.gql.Query(ctx, q, variables)
 }
 
 // Close releases allocated resources of clients
