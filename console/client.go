@@ -3,10 +3,10 @@ package console
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/philips-software/go-hsdp-api/internal"
+	"golang.org/x/oauth2"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -208,8 +208,8 @@ func (c *Client) HttpClient() *http.Client {
 	return c.client
 }
 
-// Token returns the current token
-func (c *Client) Token() string {
+// Token returns the current token. It also confirms to TokenSource
+func (c *Client) Token() (*oauth2.Token, error) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -218,10 +218,14 @@ func (c *Client) Token() string {
 
 	if expires-now < 60 {
 		if c.TokenRefresh() != nil {
-			return ""
+			return nil, fmt.Errorf("failed to refresh console token")
 		}
 	}
-	return c.token
+	return &oauth2.Token{
+		AccessToken:  c.token,
+		RefreshToken: c.refreshToken,
+		Expiry:       c.expiresAt,
+	}, nil
 }
 
 // TokenRefresh refreshes the accessToken
@@ -371,8 +375,10 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 
 	switch c.tokenType {
 	case oAuthToken:
-		if token := c.Token(); token != "" {
-			req.Header.Set("Authorization", "Bearer "+c.token)
+		if token, err := c.Token(); err == nil {
+			req.Header.Set("Authorization", "Bearer "+token.AccessToken)
+		} else {
+			req.Header.Set("X-Authorization-Error", err.Error())
 		}
 	}
 
@@ -441,14 +447,6 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 	err = checkResponse(resp)
 	return response, err
-}
-
-// WithContext runs the request with the provided context
-func WithContext(ctx context.Context) OptionFunc {
-	return func(req *http.Request) error {
-		*req = *req.WithContext(ctx)
-		return nil
-	}
 }
 
 // CheckResponse checks the API response for errors, and returns them if present.

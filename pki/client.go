@@ -249,7 +249,11 @@ func (c *Client) newTenantRequest(method, path string, opt interface{}, options 
 	}
 
 	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Authorization", "Bearer "+c.consoleClient.Token())
+	tk, err := c.consoleClient.Token()
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", tk.AccessToken)
 	req.Header.Set("API-Version", APIVersion)
 
 	if c.UserAgent != "" {

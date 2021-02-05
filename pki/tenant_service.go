@@ -102,11 +102,11 @@ func (t *TenantService) setCFAuth(req *http.Request) error {
 	if t.client.consoleClient == nil {
 		return ErrCFClientNotConfigured
 	}
-	token := t.client.consoleClient.Token()
-	if token == "" {
-		return ErrCFInvalidToken
+	token, err := t.client.consoleClient.Token()
+	if err != nil {
+		return fmt.Errorf("setCFAuth: %w", err)
 	}
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 	return nil
 }
 
