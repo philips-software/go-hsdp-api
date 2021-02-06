@@ -43,6 +43,9 @@
     },
     "dev": {
       "service": {
+        "stl": {
+          "url": "https://console.na3.hsdp.io/api/stl/user/v1/graphql"
+        },
         "uaa": {
           "url": "https://uaa.cloud.phsdp.com"
         }
@@ -116,6 +119,9 @@
         "gateway": {
           "domain": "emea1.phsdp.com",
           "host": "gw-eu1.phsdp.com"
+        },
+        "stl": {
+          "url": "https://console.eu1.hsdp.io/api/stl/user/v1/graphql"
         },
         "uaa": {
           "url": "https://uaa.eu1.phsdp.com"
@@ -265,6 +271,9 @@
         "gateway": {
           "domain": "na1.phsdp.com",
           "host": "gw-na1.phsdp.com"
+        },
+        "stl": {
+          "url": "https://console.na1.hsdp.io/api/stl/user/v1/graphql"
         },
         "uaa": {
           "url": "https://uaa.cloud.pcftest.com"

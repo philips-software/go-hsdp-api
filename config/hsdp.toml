@@ -92,6 +92,14 @@ url = "https://console.sa1.hsdp.io"
 [region.apac3.service.console]
 url = "https://console.ap3.hsdp.io"
 
+# Service STL
+[region.dev.service.stl]
+url = "https://console.na3.hsdp.io/api/stl/user/v1/graphql"
+[region.us-east.service.stl]
+url = "https://console.na1.hsdp.io/api/stl/user/v1/graphql"
+[region.eu-west.service.stl]
+url = "https://console.eu1.hsdp.io/api/stl/user/v1/graphql"
+
 # Service UAA
 [region.us-east.service.uaa]
 url = "https://uaa.cloud.pcftest.com"
