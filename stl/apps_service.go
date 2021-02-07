@@ -10,37 +10,35 @@ type AppsService struct {
 }
 
 type AppResource struct {
-	ID       int64
-	DeviceID int64
-	Name     string
-	Content  string
+	ID       int64  `json:"id"`
+	DeviceID int64  `json:"deviceId"`
+	Name     string `json:"name"`
+	Content  string `json:"content"`
 }
 
 type CreateApplicationResourceInput struct {
-	DeviceId     int64  `graphql:"deviceId"`
-	SerialNumber string `graphql:"serialNumber"`
-	GroupId      string `graphql:"groupId"`
-	Name         string `graphql:"name"`
-	Content      string `graphql:"content"`
-	IsLocked     bool   `graphql:"isLocked"`
+	SerialNumber string `json:"serialNumber"`
+	Name         string `json:"name"`
+	Content      string `json:"content"`
+	IsLocked     bool   `json:"isLocked"`
 }
 
 type UpdateApplicationResourceInput struct {
-	ID           int64  `graphql:"id"`
-	DeviceID     int64  `graphql:"deviceId"`
-	SerialNumber string `graphql:"serialNumber"`
-	GroupID      string `graphql:"groupId"`
-	Name         string `graphql:"idname"`
-	Content      string `graphql:"content"`
-	IsLocked     bool   `graphql:"isLocked"`
+	ID           int64  `json:"id"`
+	DeviceID     int64  `json:"deviceId"`
+	SerialNumber string `json:"serialNumber"`
+	GroupID      string `json:"groupId"`
+	Name         string `json:"name"`
+	Content      string `json:"content"`
+	IsLocked     bool   `json:"isLocked"`
 }
 
 type DeleteApplicationResourceInput struct {
-	ID           int64
-	Name         string
-	SerialNumber string
-	DeviceID     int64
-	GroupID      string
+	ID           int64  `json:"id"`
+	Name         string `json:"name"`
+	SerialNumber string `json:"serialNumber"`
+	DeviceID     int64  `json:"deviceId"`
+	GroupID      string `json:"groupId"`
 }
 
 func (a *AppsService) GetAppResourceByID(ctx context.Context, id int64) (*AppResource, error) {
