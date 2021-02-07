@@ -17,22 +17,22 @@ type AppResource struct {
 }
 
 type CreateApplicationResourceInput struct {
-	DeviceId     int64
-	SerialNumber string
-	GroupId      string
-	Name         string
-	Content      string
-	IsLocked     bool
+	DeviceId     int64  `graphql:"deviceId"`
+	SerialNumber string `graphql:"serialNumber"`
+	GroupId      string `graphql:"groupId"`
+	Name         string `graphql:"name"`
+	Content      string `graphql:"content"`
+	IsLocked     bool   `graphql:"isLocked"`
 }
 
 type UpdateApplicationResourceInput struct {
-	ID           int64
-	DeviceID     int64
-	SerialNumber string
-	GroupID      string
-	Name         string
-	Content      string
-	IsLocked     bool
+	ID           int64  `graphql:"id"`
+	DeviceID     int64  `graphql:"deviceId"`
+	SerialNumber string `graphql:"serialNumber"`
+	GroupID      string `graphql:"groupId"`
+	Name         string `graphql:"idname"`
+	Content      string `graphql:"content"`
+	IsLocked     bool   `graphql:"isLocked"`
 }
 
 type DeleteApplicationResourceInput struct {
