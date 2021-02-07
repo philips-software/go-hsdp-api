@@ -33,6 +33,19 @@ type DeleteApplicationResourceInput struct {
 	GroupID      string
 }
 
+func (a *AppsService) GetAppResourceByID(ctx context.Context, id int64) (*AppResource, error) {
+	var query struct {
+		App AppResource `graphql:"applicationResource(id: $id)"`
+	}
+	err := a.client.gql.Query(ctx, &query, map[string]interface{}{
+		"id": graphql.Int(id),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &query.App, nil
+}
+
 func (a *AppsService) GetAppResourceByDeviceIDAndName(ctx context.Context, deviceID int64, name string) (*AppResource, error) {
 	var query struct {
 		App AppResource `graphql:"applicationResource(id: $id, name: $name)"`
