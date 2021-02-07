@@ -3,6 +3,7 @@ package stl
 import (
 	"context"
 	"github.com/hasura/go-graphql-client"
+	autoconf "github.com/philips-software/go-hsdp-api/config"
 	"github.com/philips-software/go-hsdp-api/console"
 	"github.com/philips-software/go-hsdp-api/internal"
 	"golang.org/x/oauth2"
@@ -41,6 +42,7 @@ type Client struct {
 
 	Devices   *DevicesService
 	Resources *ResourcesService
+	Apps      *AppsService
 }
 
 // NewClient returns a new HSDP DICOM API client. Configured console and IAM clients
@@ -50,6 +52,7 @@ func NewClient(consoleClient *console.Client, config *Config) (*Client, error) {
 }
 
 func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
+	doAutoconf(config)
 	c := &Client{consoleClient: consoleClient, config: config, UserAgent: userAgent}
 	httpClient := oauth2.NewClient(context.Background(), consoleClient)
 
@@ -64,11 +67,25 @@ func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	header.Set("User-Agent", userAgent)
 	httpClient.Transport = newHeaderRoundTripper(httpClient.Transport, header)
 
-	c.gql = graphql.NewClient("https://console.na3.hsdp.io/api/stl/user/v1/graphql", httpClient)
+	c.gql = graphql.NewClient(config.STLAPIURL, httpClient)
 	c.Devices = &DevicesService{client: c}
 	c.Resources = &ResourcesService{client: c}
+	c.Apps = &AppsService{client: c}
 
 	return c, nil
+}
+
+func doAutoconf(config *Config) {
+	if config.Region != "" {
+		c, err := autoconf.New(
+			autoconf.WithRegion(config.Region))
+		if err == nil {
+			stlService := c.Service("stl")
+			if config.STLAPIURL == "" {
+				config.STLAPIURL = stlService.URL
+			}
+		}
+	}
 }
 
 // Query is a generic GraphQL query
