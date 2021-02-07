@@ -25,6 +25,16 @@ type CreateApplicationResourceInput struct {
 	IsLocked     bool
 }
 
+type UpdateApplicationResourceInput struct {
+	ID           int64
+	DeviceID     int64
+	SerialNumber string
+	GroupID      string
+	Name         string
+	Content      string
+	IsLocked     bool
+}
+
 type DeleteApplicationResourceInput struct {
 	ID           int64
 	Name         string
@@ -98,6 +108,25 @@ func (a *AppsService) CreateAppResource(ctx context.Context, input CreateApplica
 		return nil, err
 	}
 	return &mutation.CreateApplicationResource.ApplicationResource, nil
+}
+
+func (a *AppsService) UpdateAppResource(ctx context.Context, input UpdateApplicationResourceInput) (*AppResource, error) {
+	var mutation struct {
+		UpdateApplicationResource struct {
+			Success             string
+			Message             string
+			StatusCode          int
+			RequestID           string
+			ApplicationResource AppResource
+		} `graphql:"updateApplicationResource(input: $input)"`
+	}
+	err := a.client.gql.Query(ctx, &mutation, map[string]interface{}{
+		"input": input,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &mutation.UpdateApplicationResource.ApplicationResource, nil
 }
 
 func (a *AppsService) DeleteAppResource(ctx context.Context, input DeleteApplicationResourceInput) (bool, error) {
