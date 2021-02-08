@@ -81,6 +81,9 @@ func (c *ConfigService) UpdateAppFirewallExceptions(ctx context.Context, input U
 	if err != nil {
 		return nil, err
 	}
+	if !mutation.UpdateAppFirewallException.Success {
+		return nil, fmt.Errorf("%d: %s", mutation.UpdateAppFirewallException.StatusCode, mutation.UpdateAppFirewallException.Message)
+	}
 	return &mutation.UpdateAppFirewallException.AppFirewallException, nil
 }
 
