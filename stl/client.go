@@ -40,9 +40,9 @@ type Client struct {
 
 	debugFile *os.File
 
-	Devices   *DevicesService
-	Resources *ResourcesService
-	Apps      *AppsService
+	Devices *DevicesService
+	Apps    *AppsService
+	Config  *ConfigService
 }
 
 // NewClient returns a new HSDP DICOM API client. Configured console and IAM clients
@@ -69,8 +69,8 @@ func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 
 	c.gql = graphql.NewClient(config.STLAPIURL, httpClient)
 	c.Devices = &DevicesService{client: c}
-	c.Resources = &ResourcesService{client: c}
 	c.Apps = &AppsService{client: c}
+	c.Config = &ConfigService{client: c}
 
 	return c, nil
 }
