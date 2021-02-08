@@ -105,7 +105,7 @@ func (a *CertsService) UpdateCustomCert(ctx context.Context, input UpdateAppCust
 	return &mutation.UpdateApplicationResource.CustomCert, nil
 }
 
-func (a *AppsService) DeleteCustomCert(ctx context.Context, input DeleteAppCustomCertInput) (bool, error) {
+func (a *CertsService) DeleteCustomCert(ctx context.Context, input DeleteAppCustomCertInput) (bool, error) {
 	var mutation struct {
 		DeleteAppCustomCert struct {
 			Success    bool
