@@ -2,6 +2,7 @@ package stl
 
 import (
 	"context"
+	"fmt"
 	"github.com/hasura/go-graphql-client"
 )
 
@@ -34,6 +35,18 @@ type UpdateAppFirewallExceptionInput struct {
 type UpdateAppLoggingInput struct {
 	AppLogging
 	SerialNumber string `json:"serialNumber"`
+}
+
+func (u UpdateAppLoggingInput) Validate() (bool, error) {
+	// Valid HSDP config
+	if u.HSDPSharedKey != "" && u.HSDPIngestorHost != "" && u.HSDPSecretKey != "" && u.HSDPProductKey != "" && u.RawConfig == "" {
+		return true, nil
+	}
+	// Valid RAW config
+	if u.RawConfig != "" && (u.HSDPSharedKey == "" && u.HSDPIngestorHost == "" && u.HSDPSecretKey == "" && u.HSDPProductKey == "") {
+		return true, nil
+	}
+	return false, fmt.Errorf("invalid or conflicting HSDP / Raw config")
 }
 
 func (c *ConfigService) GetFirewallExceptionsBySerial(ctx context.Context, serial string) (*AppFirewallException, error) {
