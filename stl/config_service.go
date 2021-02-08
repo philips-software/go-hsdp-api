@@ -38,6 +38,10 @@ type UpdateAppLoggingInput struct {
 }
 
 func (u UpdateAppLoggingInput) Validate() (bool, error) {
+	// Empty config is acceptable
+	if u.RawConfig == "" && u.HSDPSharedKey == "" && u.HSDPIngestorHost == "" && u.HSDPSecretKey == "" && u.HSDPProductKey == "" {
+		return true, nil
+	}
 	// Valid HSDP config
 	if u.HSDPSharedKey != "" && u.HSDPIngestorHost != "" && u.HSDPSecretKey != "" && u.HSDPProductKey != "" && u.RawConfig == "" {
 		return true, nil
