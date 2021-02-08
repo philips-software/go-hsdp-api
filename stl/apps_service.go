@@ -99,7 +99,7 @@ func (a *AppsService) CreateAppResource(ctx context.Context, input CreateApplica
 			ApplicationResource AppResource
 		} `graphql:"createApplicationResource(input: $input)"`
 	}
-	err := a.client.gql.Query(ctx, &mutation, map[string]interface{}{
+	err := a.client.gql.Mutate(ctx, &mutation, map[string]interface{}{
 		"input": input,
 	})
 	if err != nil {
@@ -118,7 +118,7 @@ func (a *AppsService) UpdateAppResource(ctx context.Context, input UpdateApplica
 			ApplicationResource AppResource
 		} `graphql:"updateApplicationResource(input: $input)"`
 	}
-	err := a.client.gql.Query(ctx, &mutation, map[string]interface{}{
+	err := a.client.gql.Mutate(ctx, &mutation, map[string]interface{}{
 		"input": input,
 	})
 	if err != nil {
@@ -136,7 +136,7 @@ func (a *AppsService) DeleteAppResource(ctx context.Context, input DeleteApplica
 			RequestID  string
 		} `graphql:"deleteApplicationResource(input: $input)"`
 	}
-	err := a.client.gql.Query(ctx, &mutation, map[string]interface{}{
+	err := a.client.gql.Mutate(ctx, &mutation, map[string]interface{}{
 		"input": input,
 	})
 	if err != nil {
