@@ -92,7 +92,7 @@ func (a *AppsService) GetAppResourcesBySerial(ctx context.Context, serial string
 func (a *AppsService) CreateAppResource(ctx context.Context, input CreateApplicationResourceInput) (*AppResource, error) {
 	var mutation struct {
 		CreateApplicationResource struct {
-			Success             string
+			Success             bool
 			Message             string
 			StatusCode          int
 			RequestID           string
@@ -111,7 +111,7 @@ func (a *AppsService) CreateAppResource(ctx context.Context, input CreateApplica
 func (a *AppsService) UpdateAppResource(ctx context.Context, input UpdateApplicationResourceInput) (*AppResource, error) {
 	var mutation struct {
 		UpdateApplicationResource struct {
-			Success             string
+			Success             bool
 			Message             string
 			StatusCode          int
 			RequestID           string
@@ -130,7 +130,7 @@ func (a *AppsService) UpdateAppResource(ctx context.Context, input UpdateApplica
 func (a *AppsService) DeleteAppResource(ctx context.Context, input DeleteApplicationResourceInput) (bool, error) {
 	var mutation struct {
 		DeleteApplicationResource struct {
-			Success    string
+			Success    bool
 			Message    string
 			StatusCode int
 			RequestID  string
