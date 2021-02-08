@@ -43,6 +43,7 @@ type Client struct {
 	Devices *DevicesService
 	Apps    *AppsService
 	Config  *ConfigService
+	Certs   *CertsService
 }
 
 // NewClient returns a new HSDP DICOM API client. Configured console and IAM clients
@@ -71,6 +72,7 @@ func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	c.Devices = &DevicesService{client: c}
 	c.Apps = &AppsService{client: c}
 	c.Config = &ConfigService{client: c}
+	c.Certs = &CertsService{client: c}
 
 	return c, nil
 }
