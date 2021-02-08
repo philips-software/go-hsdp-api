@@ -24,7 +24,7 @@ type AppLogging struct {
 	HSDPSharedKey    string `json:"hsdpSharedKey"`
 	HSDPSecretKey    string `json:"hsdpSecretKey"`
 	HSDPProductKey   string `json:"hsdpProductKey"`
-	HSDPCustomField  bool   `json:"hsdpCustomField"`
+	HSDPCustomField  *bool  `json:"hsdpCustomField,omitempty"`
 }
 
 type UpdateAppFirewallExceptionInput struct {
