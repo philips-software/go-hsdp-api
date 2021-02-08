@@ -73,7 +73,6 @@ func (a *CertsService) CreateCustomCert(ctx context.Context, input CreateAppCust
 			Success    bool
 			Message    string
 			StatusCode int
-			RequestID  string
 			CustomCert CustomCert
 		} `graphql:"createAppCustomCert(input: $input)"`
 	}
