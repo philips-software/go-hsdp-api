@@ -70,10 +70,10 @@ func (a *CertsService) GetCustomCertsBySerial(ctx context.Context, serial string
 func (a *CertsService) CreateCustomCert(ctx context.Context, input CreateAppCustomCertInput) (*CustomCert, error) {
 	var mutation struct {
 		CreateAppCustomCert struct {
-			Success    bool
-			Message    string
-			StatusCode int
-			CustomCert CustomCert
+			Success       bool
+			Message       string
+			StatusCode    int
+			AppCustomCert CustomCert
 		} `graphql:"createAppCustomCert(input: $input)"`
 	}
 	err := a.client.gql.Mutate(ctx, &mutation, map[string]interface{}{
@@ -82,17 +82,17 @@ func (a *CertsService) CreateCustomCert(ctx context.Context, input CreateAppCust
 	if err != nil {
 		return nil, err
 	}
-	return &mutation.CreateAppCustomCert.CustomCert, nil
+	return &mutation.CreateAppCustomCert.AppCustomCert, nil
 }
 
 func (a *CertsService) UpdateCustomCert(ctx context.Context, input UpdateAppCustomCertInput) (*CustomCert, error) {
 	var mutation struct {
 		UpdateApplicationResource struct {
-			Success    bool
-			Message    string
-			StatusCode int
-			RequestID  string
-			CustomCert CustomCert
+			Success       bool
+			Message       string
+			StatusCode    int
+			RequestID     string
+			AppCustomCert CustomCert
 		} `graphql:"updateAppCustomCert(input: $input)"`
 	}
 	err := a.client.gql.Mutate(ctx, &mutation, map[string]interface{}{
@@ -101,7 +101,7 @@ func (a *CertsService) UpdateCustomCert(ctx context.Context, input UpdateAppCust
 	if err != nil {
 		return nil, err
 	}
-	return &mutation.UpdateApplicationResource.CustomCert, nil
+	return &mutation.UpdateApplicationResource.AppCustomCert, nil
 }
 
 func (a *CertsService) DeleteCustomCert(ctx context.Context, input DeleteAppCustomCertInput) (bool, error) {
