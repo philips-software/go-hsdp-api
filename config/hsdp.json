@@ -208,6 +208,9 @@
             "logging": {
               "url": "https://logingestor2-client-test.us-east.philips-healthsuite.com"
             },
+            "pki": {
+              "url": "https://pki-client-test.us-east.philips-healthsuite.com"
+            },
             "s3creds": {
               "url": "https://s3creds-client-test.us-east.philips-healthsuite.com"
             }
