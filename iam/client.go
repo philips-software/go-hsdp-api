@@ -10,7 +10,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"sort"
@@ -20,7 +19,6 @@ import (
 
 	validator "github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
-	"github.com/google/uuid"
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 	hsdpsigner "github.com/philips-software/go-hsdp-signer"
 )
@@ -129,13 +127,15 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		c.signer = config.Signer
 	}
 	if config.DebugLog != "" {
-		debugFile, err := os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err != nil {
-			c.debugFile = nil
-		} else {
-			c.debugFile = debugFile
+		var err error
+		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if err == nil {
+			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
 		}
 	}
+	header := make(http.Header)
+	header.Set("User-Agent", userAgent)
+	httpClient.Transport = internal.NewHeaderRoundTripper(httpClient.Transport, header)
 
 	c.validate = validator.New()
 	c.Organizations = &OrganizationsService{client: c}
@@ -459,10 +459,6 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 			req.Header.Set("Authorization", "Bearer "+c.token)
 		}
 	}
-
-	if c.UserAgent != "" {
-		req.Header.Set("User-Agent", c.UserAgent)
-	}
 	return req, nil
 }
 
@@ -495,19 +491,7 @@ func (c *Client) doSigned(req *http.Request, v interface{}) (*Response, error) {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	id := uuid.New()
-
-	if c.debugFile != nil {
-		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Request [%s] start ---\n%s\n[go-hsdp-api] --- Request [%s] end ---\n", id, string(dumped), id)
-		_, _ = c.debugFile.WriteString(out)
-	}
 	resp, err := c.client.Do(req)
-	if c.debugFile != nil && resp != nil {
-		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Response [%s] start ---\n%s\n[go-hsdp-api] --- Response [%s] end ---\n", id, string(dumped), id)
-		_, _ = c.debugFile.WriteString(out)
-	}
 	if err != nil {
 		return nil, err
 	}
