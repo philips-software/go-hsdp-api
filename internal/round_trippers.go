@@ -1,4 +1,4 @@
-package stl
+package internal
 
 import (
 	"fmt"
@@ -7,22 +7,22 @@ import (
 	"os"
 )
 
-type headerRoundTripper struct {
+type HeaderRoundTripper struct {
 	next   http.RoundTripper
 	Header http.Header
 }
 
-func newHeaderRoundTripper(next http.RoundTripper, Header http.Header) *headerRoundTripper {
+func NewHeaderRoundTripper(next http.RoundTripper, Header http.Header) *HeaderRoundTripper {
 	if next == nil {
 		next = http.DefaultTransport
 	}
-	return &headerRoundTripper{
+	return &HeaderRoundTripper{
 		next:   next,
 		Header: Header,
 	}
 }
 
-func (rt *headerRoundTripper) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+func (rt *HeaderRoundTripper) RoundTrip(req *http.Request) (resp *http.Response, err error) {
 	if rt.Header != nil {
 		for k, v := range rt.Header {
 			req.Header[k] = v
@@ -31,22 +31,22 @@ func (rt *headerRoundTripper) RoundTrip(req *http.Request) (resp *http.Response,
 	return rt.next.RoundTrip(req)
 }
 
-type loggingRoundTripper struct {
+type LoggingRoundTripper struct {
 	next    http.RoundTripper
 	logFile *os.File
 }
 
-func newLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *loggingRoundTripper {
+func NewLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *LoggingRoundTripper {
 	if next == nil {
 		next = http.DefaultTransport
 	}
-	return &loggingRoundTripper{
+	return &LoggingRoundTripper{
 		next:    next,
 		logFile: logFile,
 	}
 }
 
-func (rt *loggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response, err error) {
 	if rt.logFile != nil {
 		dumped, _ := httputil.DumpRequest(req, true)
 		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
