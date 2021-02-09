@@ -2,6 +2,7 @@ package stl
 
 import (
 	"context"
+	"fmt"
 	"github.com/hasura/go-graphql-client"
 )
 
@@ -20,6 +21,30 @@ type Device struct {
 
 type DevicesService struct {
 	client *Client
+}
+
+type SyncDeviceConfigsInput struct {
+	SerialNumber string `json:"serialNumber"`
+}
+
+func (d *DevicesService) SyncDeviceConfig(ctx context.Context, serial string) error {
+	var mutation struct {
+		SyncDeviceConfigs struct {
+			StatusCode int
+			Success    bool
+			Message    string
+		} `graphql:"syncDeviceConfigs(input: $input)"`
+	}
+	err := d.client.gql.Mutate(ctx, &mutation, map[string]interface{}{
+		"input": SyncDeviceConfigsInput{SerialNumber: serial},
+	})
+	if err != nil {
+		return err
+	}
+	if !mutation.SyncDeviceConfigs.Success {
+		return fmt.Errorf("%d: %s", mutation.SyncDeviceConfigs.StatusCode, mutation.SyncDeviceConfigs.Message)
+	}
+	return nil
 }
 
 // GetDeviceBySerial retrieves a device by serial
