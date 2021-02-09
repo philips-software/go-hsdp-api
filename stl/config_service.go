@@ -115,5 +115,8 @@ func (c *ConfigService) UpdateAppLogging(ctx context.Context, input UpdateAppLog
 	if err != nil {
 		return nil, err
 	}
+	if !mutation.UpdateAppLogging.Success {
+		return nil, fmt.Errorf("%d: %s", mutation.UpdateAppLogging.StatusCode, mutation.UpdateAppLogging.Message)
+	}
 	return &mutation.UpdateAppLogging.AppLogging, nil
 }

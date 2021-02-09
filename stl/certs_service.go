@@ -2,6 +2,7 @@ package stl
 
 import (
 	"context"
+	"fmt"
 	"github.com/hasura/go-graphql-client"
 )
 
@@ -82,6 +83,9 @@ func (a *CertsService) CreateCustomCert(ctx context.Context, input CreateAppCust
 	if err != nil {
 		return nil, err
 	}
+	if !mutation.CreateAppCustomCert.Success {
+		return nil, fmt.Errorf("%d: %s", mutation.CreateAppCustomCert.StatusCode, mutation.CreateAppCustomCert.Message)
+	}
 	return &mutation.CreateAppCustomCert.AppCustomCert, nil
 }
 
@@ -101,6 +105,9 @@ func (a *CertsService) UpdateCustomCert(ctx context.Context, input UpdateAppCust
 	if err != nil {
 		return nil, err
 	}
+	if !mutation.UpdateApplicationResource.Success {
+		return nil, fmt.Errorf("%d: %s", mutation.UpdateApplicationResource.StatusCode, mutation.UpdateApplicationResource.Message)
+	}
 	return &mutation.UpdateApplicationResource.AppCustomCert, nil
 }
 
@@ -117,6 +124,9 @@ func (a *CertsService) DeleteCustomCert(ctx context.Context, input DeleteAppCust
 	})
 	if err != nil {
 		return false, err
+	}
+	if !mutation.DeleteAppCustomCert.Success {
+		return false, fmt.Errorf("%d: %s", mutation.DeleteAppCustomCert.StatusCode, mutation.DeleteAppCustomCert.Message)
 	}
 	return true, nil
 }

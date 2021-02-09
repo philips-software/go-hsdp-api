@@ -2,6 +2,7 @@ package stl
 
 import (
 	"context"
+	"fmt"
 	"github.com/hasura/go-graphql-client"
 )
 
@@ -105,6 +106,9 @@ func (a *AppsService) CreateAppResource(ctx context.Context, input CreateApplica
 	if err != nil {
 		return nil, err
 	}
+	if !mutation.CreateApplicationResource.Success {
+		return nil, fmt.Errorf("%d: %s", mutation.CreateApplicationResource.StatusCode, mutation.CreateApplicationResource.Message)
+	}
 	return &mutation.CreateApplicationResource.ApplicationResource, nil
 }
 
@@ -124,6 +128,9 @@ func (a *AppsService) UpdateAppResource(ctx context.Context, input UpdateApplica
 	if err != nil {
 		return nil, err
 	}
+	if !mutation.UpdateApplicationResource.Success {
+		return nil, fmt.Errorf("%d: %s", mutation.UpdateApplicationResource.StatusCode, mutation.UpdateApplicationResource.Message)
+	}
 	return &mutation.UpdateApplicationResource.ApplicationResource, nil
 }
 
@@ -141,6 +148,9 @@ func (a *AppsService) DeleteAppResource(ctx context.Context, input DeleteApplica
 	})
 	if err != nil {
 		return false, err
+	}
+	if !mutation.DeleteApplicationResource.Success {
+		return false, fmt.Errorf("%d: %s", mutation.DeleteApplicationResource.StatusCode, mutation.DeleteApplicationResource.Message)
 	}
 	return true, nil
 }
