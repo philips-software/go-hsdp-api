@@ -14,8 +14,8 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
 - [x] Secure Transport Layer (STL) / Edge 
   - [x] Device queries
-  - [ ] Application Resources management
-  - [ ] Device configuration management
+  - [x] Application Resources management
+  - [x] Device configuration management (firewall, logging)
 - [x] Public Key Infrastructe (PKI) management
 - [x] IAM/IDM management
   - [x] Groups
