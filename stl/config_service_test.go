@@ -2,11 +2,27 @@ package stl_test
 
 import (
 	"context"
+	"github.com/philips-software/go-hsdp-api/stl"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
 )
+
+func TestUpdateAppLoggingInputValidate(t *testing.T) {
+	v := stl.UpdateAppLoggingInput{}
+	ok, err := v.Validate()
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	v.RawConfig = "[OUTPUT]"
+	ok, err = v.Validate()
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	v.HSDPProductKey = "key"
+	ok, err = v.Validate()
+	assert.NotNil(t, err)
+	assert.False(t, ok)
+}
 
 func TestGetFirewallExceptionsBySerial(t *testing.T) {
 	teardown, err := setup(t)
