@@ -196,3 +196,116 @@ func TestCreateAppResource(t *testing.T) {
 	}
 	assert.Equal(t, "terraform.yml", app.Name)
 }
+
+func TestUpdateAppResource(t *testing.T) {
+	teardown, err := setup(t)
+	if !assert.Nil(t, err) {
+		return
+	}
+	defer teardown()
+
+	muxSTL.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "data": {
+    "updateApplicationResource": {
+      "success": true,
+      "message": "Successfully applied application resource",
+      "statusCode": 202,
+      "requestId": "k3s-8681d245-5490-44aa-964b-4e72e34c828c",
+      "applicationResource": {
+        "id": 1895,
+        "deviceId": 53615,
+        "name": "terraform.yml",
+        "content": "YXBpVmVyc2lvbjogdjEKa2luZDogU2VjcmV0Cm1ldGFkYXRhOgogIG5hbWU6IHNlY3JldC1zYS1zYW1wbGUKICBhbm5vdGF0aW9uczoKICAgIGt1YmVybmV0ZXMuaW8vc2VydmljZS1hY2NvdW50Lm5hbWU6ICJzYS1uYW1lIgp0eXBlOiBrdWJlcm5ldGVzLmlvL3NlcnZpY2UtYWNjb3VudC10b2tlbgpkYXRhOgogICMgWW91IGNhbiBpbmNsdWRlIGFkZGl0aW9uYWwga2V5IHZhbHVlIHBhaXJzIGFzIHlvdSBkbyB3aXRoIE9wYXF1ZSBTZWNyZXRzCiAgZXh0cmE6IFltRnlDZz09Cg=="
+      }
+    }
+  }
+}`)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	serial := "foo"
+	ctx := context.Background()
+	app, err := client.Apps.UpdateAppResource(ctx, stl.UpdateApplicationResourceInput{
+		SerialNumber: serial,
+		Name:         "terraform.yml",
+		Content:      "NOTTHEREALTHING",
+	})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, app) {
+		return
+	}
+	assert.Equal(t, "terraform.yml", app.Name)
+}
+
+func TestDeleteAppResource(t *testing.T) {
+	teardown, err := setup(t)
+	if !assert.Nil(t, err) {
+		return
+	}
+	defer teardown()
+
+	muxSTL.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "data": {
+    "deleteApplicationResource": {
+      "success": true,
+      "message": "Successfully deleted application resource",
+      "statusCode": 202,
+      "requestId": "k3s-07514821-e753-4579-8fdd-6994b5ad80bb"
+    }
+  }
+}`)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	serial := "foo"
+	ctx := context.Background()
+	ok, err := client.Apps.DeleteAppResource(ctx, stl.DeleteApplicationResourceInput{
+		SerialNumber: serial,
+		ID:           1,
+	})
+	assert.Nil(t, err)
+	assert.True(t, ok)
+}
+
+func TestAppServiceErrors(t *testing.T) {
+	teardown, err := setup(t)
+	if !assert.Nil(t, err) {
+		return
+	}
+	defer teardown()
+
+	serial := "A444900Z0822111"
+	ctx := context.Background()
+	l, err := client.Apps.GetAppResourcesBySerial(ctx, serial)
+	assert.NotNil(t, err)
+	assert.Nil(t, l)
+	ok, err := client.Apps.DeleteAppResource(ctx, stl.DeleteApplicationResourceInput{})
+	assert.NotNil(t, err)
+	assert.False(t, ok)
+	a, err := client.Apps.UpdateAppResource(ctx, stl.UpdateApplicationResourceInput{})
+	assert.NotNil(t, err)
+	assert.Nil(t, a)
+	a, err = client.Apps.CreateAppResource(ctx, stl.CreateApplicationResourceInput{})
+	assert.NotNil(t, err)
+	assert.Nil(t, a)
+	a, err = client.Apps.GetAppResourceByDeviceIDAndName(ctx, 1, "name")
+	assert.NotNil(t, err)
+	assert.Nil(t, a)
+	a, err = client.Apps.GetAppResourceByID(ctx, 1)
+	assert.NotNil(t, err)
+	assert.Nil(t, a)
+}
