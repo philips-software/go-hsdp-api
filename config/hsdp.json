@@ -41,6 +41,16 @@
         }
       }
     },
+    "dev": {
+      "service": {
+        "stl": {
+          "url": "https://console.na3.hsdp.io/api/stl/user/v1/graphql"
+        },
+        "uaa": {
+          "url": "https://uaa.cloud.phsdp.com"
+        }
+      }
+    },
     "eu-west": {
       "env": {
         "client-test": {
@@ -109,6 +119,9 @@
         "gateway": {
           "domain": "emea1.phsdp.com",
           "host": "gw-eu1.phsdp.com"
+        },
+        "stl": {
+          "url": "https://console.eu1.hsdp.io/api/stl/user/v1/graphql"
         },
         "uaa": {
           "url": "https://uaa.eu1.phsdp.com"
@@ -195,6 +208,9 @@
             "logging": {
               "url": "https://logingestor2-client-test.us-east.philips-healthsuite.com"
             },
+            "pki": {
+              "url": "https://pki-client-test.us-east.philips-healthsuite.com"
+            },
             "s3creds": {
               "url": "https://s3creds-client-test.us-east.philips-healthsuite.com"
             }
@@ -258,6 +274,9 @@
         "gateway": {
           "domain": "na1.phsdp.com",
           "host": "gw-na1.phsdp.com"
+        },
+        "stl": {
+          "url": "https://console.na1.hsdp.io/api/stl/user/v1/graphql"
         },
         "uaa": {
           "url": "https://uaa.cloud.pcftest.com"

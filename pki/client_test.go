@@ -173,7 +173,7 @@ func setup(t *testing.T) func() {
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
 	}
-	err = consoleClient.Login("foo", "bar")
+	err = consoleClient.Login("username", "bar")
 	if !assert.Nil(t, err) {
 		t.Fatalf("failed to login to consoleClient")
 	}

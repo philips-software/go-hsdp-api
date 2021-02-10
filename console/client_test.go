@@ -89,7 +89,11 @@ func TestLogin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, token, client.Token())
+	tk, err := client.Token()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, token, tk.AccessToken)
 	assert.Equal(t, refreshToken, client.RefreshToken())
 }
 
@@ -109,7 +113,11 @@ func TestWithLogin(t *testing.T) {
 	if !assert.NotNil(t, c) {
 		return
 	}
-	assert.Equal(t, token, c.Token())
+	tk, err := c.Token()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, token, tk.AccessToken)
 	assert.Equal(t, refreshToken, c.RefreshToken())
 }
 
@@ -136,7 +144,9 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 	defer client.Close()
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer func() {
+		_ = os.Remove(tmpfile.Name())
+	}() // clean up
 
 	err = client.Login("username", "password")
 	assert.Nil(t, err)
@@ -226,7 +236,11 @@ func TestTokenRefresh(t *testing.T) {
 
 	err = client.TokenRefresh()
 	assert.Nilf(t, err, fmt.Sprintf("Unexpected error: %v", err))
-	assert.Equal(t, newToken, client.Token())
+	tk, err := client.Token()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, newToken, tk.AccessToken)
 	assert.Equal(t, newRefreshToken, client.RefreshToken())
 	httpClient := client.HttpClient()
 	assert.NotNil(t, httpClient)

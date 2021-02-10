@@ -12,8 +12,11 @@ A HSDP API client enabling Go programs to interact with various HSDP APIs in a s
 The current implement covers only a subset of HSDP APIs. Basically we implement functionality as needed.
 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
-- [x] IronIO tasks, codes and schedules management ([examples](iron/README.md))
-- [x] PKI services
+- [x] Secure Transport Layer (STL) / Edge 
+  - [x] Device queries
+  - [x] Application Resources management
+  - [x] Device configuration management (firewall, logging)
+- [x] Public Key Infrastructe (PKI) management
 - [x] IAM/IDM management
   - [x] Groups
   - [x] Organizations
@@ -38,14 +41,15 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [x] Telemetry Data Repository (TDR)
   - [x] Contract management
   - [x] Data Item management
-- [x] S3 Credentials Policy management
+- [x] S3Creds Policy management
 - [x] DICOM Store
   - [x] Config management
 - [x] Hosted Application Streaming (HAS) management
-- [x] Configuration
+- [x] Service Discovery
 - [x] Console settings
   - [ ] Metrics Alerts
   - [x] Metrics Autoscalers
+- [x] IronIO tasks, codes and schedules management ([examples](iron/README.md))
 
 ## Usage
 
