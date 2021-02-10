@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
@@ -79,4 +80,23 @@ func TestCreateApplication(t *testing.T) {
 	if createdApp.ID != appID {
 		t.Errorf("Unexpected ID")
 	}
+}
+
+func TestApplicationErrors(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	appID := "10dc5e2f-3940-4cd8-b0ef-297e12ad2f3c"
+	app, _, err := client.Applications.GetApplicationByID(appID)
+	assert.NotNil(t, err)
+	assert.Nil(t, app)
+	app, _, err = client.Applications.GetApplicationByName("name")
+	assert.NotNil(t, err)
+	assert.Nil(t, app)
+	apps, _, err := client.Applications.GetApplications(&GetApplicationsOptions{})
+	assert.NotNil(t, err)
+	assert.Nil(t, apps)
+	app, _, err = client.Applications.CreateApplication(Application{})
+	assert.NotNil(t, err)
+	assert.Nil(t, app)
 }

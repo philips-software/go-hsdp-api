@@ -25,15 +25,24 @@ type GetApplicationsOptions struct {
 
 // GetApplicationByID retrieves an Application by its ID
 func (a *ApplicationsService) GetApplicationByID(id string) (*Application, *Response, error) {
-	apps, resp, err := a.GetApplication(&GetApplicationsOptions{ID: String(id)}, nil)
+	apps, resp, err := a.GetApplications(&GetApplicationsOptions{ID: String(id)}, nil)
 	if len(apps) == 0 {
 		return nil, resp, ErrNotFound
 	}
 	return apps[0], resp, err
 }
 
-// GetApplication search for an Application entity based on the GetApplicationsOptions values
-func (a *ApplicationsService) GetApplication(opt *GetApplicationsOptions, options ...OptionFunc) ([]*Application, *Response, error) {
+// GetApplicationByName retrieves an Application by its Name
+func (a *ApplicationsService) GetApplicationByName(name string) (*Application, *Response, error) {
+	apps, resp, err := a.GetApplications(&GetApplicationsOptions{ID: String(name)}, nil)
+	if len(apps) == 0 {
+		return nil, resp, ErrNotFound
+	}
+	return apps[0], resp, err
+}
+
+// GetApplications search for an Applications entity based on the GetApplicationsOptions values
+func (a *ApplicationsService) GetApplications(opt *GetApplicationsOptions, options ...OptionFunc) ([]*Application, *Response, error) {
 	req, err := a.client.newRequest(IDM, "GET", "authorize/identity/Application", opt, options)
 	if err != nil {
 		return nil, nil, err
@@ -71,9 +80,11 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 
 	var bundleResponse interface{}
 
-	resp, err := a.client.do(req, &bundleResponse)
-
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
+	resp, _ := a.client.do(req, &bundleResponse)
+	if resp == nil {
+		return nil, nil, fmt.Errorf("CreateApplication: request failed")
+	}
+	ok := resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated
 	if !ok {
 		return nil, resp, err
 	}
