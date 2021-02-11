@@ -95,7 +95,6 @@ func (a *CertsService) UpdateCustomCert(ctx context.Context, input UpdateAppCust
 			Success       bool
 			Message       string
 			StatusCode    int
-			RequestID     string
 			AppCustomCert CustomCert
 		} `graphql:"updateAppCustomCert(input: $input)"`
 	}

@@ -18,10 +18,6 @@ func TestUpdateAppLoggingInputValidate(t *testing.T) {
 	ok, err = v.Validate()
 	assert.Nil(t, err)
 	assert.True(t, ok)
-	v.HSDPProductKey = "key"
-	ok, err = v.Validate()
-	assert.NotNil(t, err)
-	assert.False(t, ok)
 	v = stl.UpdateAppLoggingInput{
 		SerialNumber: "xxx",
 		AppLogging: stl.AppLogging{
