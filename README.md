@@ -17,7 +17,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Application Resources management
   - [x] Device configuration management (firewall, logging)
 - [x] Public Key Infrastructe (PKI) management
-- [x] IAM/IDM management
+- [x] Identity and Access Management (IAM)
   - [x] Groups
   - [x] Organizations
   - [x] Permissions
@@ -30,7 +30,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Devices
   - [x] MFA Policies
   - [x] Password Policies
-  - [x] Email Temapltes
+  - [x] Email Templates
 - [x] Logging ([examples](logging/README.md))
 - [x] Auditing ([examples](audit/README.md))
 - [x] Clinical Data Repository (CDR)
