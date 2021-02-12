@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -13,17 +14,14 @@ import (
 	"os"
 	"strings"
 
-	"go.elastic.co/apm/module/apmhttp"
-
 	signer "github.com/philips-software/go-hsdp-signer"
 
 	"github.com/google/fhir/go/jsonformat"
 )
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/audit/" + libraryVersion
-	APIVersion     = "2"
+	userAgent  = "go-hsdp-api/audit/" + internal.LibraryVersion
+	APIVersion = "2"
 )
 
 // OptionFunc is the function signature function for options
@@ -74,7 +72,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 				Proxy: http.ProxyFromEnvironment,
 			},
 		}
-		httpClient = apmhttp.WrapClient(c)
+		httpClient = c
 	}
 
 	c := &Client{httpClient: httpClient, config: config, UserAgent: userAgent}

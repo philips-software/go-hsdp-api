@@ -3,13 +3,13 @@ package console
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
+	"golang.org/x/oauth2"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
@@ -18,7 +18,6 @@ import (
 
 	validator "github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
-	"github.com/google/uuid"
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 )
 
@@ -26,8 +25,7 @@ type tokenType int
 type ContextKey string
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/console/" + libraryVersion
+	userAgent = "go-hsdp-api/console/" + internal.LibraryVersion
 )
 
 type tokenResponse struct {
@@ -128,7 +126,8 @@ type Client struct {
 
 	Metrics *MetricsService
 
-	debugFile *os.File
+	debugFile  *os.File
+	consoleErr error
 
 	sync.Mutex
 }
@@ -154,25 +153,24 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if config.UAAURL == "" {
 		return nil, ErrUAAURLCannotBeEmpty
 	}
-	if config.BaseConsoleURL == "" {
-		return nil, ErrConsoleURLCannotBeEmpty
-	}
 	c := &Client{client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseUAAURL(c.config.UAAURL); err != nil {
 		return nil, err
 	}
 	if err := c.SetBaseConsoleURL(c.config.BaseConsoleURL); err != nil {
-		return nil, err
+		c.consoleErr = err
 	}
-
 	if config.DebugLog != "" {
-		debugFile, err := os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err != nil {
-			c.debugFile = nil
-		} else {
-			c.debugFile = debugFile
+		var err error
+		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if err == nil {
+			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
 		}
 	}
+	header := make(http.Header)
+	header.Set("User-Agent", userAgent)
+	httpClient.Transport = internal.NewHeaderRoundTripper(httpClient.Transport, header)
+
 	c.Metrics = &MetricsService{client: c}
 	c.validate = validator.New()
 	return c, nil
@@ -208,8 +206,8 @@ func (c *Client) HttpClient() *http.Client {
 	return c.client
 }
 
-// Token returns the current token
-func (c *Client) Token() string {
+// Token returns the current token. It also confirms to TokenSource
+func (c *Client) Token() (*oauth2.Token, error) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -218,10 +216,14 @@ func (c *Client) Token() string {
 
 	if expires-now < 60 {
 		if c.TokenRefresh() != nil {
-			return ""
+			return nil, fmt.Errorf("failed to refresh console token")
 		}
 	}
-	return c.token
+	return &oauth2.Token{
+		AccessToken:  c.token,
+		RefreshToken: c.refreshToken,
+		Expiry:       c.expiresAt,
+	}, nil
 }
 
 // TokenRefresh refreshes the accessToken
@@ -320,6 +322,9 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		u = *c.baseUAAURL
 		u.Opaque = c.baseUAAURL.Path + path
 	case CONSOLE:
+		if c.consoleErr != nil {
+			return nil, c.consoleErr
+		}
 		u = *c.baseConsoleURL
 		u.Opaque = c.baseConsoleURL.Path + path
 	default:
@@ -371,13 +376,9 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 
 	switch c.tokenType {
 	case oAuthToken:
-		if token := c.Token(); token != "" {
-			req.Header.Set("Authorization", "Bearer "+c.token)
+		if token, err := c.Token(); err == nil {
+			req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 		}
-	}
-
-	if c.UserAgent != "" {
-		req.Header.Set("User-Agent", c.UserAgent)
 	}
 	return req, nil
 }
@@ -401,27 +402,7 @@ func newResponse(r *http.Response) *Response {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	id := uuid.New()
-
-	if c.debugFile != nil {
-		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Request [%s] start ---\n%s\n[go-hsdp-api] --- Request [%s] end ---\n", id, string(dumped), id)
-		if c.debugFile != nil {
-			_, _ = c.debugFile.WriteString(out)
-		} else {
-			fmt.Println(out)
-		}
-	}
 	resp, err := c.client.Do(req)
-	if c.debugFile != nil && resp != nil {
-		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Response [%s] start ---\n%s\n[go-hsdp-api] --- Response [%s] end ---\n", id, string(dumped), id)
-		if c.debugFile != nil {
-			_, _ = c.debugFile.WriteString(out)
-		} else {
-			fmt.Println(out)
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -441,14 +422,6 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 	err = checkResponse(resp)
 	return response, err
-}
-
-// WithContext runs the request with the provided context
-func WithContext(ctx context.Context) OptionFunc {
-	return func(req *http.Request) error {
-		*req = *req.WithContext(ctx)
-		return nil
-	}
 }
 
 // CheckResponse checks the API response for errors, and returns them if present.

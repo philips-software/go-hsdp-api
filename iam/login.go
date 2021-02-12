@@ -99,6 +99,58 @@ func (c *Client) ClientCredentialsLogin() error {
 	return c.doTokenRequest(req)
 }
 
+// RevokeAccessToken revokes the access and refresh token
+func (c *Client) RevokeAccessToken() error {
+	return c.revokeToken(c.token)
+}
+
+// RevokeRefreshToken revokes the access and refresh token
+func (c *Client) RevokeRefreshAccessToken() error {
+	return c.revokeToken(c.refreshToken)
+}
+
+type endSessionOptions struct {
+	IDTokenHint *string `url:"id_token_hint,omitempty"`
+}
+
+// EndSession
+func (c *Client) EndSession() error {
+	req, err := c.newRequest(IAM, "GET", "authorize/oauth2/endsession", &endSessionOptions{
+		IDTokenHint: &c.idToken,
+	}, nil)
+	if err != nil {
+		return err
+	}
+	form := url.Values{}
+	if len(c.config.Scopes) > 0 {
+		scopes := strings.Join(c.config.Scopes, " ")
+		form.Add("scope", scopes)
+	}
+	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
+	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.ContentLength = int64(len(form.Encode()))
+
+	return c.doTokenRequest(req)
+}
+
+func (c *Client) revokeToken(token string) error {
+	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/revoke", nil, nil)
+	if err != nil {
+		return err
+	}
+	form := url.Values{}
+	form.Add("token", token)
+	if len(c.config.Scopes) > 0 {
+		scopes := strings.Join(c.config.Scopes, " ")
+		form.Add("scope", scopes)
+	}
+	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
+	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.ContentLength = int64(len(form.Encode()))
+
+	return c.doTokenRequest(req)
+}
+
 func (c *Client) doTokenRequest(req *http.Request) error {
 	var tokenResponse tokenResponse
 

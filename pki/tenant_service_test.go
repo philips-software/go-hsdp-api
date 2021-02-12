@@ -94,7 +94,7 @@ func TestOnboarding(t *testing.T) {
 	if !assert.NotNil(t, onboarding) {
 		return
 	}
-	assert.True(t, strings.Contains(onboarding.APIEndpoint, logicalPath))
+	assert.True(t, strings.Contains(string(onboarding.APIEndpoint), logicalPath))
 }
 
 func TestOffboarding(t *testing.T) {
@@ -125,6 +125,15 @@ func TestOffboarding(t *testing.T) {
 	}
 	assert.True(t, ok)
 
+}
+
+func TestLogicalPath(t *testing.T) {
+	endpoint := pki.APIEndpoint("https://foo.bar/core/pki/api/andy")
+	logicalPath, err := endpoint.LogicalPath()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, "andy", logicalPath)
 }
 
 func TestRetrieveAndUpdate(t *testing.T) {
@@ -215,8 +224,17 @@ func TestRetrieveAndUpdate(t *testing.T) {
 		return
 	}
 	assert.Equal(t, logicalPath, tenant.ServiceParameters.LogicalPath)
+	if !assert.Equal(t, 1, len(tenant.ServiceParameters.Roles)) {
+		return
+	}
+	if !assert.Equal(t, 1, len(tenant.ServiceParameters.Roles[0].AllowedURISans)) {
+		return
+	}
+	assert.Equal(t, "*", tenant.ServiceParameters.Roles[0].AllowedURISans[0])
+	_, ok := tenant.GetRoleOk("ec384")
+	assert.True(t, ok)
 
-	ok, resp, err := pkiClient.Tenants.Update(*tenant)
+	ok, resp, err = pkiClient.Tenants.Update(*tenant)
 	if !assert.Nil(t, err) {
 		return
 	}

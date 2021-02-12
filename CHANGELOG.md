@@ -3,6 +3,46 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.35.2
+- Fix STL cert update call issue
+
+## v0.35.1
+- Add iam.Applications.GetApplicationByName()
+
+## v0.35.0
+- NEW: Secure Transport Layer (STL) support
+
+## v0.34.4
+- Fix some PKI methods
+- Add IAM token revoke calls
+
+## v0.34.3
+- Remove elastic due to license change
+
+## v0.34.2
+- Add pki.Services.GetCertificates() method
+
+## v0.34.1
+- Fix minimum version in go.mod
+
+## v0.34.0
+- Remove online config refresh code
+- Use Go 1.16 embed to bundle hsdp.json
+- This version only works with Go 1.16+ (breaking change!)
+
+## v0.33.0
+- NEW: DICOM Config API support
+- Create internal package for consistent better versioning
+- S3Creds renaming (breaking change!)
+
+## v0.32.3
+- Disable keep-alive for Cartel
+
+## v0.32.2
+- Better error reporting in Cartel
+
+## v0.32.1
+- Add cartel.BastionHost() 
 
 ## v0.32.0
 - Proxy support

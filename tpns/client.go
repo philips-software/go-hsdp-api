@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -17,8 +18,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.1.0"
-	userAgent      = "go-hsdp-api/tpns/" + libraryVersion
+	userAgent      = "go-hsdp-api/tpns/" + internal.LibraryVersion
 	tpnsAPIVersion = "2"
 )
 

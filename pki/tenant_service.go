@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -21,39 +22,39 @@ type Role struct {
 	AllowAnyName         bool     `json:"allow_any_name" validate:"required"`
 	AllowIPSans          bool     `json:"allow_ip_sans" validate:"required"`
 	AllowSubdomains      bool     `json:"allow_subdomains" validate:"required"`
-	AllowedDomains       []string `json:"allowed_domains"`
-	AllowedOtherSans     []string `json:"allowed_other_sans"`
-	AllowedSerialNumbers []string `json:"allowed_serial_numbers"`
-	AllowedURISans       []string `json:"allowed_uri_sans"`
+	AllowedDomains       []string `json:"allowed_domains,omitempty"`
+	AllowedOtherSans     []string `json:"allowed_other_sans" validate:"required"`
+	AllowedSerialNumbers []string `json:"allowed_serial_numbers,omitempty"`
+	AllowedURISans       []string `json:"allowed_uri_sans" validate:"required"`
 	ClientFlag           bool     `json:"client_flag" validate:"required"`
 	Country              []string `json:"country"`
 	EnforceHostnames     bool     `json:"enforce_hostnames" validate:"required"`
-	KeyBits              int      `json:"key_bits"`
-	KeyType              string   `json:"key_type"`
-	Locality             []string `json:"locality"`
-	MaxTTL               string   `json:"max_ttl"`
-	NotBeforeDuration    string   `json:"not_before_duration"`
-	Organization         []string `json:"organization"`
-	OU                   []string `json:"ou"`
-	PostalCode           []string `json:"postal_code"`
-	Province             []string `json:"province"`
+	KeyBits              int      `json:"key_bits,omitempty"`
+	KeyType              string   `json:"key_type,omitempty"`
+	Locality             []string `json:"locality,omitempty"`
+	MaxTTL               string   `json:"max_ttl,omitempty"`
+	NotBeforeDuration    string   `json:"not_before_duration,omitempty"`
+	Organization         []string `json:"organization,omitempty"`
+	OU                   []string `json:"ou,omitempty"`
+	PostalCode           []string `json:"postal_code,omitempty"`
+	Province             []string `json:"province,omitempty"`
 	ServerFlag           bool     `json:"server_flag"`
-	StreetAddress        []string `json:"street_address"`
-	TTL                  string   `json:"ttl"`
+	StreetAddress        []string `json:"street_address,omitempty"`
+	TTL                  string   `json:"ttl,omitempty"`
 	UseCSRCommonName     bool     `json:"use_csr_common_name"`
 	UseCSRSans           bool     `json:"use_csr_sans"`
 }
 
 type CertificateAuthority struct {
-	TTL          string `json:"ttl"`
+	TTL          string `json:"ttl,omitempty"`
 	CommonName   string `json:"common_name" validate:"required"`
-	KeyType      string `json:"key_type" validate:"required" enum:"rsa|ec"`
-	KeyBits      int    `json:"key_bits"`
-	OU           string `json:"ou"`
-	Organization string `json:"organization"`
-	Country      string `json:"country"`
-	Locality     string `json:"locality"`
-	Province     string `json:"province"`
+	KeyType      string `json:"key_type,omitempty"` // rsa|ec
+	KeyBits      int    `json:"key_bits,omitempty"`
+	OU           string `json:"ou,omitempty"`
+	Organization string `json:"organization,omitempty"`
+	Country      string `json:"country,omitempty"`
+	Locality     string `json:"locality,omitempty"`
+	Province     string `json:"province,omitempty"`
 }
 
 type ServiceParameters struct {
@@ -71,19 +72,41 @@ type Tenant struct {
 	ServiceParameters ServiceParameters `json:"service_parameters" validate:"required"`
 }
 
+func (t Tenant) GetRoleOk(role string) (Role, bool) {
+	for _, r := range t.ServiceParameters.Roles {
+		if r.Name == role {
+			return r, true
+		}
+	}
+	return Role{}, false
+}
+
 type OnboardingResponse struct {
-	APIEndpoint string `json:"api_endpoint"`
+	APIEndpoint APIEndpoint `json:"api_endpoint"`
+}
+
+type APIEndpoint string
+
+// LogicalPath returns the logical path component from the APIEndpoint
+func (a APIEndpoint) LogicalPath() (string, error) {
+	var logicalPath string
+	u, err := url.Parse(string(a))
+	if err != nil {
+		return "", err
+	}
+	_, err = fmt.Sscanf(u.Path, "/core/pki/api/%s", &logicalPath)
+	return logicalPath, err
 }
 
 func (t *TenantService) setCFAuth(req *http.Request) error {
 	if t.client.consoleClient == nil {
 		return ErrCFClientNotConfigured
 	}
-	token := t.client.consoleClient.Token()
-	if token == "" {
-		return ErrCFInvalidToken
+	token, err := t.client.consoleClient.Token()
+	if err != nil {
+		return fmt.Errorf("setCFAuth: %w", err)
 	}
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 	return nil
 }
 
@@ -156,7 +179,7 @@ func (t *TenantService) Update(tenant Tenant, options ...OptionFunc) (bool, *Res
 }
 
 func (t *TenantService) Offboard(tenant Tenant, options ...OptionFunc) (bool, *Response, error) {
-	req, err := t.client.newTenantRequest(http.MethodDelete, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
+	req, err := t.client.newTenantRequest(http.MethodDelete, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, nil, options)
 	if err != nil {
 		return false, nil, err
 	}

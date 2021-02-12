@@ -30,4 +30,5 @@ func TestHSDPJSONContent(t *testing.T) {
 		return
 	}
 	assert.Less(t, 0, len(c.Region("us-east").Services()))
+	assert.Less(t, 0, len(c.Region("eu-west").Env("client-test").Service("pki").URL))
 }

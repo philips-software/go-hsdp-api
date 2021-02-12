@@ -173,7 +173,7 @@ func setup(t *testing.T) func() {
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
 	}
-	err = consoleClient.Login("foo", "bar")
+	err = consoleClient.Login("username", "bar")
 	if !assert.Nil(t, err) {
 		t.Fatalf("failed to login to consoleClient")
 	}
@@ -226,14 +226,16 @@ func TestDebug(t *testing.T) {
 	}
 
 	defer pkiClient.Close()
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer func() {
+		_ = os.Remove(tmpfile.Name())
+	}() // clean up
 
 	err = iamClient.Login("username", "password")
 	if !assert.Nil(t, err) {
 		return
 	}
 
-	_, _, _ = pkiClient.Services.GetRootCA()
+	_, _, _, _ = pkiClient.Services.GetRootCA()
 
 	fi, err := tmpfile.Stat()
 	assert.Nil(t, err)

@@ -13,7 +13,7 @@ import (
 func main() {
 	client, err := cartel.NewClient(nil, cartel.Config{
 		Token:  "YourCartelToken",
-		Secret: []byte("YourCartelSecr3t"),
+		Secret: "YourCartelSecr3t",
 		Host:   "cartel-host.here.com",
 	})
 	if err != nil {
@@ -54,7 +54,7 @@ func pretty(data []byte) string {
 func main() {
 	client, err := cartel.NewClient(nil, cartel.Config{
 		Token:  "YourCartelToken",
-		Secret: []byte("YourCartelSecr3t"),
+		Secret: "YourCartelSecr3t",
 		Host:   "cartel-host.here.com",
 	})
 	if err != nil {
@@ -83,7 +83,7 @@ import (
 func main() {
 	client, err := cartel.NewClient(nil, cartel.Config{
 		Token:  "YourCartelToken",
-		Secret: []byte("YourCartelSecr3t"),
+		Secret: "YourCartelSecr3t",
 		Host:   "cartel-host.here.com",
 	})
 	if err != nil {

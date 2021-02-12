@@ -72,18 +72,24 @@ wo3KBVGxGCMPQZ8FeqGowJ0yDB8GxZ0=
 	muxPKI.HandleFunc("/core/pki/api/root/ca/pem", returnCA)
 	muxPKI.HandleFunc("/core/pki/api/policy/ca/pem", returnCA)
 
-	cert, resp, err := pkiClient.Services.GetRootCA()
+	cert, block, resp, err := pkiClient.Services.GetRootCA()
 	if !assert.Nil(t, err) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
 		return
 	}
+	if !assert.NotNil(t, block) {
+		return
+	}
 	if !assert.NotNil(t, cert) {
 		return
 	}
-	cert, resp, err = pkiClient.Services.GetPolicyCA()
+	cert, block, resp, err = pkiClient.Services.GetPolicyCA()
 	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, block) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
@@ -130,8 +136,11 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	muxPKI.HandleFunc("/core/pki/api/root/crl/pem", getCrl)
 	muxPKI.HandleFunc("/core/pki/api/policy/crl/pem", getCrl)
 
-	crl, resp, err := pkiClient.Services.GetRootCRL()
+	crl, block, resp, err := pkiClient.Services.GetRootCRL()
 	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, block) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
@@ -140,8 +149,11 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	if !assert.NotNil(t, crl) {
 		return
 	}
-	crl, resp, err = pkiClient.Services.GetPolicyCRL()
+	crl, block, resp, err = pkiClient.Services.GetPolicyCRL()
 	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, block) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
@@ -150,6 +162,51 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	if !assert.NotNil(t, crl) {
 		return
 	}
+}
+
+func TestRevokeCertificate(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	response := `{
+  "request_id": "6236ee66-1876-5580-6a48-99c3305366f5",
+  "lease_id": "",
+  "renewable": false,
+  "lease_duration": 0,
+  "data": {
+    "revocation_time": 1612418059,
+    "revocation_time_rfc3339": "2021-02-04T05:54:19.844392339Z"
+  },
+  "wrap_info": null,
+  "warnings": null,
+  "auth": null
+}`
+	revokeCert := func(logicalPath, serial string) func(http.ResponseWriter, *http.Request) {
+		return func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			switch r.Method {
+			case "POST":
+				w.WriteHeader(http.StatusOK)
+				_, _ = io.WriteString(w, response)
+			default:
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
+		}
+	}
+	serial := "21:53:d0:64:28:6f:52:80:ac:7e:ff:9e:fb:ed:73:aa:e6:48:11:0d"
+	logicalPath := "ron-swanson"
+	muxPKI.HandleFunc("/core/pki/api/"+logicalPath+"/revoke", revokeCert(logicalPath, serial))
+	revoke, resp, err := pkiClient.Services.RevokeCertificateBySerial(logicalPath, serial)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, revoke) {
+		return
+	}
+	assert.Equal(t, 1612418059, revoke.Data.RevocationTime)
 }
 
 func TestIssueAndSignCertificates(t *testing.T) {
@@ -263,10 +320,63 @@ func TestServicesErrors(t *testing.T) {
 	assert.NotNil(t, err)
 	_, _, err = pkiClient.Services.IssueCertificate("logicalPath", "role", pki.CertificateRequest{})
 	assert.NotNil(t, err)
-	_, _, err = pkiClient.Services.GetPolicyCRL()
+	_, _, _, err = pkiClient.Services.GetPolicyCRL()
 	assert.NotNil(t, err)
-	_, _, err = pkiClient.Services.GetRootCRL()
+	_, _, _, err = pkiClient.Services.GetRootCRL()
 	assert.NotNil(t, err)
-	_, _, err = pkiClient.Services.GetRootCA()
+	_, _, _, err = pkiClient.Services.GetRootCA()
 	assert.NotNil(t, err)
+	_, _, err = pkiClient.Services.GetCertificates("logicalPath", nil)
+	assert.NotNil(t, err)
+	_, _, err = pkiClient.Services.RevokeCertificateBySerial("logicalPath", "serial")
+	assert.NotNil(t, err)
+}
+
+func TestGetCertificates(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	response := `{
+  "request_id": "5eb80a13-1269-5056-e432-d85591917149",
+  "lease_id": "",
+  "renewable": false,
+  "lease_duration": 0,
+  "data": {
+    "keys": [
+      "76-3d-32-2e-60-f7-86-d9-ec-10-22-84-20-0f-8f-24-3d-35-b6-21",
+      "79-32-98-0e-66-22-8a-e7-df-89-f0-6f-b2-50-81-ff-e6-e6-32-84",
+      "7a-bf-83-f8-3d-75-0d-24-82-9d-c0-08-fe-0a-bf-30-43-68-d4-ac"
+    ]
+  },
+  "wrap_info": null,
+  "warnings": null,
+  "auth": null
+}`
+
+	returnCerts := func(logicalPath string) func(http.ResponseWriter, *http.Request) {
+		return func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			switch r.Method {
+			case "GET":
+				w.WriteHeader(http.StatusOK)
+				_, _ = io.WriteString(w, response)
+			default:
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
+		}
+	}
+	logicalPath := "ron-swanson"
+	muxPKI.HandleFunc("/core/pki/api/"+logicalPath+"/certs", returnCerts(logicalPath))
+
+	certs, resp, err := pkiClient.Services.GetCertificates(logicalPath, nil)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, certs) {
+		return
+	}
+	assert.Equal(t, 3, len(certs.Data.Keys))
 }

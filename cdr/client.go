@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -19,9 +20,8 @@ import (
 )
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/cdr/" + libraryVersion
-	APIVersion     = "1"
+	userAgent  = "go-hsdp-api/cdr/" + internal.LibraryVersion
+	APIVersion = "1"
 )
 
 // OptionFunc is the function signature function for options
@@ -48,7 +48,7 @@ type Client struct {
 
 	fhirStoreURL *url.URL
 
-	// User agent used when communicating with the HSDP IAM API.
+	// User agent used when communicating with the HSDP CDR API
 	UserAgent string
 
 	TenantSTU3     *TenantSTU3Service
@@ -187,8 +187,6 @@ func (c *Client) newCDRRequest(method, path string, bodyBytes []byte, options []
 
 	if method == "POST" || method == "PUT" || method == "PATCH" {
 		bodyReader := bytes.NewReader(bodyBytes)
-
-		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 	}

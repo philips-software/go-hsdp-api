@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -26,9 +27,8 @@ import (
 )
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/pki/" + libraryVersion
-	APIVersion     = "1"
+	userAgent  = "go-hsdp-api/pki/" + internal.LibraryVersion
+	APIVersion = "1"
 )
 
 // OptionFunc is the function signature function for options
@@ -158,15 +158,12 @@ func (c *Client) newServiceRequest(method, path string, opt interface{}, options
 		Header:     make(http.Header),
 		Host:       u.Host,
 	}
-
-	for _, fn := range options {
-		if fn == nil {
-			continue
-		}
-
-		if err := fn(req); err != nil {
+	if opt != nil {
+		q, err := query.Values(opt)
+		if err != nil {
 			return nil, err
 		}
+		u.RawQuery = q.Encode()
 	}
 
 	if method == "POST" || method == "PUT" {
@@ -181,14 +178,22 @@ func (c *Client) newServiceRequest(method, path string, opt interface{}, options
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}
-
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
 	req.Header.Set("API-Version", APIVersion)
-
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
 	}
+	for _, fn := range options {
+		if fn == nil {
+			continue
+		}
+
+		if err := fn(req); err != nil {
+			return nil, err
+		}
+	}
+
 	return req, nil
 }
 
@@ -244,7 +249,11 @@ func (c *Client) newTenantRequest(method, path string, opt interface{}, options 
 	}
 
 	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Authorization", "Bearer "+c.consoleClient.Token())
+	tk, err := c.consoleClient.Token()
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", tk.AccessToken)
 	req.Header.Set("API-Version", APIVersion)
 
 	if c.UserAgent != "" {

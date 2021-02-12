@@ -1,5 +1,5 @@
-// Package credentials provides support for HSDP S3 Credentials
-package credentials
+// Package s3creds provides support for HSDP S3 Credentials
+package s3creds
 
 import (
 	"bytes"
@@ -23,7 +23,7 @@ import (
 
 const (
 	libraryVersion = "0.1.0"
-	userAgent      = "go-hsdp-api/credentials/" + libraryVersion
+	userAgent      = "go-hsdp-api/s3creds/" + libraryVersion
 )
 
 // OptionFunc is the function signature function for options
@@ -103,7 +103,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 // Close releases allocated resources of clients
 func (c *Client) Close() {
 	if c.debugFile != nil {
-		c.debugFile.Close()
+		_ = c.debugFile.Close()
 		c.debugFile = nil
 	}
 }

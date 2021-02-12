@@ -40,6 +40,27 @@ func (c *Client) WithLogin(username, password string) (*Client, error) {
 	return client, err
 }
 
+// SetToken sets the UAA token
+func (c *Client) SetToken(token string) *Client {
+	c.Lock()
+	defer c.Unlock()
+
+	c.token = token
+	c.expiresAt = time.Now().Add(600 * time.Second)
+	return c
+}
+
+// SetTokens sets the tokens
+func (c *Client) SetTokens(accessToken, refreshToken, idToken string, expiresAt int64) {
+	c.Lock()
+	defer c.Unlock()
+	c.token = accessToken
+	c.refreshToken = refreshToken
+	c.idToken = idToken
+	c.expiresAt = time.Unix(expiresAt, 0)
+	c.tokenType = oAuthToken
+}
+
 func (c *Client) doTokenRequest(req *http.Request) error {
 	var tokenResponse tokenResponse
 

@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -23,8 +24,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/cartel/" + libraryVersion
+	userAgent = "go-hsdp-api/cartel/" + internal.LibraryVersion
 )
 
 // Config the client
@@ -155,9 +155,10 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		dumped, _ := httputil.DumpRequest(req, true)
 		_, _ = fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
 	}
+	req.Close = true // Always close request
 	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
+	if err != nil && err != io.EOF {
+		return nil, fmt.Errorf("client.do: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -177,9 +178,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		} else {
 			err = json.NewDecoder(resp.Body).Decode(v)
 		}
-	}
-	if err != nil {
-		return response, err
+		if err != nil && err != io.EOF {
+			return response, fmt.Errorf("client.do decode body: %w", err)
+		}
 	}
 	err = checkResponse(resp)
 	return response, err

@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -18,8 +19,6 @@ import (
 
 	"github.com/philips-software/go-hsdp-api/iam"
 
-	"go.elastic.co/apm/module/apmhttp"
-
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 
 	signer "github.com/philips-software/go-hsdp-signer"
@@ -29,8 +28,7 @@ const (
 	// TimeFormat is the time format used for the LogTime field
 	TimeFormat = "2006-01-02T15:04:05.000Z07:00"
 
-	libraryVersion = "0.29.0"
-	userAgent      = "go-hsdp-api/logging/" + libraryVersion
+	userAgent = "go-hsdp-api/logging/" + internal.LibraryVersion
 )
 
 var (
@@ -107,7 +105,7 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 				Proxy: http.ProxyFromEnvironment,
 			},
 		}
-		httpClient = apmhttp.WrapClient(c)
+		httpClient = c
 	}
 	// Autoconfig
 	if config.Region != "" && config.Environment != "" {
