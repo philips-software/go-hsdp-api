@@ -123,7 +123,7 @@ iam_url = "https://iam-service.us-east.philips-healthsuite.com"
 idm_url = "https://idm-service.us-east.philips-healthsuite.com"
 [region.eu-west.env.client-test.service.iam]
 url = "https://iam-client-test.eu-west.philips-healthsuite.com"
-iam_url = "https://iam-service.eu-west.philips-healthsuite.com"
+iam_url = "https://iam-client-test.eu-west.philips-healthsuite.com"
 idm_url = "https://idm-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.iam]
 url = "https://iam-service.eu-west.philips-healthsuite.com"
