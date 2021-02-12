@@ -59,7 +59,7 @@
               "url": "https://has-client-test.eu-west.philips-healthsuite.com"
             },
             "iam": {
-              "iam_url": "https://iam-service.eu-west.philips-healthsuite.com",
+              "iam_url": "https://iam-client-test.eu-west.philips-healthsuite.com",
               "idm_url": "https://idm-client-test.eu-west.philips-healthsuite.com",
               "url": "https://iam-client-test.eu-west.philips-healthsuite.com"
             },
