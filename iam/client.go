@@ -213,21 +213,25 @@ func (c *Client) accessTokenEndpoint() string {
 
 // Token returns the current token
 func (c *Client) Token() string {
-	c.Lock()
-	defer c.Unlock()
-
 	now := time.Now().Unix()
 	expires := c.expiresAt.Unix()
 
 	if expires-now < 60 {
-		if c.tokenRefresh() != nil {
+		if c.TokenRefresh() != nil {
 			return ""
 		}
 	}
+	c.Lock()
+	defer c.Unlock()
+
 	return c.token
 }
 
-func (c *Client) tokenRefresh() error {
+// TokenRefresh forces a token refresh
+func (c *Client) TokenRefresh() error {
+	c.Lock()
+	defer c.Unlock()
+
 	if c.refreshToken == "" {
 		return ErrMissingRefreshToken
 	}

@@ -424,7 +424,9 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 	defer client.Close()
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer func() {
+		_ = os.Remove(tmpfile.Name())
+	}() // clean up
 
 	err = client.Login("username", "password")
 	assert.Nil(t, err)
@@ -517,7 +519,7 @@ func TestTokenRefresh(t *testing.T) {
 	err = client.Login("username", "password")
 	assert.Nil(t, err)
 
-	err = client.tokenRefresh()
+	err = client.TokenRefresh()
 	assert.Nilf(t, err, fmt.Sprintf("Unexpected error: %v", err))
 	assert.Equal(t, newToken, client.Token())
 	assert.Equal(t, newRefreshToken, client.RefreshToken())
