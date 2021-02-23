@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.35.4
+- Remove duplicate DICOM logging
+
 ## v0.35.3
 - Expose TokenRefresh() in DICOM client
 
