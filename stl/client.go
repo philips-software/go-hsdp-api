@@ -1,3 +1,4 @@
+// Package stl provides support for HSDP STL services
 package stl
 
 import (
