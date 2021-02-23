@@ -95,10 +95,13 @@ url = "https://console.ap3.hsdp.io"
 # Service STL
 [region.dev.service.stl]
 url = "https://console.na3.hsdp.io/api/stl/user/v1/graphql"
+domain = "na1.vpn.hsdp.io"
 [region.us-east.service.stl]
 url = "https://console.na1.hsdp.io/api/stl/user/v1/graphql"
+domain = "na1.vpn.hsdp.io"
 [region.eu-west.service.stl]
 url = "https://console.eu1.hsdp.io/api/stl/user/v1/graphql"
+domain = "emea1.vpn.hsdp.io"
 
 # Service UAA
 [region.us-east.service.uaa]
@@ -115,36 +118,20 @@ url = "https://uaa.cloud.phsdp.com"
 # Service IAM
 [region.us-east.env.client-test.service.iam]
 url = "https://iam-client-test.us-east.philips-healthsuite.com"
-iam_url = "https://iam-client-test.us-east.philips-healthsuite.com"
-idm_url = "https://idm-client-test.us-east.philips-healthsuite.com"
 [region.us-east.env.prod.service.iam]
 url = "https://iam-service.us-east.philips-healthsuite.com"
-iam_url = "https://iam-service.us-east.philips-healthsuite.com"
-idm_url = "https://idm-service.us-east.philips-healthsuite.com"
 [region.eu-west.env.client-test.service.iam]
 url = "https://iam-client-test.eu-west.philips-healthsuite.com"
-iam_url = "https://iam-client-test.eu-west.philips-healthsuite.com"
-idm_url = "https://idm-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.iam]
 url = "https://iam-service.eu-west.philips-healthsuite.com"
-iam_url = "https://iam-service.eu-west.philips-healthsuite.com"
-idm_url = "https://idm-service.eu-west.philips-healthsuite.com"
 [region.sa1.env.client-test.service.iam]
 url = "https://iam-client-test.sa1.hsdp.io"
-iam_url = "https://iam-client-test.sa1.hsdp.io"
-idm_url = "https://idm-client-test.sa1.hsdp.io"
 [region.sa1.env.prod.service.iam]
 url = "https://iam-service.sa1.hsdp.io"
-iam_url = "https://iam-service.sa1.hsdp.io"
-idm_url = "https://idm-service.sa1.hsdp.io"
 [region.apac3.env.prod.service.iam]
 url = "https://iam-service.ap3.hsdp.io"
-iam_url = "https://iam-service.ap3.hsdp.io"
-idm_url = "https://idm-service.ap3.hsdp.io"
 [region.us-east.env.dev.service.iam]
 url = "https://iam-development.us-east.philips-healthsuite.com"
-iam_url = "https://iam-development.us-east.philips-healthsuite.com"
-idm_url = "https://idm-development.us-east.philips-healthsuite.com"
 
 # Service IDM
 [region.us-east.env.client-test.service.idm]

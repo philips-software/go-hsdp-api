@@ -5,8 +5,6 @@
         "prod": {
           "service": {
             "iam": {
-              "iam_url": "https://iam-service.ap3.hsdp.io",
-              "idm_url": "https://idm-service.ap3.hsdp.io",
               "url": "https://iam-service.ap3.hsdp.io"
             },
             "idm": {
@@ -44,6 +42,7 @@
     "dev": {
       "service": {
         "stl": {
+          "domain": "na1.vpn.hsdp.io",
           "url": "https://console.na3.hsdp.io/api/stl/user/v1/graphql"
         },
         "uaa": {
@@ -59,8 +58,6 @@
               "url": "https://has-client-test.eu-west.philips-healthsuite.com"
             },
             "iam": {
-              "iam_url": "https://iam-client-test.eu-west.philips-healthsuite.com",
-              "idm_url": "https://idm-client-test.eu-west.philips-healthsuite.com",
               "url": "https://iam-client-test.eu-west.philips-healthsuite.com"
             },
             "idm": {
@@ -83,8 +80,6 @@
         "prod": {
           "service": {
             "iam": {
-              "iam_url": "https://iam-service.eu-west.philips-healthsuite.com",
-              "idm_url": "https://idm-service.eu-west.philips-healthsuite.com",
               "url": "https://iam-service.eu-west.philips-healthsuite.com"
             },
             "idm": {
@@ -121,6 +116,7 @@
           "host": "gw-eu1.phsdp.com"
         },
         "stl": {
+          "domain": "emea1.vpn.hsdp.io",
           "url": "https://console.eu1.hsdp.io/api/stl/user/v1/graphql"
         },
         "uaa": {
@@ -133,8 +129,6 @@
         "client-test": {
           "service": {
             "iam": {
-              "iam_url": "https://iam-client-test.sa1.hsdp.io",
-              "idm_url": "https://idm-client-test.sa1.hsdp.io",
               "url": "https://iam-client-test.sa1.hsdp.io"
             },
             "idm": {
@@ -151,8 +145,6 @@
         "prod": {
           "service": {
             "iam": {
-              "iam_url": "https://iam-service.sa1.hsdp.io",
-              "idm_url": "https://idm-service.sa1.hsdp.io",
               "url": "https://iam-service.sa1.hsdp.io"
             },
             "idm": {
@@ -195,8 +187,6 @@
         "client-test": {
           "service": {
             "iam": {
-              "iam_url": "https://iam-client-test.us-east.philips-healthsuite.com",
-              "idm_url": "https://idm-client-test.us-east.philips-healthsuite.com",
               "url": "https://iam-client-test.us-east.philips-healthsuite.com"
             },
             "idm": {
@@ -219,8 +209,6 @@
         "dev": {
           "service": {
             "iam": {
-              "iam_url": "https://iam-development.us-east.philips-healthsuite.com",
-              "idm_url": "https://idm-development.us-east.philips-healthsuite.com",
               "url": "https://iam-development.us-east.philips-healthsuite.com"
             },
             "idm": {
@@ -231,8 +219,6 @@
         "prod": {
           "service": {
             "iam": {
-              "iam_url": "https://iam-service.us-east.philips-healthsuite.com",
-              "idm_url": "https://idm-service.us-east.philips-healthsuite.com",
               "url": "https://iam-service.us-east.philips-healthsuite.com"
             },
             "idm": {
@@ -276,6 +262,7 @@
           "host": "gw-na1.phsdp.com"
         },
         "stl": {
+          "domain": "na1.vpn.hsdp.io",
           "url": "https://console.na1.hsdp.io/api/stl/user/v1/graphql"
         },
         "uaa": {
