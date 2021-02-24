@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.35.5
+- Improved error checking for application and proposition creation
+
 ## v0.35.4
 - Remove duplicate DICOM logging
 
