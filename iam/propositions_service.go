@@ -2,6 +2,7 @@ package iam
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -101,10 +102,15 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	var bundleResponse interface{}
 
 	resp, err := p.client.do(req, &bundleResponse)
-
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
-	if !ok {
+	if err == io.EOF {
+		err = nil
+	}
+	if err != nil {
 		return nil, resp, err
+	}
+	ok := resp != nil && resp.StatusCode == http.StatusCreated
+	if !ok {
+		return nil, resp, fmt.Errorf("CreateProposition failed: resp=%v", resp)
 	}
 	var id string
 	count, _ := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Proposition/%s", &id)

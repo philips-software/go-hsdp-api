@@ -2,6 +2,7 @@ package iam
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -80,13 +81,19 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 
 	var bundleResponse interface{}
 
-	resp, _ := a.client.do(req, &bundleResponse)
+	resp, err := a.client.do(req, &bundleResponse)
+	if err == io.EOF { // EOF is not an error in this case
+		err = nil
+	}
+	if err != nil {
+		return nil, resp, err
+	}
 	if resp == nil {
 		return nil, nil, fmt.Errorf("CreateApplication: request failed")
 	}
-	ok := resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated
+	ok := resp.StatusCode == http.StatusCreated
 	if !ok {
-		return nil, resp, err
+		return nil, resp, fmt.Errorf("CreateApplication: failed with StatusCode=%d", resp.StatusCode)
 	}
 	var id string
 	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Application/%s", &id)
