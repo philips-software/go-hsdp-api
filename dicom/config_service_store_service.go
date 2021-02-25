@@ -2,6 +2,7 @@ package dicom
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -54,7 +55,7 @@ func (c *ConfigService) SetStoreService(svc SCPConfig, options ...OptionFunc) (*
 	resp, err := c.client.do(req, &createdService)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("SetStoreService: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -74,7 +75,7 @@ func (c *ConfigService) GetStoreService(options ...OptionFunc) (*SCPConfig, *Res
 	resp, err := c.client.do(req, &service)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetStoreService: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}

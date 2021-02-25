@@ -296,7 +296,7 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 		return nil, resp, err
 	}
 	if responseStruct.Total == 0 {
-		return nil, resp, ErrEmptyResults
+		return nil, resp, fmt.Errorf("GetUserByID: %w", ErrEmptyResults)
 	}
 	return &responseStruct.Entry[0], resp, nil
 }
@@ -308,7 +308,7 @@ func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, er
 		return "", resp, err
 	}
 	if user == nil {
-		return "", resp, ErrEmptyResults
+		return "", resp, fmt.Errorf("GetUserIDByLoginID: %w", ErrEmptyResults)
 	}
 	return user.ID, resp, nil
 }
@@ -336,7 +336,7 @@ func (u *UsersService) LegacyGetUserIDByLoginID(loginID string) (string, *Respon
 		return "", resp, err
 	}
 	if len(responseStruct.Exchange.Users) == 0 {
-		return "", resp, ErrEmptyResults
+		return "", resp, fmt.Errorf("LegacyGetUserIDByLoginID: %w", ErrEmptyResults)
 	}
 	return responseStruct.Exchange.Users[0].UserUUID, resp, nil
 }

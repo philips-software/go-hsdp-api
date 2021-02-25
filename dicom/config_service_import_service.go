@@ -2,6 +2,7 @@ package dicom
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -25,7 +26,7 @@ func (c *ConfigService) SetImportService(svc ImportService, opt *QueryOptions, o
 	resp, err := c.client.do(req, &createdService)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("SetImportService: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -45,7 +46,7 @@ func (c *ConfigService) GetImportService(opt *QueryOptions, options ...OptionFun
 	resp, err := c.client.do(req, &service)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetImportService: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}

@@ -2,6 +2,7 @@ package dicom
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -20,7 +21,7 @@ func (c *ConfigService) SetQueryService(svc SCPConfig, opt *QueryOptions, option
 	resp, err := c.client.do(req, &createdService)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("SetQueryService: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -40,7 +41,7 @@ func (c *ConfigService) GetQueryService(opt *QueryOptions, options ...OptionFunc
 	resp, err := c.client.do(req, &service)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetQueryService: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}

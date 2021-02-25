@@ -3,6 +3,7 @@ package dicom
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -28,7 +29,7 @@ func (c *ConfigService) CreateRepository(repo Repository, opt *QueryOptions, opt
 	resp, err := c.client.do(req, &createdRepo)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("CreateRepository: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -50,7 +51,7 @@ func (c *ConfigService) GetRepositories(opt *QueryOptions, options ...OptionFunc
 	resp, err := c.client.do(req, &repos)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetRepositories: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -69,7 +70,7 @@ func (c *ConfigService) GetRepository(id string, opt *QueryOptions, options ...O
 	resp, err := c.client.do(req, &repo)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetRepository: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -88,7 +89,7 @@ func (c *ConfigService) DeleteRepository(repo Repository, opt *QueryOptions, opt
 	resp, err := c.client.do(req, &res)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("DeleteRepository: %w", ErrEmptyResult)
 		}
 		return false, resp, err
 	}

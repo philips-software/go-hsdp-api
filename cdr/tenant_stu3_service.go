@@ -36,7 +36,7 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	resp, err := t.client.do(req, &onboardResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("Onboard: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -62,7 +62,7 @@ func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organizat
 		return nil, resp, err
 	}
 	if resp == nil {
-		return nil, nil, ErrEmptyResult
+		return nil, nil, fmt.Errorf("GetOrganizationByID: %w", ErrEmptyResult)
 	}
 	unmarshalled, err := t.um.Unmarshal(getResponse.Bytes())
 	if err != nil {

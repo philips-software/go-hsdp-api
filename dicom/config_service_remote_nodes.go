@@ -3,6 +3,7 @@ package dicom
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -45,7 +46,7 @@ func (c *ConfigService) CreateRemoteNode(node RemoteNode, options ...OptionFunc)
 	resp, err := c.client.do(req, &createdNode)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("CreateRemoteNode: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -67,7 +68,7 @@ func (c *ConfigService) GetRemoteNodes(opt *QueryOptions, options ...OptionFunc)
 	resp, err := c.client.do(req, &nodes)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetRemoteNodes: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -86,7 +87,7 @@ func (c *ConfigService) GetRemoteNode(id string, opt *QueryOptions, options ...O
 	resp, err := c.client.do(req, &node)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetRemoteNode: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -105,7 +106,7 @@ func (c *ConfigService) DeleteRemoteNode(node RemoteNode, options ...OptionFunc)
 	resp, err := c.client.do(req, &res)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("DeleteRemoteNode: %w", ErrEmptyResult)
 		}
 		return false, resp, err
 	}

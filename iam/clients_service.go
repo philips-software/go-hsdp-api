@@ -78,10 +78,13 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 	if !ok {
 		return nil, resp, err
 	}
+	if resp == nil {
+		return nil, resp, fmt.Errorf("CreateClient (resp=nil): %w", ErrCouldNoReadResourceAfterCreate)
+	}
 	var id string
 	count, _ := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Client/%s", &id)
 	if count == 0 {
-		return nil, resp, ErrCouldNoReadResourceAfterCreate
+		return nil, resp, fmt.Errorf("CreateClient: %w", ErrCouldNoReadResourceAfterCreate)
 	}
 	ac.ID = id
 	if len(scopes) > 0 {
@@ -118,7 +121,7 @@ func (c *ClientsService) GetClientByID(id string) (*ApplicationClient, *Response
 		return nil, resp, ErrOperationFailed
 	}
 	if len(*clients) == 0 {
-		return nil, resp, ErrEmptyResults
+		return nil, resp, fmt.Errorf("GetClientByID: %w", ErrEmptyResults)
 	}
 	foundClient := (*clients)[0]
 

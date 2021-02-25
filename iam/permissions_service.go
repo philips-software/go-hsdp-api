@@ -1,5 +1,7 @@
 package iam
 
+import "fmt"
+
 const permissionAPIVersion = "1"
 
 // Permission represents a IAM Permission resource
@@ -63,7 +65,7 @@ func (p *PermissionsService) GetPermission(opt *GetPermissionOptions, options ..
 		return nil, resp, err
 	}
 	if len(*permissions) == 0 {
-		return nil, resp, ErrEmptyResults
+		return nil, resp, fmt.Errorf("GetPermission: %w", ErrEmptyResults)
 	}
 	return &(*permissions)[0], resp, nil
 }

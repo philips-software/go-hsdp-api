@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -112,7 +113,7 @@ func (c *ServicesService) getCA(path string, options ...OptionFunc) (*x509.Certi
 		return nil, nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, nil, ErrEmptyResult
+		return nil, nil, nil, fmt.Errorf("getCA: %w", ErrEmptyResult)
 	}
 	defer resp.Body.Close()
 	pemData, err := ioutil.ReadAll(resp.Body)
@@ -155,7 +156,7 @@ func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.Cert
 		return nil, nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, nil, ErrEmptyResult
+		return nil, nil, nil, fmt.Errorf("getCRL: %w", ErrEmptyResult)
 	}
 	defer resp.Body.Close()
 	pemData, err := ioutil.ReadAll(resp.Body)
@@ -224,7 +225,7 @@ func (c *ServicesService) Sign(logicalPath, roleName string, signRequest SignReq
 		return nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, ErrEmptyResult
+		return nil, nil, fmt.Errorf("Sign: %w", ErrEmptyResult)
 	}
 	return &responseStruct.IssueResponse, resp, nil
 }
@@ -244,7 +245,7 @@ func (c *ServicesService) IssueCertificate(logicalPath, roleName string, request
 		return nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, ErrEmptyResult
+		return nil, nil, fmt.Errorf("IssueCertificate: %w", ErrEmptyResult)
 	}
 	return &responseStruct.IssueResponse, resp, nil
 }
@@ -269,7 +270,7 @@ func (c *ServicesService) RevokeCertificateBySerial(logicalPath, serial string, 
 		return nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, ErrEmptyResult
+		return nil, nil, fmt.Errorf("RevokeCertificateBySerial: %w", ErrEmptyResult)
 	}
 	return &responseStruct.RevokeResponse, resp, nil
 }
@@ -289,7 +290,7 @@ func (c *ServicesService) GetCertificateBySerial(logicalPath, serial string, opt
 		return nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, ErrEmptyResult
+		return nil, nil, fmt.Errorf("GetCertificateBySerial: %w", ErrEmptyResult)
 	}
 	return &responseStruct.IssueResponse, resp, nil
 }
@@ -357,7 +358,7 @@ func (c *ServicesService) GetCertificates(logicalPath string, opt *QueryOptions,
 		return nil, nil, err
 	}
 	if resp == nil {
-		return nil, nil, ErrEmptyResult
+		return nil, nil, fmt.Errorf("GetCertificates: %w", ErrEmptyResult)
 	}
 	return &responseStruct.CertificateList, resp, nil
 }

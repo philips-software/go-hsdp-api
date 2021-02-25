@@ -61,7 +61,7 @@ func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, option
 		return nil, resp, err
 	}
 	if len(*props) == 0 {
-		return nil, resp, ErrEmptyResults
+		return nil, resp, fmt.Errorf("GetProposition: %w", ErrEmptyResults)
 	}
 	return &(*props)[0], resp, nil
 }
@@ -115,7 +115,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	var id string
 	count, _ := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Proposition/%s", &id)
 	if count == 0 {
-		return nil, resp, ErrCouldNoReadResourceAfterCreate
+		return nil, resp, fmt.Errorf("CreateProposition: %w", ErrCouldNoReadResourceAfterCreate)
 	}
 	return p.GetPropositionByID(id)
 }

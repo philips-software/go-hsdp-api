@@ -24,7 +24,7 @@ func (c *Client) CreateAuditEvent(event *dstu2pb.AuditEvent) (*stu3pb.ContainedR
 	resp, doErr := c.do(req, &operationResponse)
 	if (doErr != nil && !(doErr == io.EOF || doErr == ErrBadRequest)) || resp == nil {
 		if resp == nil && doErr != nil {
-			doErr = ErrEmptyResult
+			doErr = fmt.Errorf("CreateAuditEvent: %w", ErrEmptyResult)
 		}
 		return nil, resp, doErr
 	}

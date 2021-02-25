@@ -2,6 +2,7 @@ package dicom
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -31,7 +32,7 @@ func (c *ConfigService) SetFHIRStore(svc FHIRStore, opt *QueryOptions, options .
 	resp, err := c.client.do(req, &fhirStore)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("SetFHIRStore: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -51,7 +52,7 @@ func (c *ConfigService) GetFHIRStore(opt *QueryOptions, options ...OptionFunc) (
 	resp, err := c.client.do(req, &fhirStore)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetFHIRStore: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}

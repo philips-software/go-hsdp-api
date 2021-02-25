@@ -3,6 +3,7 @@ package dicom
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -54,7 +55,7 @@ func (c *ConfigService) CreateObjectStore(store ObjectStore, opt *QueryOptions, 
 	resp, err := c.client.do(req, &createdObjectStore)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("CreateObjectStore: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -73,7 +74,7 @@ func (c *ConfigService) GetObjectStores(opt *QueryOptions, options ...OptionFunc
 	resp, err := c.client.do(req, &objectStores)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetObjectStores: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -92,7 +93,7 @@ func (c *ConfigService) GetObjectStore(id string, opt *QueryOptions, options ...
 	resp, err := c.client.do(req, &objectStore)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("GetObjectStore: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
@@ -111,7 +112,7 @@ func (c *ConfigService) DeleteObjectStore(store ObjectStore, opt *QueryOptions, 
 	resp, err := c.client.do(req, &res)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = ErrEmptyResult
+			err = fmt.Errorf("DeleteObjectStore: %w", ErrEmptyResult)
 		}
 		return false, resp, err
 	}

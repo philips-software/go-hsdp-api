@@ -101,7 +101,7 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 		return nil, resp, err
 	}
 	if count == 0 {
-		return nil, resp, ErrCouldNoReadResourceAfterCreate
+		return nil, resp, fmt.Errorf("CreateApplication: %w", ErrCouldNoReadResourceAfterCreate)
 	}
 	return a.GetApplicationByID(id)
 }

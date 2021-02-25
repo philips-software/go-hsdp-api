@@ -1,6 +1,7 @@
 package has
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -33,7 +34,7 @@ type Session struct {
 	// The remote IP of the instance
 	RemoteIP string `json:"remoteIp,omitempty"`
 	// The access token for the instance
-	AccessToken string `json:"accessToken,omitempty""`
+	AccessToken string `json:"accessToken,omitempty"`
 }
 
 // Sessions contains a list of Session values
@@ -117,7 +118,7 @@ func (c *SessionsService) DeleteSession(userID string) (bool, *Response, error) 
 	var sr Sessions
 	resp, _ := c.client.do(req, &sr)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, nil, ErrEmptyResults
+		return false, nil, fmt.Errorf("DeleteSession: %w", ErrEmptyResults)
 	}
 	return true, resp, nil
 }
