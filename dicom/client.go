@@ -271,7 +271,7 @@ func checkResponse(r *http.Response) error {
 	case 200, 201, 202, 204, 304:
 		return nil
 	case 403:
-		return ErrDICOMForbidden
+		return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrDICOMForbidden)
 	}
-	return ErrNonHttp20xResponse
+	return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrNonHttp20xResponse)
 }

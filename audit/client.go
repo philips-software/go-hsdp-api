@@ -219,5 +219,5 @@ func checkResponse(r *http.Response) error {
 	case 400:
 		return ErrBadRequest
 	}
-	return ErrNonHttp20xResponse
+	return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrNonHttp20xResponse)
 }

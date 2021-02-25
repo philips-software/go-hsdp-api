@@ -157,11 +157,10 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 	req.Close = true // Always close request
 	resp, err := c.httpClient.Do(req)
-	if err != nil && err != io.EOF {
+	if resp == nil || (err != nil && err != io.EOF) {
 		return nil, fmt.Errorf("client.do: %w", err)
 	}
 	defer resp.Body.Close()
-
 	response := newResponse(resp)
 
 	if c.debugFile != nil {
@@ -192,7 +191,7 @@ func checkResponse(r *http.Response) error {
 	case 200, 201, 202, 204, 304:
 		return nil
 	}
-	return ErrNonHttp20xResponse
+	return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrNonHttp20xResponse)
 }
 
 // newRequest creates an API request. A relative URL path can be provided in
