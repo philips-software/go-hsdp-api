@@ -1,17 +1,16 @@
 package iam
 
-import "time"
+import (
+	"time"
+)
 
 // User represents a user profile in IAM
 type User struct {
-	PreferredLanguage string `json:"preferredLanguage"`
-	EmailAddress      string `json:"emailAddress"`
-	ID                string `json:"id"`
-	LoginID           string `json:"loginId"`
-	Name              struct {
-		Given  string `json:"given"`
-		Family string `json:"family"`
-	} `json:"name"`
+	PreferredLanguage    string `json:"preferredLanguage"`
+	EmailAddress         string `json:"emailAddress"`
+	ID                   string `json:"id"`
+	LoginID              string `json:"loginId"`
+	Name                 Name   `json:"name"`
 	ManagingOrganization string `json:"managingOrganization"`
 	PasswordStatus       struct {
 		PasswordExpiresOn time.Time `json:"passwordExpiresOn"`
@@ -55,10 +54,10 @@ type Person struct {
 
 // Contact describes contact details of a Profile
 type Contact struct {
-	EmailAddress string
-	MobilePhone  string
-	WorkPhone    string
-	HomePhone    string
+	EmailAddress string `json:"emailAddress,omitempty"`
+	MobilePhone  string `json:"mobilePhone,omitempty"`
+	WorkPhone    string `json:"workPhone,omitempty"`
+	HomePhone    string `json:"homePhone,omitempty"`
 }
 
 // Address describes an address of a Profile
@@ -83,15 +82,30 @@ type Period struct {
 // Profile describes the response from legacy User APIs
 // The response does not correspond to the object that is used to create a user
 type Profile struct {
-	GivenName         string    `json:"givenName"`
-	MiddleName        string    `json:"middleName"`
-	FamilyName        string    `json:"familyName"`
-	BirthDay          string    `json:"birthDay"`
-	DisplayName       string    `json:"displayName"`
-	Gender            string    `json:"gender" enum:"Male|Female"`
-	Country           string    `json:"country"`
-	Addresses         []Address `json:"addresses"`
-	PreferredLanguage string    `json:"preferredLanguage"`
+	ID                string     `json:"-"`
+	GivenName         string     `json:"givenName"`
+	MiddleName        string     `json:"middleName"`
+	FamilyName        string     `json:"familyName"`
+	BirthDay          *time.Time `json:"birthDay,omitempty"`
+	DisplayName       string     `json:"displayName,omitempty"`
+	Gender            string     `json:"gender,omitempty" enum:"Male|Female"`
+	Country           string     `json:"country,omitempty"`
+	Contact           Contact    `json:"contact,omitempty"`
+	Addresses         []Address  `json:"addresses,omitempty,omitempty"`
+	PreferredLanguage string     `json:"preferredLanguage,omitempty"`
+}
+
+// MergeUser merges User into legacy Profile
+func (p *Profile) MergeUser(user *User) {
+	p.GivenName = user.Name.Given
+	p.FamilyName = user.Name.Family
+	// See INC0058741 for backround for this workaround
+	if p.MiddleName == "" {
+		p.MiddleName = " "
+	}
+	p.ID = user.ID
+	p.Contact.EmailAddress = user.EmailAddress
+	p.PreferredLanguage = user.PreferredLanguage
 }
 
 // Name entity
@@ -110,9 +124,11 @@ type TelecomEntry struct {
 
 // AddressEntry entity
 type AddressEntry struct {
-	Use        string `json:"use"`
-	City       string `json:"city"`
-	State      string `json:"state"`
-	Country    string `json:"country"`
-	Postalcode string `json:"postalcode"`
+	Use        string   `json:"use"`
+	Text       string   `json:"text"`
+	Line       []string `json:"line"`
+	City       string   `json:"city"`
+	State      string   `json:"state"`
+	Country    string   `json:"country"`
+	Postalcode string   `json:"postalcode"`
 }

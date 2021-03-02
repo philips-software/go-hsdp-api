@@ -135,11 +135,13 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 		IsAgeValidated: "true",
 	}
 	user, resp, err := client.Users.CreateUser(person)
+	if !assert.Nil(t, err) {
+		return
+	}
 	if !assert.NotNil(t, resp) {
 		return
 	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.Nil(t, err)
 	if !assert.NotNil(t, user) {
 		return
 	}
@@ -502,4 +504,119 @@ func actionRequestHandler(t *testing.T, paramName, informationalMessage string, 
 		  }`)
 		}
 	}
+}
+
+func TestLegacyPaths(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	userUUID := "44d20214-7879-4e35-923d-f9d4e01c9746"
+
+	muxIDM.HandleFunc("/authorize/identity/User", func(w http.ResponseWriter, request *http.Request) {
+		switch request.Method {
+		case http.MethodGet:
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{
+  "total": 1,
+  "entry": [
+    {
+      "preferredLanguage": "en-us",
+      "loginId": "ron",
+      "emailAddress": "ron.swanson@pawnee.com",
+      "id": "` + userUUID + `",
+      "managingOrganization": "daedbeaf-888d-4a26-8c1d-578e97365aaa",
+      "name": {
+        "given": "Ron",
+        "family": "Swanson"
+      },
+      "memberships": [],
+      "passwordStatus": {
+        "passwordExpiresOn": "2023-05-09T16:41:29Z",
+        "passwordChangedOn": "2020-05-09T16:41:29Z"
+      },
+      "accountStatus": {
+        "mfaStatus": "REQUIRED",
+        "lastLoginTime": null,
+        "emailVerified": true,
+        "disabled": false
+      },
+      "consentedApps": [
+        "default default default"
+      ]
+    }
+  ]
+}`))
+
+		}
+	})
+
+	muxIDM.HandleFunc("/security/users/"+userUUID,
+		func(w http.ResponseWriter, request *http.Request) {
+			switch request.Method {
+			case http.MethodGet:
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`{
+  "exchange": {
+    "loginId": "ron",
+    "profile": {
+      "contact": {
+        "emailAddress": "ron.swanson@pawnee.gov",
+        "mobilePhone": "1234567890"
+      },
+      "givenName": "Ron",
+      "familyName": "Swanson",
+      "addresses": [],
+      "disabled": false,
+      "preferredLanguage": "en-US"
+    }
+  },
+  "responseCode": "200",
+  "responseMessage": "Success"
+}`))
+			case http.MethodPut:
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`{
+  "exchange": {
+    "userUUID": "` + userUUID + `",
+    "loginId": "ron",
+    "profile": {
+      "contact": {
+        "emailAddress": "ron.swanson@pawnee.gov",
+        "mobilePhone": "31612345678"
+      },
+      "givenName": "Ron",
+      "familyName": "Swanson",
+      "addresses": [],
+      "disabled": false,
+      "preferredLanguage": "en-US"
+    }
+  },
+  "responseCode": "200",
+  "responseMessage": "Success"
+}`))
+			}
+		})
+
+	user, resp, err := client.Users.LegacyGetUserByUUID(userUUID)
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, user) {
+		return
+	}
+	assert.Nil(t, err)
+	assert.Equal(t, "Swanson", user.FamilyName)
+	user.GivenName = "Ron"
+	user.ID = userUUID
+	profile, resp, err := client.Users.LegacyUpdateUser(*user)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, profile) {
+		return
+	}
+	assert.Equal(t, "Swanson", profile.FamilyName)
 }

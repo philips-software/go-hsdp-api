@@ -2,10 +2,9 @@ package iam
 
 import (
 	"fmt"
+	validator "github.com/go-playground/validator/v10"
 	"net/http"
 	"strconv"
-
-	validator "github.com/go-playground/validator/v10"
 )
 
 const (
@@ -311,6 +310,47 @@ func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, er
 		return "", resp, fmt.Errorf("GetUserIDByLoginID: %w", ErrEmptyResults)
 	}
 	return user.ID, resp, nil
+}
+
+// LegacyUpdateUser updates the user profile
+func (u *UsersService) LegacyUpdateUser(profile Profile) (*Profile, *Response, error) {
+	req, _ := u.client.newRequest(IDM, "PUT", "security/users/"+profile.ID, profile, nil)
+	req.Header.Set("api-version", "1")
+
+	var responseStruct struct {
+		Exchange struct {
+			UserUUID string  `json:"userUUID"`
+			LoginID  string  `json:"loginId"`
+			Profile  Profile `json:"profile"`
+		} `json:"exchange"`
+		ResponseCode    string `json:"responseCode"`
+		ResponseMessage string `json:"responseMessage"`
+	}
+	resp, err := u.client.do(req, &responseStruct)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &responseStruct.Exchange.Profile, resp, err
+}
+
+// LegacyGetUserByUUID looks the a user by UUID using the legacy API
+func (u *UsersService) LegacyGetUserByUUID(uuid string) (*Profile, *Response, error) {
+	req, _ := u.client.newRequest(IDM, "GET", "security/users/"+uuid, nil, nil)
+	req.Header.Set("api-version", "1")
+
+	var responseStruct struct {
+		Exchange struct {
+			LoginID string  `json:"loginId"`
+			Profile Profile `json:"profile"`
+		} `json:"exchange"`
+		ResponseCode    string `json:"responseCode"`
+		ResponseMessage string `json:"responseMessage"`
+	}
+	resp, err := u.client.do(req, &responseStruct)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &responseStruct.Exchange.Profile, resp, err
 }
 
 // LegacyGetUserIDByLoginID looks up the UUID of a user by LoginID (email address)
