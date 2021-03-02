@@ -74,7 +74,7 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", userAPIVersion)
+	req.Header.Set("api-version", "3")
 
 	var bundleResponse interface{}
 

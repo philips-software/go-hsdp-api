@@ -48,6 +48,7 @@ type Person struct {
 	ManagingOrganization string         `json:"managingOrganization,omitempty"`
 	PreferredLanguage    string         `json:"preferredLanguage,omitempty"`
 	IsAgeValidated       string         `json:"isAgeValidated,omitempty"`
+	Password             string         `json:"password,omitempty"`
 	Disabled             bool           `json:"disabled"`
 	Loaded               bool           `json:"-"`
 }
