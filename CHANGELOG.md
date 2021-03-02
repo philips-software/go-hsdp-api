@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.36.0
+- NEW: Support immediate IAM account activation with optional password input
+- Support user updates
+
 ## v0.35.6
 - Wrap errors for better contextual errors
 
