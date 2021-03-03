@@ -330,6 +330,9 @@ func (u *UsersService) LegacyUpdateUser(profile Profile) (*Profile, *Response, e
 	if err != nil {
 		return nil, resp, err
 	}
+	if responseStruct.ResponseCode != "200" {
+		return nil, resp, fmt.Errorf("ResponseCode=%s: %v", responseStruct.ResponseCode, responseStruct)
+	}
 	return &responseStruct.Exchange.Profile, resp, err
 }
 
