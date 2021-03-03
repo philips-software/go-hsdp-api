@@ -63,14 +63,22 @@ type Contact struct {
 
 // Address describes an address of a Profile
 type Address struct {
-	Use        string `json:"use" enum:"home|work|temp|old"`
-	Text       string `json:"text"`
-	City       string `json:"city"`
-	State      string `json:"state"`
-	PostalCode string `json:"postalCode"`
-	Country    string `json:"country"`
-	Building   string `json:"building"`
-	Street     string `json:"street"`
+	Use        string   `json:"use,omitempty" enum:"home|work|temp|old"`
+	Text       string   `json:"text,omitempty"`
+	City       string   `json:"city,omitempty"`
+	State      string   `json:"state,omitempty"`
+	Line       []string `json:"line,omitempty"`
+	PostalCode string   `json:"postalCode,omitempty"`
+	Country    string   `json:"country,omitempty"`
+	Building   string   `json:"building,omitempty"`
+	Street     string   `json:"street,omitempty"`
+	IsPrimary  string   `json:"isPrimary,omitempty" enum:"yes|no"`
+}
+
+func (a *Address) IsBlank() bool {
+	return len(a.Use) == 0 && len(a.Text) == 0 && len(a.City) == 0 && len(a.State) == 0 &&
+		len(a.Line) == 0 && len(a.PostalCode) == 0 && len(a.Country) == 0 && len(a.Building) == 0 &&
+		len(a.Street) == 0 && len(a.IsPrimary) == 0
 }
 
 // Period defines a given time period for use in Profile context
@@ -94,6 +102,23 @@ type Profile struct {
 	Contact           Contact    `json:"contact,omitempty"`
 	Addresses         []Address  `json:"addresses,omitempty"`
 	PreferredLanguage string     `json:"preferredLanguage,omitempty"`
+}
+
+// PruneBlankAddresses removes addresses which are blank
+func (p *Profile) PruneBlankAddresses() {
+	if len(p.Addresses) == 0 {
+		return
+	}
+	pruned := make([]Address, 0)
+	for _, a := range p.Addresses {
+		if !a.IsBlank() {
+			pruned = append(pruned, a)
+		}
+	}
+	if len(pruned) == len(p.Addresses) {
+		return
+	}
+	p.Addresses = pruned
 }
 
 // MergeUser merges User into legacy Profile
