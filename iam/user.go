@@ -92,7 +92,7 @@ type Profile struct {
 	Gender            string     `json:"gender,omitempty" enum:"Male|Female"`
 	Country           string     `json:"country,omitempty"`
 	Contact           Contact    `json:"contact,omitempty"`
-	Addresses         []Address  `json:"addresses,omitempty,omitempty"`
+	Addresses         []Address  `json:"addresses,omitempty"`
 	PreferredLanguage string     `json:"preferredLanguage,omitempty"`
 }
 
@@ -111,10 +111,10 @@ func (p *Profile) MergeUser(user *User) {
 
 // Name entity
 type Name struct {
-	Text   string `json:"text"`
+	Text   string `json:"text,omitempty"`
 	Family string `json:"family" validate:"required"`
 	Given  string `json:"given" validate:"required"`
-	Prefix string `json:"prefix"`
+	Prefix string `json:"prefix,omitempty"`
 }
 
 // TelecomEntry entity
@@ -125,11 +125,11 @@ type TelecomEntry struct {
 
 // AddressEntry entity
 type AddressEntry struct {
-	Use        string   `json:"use"`
-	Text       string   `json:"text"`
-	Line       []string `json:"line"`
-	City       string   `json:"city"`
-	State      string   `json:"state"`
-	Country    string   `json:"country"`
-	Postalcode string   `json:"postalcode"`
+	Use        string   `json:"use,omitempty"`
+	Text       string   `json:"text,omitempty"`
+	Line       []string `json:"line,omitempty"`
+	City       string   `json:"city,omitempty"`
+	State      string   `json:"state,omitempty"`
+	Country    string   `json:"country,omitempty"`
+	Postalcode string   `json:"postalcode,omitempty"`
 }
