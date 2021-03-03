@@ -314,6 +314,9 @@ func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, er
 
 // LegacyUpdateUser updates the user profile
 func (u *UsersService) LegacyUpdateUser(profile Profile) (*Profile, *Response, error) {
+	// don't send blank addresses
+	profile.PruneBlankAddresses()
+
 	req, _ := u.client.newRequest(IDM, "PUT", "security/users/"+profile.ID, profile, nil)
 	req.Header.Set("api-version", "1")
 
