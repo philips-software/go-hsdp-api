@@ -56,7 +56,7 @@ type Person struct {
 // Contact describes contact details of a Profile
 type Contact struct {
 	EmailAddress string `json:"emailAddress,omitempty"`
-	MobilePhone  string `json:"mobilePhone,omitempty"`
+	MobilePhone  string `json:"mobilePhone"`
 	WorkPhone    string `json:"workPhone,omitempty"`
 	HomePhone    string `json:"homePhone,omitempty"`
 }
