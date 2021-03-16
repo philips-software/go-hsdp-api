@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -12,8 +13,9 @@ const (
 // GetGroupOptions describes the fields on which you can search for Groups
 type GetGroupOptions struct {
 	ID             *string `url:"_id,omitempty"`
-	OrganizationID *string `url:"Id,omitempty"`
+	OrganizationID *string `url:"orgID,omitempty"`
 	Name           *string `url:"name,omitempty"`
+	MemberType     *string `url:"memberType,omitempty"`
 }
 
 // GroupsService implements actions on Group entities
@@ -36,6 +38,41 @@ func (g *GroupsService) GetGroupByID(id string) (*Group, *Response, error) {
 		return nil, resp, err
 	}
 	return &group, resp, err
+}
+
+// GetGroups retrieves all groups
+func (g *GroupsService) GetGroups(opt *GetGroupOptions, options ...OptionFunc) (*[]Group, *Response, error) {
+	req, err := g.client.newRequest(IDM, "GET", "authorize/identity/Group", opt, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", groupAPIVersion)
+
+	var bundleResponse struct {
+		Total int `json:"total"`
+		Entry []struct {
+			Resource struct {
+				ID string `json:"_id"`
+			} `json:"resource"`
+		} `json:"entry"`
+	}
+
+	resp, err := g.client.do(req, &bundleResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	if bundleResponse.Total == 0 {
+		return nil, resp, ErrNotFound
+	}
+	var groups []Group
+	for _, gr := range bundleResponse.Entry {
+		group, resp, err := g.GetGroupByID(gr.Resource.ID)
+		if err != nil {
+			return nil, resp, fmt.Errorf("GetGroups: GetGroupByID: %w", err)
+		}
+		groups = append(groups, *group)
+	}
+	return &groups, resp, nil
 }
 
 // GetGroup retrieves a Group entity based on the values passed in GetGroupOptions
@@ -285,7 +322,7 @@ func (g *GroupsService) RemoveIdentities(group Group, memberType string, identit
 		return false, resp, err
 	}
 	version := resp.Header.Get("ETag")
-	return g.memberAction(group, "$remove", memberRequestBody("SERVICE", identities...), []OptionFunc{addIfMatchHeader(version)})
+	return g.memberAction(group, "$remove", memberRequestBody(memberType, identities...), []OptionFunc{addIfMatchHeader(version)})
 }
 
 // AddDevices adds services to the given Group
