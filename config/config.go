@@ -1,4 +1,4 @@
-// Package config provides info on HSDP services
+// Package world provides info on HSDP services
 package config
 
 import (
@@ -13,7 +13,7 @@ type Config struct {
 	region      string
 	environment string
 	source      io.Reader
-	config      World
+	world       World
 }
 
 type World struct {
@@ -58,7 +58,7 @@ func New(opts ...OptionFunc) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	config.config = world
+	config.world = world
 	return config, nil
 }
 
@@ -91,7 +91,7 @@ func WithEnv(env string) OptionFunc {
 // Region returns a new Config instance with region set
 func (c *Config) Region(region string) *Config {
 	return &Config{
-		config:      c.config,
+		world:       c.world,
 		region:      region,
 		environment: c.environment,
 	}
@@ -100,7 +100,7 @@ func (c *Config) Region(region string) *Config {
 // Env returns a new Config instance with environment set
 func (c *Config) Env(environment string) *Config {
 	return &Config{
-		config:      c.config,
+		world:       c.world,
 		region:      c.region,
 		environment: environment,
 	}
@@ -110,7 +110,7 @@ func (c *Config) Env(environment string) *Config {
 func (c *Config) Regions() []string {
 	regions := make([]string, 0)
 	// region level
-	for k := range c.config.Regions {
+	for k := range c.world.Regions {
 		regions = append(regions, k)
 	}
 	return regions
@@ -120,14 +120,14 @@ func (c *Config) Regions() []string {
 func (c *Config) Services() []string {
 	services := make([]string, 0)
 	// region level
-	if svcs, ok := c.config.Regions[c.region]; ok {
+	if svcs, ok := c.world.Regions[c.region]; ok {
 		for s := range svcs.Services {
 			services = append(services, s)
 		}
 	}
 
 	// environment
-	if svcs, ok := c.config.Regions[c.region].Environments[c.environment]; ok {
+	if svcs, ok := c.world.Regions[c.region].Environments[c.environment]; ok {
 		for s := range svcs.Services {
 			services = append(services, s)
 		}
@@ -138,7 +138,7 @@ func (c *Config) Services() []string {
 // Service returns an instance scoped to the service in the region and environment
 func (c *Config) Service(service string) *Service {
 	// Check if service is at region level
-	if regionService, ok := c.config.Regions[c.region]; ok {
+	if regionService, ok := c.world.Regions[c.region]; ok {
 		if service, ok := regionService.Services[service]; ok {
 			return &service
 		}
