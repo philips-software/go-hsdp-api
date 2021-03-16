@@ -267,7 +267,7 @@ func (c *ServicesService) RevokeCertificateBySerial(logicalPath, serial string, 
 	}
 	resp, err := c.client.do(req, &responseStruct)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	if resp == nil {
 		return nil, nil, fmt.Errorf("RevokeCertificateBySerial: %w", ErrEmptyResult)
@@ -287,7 +287,7 @@ func (c *ServicesService) GetCertificateBySerial(logicalPath, serial string, opt
 	}
 	resp, err := c.client.do(req, &responseStruct)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	if resp == nil {
 		return nil, nil, fmt.Errorf("GetCertificateBySerial: %w", ErrEmptyResult)
