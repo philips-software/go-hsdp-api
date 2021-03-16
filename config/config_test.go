@@ -111,4 +111,6 @@ func TestServices(t *testing.T) {
 	}
 	services := c.Region("us-east").Env("client-test").Services()
 	assert.Less(t, 0, len(services))
+	assert.Contains(t, services, "cf")
+	assert.Contains(t, services, "iam")
 }

@@ -1,3 +1,4 @@
+// Package config provides info on HSDP services
 package config
 
 import (
