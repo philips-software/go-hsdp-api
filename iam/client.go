@@ -190,7 +190,6 @@ func (c *Client) HttpClient() *http.Client {
 }
 
 // WithToken returns a cloned client with the token set
-// Deprecated: use SetTokens on existing client
 func (c *Client) WithToken(token string) *Client {
 	client, _ := NewClient(c.client, c.config)
 	client.SetToken(token)
@@ -310,7 +309,6 @@ func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 }
 
 // SetToken sets the token
-// Deprecated: use SetTokens instead
 func (c *Client) SetToken(token string) {
 	c.token = token
 	c.expiresAt = time.Now().Add(86400 * time.Minute)
