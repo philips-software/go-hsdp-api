@@ -64,7 +64,7 @@ func (p *Policy) Equals(other *Policy) bool {
 }
 
 func validateActions(fl validator.FieldLevel) bool {
-	validActions := []string{"GET", "PUT", "LIST", "DELETE", "ALL_OBJECT"}
+	validActions := []string{"GET", "PUT", "LIST", "DELETE", "ALL_OBJECT", "ALL_BUCKET"}
 	actions, ok := fl.Field().Interface().([]string)
 	if !ok {
 		return false
