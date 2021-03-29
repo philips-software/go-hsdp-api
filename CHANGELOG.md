@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.36.3
+- Add ALL_BUCKET to S3 policy action list
+
+## v0.36.2
+- Dependency upgrade
+
 ## v0.36.1
 - Tweak JSON structs
 
