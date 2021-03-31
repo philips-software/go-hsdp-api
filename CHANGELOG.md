@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.36.5
+- Add additional S3Creds regions
+
 ## v0.36.4
 - Add all other possible actions
 
