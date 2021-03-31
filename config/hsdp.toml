@@ -183,6 +183,10 @@ url = "https://s3creds-service.us-east.philips-healthsuite.com"
 url = "https://s3creds-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.s3creds]
 url = "https://s3creds-service.eu-west.philips-healthsuite.com"
+[region.ap-southeast-2.prod.service.s3creds]
+url = "https://s3creds-service.ap3.hsdp.io"
+[region.cn1.env.prod.service.s3creds]
+url = "https://s3creds-service.cn1.philips-healthsuite.com.cn"
 
 # Service HAS
 [region.eu-west.env.client-test.service.has]

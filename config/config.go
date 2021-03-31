@@ -75,7 +75,7 @@ func FromReader(reader io.Reader) OptionFunc {
 // WithRegion sets the region of the newly created Config instance
 func WithRegion(region string) OptionFunc {
 	return func(c *Config) error {
-		c.region = region
+		c.region = c.regionMapping(region)
 		return nil
 	}
 }
@@ -92,7 +92,7 @@ func WithEnv(env string) OptionFunc {
 func (c *Config) Region(region string) *Config {
 	return &Config{
 		world:       c.world,
-		region:      region,
+		region:      c.regionMapping(region),
 		environment: c.environment,
 	}
 }
@@ -149,4 +149,15 @@ func (c *Config) Service(service string) *Service {
 		}
 	}
 	return &Service{}
+}
+
+func (c *Config) regionMapping(region string) string {
+	switch region {
+	case "us-east-1":
+		return "us-east"
+	case "eu-west-1":
+		return "eu-west"
+	default:
+		return region
+	}
 }

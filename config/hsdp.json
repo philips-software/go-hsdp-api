@@ -1,5 +1,14 @@
 {
   "region": {
+    "ap-southeast-2": {
+      "prod": {
+        "service": {
+          "s3creds": {
+            "url": "https://s3creds-service.ap3.hsdp.io"
+          }
+        }
+      }
+    },
     "apac3": {
       "env": {
         "prod": {
@@ -36,6 +45,17 @@
         },
         "uaa": {
           "url": "https://uaa.sys.ap3.hsdp.io"
+        }
+      }
+    },
+    "cn1": {
+      "env": {
+        "prod": {
+          "service": {
+            "s3creds": {
+              "url": "https://s3creds-service.cn1.philips-healthsuite.com.cn"
+            }
+          }
         }
       }
     },
