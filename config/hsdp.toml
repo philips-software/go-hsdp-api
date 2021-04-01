@@ -175,6 +175,8 @@ host = "gw-apac3.phsdp.com"
 domain = "apac3.phsdp.com"
 
 # Service S3CREDS
+[region.us-east.env.dev.service.s3creds]
+url = "https://s3creds-development.us-east.philips-healthsuite.com"
 [region.us-east.env.client-test.service.s3creds]
 url = "https://s3creds-client-test.us-east.philips-healthsuite.com"
 [region.us-east.env.prod.service.s3creds]

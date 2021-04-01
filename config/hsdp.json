@@ -233,6 +233,9 @@
             },
             "idm": {
               "url": "https://idm-development.us-east.philips-healthsuite.com"
+            },
+            "s3creds": {
+              "url": "https://s3creds-development.us-east.philips-healthsuite.com"
             }
           }
         },
