@@ -130,6 +130,8 @@ url = "https://iam-service.sa1.hsdp.io"
 url = "https://iam-service.ap3.hsdp.io"
 [region.us-east.env.dev.service.iam]
 url = "https://iam-development.us-east.philips-healthsuite.com"
+[region.cn1.env.prod.service.iam]
+url = "https://iam-service.cn1.philips-healthsuite.com.cn"
 
 # Service IDM
 [region.us-east.env.client-test.service.idm]
@@ -146,6 +148,8 @@ url = "https://idm-service.sa1.hsdp.io"
 url = "https://idm-service.ap3.hsdp.io"
 [region.us-east.env.dev.service.idm]
 url = "https://idm-development.us-east.philips-healthsuite.com"
+[region.cn1.env.prod.service.idm]
+url = "https://idm-service.cn1.philips-healthsuite.com.cn"
 
 
 # Service CARTEL
@@ -181,7 +185,7 @@ url = "https://s3creds-service.us-east.philips-healthsuite.com"
 url = "https://s3creds-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.s3creds]
 url = "https://s3creds-service.eu-west.philips-healthsuite.com"
-[region.ap-southeast-2.prod.service.s3creds]
+[region.apac3.prod.service.s3creds]
 url = "https://s3creds-service.ap3.hsdp.io"
 [region.cn1.env.prod.service.s3creds]
 url = "https://s3creds-service.cn1.philips-healthsuite.com.cn"

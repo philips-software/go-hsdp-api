@@ -1,14 +1,5 @@
 {
   "region": {
-    "ap-southeast-2": {
-      "prod": {
-        "service": {
-          "s3creds": {
-            "url": "https://s3creds-service.ap3.hsdp.io"
-          }
-        }
-      }
-    },
     "apac3": {
       "env": {
         "prod": {
@@ -25,6 +16,13 @@
             "logging": {
               "url": "https://logingestor2.ap3.hsdp.io"
             }
+          }
+        }
+      },
+      "prod": {
+        "service": {
+          "s3creds": {
+            "url": "https://s3creds-service.ap3.hsdp.io"
           }
         }
       },
@@ -52,6 +50,12 @@
       "env": {
         "prod": {
           "service": {
+            "iam": {
+              "url": "https://iam-service.cn1.philips-healthsuite.com.cn"
+            },
+            "idm": {
+              "url": "https://idm-service.cn1.philips-healthsuite.com.cn"
+            },
             "s3creds": {
               "url": "https://s3creds-service.cn1.philips-healthsuite.com.cn"
             }
@@ -148,12 +152,6 @@
       "env": {
         "client-test": {
           "service": {
-            "iam": {
-              "url": "https://iam-client-test.sa1.hsdp.io"
-            },
-            "idm": {
-              "url": "https://idm-client-test.sa1.hsdp.io"
-            },
             "kibana": {
               "url": "https://kibana-client-test.sa1.hsdp.io"
             },
