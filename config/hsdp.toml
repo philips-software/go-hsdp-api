@@ -124,8 +124,6 @@ url = "https://iam-service.us-east.philips-healthsuite.com"
 url = "https://iam-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.iam]
 url = "https://iam-service.eu-west.philips-healthsuite.com"
-[region.sa1.env.client-test.service.iam]
-url = "https://iam-client-test.sa1.hsdp.io"
 [region.sa1.env.prod.service.iam]
 url = "https://iam-service.sa1.hsdp.io"
 [region.apac3.env.prod.service.iam]
@@ -142,8 +140,6 @@ url = "https://idm-service.us-east.philips-healthsuite.com"
 url = "https://idm-client-test.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.idm]
 url = "https://idm-service.eu-west.philips-healthsuite.com"
-[region.sa1.env.client-test.service.idm]
-url = "https://idm-client-test.sa1.hsdp.io"
 [region.sa1.env.prod.service.idm]
 url = "https://idm-service.sa1.hsdp.io"
 [region.apac3.env.prod.service.idm]

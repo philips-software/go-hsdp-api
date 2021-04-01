@@ -157,6 +157,10 @@ func (c *Config) regionMapping(region string) string {
 		return "us-east"
 	case "eu-west-1":
 		return "eu-west"
+	case "ap-se-2":
+		return "apac3"
+	case "sa-east-1":
+		return "sa1"
 	default:
 		return region
 	}
