@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.36.6
+- Add cn1 endpoints for IAM/IDM
+
 ## v0.36.5
 - Add additional S3Creds regions
 
