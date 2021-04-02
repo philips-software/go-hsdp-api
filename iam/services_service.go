@@ -131,6 +131,9 @@ func (p *ServicesService) GetService(opt *GetServiceOptions, options ...OptionFu
 	if err != nil {
 		return nil, resp, err
 	}
+	if len(*services) == 0 {
+		return nil, resp, ErrEmptyResults
+	}
 	return &(*services)[0], resp, nil
 }
 
