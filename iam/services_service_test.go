@@ -1,6 +1,8 @@
 package iam
 
 import (
+	"crypto/x509"
+	"encoding/pem"
 	"io"
 	"net/http"
 	"testing"
@@ -168,4 +170,90 @@ func TestScopes(t *testing.T) {
 		return
 	}
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+}
+
+func TestServicesService_UpdateServiceCertificate(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	var privateKeyPEM = `-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQCbn6eqy4c9AyqHTNLUHD17yzSf47uiLdcl+Djo2acsIBO4sihI
+XYrPTahSh+4MuwE0CkXN7R8wD5UdhBjjFPPJb8saWdz7wO5zIBpo0XaiBnzy/Bo2
+/NfBt3jDgJW1KrzhO2iliNT05fkuV5qHaWqynjHrTX9XW02YWR+lhBwH7QIDAQAB
+AoGAIo9QEtPkEp6TYTykTUqANO+pniBa2OdJMjtvl/ZN87Sj7I5T984eN29NhBZ/
+vQACgmYNnm+cT3YGbWmahUNv5+FgrBzp+wP+vjioreKc3rbzEZ7Q1WSCgRYPWgjX
+cnGbNoW9eIBU4AbIHjd4AZo6/8D+e/3lP2NID+sVw00+xMECQQDOwNd7qWmWixVR
+ulNnPCpnvzucg0UMbxJKkM7JCSPItQ3v+YEBmUIS07JFWDAcM6eaNRNS8tEhjiKS
+9f+S6nHZAkEAwLEXLrmtAgGrbBqGSF9h2OV1fAqucQbAy0jWkJ1ca2TxWzHSJEji
+ba/Kz1gZIrUyRpz2b/Sq8YjOMdor2iZmNQJBAM61iPsvJs0HozoB8u8M/UyaqkvS
+Bo/m4L/CRaxDQg6hzhx2NN/XTXMrSloAUKFxl4katYZCFIra44BRCMPnOAkCQB6V
+fRp7egxRe4XjB+FA0mT8tpMDlwB1k/AwFW5Kq7qYAP76f2Im91l1h3k1gHfTzrEK
+hMrsSJ2hmyiqej9bzOkCQQDGQzjdaCL/8c9DsR20vMwKUCmkUNx69Owb8UJ/BGwe
+H4N1gfoHxQbN34YNKoAzQbode9Xv1p9CAPi2v9VlNen2
+-----END RSA PRIVATE KEY-----`
+	block, _ := pem.Decode([]byte(privateKeyPEM))
+	if !assert.NotNil(t, block) {
+		return
+	}
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if !assert.Nil(t, err) {
+		return
+	}
+	applicationID := "b0889958-3762-4427-af07-2d6268c26988"
+	id := "2c266886-f918-4223-941d-437cb3cd09e8"
+	orgID := "bda40124-54fa-4967-b2fb-23dcc4e0ad1a"
+
+	muxIDM.HandleFunc("/authorize/identity/Service", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "GET":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+				"total": 1,
+				"entry": [
+					{
+						"id": "`+id+`",
+						"serviceId": "`+id+`",
+						"organizationId": "`+orgID+`",
+						"expiresOn": "2019-08-15T17:38:06.322Z",
+						"name": "testservice",
+						"applicationId": "`+applicationID+`",
+						"defaultScopes": [
+							"openid"
+						],
+						"scopes": [
+							"openid"
+						]
+					}
+				]
+			}`)
+		}
+	})
+	muxIDM.HandleFunc("/authorize/identity/Service/"+id+"/$update-certificate", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{}`)
+		default:
+			w.WriteHeader(http.StatusBadRequest)
+		}
+	})
+
+	var r Service
+	r.Name = "name"
+	r.Description = "description"
+	r.ApplicationID = applicationID
+	r.ID = id
+
+	service, resp, err := client.Services.UpdateServiceCertificate(r, privateKey)
+	if ok := assert.Nil(t, err); !ok {
+		return
+	}
+	if ok := assert.NotNil(t, resp); !ok {
+		return
+	}
+	if ok := assert.NotNil(t, service); !ok {
+		return
+	}
 }

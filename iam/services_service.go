@@ -2,9 +2,13 @@ package iam
 
 import (
 	"bytes"
+	"crypto/ecdsa"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"math/big"
 	"net/http"
 	"strings"
 	"time"
@@ -42,6 +46,8 @@ type GetServiceOptions struct {
 	OrganizationID *string `url:"organizationId,omitempty"`
 	ServiceID      *string `url:"serviceId,omitempty"`
 }
+
+type CertificateOptionFunc func(cert *x509.Certificate) error
 
 func fixHSDPPEM(pemString string) string {
 	pre := strings.Replace(pemString,
@@ -176,6 +182,63 @@ func (p *ServicesService) DeleteService(service Service) (bool, *Response, error
 	return true, resp, nil
 }
 
+// UpdateServiceCertificate updates the associated public key of the service
+func (p *ServicesService) UpdateServiceCertificate(service Service, privateKey *rsa.PrivateKey, options ...CertificateOptionFunc) (*Service, *Response, error) {
+	keyUsage := x509.KeyUsageDigitalSignature
+	keyUsage |= x509.KeyUsageKeyEncipherment
+	notBefore := time.Now().Add(-24 * time.Hour)
+	validFor := time.Duration(365 * 24 * time.Hour)
+	notAfter := notBefore.Add(validFor)
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
+	if err != nil {
+		return nil, nil, err
+	}
+	template := x509.Certificate{
+		SerialNumber: serialNumber,
+		NotBefore:    notBefore,
+		NotAfter:     notAfter,
+
+		KeyUsage:              keyUsage,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		BasicConstraintsValid: true,
+	}
+	template.Subject.CommonName = service.ServiceID
+	template.IsCA = true
+	template.KeyUsage |= x509.KeyUsageCertSign
+	for _, o := range options {
+		if err := o(&template); err != nil {
+			return nil, nil, err
+		}
+	}
+	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, publicKey(privateKey), privateKey)
+	if err != nil {
+		return nil, nil, err
+	}
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+
+	var request = struct {
+		Certificate string `json:"certificate"`
+	}{
+		Certificate: string(certPEM),
+	}
+	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Service/"+service.ID+"/$update-certificate", request, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", servicesAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+	var updateResponse bytes.Buffer
+	resp, err := p.client.do(req, &updateResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	if resp == nil || resp.StatusCode != http.StatusOK {
+		return nil, resp, err
+	}
+	return p.GetServiceByID(service.ID)
+}
+
 // AddScopes add scopes to the service
 func (p *ServicesService) AddScopes(service Service, scopes []string, defaultScopes []string) (bool, *Response, error) {
 	return p.updateScopes(service, "add", scopes, defaultScopes)
@@ -213,4 +276,15 @@ func (p *ServicesService) updateScopes(service Service, action string, scopes []
 		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil
+}
+
+func publicKey(priv interface{}) interface{} {
+	switch k := priv.(type) {
+	case *rsa.PrivateKey:
+		return &k.PublicKey
+	case *ecdsa.PrivateKey:
+		return &k.PublicKey
+	default:
+		return nil
+	}
 }
