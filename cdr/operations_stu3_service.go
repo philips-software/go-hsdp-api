@@ -34,7 +34,7 @@ func (o *OperationsSTU3Service) Patch(resourceID string, jsonPatch []byte, optio
 	}
 	unmarshalled, err := o.um.Unmarshal(patchResponse.Bytes())
 	if err != nil {
-		return nil, resp, err
+		return nil, resp, fmt.Errorf("FHIR unmarshal: %w", err)
 	}
 	contained := unmarshalled.(*stu3pb.ContainedResource)
 	return contained, resp, nil
@@ -67,7 +67,7 @@ func (o *OperationsSTU3Service) Get(resourceID string, options ...OptionFunc) (*
 	}
 	unmarshalled, err := o.um.Unmarshal(operationResponse.Bytes())
 	if err != nil {
-		return nil, resp, err
+		return nil, resp, fmt.Errorf("FHIR unmarshal: %w", err)
 	}
 	contained := unmarshalled.(*stu3pb.ContainedResource)
 	return contained, resp, nil
@@ -105,9 +105,12 @@ func (o *OperationsSTU3Service) postOrPut(method, resourceID string, jsonBody []
 		}
 		return nil, resp, err
 	}
+	if operationResponse.Len() == 0 { // Empty body
+		return &stu3pb.ContainedResource{}, resp, nil
+	}
 	unmarshalled, err := o.um.Unmarshal(operationResponse.Bytes())
 	if err != nil {
-		return nil, resp, err
+		return nil, resp, fmt.Errorf("FHIR unmarshal: %w", err)
 	}
 	contained := unmarshalled.(*stu3pb.ContainedResource)
 	return contained, resp, nil
