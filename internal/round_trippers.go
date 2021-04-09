@@ -52,16 +52,26 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 	rt.id++
 
 	if rt.logFile != nil {
-		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("[go-hsdp-api %d] --- Request start ---\n%s\n[go-hsdp-api %d] Request end ---\n", localID, string(dumped), localID)
+		out := ""
+		dumped, err := httputil.DumpRequest(req, true)
+		if err != nil {
+			out = fmt.Sprintf("[go-hsdp-api %d] --- Request dump error: %v\n", localID, err)
+		} else {
+			out = fmt.Sprintf("[go-hsdp-api %d] --- Request start ---\n%s\n[go-hsdp-api %d] Request end ---\n", localID, string(dumped), localID)
+		}
 		_, _ = rt.logFile.WriteString(out)
 	}
 
 	resp, err = rt.next.RoundTrip(req)
 
 	if rt.logFile != nil {
-		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("[go-hsdp-api %d] --- Response start ---\n%s\n[go-hsdp-api %d] --- Response end ---\n", localID, string(dumped), localID)
+		out := ""
+		dumped, err := httputil.DumpResponse(resp, true)
+		if err != nil {
+			out = fmt.Sprintf("[go-hsdp-api %d] --- Response dump error: %v\n", localID, err)
+		} else {
+			out = fmt.Sprintf("[go-hsdp-api %d] --- Response start ---\n%s\n[go-hsdp-api %d] --- Response end ---\n", localID, string(dumped), localID)
+		}
 		_, _ = rt.logFile.WriteString(out)
 	}
 
