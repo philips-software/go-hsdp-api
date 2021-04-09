@@ -5,14 +5,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
-	"os"
 	"strings"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 
 	"github.com/google/fhir/go/jsonformat"
 
@@ -53,8 +52,6 @@ type Client struct {
 
 	TenantSTU3     *TenantSTU3Service
 	OperationsSTU3 *OperationsSTU3Service
-
-	debugFile *os.File
 }
 
 // NewClient returns a new HSDP CDR API client. Configured console and IAM clients
@@ -71,13 +68,6 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	}
 	if err := c.SetFHIRStoreURL(fhirStore); err != nil {
 		return nil, err
-	}
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err != nil {
-			c.debugFile = nil
-		}
 	}
 	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
 	if err != nil {
@@ -96,10 +86,6 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // GetFHIRStoreURL returns the base FHIR Store base URL as configured
@@ -217,17 +203,7 @@ func newResponse(r *http.Response) *Response {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	if c.debugFile != nil {
-		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("[CDR go-hsdp-api] --- Request start ---\n%s\n[CDR go-hsdp-api] Request end ---\n", string(dumped))
-		_, _ = c.debugFile.WriteString(out)
-	}
 	resp, err := c.iamClient.HttpClient().Do(req)
-	if c.debugFile != nil && resp != nil {
-		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("[CDR go-hsdp-api] --- Response start ---\n%s\n[CDR go-hsdp-api] --- Response end ---\n", string(dumped))
-		_, _ = c.debugFile.WriteString(out)
-	}
 	if err != nil {
 		return nil, err
 	}
