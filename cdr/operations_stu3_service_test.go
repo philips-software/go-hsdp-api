@@ -129,7 +129,7 @@ func TestPostOperation(t *testing.T) {
   },
   "identifier": [
     {
-      "use": "official",
+      "use": "usual",
       "system": "https://identity.philips-healthsuite.com/organization",
       "value": "dae89cf0-888d-4a26-8c1d-578e97365efc"
     }

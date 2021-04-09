@@ -17,7 +17,7 @@ func NewOrganization(timeZone, orgID, name string) (*stu3pb.Organization, error)
 		"name":         name,
 		"identifier": []map[string]interface{}{
 			{
-				"use":    "official",
+				"use":    "usual",
 				"system": "https://identity.philips-healthsuite.com/organization",
 				"value":  orgID,
 			},
