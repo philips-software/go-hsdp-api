@@ -103,6 +103,14 @@ func IOPs(iops int) RequestOptionFunc {
 	}
 }
 
+// Image sets the image type
+func Image(image string) RequestOptionFunc {
+	return func(body *RequestBody) error {
+		body.Image = image
+		return nil
+	}
+}
+
 // SubnetType sets the subnet type
 func SubnetType(subnetType string) RequestOptionFunc {
 	return func(body *RequestBody) error {
