@@ -235,3 +235,7 @@ url = "https://kibana.ap3.hsdp.io"
 url = "https://pki-proxy-client-test.eu-west.philips-healthsuite.com"
 [region.us-east.env.client-test.service.pki]
 url = "https://pki-client-test.us-east.philips-healthsuite.com"
+
+# Service MDM
+[region.eu-west.env.client-test.service.mdm]
+url = "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"

@@ -144,11 +144,11 @@ func (p *RolesService) GetRolePermissions(role Role) (*[]string, *Response, erro
 }
 
 // AddRolePermission adds a given permission to the Role
-func (p *RolesService) rolePermissionAction(role Role, permission string, action string) (bool, *Response, error) {
+func (p *RolesService) rolePermissionAction(role Role, permissions []string, action string) (bool, *Response, error) {
 	var permissionRequest struct {
 		Permissions []string `json:"permissions"`
 	}
-	permissionRequest.Permissions = []string{permission}
+	permissionRequest.Permissions = permissions
 
 	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/"+action, &permissionRequest, nil)
 	if err != nil {
@@ -167,10 +167,10 @@ func (p *RolesService) rolePermissionAction(role Role, permission string, action
 }
 
 func (p *RolesService) AddRolePermission(role Role, permission string) (bool, *Response, error) {
-	return p.rolePermissionAction(role, permission, "$assign-permission")
+	return p.rolePermissionAction(role, []string{permission}, "$assign-permission")
 }
 
 // RemoveRolePermission removes the permission from the Role
 func (p *RolesService) RemoveRolePermission(role Role, permission string) (bool, *Response, error) {
-	return p.rolePermissionAction(role, permission, "$remove-permission")
+	return p.rolePermissionAction(role, []string{permission}, "$remove-permission")
 }
