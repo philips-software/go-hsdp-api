@@ -34,6 +34,7 @@ func (rt *HeaderRoundTripper) RoundTrip(req *http.Request) (resp *http.Response,
 type LoggingRoundTripper struct {
 	next    http.RoundTripper
 	logFile *os.File
+	id      int64
 }
 
 func NewLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *LoggingRoundTripper {
@@ -47,9 +48,12 @@ func NewLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *LoggingRo
 }
 
 func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+	localID := rt.id
+	rt.id++
+
 	if rt.logFile != nil {
 		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
+		out := fmt.Sprintf("[go-hsdp-api %d] --- Request start ---\n%s\n[go-hsdp-api %d] Request end ---\n", localID, string(dumped), localID)
 		_, _ = rt.logFile.WriteString(out)
 	}
 
@@ -57,7 +61,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 
 	if rt.logFile != nil {
 		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
+		out := fmt.Sprintf("[go-hsdp-api %d] --- Response start ---\n%s\n[go-hsdp-api %d] --- Response end ---\n", localID, string(dumped), localID)
 		_, _ = rt.logFile.WriteString(out)
 	}
 
