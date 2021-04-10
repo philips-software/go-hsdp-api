@@ -63,6 +63,9 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 	}
 
 	resp, err = rt.next.RoundTrip(req)
+	if err != nil {
+		return resp, err
+	}
 
 	if rt.logFile != nil {
 		out := ""
