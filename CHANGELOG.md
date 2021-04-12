@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 ## v0.37.0
+- NEW: support for updating IAM service certificates
 - Prepare for CDR changes
+- Improve debug log output
 
 ## v0.36.6
 - Add cn1 endpoints for IAM/IDM

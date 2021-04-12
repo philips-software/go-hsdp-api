@@ -8,7 +8,7 @@ require (
 	github.com/go-playground/validator/v10 v10.5.0
 	github.com/google/fhir/go v0.0.0-20201203001644-a2580b6ea022
 	github.com/google/go-querystring v1.1.0
-	github.com/google/uuid v1.2.0 // indirect
+	github.com/google/uuid v1.2.0
 	github.com/hasura/go-graphql-client v0.2.0
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/philips-software/go-hsdp-signer v1.3.0
