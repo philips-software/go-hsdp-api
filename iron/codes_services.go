@@ -81,10 +81,17 @@ func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) 
 
 func (c *CodesServices) GetCodes() (*[]Code, *Response, error) {
 	getPath := c.client.Path("projects", c.projectID, "codes")
+
+	page := 0
+	perPage := 100
+
 	req, err := c.client.newRequest(
 		"GET",
 		getPath,
-		nil,
+		pageOptions{
+			Page:    &page,
+			PerPage: &perPage,
+		},
 		nil)
 	if err != nil {
 		return nil, nil, err

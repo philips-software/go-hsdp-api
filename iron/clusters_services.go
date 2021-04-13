@@ -1,6 +1,8 @@
 package iron
 
-import "time"
+import (
+	"time"
+)
 
 // ClustersServices implements API calls to get
 // details on Iron clusters. As HSDP Iron clusters are not
@@ -54,7 +56,12 @@ type ClusterStats struct {
 // In some cases a token might not have the proper scope
 // to retrieve a list of clusters in which case the list will be empty
 func (c *ClustersServices) GetClusters() (*[]Cluster, *Response, error) {
-	req, err := c.client.newRequest("GET", c.client.Path("clusters"), nil, nil)
+	page := 0
+	perPage := 100
+	req, err := c.client.newRequest("GET", c.client.Path("clusters"), pageOptions{
+		PerPage: &perPage,
+		Page:    &page,
+	}, nil)
 	if err != nil {
 		return nil, nil, err
 	}

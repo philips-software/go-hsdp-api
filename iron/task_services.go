@@ -33,10 +33,15 @@ type Task struct {
 
 // GetTasks gets the tasks of the project
 func (t *TasksServices) GetTasks() (*[]Task, *Response, error) {
+	page := 0
+	perPage := 100
 	req, err := t.client.newRequest(
 		"GET",
 		t.client.Path("projects", t.projectID, "tasks"),
-		nil,
+		pageOptions{
+			PerPage: &perPage,
+			Page:    &page,
+		},
 		nil)
 	if err != nil {
 		return nil, nil, err

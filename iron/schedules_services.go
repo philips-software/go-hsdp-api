@@ -25,6 +25,11 @@ type Schedule struct {
 	Payload     string     `json:"payload,omitempty"`
 }
 
+type pageOptions struct {
+	Page    *int `url:"page,omitempty"`
+	PerPage *int `url:"per_page,omitempty"`
+}
+
 // CreateSchedules creates one or more schedules
 func (s *SchedulesServices) CreateSchedules(schedules []Schedule) (*[]Schedule, *Response, error) {
 	var createSchedules struct {
@@ -65,11 +70,17 @@ func (s *SchedulesServices) GetSchedules() (*[]Schedule, *Response, error) {
 	var schedules struct {
 		Schedules []Schedule `json:"schedules"`
 	}
+	page := 0
+	perPage := 100
+
 	path := s.client.Path("projects", s.projectID, "schedules")
 	req, err := s.client.newRequest(
 		"GET",
 		path,
-		nil,
+		pageOptions{
+			PerPage: &perPage,
+			Page:    &page,
+		},
 		nil)
 	if err != nil {
 		return nil, nil, err
@@ -81,10 +92,16 @@ func (s *SchedulesServices) GetSchedules() (*[]Schedule, *Response, error) {
 // GetSchedule gets info on a schedule
 func (s *SchedulesServices) GetSchedule(scheduleID string) (*Schedule, *Response, error) {
 	path := s.client.Path("projects", s.projectID, "schedules", scheduleID)
+
+	page := 0
+	perPage := 100
 	req, err := s.client.newRequest(
 		"GET",
 		path,
-		nil,
+		pageOptions{
+			PerPage: &perPage,
+			Page:    &page,
+		},
 		nil)
 	if err != nil {
 		return nil, nil, err
