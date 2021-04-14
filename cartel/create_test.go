@@ -54,3 +54,37 @@ func TestCreate(t *testing.T) {
 	assert.Equal(t, "i-xxfbdf005781fa900", sr.InstanceID())
 	assert.Equal(t, "192.168.2.106", sr.IPAddress())
 }
+
+func TestAlreadyExist(t *testing.T) {
+	var createResponse = `{
+  "code": 400,
+  "description": "Host named foo.dev already exists!"
+}`
+	teardown, err := setup(t, &Config{
+		Token:  sharedToken,
+		Secret: sharedSecret,
+		Host:   "foo",
+		NoTLS:  true,
+	})
+
+	muxCartel.HandleFunc("/v3/api/create", endpointMocker([]byte(sharedSecret),
+		createResponse,
+		http.StatusBadRequest))
+
+	defer teardown()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, resp, err := client.Create("foo.dev",
+		VolumeEncryption(true),
+		VolumesAndSize(1, 50),
+		SecurityGroups("foo", "bar"),
+		UserGroups("andy"))
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, ErrHostnameAlreadyExists, err)
+}

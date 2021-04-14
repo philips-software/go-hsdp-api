@@ -1,5 +1,9 @@
 package cartel
 
+import (
+	"net/http"
+)
+
 type CreateResponse struct {
 	Message []struct {
 		EipAddress interface{} `json:"eip_address"`
@@ -52,5 +56,10 @@ func (c *Client) Create(tagName string, opts ...RequestOptionFunc) (*CreateRespo
 		return nil, nil, err
 	}
 	resp, err := c.do(req, &responseBody)
+	if err != nil && responseBody.Code == http.StatusBadRequest { // Determine specific error condition
+		if existRegexErr.MatchString(responseBody.Description) {
+			return &responseBody, resp, ErrHostnameAlreadyExists
+		}
+	}
 	return &responseBody, resp, err
 }
