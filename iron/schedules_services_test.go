@@ -151,7 +151,7 @@ func TestSchedulesServices_GetSchedules(t *testing.T) {
       "updated_at": "2020-06-25T11:31:27.379Z",
       "project_id": "`+projectID+`",
       "status": "scheduled",
-      "code_name": "testandy",
+      "code_name": "testrichard",
       "start_at": "2020-06-25T11:31:21.167Z",
       "end_at": "0001-01-01T00:00:00Z",
       "next_start": "2020-06-25T12:31:21.167Z",
@@ -178,6 +178,19 @@ func TestSchedulesServices_GetSchedules(t *testing.T) {
 		return
 	}
 	assert.Equal(t, 2, len(*tasks))
+
+	tasks, resp, err = client.Schedules.GetSchedulesWithCode("testrichard")
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, tasks) {
+		return
+	}
+	assert.Equal(t, 1, len(*tasks))
 }
 
 func TestSchedulesServices_CancelSchedule(t *testing.T) {

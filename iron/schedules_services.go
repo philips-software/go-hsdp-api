@@ -89,6 +89,21 @@ func (s *SchedulesServices) GetSchedules() (*[]Schedule, *Response, error) {
 	return &schedules.Schedules, resp, err
 }
 
+// GetSchedulesWithCode gets schedules which use code
+func (s *SchedulesServices) GetSchedulesWithCode(codeName string) (*[]Schedule, *Response, error) {
+	schedules, resp, err := s.GetSchedules()
+	if err != nil {
+		return nil, resp, err
+	}
+	filtered := make([]Schedule, 0)
+	for _, schedule := range *schedules {
+		if schedule.CodeName == codeName {
+			filtered = append(filtered, schedule)
+		}
+	}
+	return &filtered, resp, err
+}
+
 // GetSchedule gets info on a schedule
 func (s *SchedulesServices) GetSchedule(scheduleID string) (*Schedule, *Response, error) {
 	path := s.client.Path("projects", s.projectID, "schedules", scheduleID)

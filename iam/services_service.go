@@ -187,7 +187,7 @@ func (p *ServicesService) UpdateServiceCertificate(service Service, privateKey *
 	keyUsage := x509.KeyUsageDigitalSignature
 	keyUsage |= x509.KeyUsageKeyEncipherment
 	notBefore := time.Now().Add(-24 * time.Hour)
-	validFor := time.Duration(365 * 24 * time.Hour)
+	validFor := 365 * 24 * time.Hour
 	notAfter := notBefore.Add(validFor)
 	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
 	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
@@ -195,10 +195,9 @@ func (p *ServicesService) UpdateServiceCertificate(service Service, privateKey *
 		return nil, nil, err
 	}
 	template := x509.Certificate{
-		SerialNumber: serialNumber,
-		NotBefore:    notBefore,
-		NotAfter:     notAfter,
-
+		SerialNumber:          serialNumber,
+		NotBefore:             notBefore,
+		NotAfter:              notAfter,
 		KeyUsage:              keyUsage,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
