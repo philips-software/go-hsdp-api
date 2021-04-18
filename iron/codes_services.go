@@ -72,7 +72,7 @@ func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) 
 		Message string `json:"msg,omitempty"`
 		ID      string `json:"id,omitempty"`
 	}
-	resp, err := c.client.Do(req, &createResponse)
+	resp, err := c.client.do(req, &createResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -99,7 +99,7 @@ func (c *CodesServices) GetCodes() (*[]Code, *Response, error) {
 	var codes struct {
 		Codes []Code `json:"codes"`
 	}
-	resp, err := c.client.Do(req, &codes)
+	resp, err := c.client.do(req, &codes)
 	return &codes.Codes, resp, err
 }
 
@@ -113,7 +113,7 @@ func (c *CodesServices) GetCode(codeID string) (*Code, *Response, error) {
 		return nil, nil, err
 	}
 	var code Code
-	resp, err := c.client.Do(req, &code)
+	resp, err := c.client.do(req, &code)
 	return &code, resp, err
 }
 
@@ -130,7 +130,7 @@ func (c *CodesServices) DeleteCode(codeID string) (bool, *Response, error) {
 	var deleteResponse struct {
 		Message string `json:"msg,omitempty"`
 	}
-	resp, err := c.client.Do(req, &deleteResponse)
+	resp, err := c.client.do(req, &deleteResponse)
 	if deleteResponse.Message != "Deleted" {
 		return false, resp, err
 	}
@@ -163,7 +163,7 @@ func (c *CodesServices) DockerLogin(creds DockerCredentials) (bool, *Response, e
 		Message string `json:"msg"`
 	}
 	var success bool
-	resp, err := c.client.Do(req, &authResponse)
+	resp, err := c.client.do(req, &authResponse)
 	if resp != nil {
 		success = resp.StatusCode == http.StatusOK
 	}

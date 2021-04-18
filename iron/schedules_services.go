@@ -49,7 +49,7 @@ func (s *SchedulesServices) CreateSchedules(schedules []Schedule) (*[]Schedule, 
 	var schedulesResponse struct {
 		Schedules []Schedule `json:"schedules"`
 	}
-	resp, err := s.client.Do(req, &schedulesResponse)
+	resp, err := s.client.do(req, &schedulesResponse)
 	return &schedulesResponse.Schedules, resp, err
 }
 
@@ -85,7 +85,7 @@ func (s *SchedulesServices) GetSchedules() (*[]Schedule, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	resp, err := s.client.Do(req, &schedules)
+	resp, err := s.client.do(req, &schedules)
 	return &schedules.Schedules, resp, err
 }
 
@@ -122,7 +122,7 @@ func (s *SchedulesServices) GetSchedule(scheduleID string) (*Schedule, *Response
 		return nil, nil, err
 	}
 	var schedule Schedule
-	resp, err := s.client.Do(req, &schedule)
+	resp, err := s.client.do(req, &schedule)
 	return &schedule, resp, err
 }
 
@@ -140,7 +140,7 @@ func (s *SchedulesServices) CancelSchedule(scheduleID string) (bool, *Response, 
 	var cancelResponse struct {
 		Message string `json:"msg"`
 	}
-	resp, err := s.client.Do(req, &cancelResponse)
+	resp, err := s.client.do(req, &cancelResponse)
 	if cancelResponse.Message != "Cancelled" {
 		return false, resp, err
 	}

@@ -49,7 +49,7 @@ func (t *TasksServices) GetTasks() (*[]Task, *Response, error) {
 	var tasks struct {
 		Tasks []Task `json:"tasks"`
 	}
-	resp, err := t.client.Do(req, &tasks)
+	resp, err := t.client.do(req, &tasks)
 	return &tasks.Tasks, resp, err
 }
 
@@ -64,7 +64,7 @@ func (t *TasksServices) GetTask(taskID string) (*Task, *Response, error) {
 		return nil, nil, err
 	}
 	var task Task
-	resp, err := t.client.Do(req, &task)
+	resp, err := t.client.do(req, &task)
 	return &task, resp, err
 }
 
@@ -99,7 +99,7 @@ func (t *TasksServices) QueueTasks(tasks []Task) (*[]Task, *Response, error) {
 	var queueResponse struct {
 		Tasks []Task `json:"tasks"`
 	}
-	resp, err := t.client.Do(req, &queueResponse)
+	resp, err := t.client.do(req, &queueResponse)
 	return &queueResponse.Tasks, resp, err
 }
 
@@ -116,7 +116,7 @@ func (t *TasksServices) CancelTask(taskID string) (bool, *Response, error) {
 	var cancelResponse struct {
 		Message string `json:"msg"`
 	}
-	resp, err := t.client.Do(req, &cancelResponse)
+	resp, err := t.client.do(req, &cancelResponse)
 	if cancelResponse.Message != "Cancelled" {
 		return false, resp, err
 	}

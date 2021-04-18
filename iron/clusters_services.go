@@ -68,7 +68,7 @@ func (c *ClustersServices) GetClusters() (*[]Cluster, *Response, error) {
 	var clusters struct {
 		Clusters []Cluster `json:"clusters"`
 	}
-	resp, err := c.client.Do(req, &clusters)
+	resp, err := c.client.do(req, &clusters)
 	return &clusters.Clusters, resp, err
 }
 
@@ -81,7 +81,7 @@ func (c *ClustersServices) GetCluster(clusterID string) (*Cluster, *Response, er
 	var cluster struct {
 		Cluster Cluster `json:"cluster"`
 	}
-	resp, err := c.client.Do(req, &cluster)
+	resp, err := c.client.do(req, &cluster)
 	return &cluster.Cluster, resp, err
 }
 
@@ -94,6 +94,6 @@ func (c *ClustersServices) GetClusterStats(clusterID string) (*ClusterStats, *Re
 	var cluster struct {
 		ClusterStats ClusterStats `json:"cluster"`
 	}
-	resp, err := c.client.Do(req, &cluster)
+	resp, err := c.client.do(req, &cluster)
 	return &cluster.ClusterStats, resp, err
 }
