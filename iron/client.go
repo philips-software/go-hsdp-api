@@ -27,7 +27,7 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a client
 type Config struct {
-	BaseURL     string        `cloud:"-" json:"-"`
+	BaseURL     string        `cloud:"-" json:"base_url,omitempty"`
 	Debug       bool          `cloud:"-" json:"-"`
 	DebugLog    string        `cloud:"-" json:"-"`
 	ClusterInfo []ClusterInfo `cloud:"cluster_info" json:"cluster_info"`
