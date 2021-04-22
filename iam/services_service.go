@@ -49,9 +49,9 @@ type GetServiceOptions struct {
 
 type CertificateOptionFunc func(cert *x509.Certificate) error
 
-// FixIAMPEM fixes the IAM generated PEM key strings so they are valid
+// FixPEM fixes the IAM generated PEM key strings so they are valid
 // for decoding by Go and other parsers which expect newlines after labels
-func FixIAMPEM(pemString string) string {
+func FixPEM(pemString string) string {
 	begin := "KEY-----"
 	end := "-----END"
 	pre := pemString
@@ -71,7 +71,7 @@ func FixIAMPEM(pemString string) string {
 // GetToken returns a JWT which can be exchanged for an access token
 func (s *Service) GetToken(accessTokenEndpoint string) (string, error) {
 	// Decode private key
-	block, _ := pem.Decode([]byte(FixIAMPEM(s.PrivateKey)))
+	block, _ := pem.Decode([]byte(FixPEM(s.PrivateKey)))
 	if block == nil {
 		return "", fmt.Errorf("failed to parse privateKey")
 	}

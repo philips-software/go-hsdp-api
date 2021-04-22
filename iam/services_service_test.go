@@ -265,10 +265,10 @@ MIIEogIBAAKCAQEAg2ASjNf6XT/wPqjJlrjCCeD7aSC2JkFXkdlLIGUgrwYJdQcmP8cIfzsJmAa0Fba5
 -----END RSA PRIVATE KEY-----
 `
 
-	fixed := FixIAMPEM(generatedIAMPEM)
+	fixed := FixPEM(generatedIAMPEM)
 	assert.Equal(t, fixedIAMPEM, fixed)
 	// A second run should be a NOOP
-	assert.Equal(t, fixedIAMPEM, FixIAMPEM(fixed))
+	assert.Equal(t, fixedIAMPEM, FixPEM(fixed))
 
 	// Test decoding
 	block, _ := pem.Decode([]byte(generatedIAMPEM))
