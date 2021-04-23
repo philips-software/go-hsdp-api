@@ -50,6 +50,50 @@ func EncryptPayload(publicKey []byte, pbytes []byte) (string, error) {
 	return payload, nil
 }
 
+// DecryptPayload decrypts a base64 encoded payload using private key
+func DecryptPayload(privKey []byte, payload string) ([]byte, error) {
+	privateKey, err := parsePrivateKey(privKey)
+	if err != nil {
+		return nil, err
+	}
+	data, err := base64.StdEncoding.DecodeString(payload)
+	if err != nil {
+		return nil, err
+	}
+	aesKeyCipher := data[:128]
+	ciphertext := data[128:]
+	nonce := ciphertext[len(ciphertext)-12:]
+	aesKey, err := rsa.DecryptOAEP(sha1.New(), rand.Reader, privateKey, aesKeyCipher, nil)
+	block, _ := aes.NewCipher(aesKey)
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+	pbytes := make([]byte, 0, len(ciphertext)-gcm.NonceSize())
+	data = ciphertext[:len(ciphertext)-gcm.NonceSize()]
+	out, err := gcm.Open(pbytes, nonce, data, nil)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func parsePrivateKey(privkey []byte) (key *rsa.PrivateKey, err error) {
+	defer func() {
+		if errr := recover(); errr != nil {
+			key = nil
+			err = fmt.Errorf("panic during decode")
+		}
+	}()
+	rsablock, _ := pem.Decode([]byte(privkey))
+
+	rsaKey, err := x509.ParsePKCS1PrivateKey(rsablock.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	return rsaKey, nil
+}
+
 func parsePublicKey(pubkey []byte) (key *rsa.PublicKey, err error) {
 	defer func() {
 		if errr := recover(); errr != nil {
