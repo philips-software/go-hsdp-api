@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.38.0
+- Add DecryptPayload to decrypt Iron payloads
+- Export some convenience functions
+
 ## v0.37.0
 - NEW: support for updating IAM service certificates
 - Prepare for CDR changes
