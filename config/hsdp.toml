@@ -151,8 +151,9 @@ url = "https://idm-development.us-east.philips-healthsuite.com"
 [region.cn1.env.prod.service.idm]
 url = "https://idm-service.cn1.philips-healthsuite.com.cn"
 
-
 # Service CARTEL
+[region.dev.service.cartel]
+host = "cartel-na1.cloud.phsdp.com"
 [region.us-east.service.cartel]
 host = "cartel-na1.cloud.phsdp.com"
 [region.eu-west.service.cartel]
@@ -161,6 +162,9 @@ host = "cartel-eu1.cloud.phsdp.com"
 host = "cartel-sa1.cloud.phsdp.com"
 
 # Service GATEWAY
+[region.dev.service.gateway]
+host = "gw-na1.phsdp.com"
+domain = "na1.phsdp.com"
 [region.us-east.service.gateway]
 host = "gw-na1.phsdp.com"
 domain = "na1.phsdp.com"

@@ -65,6 +65,13 @@
     },
     "dev": {
       "service": {
+        "cartel": {
+          "host": "cartel-na1.cloud.phsdp.com"
+        },
+        "gateway": {
+          "domain": "na1.phsdp.com",
+          "host": "gw-na1.phsdp.com"
+        },
         "stl": {
           "domain": "na1.vpn.hsdp.io",
           "url": "https://console.na3.hsdp.io/api/stl/user/v1/graphql"
@@ -92,6 +99,9 @@
             },
             "logging": {
               "url": "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
+            },
+            "mdm": {
+              "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
             },
             "pki": {
               "url": "https://pki-proxy-client-test.eu-west.philips-healthsuite.com"
