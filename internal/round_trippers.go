@@ -5,9 +5,20 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"regexp"
 
 	"github.com/google/uuid"
 )
+
+type filter struct {
+	Regex   *regexp.Regexp
+	Replace string
+}
+
+var filterList = []filter{
+	{regexp.MustCompile(`Authorization: (.*)\n`), "Authorization: [filtered]\n"},
+	{regexp.MustCompile(`password=\w+`), "password=[filtered]"},
+}
 
 type HeaderRoundTripper struct {
 	next   http.RoundTripper
@@ -59,10 +70,14 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 	if rt.logFile != nil {
 		out := ""
 		dumped, err := httputil.DumpRequest(req, true)
+		filtered := string(dumped)
+		for _, f := range filterList {
+			filtered = f.Regex.ReplaceAllString(filtered, f.Replace)
+		}
 		if err != nil {
 			out = fmt.Sprintf("[go-hsdp-api %s] --- Request dump error: %v\n", id, err)
 		} else {
-			out = fmt.Sprintf("[go-hsdp-api %s] --- Request start ---\n%s\n[go-hsdp-api %s] Request end ---\n", id, string(dumped), id)
+			out = fmt.Sprintf("[go-hsdp-api %s] --- Request start ---\n%s\n[go-hsdp-api %s] Request end ---\n", id, filtered, id)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
@@ -75,10 +90,14 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 	if rt.logFile != nil {
 		out := ""
 		dumped, err := httputil.DumpResponse(resp, true)
+		filtered := string(dumped)
+		for _, f := range filterList {
+			filtered = f.Regex.ReplaceAllString(filtered, f.Replace)
+		}
 		if err != nil {
 			out = fmt.Sprintf("[go-hsdp-api %s] --- Response dump error: %v\n", id, err)
 		} else {
-			out = fmt.Sprintf("[go-hsdp-api %s] --- Response start ---\n%s\n[go-hsdp-api %s] --- Response end ---\n", id, string(dumped), id)
+			out = fmt.Sprintf("[go-hsdp-api %s] --- Response start ---\n%s\n[go-hsdp-api %s] --- Response end ---\n", id, filtered, id)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
