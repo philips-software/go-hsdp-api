@@ -4,15 +4,14 @@ package iron
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 
 	"github.com/google/go-querystring/query"
 )
@@ -90,8 +89,8 @@ func newClient(config *Config) (*Client, error) {
 	if config.DebugLog != "" {
 		var err error
 		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err != nil {
-			c.debugFile = nil
+		if err == nil {
+			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
 		}
 	}
 
@@ -203,17 +202,7 @@ func newResponse(r *http.Response) *Response {
 }
 
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	if c.debugFile != nil {
-		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
-		_, _ = c.debugFile.WriteString(out)
-	}
 	resp, err := c.client.Do(req)
-	if c.debugFile != nil && resp != nil {
-		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
-		_, _ = c.debugFile.WriteString(out)
-	}
 	if err != nil {
 		return nil, err
 	}
