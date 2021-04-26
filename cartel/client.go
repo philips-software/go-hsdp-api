@@ -9,14 +9,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 
@@ -115,6 +115,14 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	cartel.httpClient = httpClient
 	cartel.userAgent = userAgent
 
+	if config.DebugLog != "" {
+		var err error
+		cartel.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if err == nil {
+			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, cartel.debugFile)
+		}
+	}
+
 	// Make sure the given URL ends with a slash
 	host := fmt.Sprintf("https://%s", cartel.config.Host)
 	if config.NoTLS {
@@ -129,20 +137,7 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 
-	configDebug(&cartel)
 	return &cartel, nil
-}
-
-func configDebug(cartel *Client) {
-	if cartel.config.DebugLog != "" {
-		debugFile, err := os.OpenFile(cartel.config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			cartel.debugFile = debugFile
-		}
-	}
-	if cartel.debugFile == nil {
-		cartel.debugFile = os.Stderr
-	}
 }
 
 // do sends an API request and returns the API response. The API response is
@@ -151,10 +146,6 @@ func configDebug(cartel *Client) {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	if c.debugFile != nil {
-		dumped, _ := httputil.DumpRequest(req, true)
-		_, _ = fmt.Fprintf(c.debugFile, "REQUEST: %s\n", string(dumped))
-	}
 	req.Close = true // Always close request
 	resp, err := c.httpClient.Do(req)
 	if resp == nil || (err != nil && err != io.EOF) {
@@ -162,15 +153,6 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 	defer resp.Body.Close()
 	response := newResponse(resp)
-
-	if c.debugFile != nil {
-		if resp != nil {
-			dumped, _ := httputil.DumpResponse(resp, true)
-			_, _ = fmt.Fprintf(c.debugFile, "RESPONSE: %s\n", string(dumped))
-		} else {
-			_, _ = fmt.Fprintf(c.debugFile, "Error sending response: %s\n", err)
-		}
-	}
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
