@@ -18,6 +18,9 @@ type filter struct {
 var filterList = []filter{
 	{regexp.MustCompile(`Authorization: (.*)\n`), "Authorization: [filtered]\n"},
 	{regexp.MustCompile(`password=\w+`), "password=[filtered]"},
+	{regexp.MustCompile(`"refresh_token":"[^"]+"`), `"refresh_token":"[filtered]"`},
+	{regexp.MustCompile(`"access_token":"[^"]+"`), `"access_token":"[filtered]"`},
+	{regexp.MustCompile(`"id_token":"[^"]+"`), `"id_token":"[filtered]"`},
 }
 
 type HeaderRoundTripper struct {
