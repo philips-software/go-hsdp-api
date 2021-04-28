@@ -64,7 +64,13 @@ func DecryptPayload(privKey []byte, payload string) ([]byte, error) {
 	ciphertext := data[128:]
 	nonce := ciphertext[len(ciphertext)-12:]
 	aesKey, err := rsa.DecryptOAEP(sha1.New(), rand.Reader, privateKey, aesKeyCipher, nil)
-	block, _ := aes.NewCipher(aesKey)
+	if err != nil {
+		return nil, err
+	}
+	block, err := aes.NewCipher(aesKey)
+	if err != nil {
+		return nil, err
+	}
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
 		return nil, err

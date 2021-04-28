@@ -57,4 +57,7 @@ oMnuk0nKbftpGy1WEf+ME7XUFEZbYau5rQqXm2kNJJhGwYnm07rqIKNaL4bPQoRt
 	decrypted, err := DecryptPayload(privkey, encrypted)
 	assert.Nil(t, err)
 	assert.Equal(t, "I’m gonna count to one. One.", string(decrypted))
+
+	_, err = DecryptPayload([]byte(""), "bogus")
+	assert.NotNil(t, err)
 }
