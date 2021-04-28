@@ -30,6 +30,7 @@ func EncryptPayload(publicKey []byte, pbytes []byte) (string, error) {
 	if _, err := rand.Read(aesKey); err != nil {
 		return "", err
 	}
+
 	// have to use sha1 b/c ruby openssl picks it for OAEP:  https://www.openssl.org/docs/manmaster/crypto/RSA_public_encrypt.html
 	aesKeyCipher, _ := rsa.EncryptOAEP(sha1.New(), rand.Reader, rsaPublicKey, aesKey, nil)
 	block, _ := aes.NewCipher(aesKey)
@@ -46,7 +47,9 @@ func EncryptPayload(publicKey []byte, pbytes []byte) (string, error) {
 	// tag is appended to cipher as last 16 bytes. https://golang.org/src/crypto/cipher/gcm.go?s=2318:2357#L145
 	gcm.Seal(ciphertext[:0], nonce, pbytes, nil)
 	// base64 the whole thing
-	payload := base64.StdEncoding.EncodeToString(append(aesKeyCipher, ciphertext...))
+	data := append(aesKeyCipher, ciphertext...)
+
+	payload := base64.StdEncoding.EncodeToString(data)
 	return payload, nil
 }
 
@@ -60,20 +63,23 @@ func DecryptPayload(privKey []byte, payload string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	aesKeyCipher := data[:128]
-	ciphertext := data[128:]
+
+	offset := privateKey.Size()
+	aesKeyCipher := data[:offset]
+	ciphertext := data[offset:]
 	nonce := ciphertext[len(ciphertext)-12:]
+
 	aesKey, err := rsa.DecryptOAEP(sha1.New(), rand.Reader, privateKey, aesKeyCipher, nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("rsa.DecryptOAEP: %w", err)
 	}
 	block, err := aes.NewCipher(aesKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("aes.NewCipher: %w", err)
 	}
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cipher.NewGCM: %w", err)
 	}
 	pbytes := make([]byte, 0, len(ciphertext)-gcm.NonceSize())
 	data = ciphertext[:len(ciphertext)-gcm.NonceSize()]
@@ -97,10 +103,13 @@ func parsePrivateKey(privKey []byte) (key *rsa.PrivateKey, err error) {
 }
 
 func parsePublicKey(pubKey []byte) (key *rsa.PublicKey, err error) {
-	fixed := FormatBrokenPubkey(pubKey)
-	rsaBlock, rest := pem.Decode(fixed)
+	rsaBlock, rest := pem.Decode(pubKey)
 	if rsaBlock == nil {
-		return nil, fmt.Errorf("error parsing: %s", string(rest))
+		fixed := FormatBrokenPubkey(pubKey)
+		rsaBlock, rest = pem.Decode(fixed)
+		if rsaBlock == nil {
+			return nil, fmt.Errorf("error parsing after FormatBrokenPubkey: %s", string(rest))
+		}
 	}
 	rsaKey, err := x509.ParsePKIXPublicKey(rsaBlock.Bytes)
 	if err != nil {
