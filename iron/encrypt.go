@@ -84,35 +84,27 @@ func DecryptPayload(privKey []byte, payload string) ([]byte, error) {
 	return out, nil
 }
 
-func parsePrivateKey(privkey []byte) (key *rsa.PrivateKey, err error) {
-	defer func() {
-		if errr := recover(); errr != nil {
-			key = nil
-			err = fmt.Errorf("panic during decode")
-		}
-	}()
-	rsablock, _ := pem.Decode([]byte(privkey))
-
-	rsaKey, err := x509.ParsePKCS1PrivateKey(rsablock.Bytes)
+func parsePrivateKey(privKey []byte) (key *rsa.PrivateKey, err error) {
+	rsaBlock, rest := pem.Decode([]byte(privKey))
+	if rsaBlock == nil {
+		return nil, fmt.Errorf("error decoding: len(rest)=%d", len(rest))
+	}
+	rsaKey, err := x509.ParsePKCS1PrivateKey(rsaBlock.Bytes)
 	if err != nil {
 		return nil, err
 	}
 	return rsaKey, nil
 }
 
-func parsePublicKey(pubkey []byte) (key *rsa.PublicKey, err error) {
-	defer func() {
-		if errr := recover(); errr != nil {
-			key = nil
-			err = fmt.Errorf("panic during decode")
-		}
-	}()
-	fixed := FormatBrokenPubkey(pubkey)
-	rsablock, _ := pem.Decode(fixed)
-
-	rsaKey, err := x509.ParsePKIXPublicKey(rsablock.Bytes)
+func parsePublicKey(pubKey []byte) (key *rsa.PublicKey, err error) {
+	fixed := FormatBrokenPubkey(pubKey)
+	rsaBlock, rest := pem.Decode(fixed)
+	if rsaBlock == nil {
+		return nil, fmt.Errorf("error parsing: %s", string(rest))
+	}
+	rsaKey, err := x509.ParsePKIXPublicKey(rsaBlock.Bytes)
 	if err != nil {
-		rsaKey, err = x509.ParsePKCS1PublicKey(rsablock.Bytes)
+		rsaKey, err = x509.ParsePKCS1PublicKey(rsaBlock.Bytes)
 		if err != nil {
 			return nil, err
 		}
