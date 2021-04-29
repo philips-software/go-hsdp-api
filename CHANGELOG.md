@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.38.1
+- Filter known sensitive fields form debug logs
+- Move cartel client to internal logger
+- Move iron client to internal logger
+- Fix DecryptPayload
+
 ## v0.38.0
 - Add DecryptPayload to decrypt Iron payloads
 - Export some convenience functions
