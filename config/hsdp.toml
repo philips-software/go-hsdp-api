@@ -115,6 +115,24 @@ url = "https://uaa.sys.ap3.hsdp.io"
 [region.dev.service.uaa]
 url = "https://uaa.cloud.phsdp.com"
 
+# Notification
+[region.us-east.env.client-test.service.notification]
+url = "https://notification-client-test.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.notification]
+url = "https://notification-service.us-east.philips-healthsuite.com"
+[region.us-east.env.dev.service.notification]
+url = "https://notification-dev.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.notification]
+url = "https://notification-client-test.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.notification]
+url = "https://notification-service.eu-west.philips-healthsuite.com"
+[region.sa1.env.prod.service.notification]
+url = "https://notification-service.sa1.hsdp.io"
+[region.cn1.env.prod.service.notification]
+url = "https://notification-service.cn1.philips-healthsuite.com.cn"
+[region.apac3.env.prod.service.notification]
+url = "https://notification-service.ap3.hsdp.io"
+
 # Service IAM
 [region.us-east.env.client-test.service.iam]
 url = "https://iam-client-test.us-east.philips-healthsuite.com"
