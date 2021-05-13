@@ -236,7 +236,7 @@ func TestGetUsers(t *testing.T) {
 						"userUUID": "461ce8d0-7aab-4982-9e1f-cfafb69e51f0"
 					}
 				],
-				"nextPageExists": true
+				"nextPageExists": false
 			},
 			"responseCode": "200",
 			"responseMessage": "Success"
@@ -261,7 +261,7 @@ func TestGetUsers(t *testing.T) {
 	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, 5, len(list.UserUUIDs))
-	assert.True(t, list.HasNextPage)
+	assert.False(t, list.HasNextPage)
 
 	foundUser, resp, err := client.Users.LegacyGetUserIDByLoginID("foo")
 	if !assert.NotNil(t, resp) {
@@ -271,6 +271,18 @@ func TestGetUsers(t *testing.T) {
 		return
 	}
 	assert.Equal(t, "7dbfe5fc-1320-4bc6-92a7-2be5d7f07cac", foundUser)
+
+	allUsers, resp, err := client.Users.GetAllUsers(&GetUserOptions{
+		PageNumber: &pageNumber,
+		PageSize:   &pageSize,
+	})
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, 5, len(allUsers))
 }
 
 func userIDByLoginIDHandler(t *testing.T, loginID, email, userUUID string) func(http.ResponseWriter, *http.Request) {
