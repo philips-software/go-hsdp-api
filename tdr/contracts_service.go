@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 // ContractsService provides operations on TDR contracts
@@ -33,7 +35,7 @@ func (c *ContractsService) GetContract(opt *GetContractOptions, options ...Optio
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	var bundleResponse Bundle
+	var bundleResponse internal.Bundle
 
 	resp, err := c.client.Do(req, &bundleResponse)
 	if err != nil {

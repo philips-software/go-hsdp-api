@@ -1,4 +1,4 @@
-package tdr
+package internal
 
 import "encoding/json"
 
