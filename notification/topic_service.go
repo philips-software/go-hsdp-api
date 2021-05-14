@@ -2,13 +2,11 @@ package notification
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 type TopicService struct {
@@ -75,11 +73,11 @@ func (p *TopicService) UpdateTopic(topic Topic) (*Topic, *Response, error) {
 	if len(updated) != 1 {
 		return nil, resp, fmt.Errorf("failed to retrieve updated Topic %s", topic.ID)
 	}
-	return updated[0], resp, nil
+	return &updated[0], resp, nil
 }
 
-func (p *TopicService) GetTopics(opt *GetOptions, options ...OptionFunc) ([]*Topic, *Response, error) {
-	var topics []*Topic
+func (p *TopicService) GetTopics(opt *GetOptions, options ...OptionFunc) ([]Topic, *Response, error) {
+	var topics []Topic
 
 	req, err := p.client.newNotificationRequest("GET", "core/notification/Topic", opt, options...)
 	if err != nil {
@@ -87,7 +85,12 @@ func (p *TopicService) GetTopics(opt *GetOptions, options ...OptionFunc) ([]*Top
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	var bundleResponse internal.Bundle
+	var bundleResponse struct {
+		ResourceType string  `json:"resourceType,omitempty"`
+		Type         string  `json:"type,omitempty"`
+		Total        int     `json:"total"`
+		Entry        []Topic `json:"entry"`
+	}
 
 	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
@@ -100,14 +103,20 @@ func (p *TopicService) GetTopics(opt *GetOptions, options ...OptionFunc) ([]*Top
 		return topics, resp, ErrEmptyResult
 	}
 	for _, e := range bundleResponse.Entry {
-		c := new(Topic)
-		if err := json.Unmarshal(e.Resource, c); err == nil {
-			topics = append(topics, c)
-		} else {
-			return nil, resp, err
-		}
+		topics = append(topics, e)
 	}
 	return topics, resp, err
+}
+
+func (p *TopicService) GetTopic(id string) (*Topic, *Response, error) {
+	topics, resp, err := p.GetTopics(&GetOptions{ID: &id})
+	if err != nil {
+		return nil, resp, err
+	}
+	if topics == nil || len(topics) != 1 {
+		return nil, resp, fmt.Errorf("GetTopic: not found")
+	}
+	return &topics[0], resp, nil
 }
 
 func (p *TopicService) DeleteTopic(topic Topic) (bool, *Response, error) {
