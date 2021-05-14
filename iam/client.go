@@ -549,7 +549,7 @@ func (e *ErrorResponse) Error() string {
 
 func checkResponse(r *http.Response) error {
 	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
+	case 200, 201, 202, 204, 207, 304:
 		return nil
 	}
 

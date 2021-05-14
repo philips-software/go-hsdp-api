@@ -235,7 +235,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 // checkResponse checks the API response for errors, and returns them if present.
 func checkResponse(r *http.Response) error {
 	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
+	case 200, 201, 202, 204, 207, 304:
 		return nil
 	case 400:
 		return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrBadRequest)
