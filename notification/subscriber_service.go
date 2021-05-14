@@ -2,13 +2,11 @@ package notification
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 type SubscriberService struct {
@@ -49,8 +47,8 @@ func (p *SubscriberService) CreateSubscriber(subscriber Subscriber) (*Subscriber
 	return &createdSubscriber, resp, nil
 }
 
-func (p *SubscriberService) GetSubscribers(opt *GetOptions, options ...OptionFunc) ([]*Subscriber, *Response, error) {
-	var subscribers []*Subscriber
+func (p *SubscriberService) GetSubscribers(opt *GetOptions, options ...OptionFunc) ([]Subscriber, *Response, error) {
+	var subscribers []Subscriber
 
 	req, err := p.client.newNotificationRequest("GET", "core/notification/Subscriber", opt, options...)
 	if err != nil {
@@ -58,8 +56,12 @@ func (p *SubscriberService) GetSubscribers(opt *GetOptions, options ...OptionFun
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	var bundleResponse internal.Bundle
-
+	var bundleResponse struct {
+		ResourceType string       `json:"resourceType,omitempty"`
+		Type         string       `json:"type,omitempty"`
+		Total        int          `json:"total"`
+		Entry        []Subscriber `json:"entry"`
+	}
 	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
@@ -71,14 +73,20 @@ func (p *SubscriberService) GetSubscribers(opt *GetOptions, options ...OptionFun
 		return subscribers, resp, ErrEmptyResult
 	}
 	for _, e := range bundleResponse.Entry {
-		c := new(Subscriber)
-		if err := json.Unmarshal(e.Resource, c); err == nil {
-			subscribers = append(subscribers, c)
-		} else {
-			return nil, resp, err
-		}
+		subscribers = append(subscribers, e)
 	}
 	return subscribers, resp, err
+}
+
+func (p *SubscriberService) GetSubscriber(id string) (*Subscriber, *Response, error) {
+	subscribers, resp, err := p.GetSubscribers(&GetOptions{ID: &id})
+	if err != nil {
+		return nil, resp, err
+	}
+	if subscribers == nil || len(subscribers) != 1 {
+		return nil, resp, fmt.Errorf("GetSubscriber: not found")
+	}
+	return &subscribers[0], resp, nil
 }
 
 func (p *SubscriberService) DeleteSubscriber(subscriber Subscriber) (bool, *Response, error) {
