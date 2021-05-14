@@ -91,6 +91,17 @@ func (p *ProducerService) GetProducers(opt *GetOptions, options ...OptionFunc) (
 	return producers, resp, err
 }
 
+func (p *ProducerService) GetProducer(id string) (*Producer, *Response, error) {
+	producers, resp, err := p.GetProducers(&GetOptions{ID: &id})
+	if err != nil {
+		return nil, resp, err
+	}
+	if producers == nil || len(producers) != 1 {
+		return nil, resp, fmt.Errorf("GetProducer: not found")
+	}
+	return producers[0], resp, nil
+}
+
 func (p *ProducerService) DeleteProducer(producer Producer) (bool, *Response, error) {
 	req, err := p.client.newNotificationRequest("DELETE", "core/notification/Producer/"+producer.ID, nil, nil)
 	if err != nil {
