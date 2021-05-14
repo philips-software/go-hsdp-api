@@ -2,13 +2,11 @@ package notification
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 type ProducerService struct {
@@ -59,8 +57,8 @@ func (p *ProducerService) CreateProducer(producer Producer) (*Producer, *Respons
 	return &createdProducer, resp, nil
 }
 
-func (p *ProducerService) GetProducers(opt *GetOptions, options ...OptionFunc) ([]*Producer, *Response, error) {
-	var producers []*Producer
+func (p *ProducerService) GetProducers(opt *GetOptions, options ...OptionFunc) ([]Producer, *Response, error) {
+	var producers []Producer
 
 	req, err := p.client.newNotificationRequest("GET", "core/notification/Producer", opt, options...)
 	if err != nil {
@@ -68,7 +66,12 @@ func (p *ProducerService) GetProducers(opt *GetOptions, options ...OptionFunc) (
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	var bundleResponse internal.Bundle
+	var bundleResponse struct {
+		ResourceType string     `json:"resourceType,omitempty"`
+		Type         string     `json:"type,omitempty"`
+		Total        int        `json:"total"`
+		Entry        []Producer `json:"entry"`
+	}
 
 	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
@@ -81,12 +84,7 @@ func (p *ProducerService) GetProducers(opt *GetOptions, options ...OptionFunc) (
 		return producers, resp, ErrEmptyResult
 	}
 	for _, e := range bundleResponse.Entry {
-		c := new(Producer)
-		if err := json.Unmarshal(e.Resource, c); err == nil {
-			producers = append(producers, c)
-		} else {
-			return nil, resp, err
-		}
+		producers = append(producers, e)
 	}
 	return producers, resp, err
 }
@@ -99,7 +97,7 @@ func (p *ProducerService) GetProducer(id string) (*Producer, *Response, error) {
 	if producers == nil || len(producers) != 1 {
 		return nil, resp, fmt.Errorf("GetProducer: not found")
 	}
-	return producers[0], resp, nil
+	return &producers[0], resp, nil
 }
 
 func (p *ProducerService) DeleteProducer(producer Producer) (bool, *Response, error) {
