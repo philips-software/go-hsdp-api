@@ -2,13 +2,11 @@ package notification
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 type SubscriptionService struct {
@@ -44,8 +42,8 @@ func (p *SubscriptionService) CreateSubscription(subscription Subscription) (*Su
 	return &createdSubscription, resp, nil
 }
 
-func (p *SubscriptionService) GetSubscriptions(opt *GetOptions, options ...OptionFunc) ([]*Subscription, *Response, error) {
-	var subscriptions []*Subscription
+func (p *SubscriptionService) GetSubscriptions(opt *GetOptions, options ...OptionFunc) ([]Subscription, *Response, error) {
+	var subscriptions []Subscription
 
 	req, err := p.client.newNotificationRequest("GET", "core/notification/Subscription", opt, options...)
 	if err != nil {
@@ -53,8 +51,12 @@ func (p *SubscriptionService) GetSubscriptions(opt *GetOptions, options ...Optio
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	var bundleResponse internal.Bundle
-
+	var bundleResponse struct {
+		ResourceType string         `json:"resourceType,omitempty"`
+		Type         string         `json:"type,omitempty"`
+		Total        int            `json:"total"`
+		Entry        []Subscription `json:"entry"`
+	}
 	resp, err := p.client.do(req, &bundleResponse)
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
@@ -66,14 +68,20 @@ func (p *SubscriptionService) GetSubscriptions(opt *GetOptions, options ...Optio
 		return subscriptions, resp, ErrEmptyResult
 	}
 	for _, e := range bundleResponse.Entry {
-		c := new(Subscription)
-		if err := json.Unmarshal(e.Resource, c); err == nil {
-			subscriptions = append(subscriptions, c)
-		} else {
-			return nil, resp, err
-		}
+		subscriptions = append(subscriptions, e)
 	}
 	return subscriptions, resp, err
+}
+
+func (p *SubscriptionService) GetSubscription(id string) (*Subscription, *Response, error) {
+	subscriptions, resp, err := p.GetSubscriptions(&GetOptions{ID: &id})
+	if err != nil {
+		return nil, resp, err
+	}
+	if subscriptions == nil || len(subscriptions) != 1 {
+		return nil, resp, fmt.Errorf("GetSubscriber: not found")
+	}
+	return &subscriptions[0], resp, nil
 }
 
 func (p *SubscriptionService) DeleteSubscription(subscription Subscription) (bool, *Response, error) {
