@@ -130,7 +130,7 @@ func (p *TopicService) DeleteTopic(topic Topic) (bool, *Response, error) {
 
 	resp, err := p.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, resp, nil
+		return false, resp, fmt.Errorf("DeleteTopic: HTTP %d", resp.StatusCode)
 	}
 	return true, resp, err
 }

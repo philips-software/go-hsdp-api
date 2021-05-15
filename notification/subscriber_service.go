@@ -100,7 +100,7 @@ func (p *SubscriberService) DeleteSubscriber(subscriber Subscriber) (bool, *Resp
 
 	resp, err := p.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, resp, nil
+		return false, resp, fmt.Errorf("DeleteSubscriber: HTTP %d", resp.StatusCode)
 	}
 	return true, resp, err
 }
