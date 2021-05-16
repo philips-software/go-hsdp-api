@@ -16,7 +16,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Device queries
   - [x] Application Resources management
   - [x] Device configuration management (firewall, logging)
-- [x] Public Key Infrastructe (PKI) management
+- [x] Public Key Infrastructure (PKI) management
 - [x] Identity and Access Management (IAM)
   - [x] Groups
   - [x] Organizations
@@ -44,6 +44,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [x] S3Creds Policy management
 - [x] DICOM Store
   - [x] Config management
+- [x] Notification service
 - [x] Hosted Application Streaming (HAS) management
 - [x] Service Discovery
 - [x] Console settings

@@ -16,6 +16,7 @@ type PublishResponse struct {
 	TopicID      string `json:"topicId"`
 }
 
+// Publish publishes a message to a topic
 func (c *Client) Publish(request PublishRequest) (*PublishResponse, *Response, error) {
 	if err := c.validate.Struct(request); err != nil {
 		return nil, nil, err

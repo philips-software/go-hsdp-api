@@ -1,3 +1,4 @@
+// Package notification provides support for interacting with HSDP Notification services
 package notification
 
 import (
@@ -46,7 +47,7 @@ type Client struct {
 
 	notificationURL *url.URL
 
-	// User agent used when communicating with the HSDP Notification API.
+	// User agent used when communicating with the HSDP Notification API
 	UserAgent string
 
 	debugFile *os.File
@@ -58,8 +59,8 @@ type Client struct {
 	Topic        *TopicService
 }
 
-// NewClient returns a new HSDP Notification API client. Configured console and IAM clients
-// must be provided as the underlying API requires tokens from respective services
+// NewClient returns a new HSDP Notification API client. A configured IAM client
+// must be provided as the underlying API requires an IAM token
 func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	return newClient(iamClient, config)
 }
@@ -102,8 +103,7 @@ func (c *Client) Close() {
 	}
 }
 
-// SetNotificationURL sets the FHIR store URL for API requests to a custom endpoint. urlStr
-// should always be specified with a trailing slash.
+// SetNotificationURL sets the Notification URL for API requests
 func (c *Client) SetNotificationURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrNotificationURLCannotBeEmpty
