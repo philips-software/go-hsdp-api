@@ -23,6 +23,18 @@ type Subscription struct {
 	SubscriptionEndpoint string `json:"subscriptionEndpoint" validate:"required"`
 }
 
+type ConfirmRequest struct {
+	AuthenticateOnUnsubscribe string `json:"authenticateOnUnsubscribe,omitempty"`
+	Token                     string `json:"token" validate:"required"`
+	TopicARN                  string `json:"topicArn" validate:"required"`
+	Endpoint                  string `json:"endpoint" validate:"required"`
+}
+
+type ConfirmResponse struct {
+	SubscriptionID  string `json:"subscriptionId"`
+	SubscriptionARN string `json:"subscriptionArn"`
+}
+
 func (p *SubscriptionService) CreateSubscription(subscription Subscription) (*Subscription, *Response, error) {
 	if err := p.validate.Struct(subscription); err != nil {
 		return nil, nil, err
@@ -94,8 +106,32 @@ func (p *SubscriptionService) DeleteSubscription(subscription Subscription) (boo
 	var deleteResponse bytes.Buffer
 
 	resp, err := p.client.do(req, &deleteResponse)
+	if err != nil {
+		if err != io.EOF {
+			return false, resp, err
+		}
+	}
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
 		return false, resp, fmt.Errorf("DeleteSubscription: HTTP %d", resp.StatusCode)
 	}
 	return true, resp, err
+}
+
+func (p *SubscriptionService) ConfirmSubscription(confirm ConfirmRequest) (*ConfirmResponse, *Response, error) {
+	if err := p.validate.Struct(confirm); err != nil {
+		return nil, nil, err
+	}
+	req, err := p.client.newNotificationRequest("POST", "core/notification/Subscription/_confirm", confirm, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", APIVersion)
+
+	var confirmResponse ConfirmResponse
+
+	resp, err := p.client.do(req, &confirmResponse)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return nil, resp, fmt.Errorf("ConfirmSubscription: HTTP %d", resp.StatusCode)
+	}
+	return &confirmResponse, resp, err
 }
