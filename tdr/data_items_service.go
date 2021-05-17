@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 // DataItemsService provides operations on TDR data items
@@ -49,7 +51,7 @@ func (d *DataItemsService) GetDataItem(opt *GetDataItemOptions, options ...Optio
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	var bundleResponse Bundle
+	var bundleResponse internal.Bundle
 
 	resp, err := d.client.Do(req, &bundleResponse)
 	if err != nil {

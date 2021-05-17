@@ -133,9 +133,6 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
 		}
 	}
-	header := make(http.Header)
-	header.Set("User-Agent", userAgent)
-	httpClient.Transport = internal.NewHeaderRoundTripper(httpClient.Transport, header)
 
 	c.validate = validator.New()
 	c.Organizations = &OrganizationsService{client: c}
@@ -429,6 +426,7 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		Header:     make(http.Header),
 		Host:       u.Host,
 	}
+	req.Header.Set("User-Agent", userAgent)
 
 	for _, fn := range options {
 		if fn == nil {
@@ -551,7 +549,7 @@ func (e *ErrorResponse) Error() string {
 
 func checkResponse(r *http.Response) error {
 	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
+	case 200, 201, 202, 204, 207, 304:
 		return nil
 	}
 

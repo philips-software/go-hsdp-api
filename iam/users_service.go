@@ -235,6 +235,40 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 	return u.userActionV(body, "$change-password", "1")
 }
 
+func stringInc(number string) string {
+	i, _ := strconv.Atoi(number)
+	i = i + 1
+	return strconv.FormatInt(int64(i), 10)
+}
+
+// GetAllUsers retrieves all users based on GetUserOptions
+func (u *UsersService) GetAllUsers(opts *GetUserOptions, options ...OptionFunc) ([]string, *Response, error) {
+	var users []string
+	currentPage := "1"
+	pageSize := "100"
+	if opts.PageNumber == nil {
+		opts.PageNumber = &currentPage
+	}
+	if opts.PageSize == nil {
+		opts.PageSize = &pageSize
+	}
+	for {
+		userList, resp, err := u.GetUsers(opts, options...)
+		if err != nil {
+			return users, resp, err
+		}
+		for _, u := range userList.UserUUIDs {
+			users = append(users, u)
+		}
+		if !userList.HasNextPage {
+			return users, resp, nil
+		}
+		// Next page
+		currentPage = stringInc(currentPage)
+		opts.PageNumber = &currentPage
+	}
+}
+
 // GetUsers looks up users by search criteria specified in GetUserOptions
 func (u *UsersService) GetUsers(opts *GetUserOptions, options ...OptionFunc) (*UserList, *Response, error) {
 	req, err := u.client.newRequest(IDM, "GET", "security/users", opts, options)
