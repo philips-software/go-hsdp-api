@@ -21,6 +21,7 @@ type Subscription struct {
 	TopicID              string `json:"topicId" validate:"required"`
 	SubscriberID         string `json:"subscriberId" validate:"required"`
 	SubscriptionEndpoint string `json:"subscriptionEndpoint" validate:"required"`
+	SubscriptionARN      string `json:"subscriptionArn,omitempty"`
 }
 
 type ConfirmRequest struct {
@@ -28,11 +29,6 @@ type ConfirmRequest struct {
 	Token                     string `json:"token" validate:"required"`
 	TopicARN                  string `json:"topicArn" validate:"required"`
 	Endpoint                  string `json:"endpoint" validate:"required"`
-}
-
-type ConfirmResponse struct {
-	SubscriptionID  string `json:"subscriptionId"`
-	SubscriptionARN string `json:"subscriptionArn"`
 }
 
 func (p *SubscriptionService) CreateSubscription(subscription Subscription) (*Subscription, *Response, error) {
@@ -117,7 +113,7 @@ func (p *SubscriptionService) DeleteSubscription(subscription Subscription) (boo
 	return true, resp, err
 }
 
-func (p *SubscriptionService) ConfirmSubscription(confirm ConfirmRequest) (*ConfirmResponse, *Response, error) {
+func (p *SubscriptionService) ConfirmSubscription(confirm ConfirmRequest) (*Subscription, *Response, error) {
 	if err := p.validate.Struct(confirm); err != nil {
 		return nil, nil, err
 	}
@@ -127,10 +123,10 @@ func (p *SubscriptionService) ConfirmSubscription(confirm ConfirmRequest) (*Conf
 	}
 	req.Header.Set("api-version", APIVersion)
 
-	var confirmResponse ConfirmResponse
+	var confirmResponse Subscription
 
 	resp, err := p.client.do(req, &confirmResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode != http.StatusCreated {
 		return nil, resp, fmt.Errorf("ConfirmSubscription: HTTP %d", resp.StatusCode)
 	}
 	return &confirmResponse, resp, err
