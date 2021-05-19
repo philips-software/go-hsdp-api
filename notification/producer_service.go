@@ -36,6 +36,8 @@ type GetOptions struct {
 	ProducerProductName   *string `url:"producerProductName,omitempty"`
 	ProducerServiceName   *string `url:"producerServiceName,omitempty"`
 	Scope                 *string `url:"scope,omitempty"`
+	Name                  *string `url:"name,omitempty"`
+	ProducerID            *string `url:"producerId,omitempty"`
 }
 
 func (p *ProducerService) CreateProducer(producer Producer) (*Producer, *Response, error) {
