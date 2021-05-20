@@ -1,11 +1,11 @@
 package notification
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 
+	"github.com/cenkalti/backoff/v4"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -99,35 +99,42 @@ func (p *SubscriptionService) DeleteSubscription(subscription Subscription) (boo
 	}
 	req.Header.Set("api-version", APIVersion)
 
-	var deleteResponse bytes.Buffer
-
-	resp, err := p.client.do(req, &deleteResponse)
+	resp, err := p.client.do(req, nil)
 	if err != nil {
-		if err != io.EOF {
-			return false, resp, err
-		}
+		return false, resp, err
 	}
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp != nil && resp.StatusCode != http.StatusNoContent {
 		return false, resp, fmt.Errorf("DeleteSubscription: HTTP %d", resp.StatusCode)
 	}
 	return true, resp, err
 }
 
 func (p *SubscriptionService) ConfirmSubscription(confirm ConfirmRequest) (*Subscription, *Response, error) {
+	var confirmResponse Subscription
+	var resp *Response
+
 	if err := p.validate.Struct(confirm); err != nil {
 		return nil, nil, err
 	}
-	req, err := p.client.newNotificationRequest("POST", "core/notification/Subscription/_confirm", confirm, nil)
+	operation := func() error {
+		req, err := p.client.newNotificationRequest("POST", "core/notification/Subscription/_confirm", confirm, nil)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("api-version", APIVersion)
+
+		resp, err = p.client.do(req, &confirmResponse)
+		if err != nil {
+			return err
+		}
+		if resp != nil && resp.StatusCode != http.StatusCreated {
+			return fmt.Errorf("ConfirmSubscription: HTTP %d", resp.StatusCode)
+		}
+		return err
+	}
+	err := backoff.Retry(operation, backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 8))
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
-	req.Header.Set("api-version", APIVersion)
-
-	var confirmResponse Subscription
-
-	resp, err := p.client.do(req, &confirmResponse)
-	if resp == nil || resp.StatusCode != http.StatusCreated {
-		return nil, resp, fmt.Errorf("ConfirmSubscription: HTTP %d", resp.StatusCode)
-	}
-	return &confirmResponse, resp, err
+	return &confirmResponse, resp, nil
 }

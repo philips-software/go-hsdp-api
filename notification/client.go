@@ -36,6 +36,7 @@ type Config struct {
 	Type            string
 	TimeZone        string
 	DebugLog        string
+	Retry           int
 }
 
 // A Client manages communication with HSDP Notification API
