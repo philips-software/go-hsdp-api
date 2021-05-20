@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// CodeLogin
+// CodeLogin uses the authorization_code grant type to fetch tokens
 func (c *Client) CodeLogin(code string, redirectURI string) error {
 	// Authorize
 	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
@@ -54,6 +54,7 @@ func (c *Client) ServiceLogin(service Service) error {
 
 	req.Body = ioutil.NopCloser(strings.NewReader(body))
 	req.ContentLength = int64(len(body))
+	c.service = service // Save service so we can refresh later!
 
 	return c.doTokenRequest(req)
 }
@@ -75,6 +76,7 @@ func (c *Client) Login(username, password string) error {
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
 	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
+	c.service = Service{} // reset
 
 	return c.doTokenRequest(req)
 }
@@ -104,7 +106,7 @@ func (c *Client) RevokeAccessToken() error {
 	return c.revokeToken(c.token)
 }
 
-// RevokeRefreshToken revokes the access and refresh token
+// RevokeRefreshAccessToken revokes the access and refresh token
 func (c *Client) RevokeRefreshAccessToken() error {
 	return c.revokeToken(c.refreshToken)
 }
@@ -113,7 +115,7 @@ type endSessionOptions struct {
 	IDTokenHint *string `url:"id_token_hint,omitempty"`
 }
 
-// EndSession
+// EndSession ends the current active session
 func (c *Client) EndSession() error {
 	req, err := c.newRequest(IAM, "GET", "authorize/oauth2/endsession", &endSessionOptions{
 		IDTokenHint: &c.idToken,

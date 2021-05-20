@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -16,6 +15,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 
 	validator "github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
@@ -68,6 +69,7 @@ type Client struct {
 	refreshToken string
 	idToken      string
 	expiresAt    time.Time
+	service      Service
 
 	// scope holds the client scope
 	scopes []string
@@ -229,6 +231,9 @@ func (c *Client) TokenRefresh() error {
 	defer c.Unlock()
 
 	if c.refreshToken == "" {
+		if c.service.Valid() { // Possible service
+			return c.ServiceLogin(c.service)
+		}
 		return ErrMissingRefreshToken
 	}
 
@@ -406,7 +411,7 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		u = *c.baseIAMURL
 		u.Opaque = c.baseIAMURL.Path + path
 	default:
-		return nil, fmt.Errorf("Unknown endpoint: `%s`", endpoint)
+		return nil, fmt.Errorf("unknown endpoint: `%s`", endpoint)
 	}
 
 	if opt != nil {

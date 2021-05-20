@@ -68,6 +68,14 @@ func FixPEM(pemString string) string {
 	return pre
 }
 
+// Valid checks if a service is usable
+func (s *Service) Valid() bool {
+	if s.ServiceID == "" || s.PrivateKey == "" {
+		return false
+	}
+	return true
+}
+
 // GetToken returns a JWT which can be exchanged for an access token
 func (s *Service) GetToken(accessTokenEndpoint string) (string, error) {
 	// Decode private key
