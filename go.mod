@@ -3,9 +3,9 @@ module github.com/philips-software/go-hsdp-api
 go 1.16
 
 require (
-	github.com/cenkalti/backoff/v4 v4.1.0 // indirect
+	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/evanphx/json-patch/v5 v5.3.0
+	github.com/evanphx/json-patch/v5 v5.5.0
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/google/fhir/go v0.0.0-20201203001644-a2580b6ea022
 	github.com/google/go-querystring v1.1.0
