@@ -8,6 +8,11 @@ import (
 	"net/http"
 )
 
+// ErrorResponse contains fields of an error response
+type ErrorResponse struct {
+	Error string `json:"error,omitempty"`
+}
+
 // CredsServiceAccess
 type CredsServiceAccess struct {
 	Endpoint       string `json:"endPoint"`
@@ -31,13 +36,14 @@ type StaticAccess struct {
 	SecretKey  string `json:"secretKey"`
 }
 
-// ObjectStore
+// ObjectStore describes a DICOM object store
 type ObjectStore struct {
 	ID                string              `json:"id,omitempty"`
 	Description       string              `json:"description,omitempty"`
 	AccessType        string              `json:"accessType" validate:"required,enum" enum:"direct,s3Creds"`
 	CredServiceAccess *CredsServiceAccess `json:"credServiceAccess,omitempty"`
 	StaticAccess      *StaticAccess       `json:"staticAccess,omitempty"`
+	ErrorResponse
 }
 
 // CreateObjectStore
@@ -97,7 +103,7 @@ func (c *ConfigService) GetObjectStore(id string, opt *QueryOptions, options ...
 		}
 		return nil, resp, err
 	}
-	return &objectStore, resp, nil
+	return &objectStore, resp, err
 }
 
 // DeleteObjectStore

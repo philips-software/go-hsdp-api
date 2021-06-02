@@ -21,7 +21,7 @@ type ServicesService struct {
 
 type CertificateRequest struct {
 	CommonName        string `json:"common_name" validate:"required,max=253"`
-	AltName           string `json:"alt_name,omitempty"`
+	AltNames          string `json:"alt_names,omitempty"`
 	IPSANS            string `json:"ip_sans,omitempty"`
 	URISANS           string `json:"uri_sans,omitempty"`
 	OtherSANS         string `json:"other_sans,omitempty"`
