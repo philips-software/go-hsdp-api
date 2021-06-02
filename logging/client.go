@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/philips-software/go-hsdp-api/internal"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -16,6 +15,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 
 	"github.com/philips-software/go-hsdp-api/iam"
 
@@ -84,7 +85,7 @@ type Client struct {
 	httpSigner *signer.Signer
 }
 
-// Response holds a LogEvent response
+// StoreResponse holds a LogEvent response
 type StoreResponse struct {
 	*http.Response
 	Message string

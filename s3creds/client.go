@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"sort"
@@ -200,18 +199,7 @@ func newResponse(r *http.Response) *Response {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
-	if c.debugFile != nil {
-		dumped, _ := httputil.DumpRequest(req, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Request start ---\n%s\n[go-hsdp-api] Request end ---\n", string(dumped))
-		_, _ = c.debugFile.WriteString(out)
-
-	}
 	resp, err := c.iamClient.HttpClient().Do(req)
-	if c.debugFile != nil && resp != nil {
-		dumped, _ := httputil.DumpResponse(resp, true)
-		out := fmt.Sprintf("[go-hsdp-api] --- Response start ---\n%s\n[go-hsdp-api] --- Response end ---\n", string(dumped))
-		_, _ = c.debugFile.WriteString(out)
-	}
 	if err != nil {
 		return nil, err
 	}
