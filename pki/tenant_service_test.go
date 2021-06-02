@@ -150,9 +150,14 @@ func TestRetrieveAndUpdate(t *testing.T) {
 			if !assert.Nil(t, err) {
 				return
 			}
-			var tenant pki.Tenant
-			err = json.Unmarshal(body, &tenant)
+			var update pki.UpdateTenantRequest
+			err = json.Unmarshal(body, &update)
 			if !assert.Nil(t, err) {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			if update.ServiceParameters.LogicalPath == "" {
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 			w.WriteHeader(http.StatusNoContent)
@@ -234,7 +239,13 @@ func TestRetrieveAndUpdate(t *testing.T) {
 	_, ok := tenant.GetRoleOk("ec384")
 	assert.True(t, ok)
 
-	ok, resp, err = pkiClient.Tenants.Update(*tenant)
+	ok, resp, err = pkiClient.Tenants.Update(pki.UpdateTenantRequest{
+		ServiceParameters: pki.UpdateServiceParameters{
+			LogicalPath: tenant.ServiceParameters.LogicalPath,
+			IAMOrgs:     tenant.ServiceParameters.IAMOrgs,
+			Roles:       tenant.ServiceParameters.Roles,
+		},
+	})
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -250,7 +261,7 @@ func TestTenantErrors(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	_, _, err := pkiClient.Tenants.Update(pki.Tenant{})
+	_, _, err := pkiClient.Tenants.Update(pki.UpdateTenantRequest{})
 	assert.NotNil(t, err)
 	_, _, err = pkiClient.Tenants.Retrieve("logicalPath")
 	assert.NotNil(t, err)

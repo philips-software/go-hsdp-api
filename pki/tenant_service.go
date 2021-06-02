@@ -64,12 +64,22 @@ type ServiceParameters struct {
 	Roles       []Role               `json:"roles" validate:"min=1,max=10,required"`
 }
 
+type UpdateServiceParameters struct {
+	LogicalPath string   `json:"logical_path" validate:"required"`
+	IAMOrgs     []string `json:"iam_orgs" validate:"min=1,max=10,required"`
+	Roles       []Role   `json:"roles" validate:"min=1,max=10,required"`
+}
+
 type Tenant struct {
 	OrganizationName  string            `json:"organization_name" validate:"required"`
 	SpaceName         string            `json:"space_name" validate:"required"`
 	ServiceName       string            `json:"service_name" validate:"required"`
 	PlanName          string            `json:"plan_name" validate:"required"`
 	ServiceParameters ServiceParameters `json:"service_parameters" validate:"required"`
+}
+
+type UpdateTenantRequest struct {
+	ServiceParameters UpdateServiceParameters `json:"service_parameters" validate:"required"`
 }
 
 func (t Tenant) GetRoleOk(role string) (Role, bool) {
@@ -151,11 +161,11 @@ func (t *TenantService) Retrieve(logicalPath string, options ...OptionFunc) (*Te
 	return &tenant, resp, err
 }
 
-func (t *TenantService) Update(tenant Tenant, options ...OptionFunc) (bool, *Response, error) {
-	if err := t.validate.Struct(tenant); err != nil {
+func (t *TenantService) Update(update UpdateTenantRequest, options ...OptionFunc) (bool, *Response, error) {
+	if err := t.validate.Struct(update); err != nil {
 		return false, nil, err
 	}
-	req, err := t.client.newTenantRequest(http.MethodPut, "core/pki/tenant/"+tenant.ServiceParameters.LogicalPath, &tenant, options)
+	req, err := t.client.newTenantRequest(http.MethodPut, "core/pki/tenant/"+update.ServiceParameters.LogicalPath, &update, options)
 	if err != nil {
 		return false, nil, err
 	}
