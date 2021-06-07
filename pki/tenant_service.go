@@ -137,7 +137,7 @@ func (t *TenantService) Onboard(tenant Tenant, options ...OptionFunc) (*Onboardi
 	}
 	resp, err := t.client.do(req, &onboardResponse)
 	if err != nil && err != io.EOF {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	if resp == nil {
 		return nil, nil, ErrEmptyResult
@@ -156,7 +156,7 @@ func (t *TenantService) Retrieve(logicalPath string, options ...OptionFunc) (*Te
 	var tenant Tenant
 	resp, err := t.client.do(req, &tenant)
 	if err != nil && err != io.EOF {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return &tenant, resp, err
 }
@@ -199,7 +199,7 @@ func (t *TenantService) Offboard(tenant Tenant, options ...OptionFunc) (bool, *R
 	var errorResponse ErrorResponse
 	resp, err := t.client.do(req, &errorResponse)
 	if err != nil && err != io.EOF {
-		return false, nil, err
+		return false, resp, err
 	}
 	if resp == nil {
 		return false, nil, ErrEmptyResult

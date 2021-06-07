@@ -110,7 +110,7 @@ func (c *ServicesService) getCA(path string, options ...OptionFunc) (*x509.Certi
 	}
 	resp, err := c.client.do(req, nil)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, resp, err
 	}
 	if resp == nil {
 		return nil, nil, nil, fmt.Errorf("getCA: %w", ErrEmptyResult)
@@ -153,10 +153,10 @@ func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.Cert
 	}
 	resp, err := c.client.do(req, nil)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, resp, err
 	}
 	if resp == nil {
-		return nil, nil, nil, fmt.Errorf("getCRL: %w", ErrEmptyResult)
+		return nil, nil, resp, fmt.Errorf("getCRL: %w", ErrEmptyResult)
 	}
 	defer resp.Body.Close()
 	pemData, err := ioutil.ReadAll(resp.Body)
@@ -222,10 +222,10 @@ func (c *ServicesService) Sign(logicalPath, roleName string, signRequest SignReq
 	}
 	resp, err := c.client.do(req, &responseStruct)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	if resp == nil {
-		return nil, nil, fmt.Errorf("Sign: %w", ErrEmptyResult)
+		return nil, resp, fmt.Errorf("Sign: %w", ErrEmptyResult)
 	}
 	return &responseStruct.IssueResponse, resp, nil
 }
@@ -242,10 +242,10 @@ func (c *ServicesService) IssueCertificate(logicalPath, roleName string, request
 	}
 	resp, err := c.client.do(req, &responseStruct)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	if resp == nil {
-		return nil, nil, fmt.Errorf("IssueCertificate: %w", ErrEmptyResult)
+		return nil, resp, fmt.Errorf("IssueCertificate: %w", ErrEmptyResult)
 	}
 	return &responseStruct.IssueResponse, resp, nil
 }
@@ -290,7 +290,7 @@ func (c *ServicesService) GetCertificateBySerial(logicalPath, serial string, opt
 		return nil, resp, err
 	}
 	if resp == nil {
-		return nil, nil, fmt.Errorf("GetCertificateBySerial: %w", ErrEmptyResult)
+		return nil, resp, fmt.Errorf("GetCertificateBySerial: %w", ErrEmptyResult)
 	}
 	return &responseStruct.IssueResponse, resp, nil
 }
@@ -355,7 +355,7 @@ func (c *ServicesService) GetCertificates(logicalPath string, opt *QueryOptions,
 	}
 	resp, err := c.client.do(req, &responseStruct)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	if resp == nil {
 		return nil, nil, fmt.Errorf("GetCertificates: %w", ErrEmptyResult)
