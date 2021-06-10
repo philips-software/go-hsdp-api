@@ -16,6 +16,9 @@
             "logging": {
               "url": "https://logingestor2.ap3.hsdp.io"
             },
+            "logquery": {
+              "url": "https://logquery.ap3.hsdp.io"
+            },
             "notification": {
               "url": "https://notification-service.ap3.hsdp.io"
             }
@@ -106,6 +109,9 @@
             "logging": {
               "url": "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
             },
+            "logquery": {
+              "url": "https://logquery-client-test.eu-west.philips-healthsuite.com"
+            },
             "mdm": {
               "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
             },
@@ -133,6 +139,9 @@
             },
             "logging": {
               "url": "https://logingestor2.eu-west.philips-healthsuite.com"
+            },
+            "logquery": {
+              "url": "https://logquery.eu-west.philips-healthsuite.com"
             },
             "notification": {
               "url": "https://notification-service.eu-west.philips-healthsuite.com"
@@ -176,9 +185,6 @@
           "service": {
             "kibana": {
               "url": "https://kibana-client-test.sa1.hsdp.io"
-            },
-            "logging": {
-              "url": "https://logingestor2-client-test.sa1.hsdp.io"
             }
           }
         },
@@ -195,6 +201,9 @@
             },
             "logging": {
               "url": "https://logingestor2.sa1.hsdp.io"
+            },
+            "logquery": {
+              "url": "https://logquery.sa1.hsdp.io"
             },
             "notification": {
               "url": "https://notification-service.sa1.hsdp.io"
@@ -241,6 +250,9 @@
             "logging": {
               "url": "https://logingestor2-client-test.us-east.philips-healthsuite.com"
             },
+            "logquery": {
+              "url": "https://logquery-client-test.us-east.philips-healthsuite.com"
+            },
             "notification": {
               "url": "https://notification-client-test.us-east.philips-healthsuite.com"
             },
@@ -281,6 +293,9 @@
             },
             "logging": {
               "url": "https://logingestor2.us-east.philips-healthsuite.com"
+            },
+            "logquery": {
+              "url": "https://logquery.us-east.philips-healthsuite.com"
             },
             "notification": {
               "url": "https://notification-service.us-east.philips-healthsuite.com"

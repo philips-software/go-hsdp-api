@@ -229,12 +229,24 @@ url = "https://logingestor2.eu-west.philips-healthsuite.com"
 url = "https://logingestor2-client-test.us-east.philips-healthsuite.com"
 [region.us-east.env.prod.service.logging]
 url = "https://logingestor2.us-east.philips-healthsuite.com"
-[region.sa1.env.client-test.service.logging]
-url = "https://logingestor2-client-test.sa1.hsdp.io"
 [region.sa1.env.prod.service.logging]
 url = "https://logingestor2.sa1.hsdp.io"
 [region.apac3.env.prod.service.logging]
 url = "https://logingestor2.ap3.hsdp.io"
+
+# Service LOGQUERY
+[region.eu-west.env.client-test.service.logquery]
+url = "https://logquery-client-test.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.logquery]
+url = "https://logquery.eu-west.philips-healthsuite.com"
+[region.us-east.env.client-test.service.logquery]
+url = "https://logquery-client-test.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.logquery]
+url = "https://logquery.us-east.philips-healthsuite.com"
+[region.sa1.env.prod.service.logquery]
+url = "https://logquery.sa1.hsdp.io"
+[region.apac3.env.prod.service.logquery]
+url = "https://logquery.ap3.hsdp.io"
 
 # Service KIBANA
 [region.eu-west.env.client-test.service.kibana]
