@@ -22,7 +22,7 @@ var filterList = []filter{
 	{regexp.MustCompile(`"access_token":"[^"]+"`), `"access_token":"[sensitive]"`},
 	{regexp.MustCompile(`"id_token":"[^"]+"`), `"id_token":"[sensitive]"`},
 	{regexp.MustCompile(`"token":"[^"]+"`), `"token":"[sensitive]"`},
-	{regexp.MustCompile(`refresh_token=\w+`), `refresh_token=sensitive`},
+	{regexp.MustCompile(`token=\w+`), `token=sensitive`},
 }
 
 type HeaderRoundTripper struct {
