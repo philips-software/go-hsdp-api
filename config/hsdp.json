@@ -49,6 +49,60 @@
         },
         "uaa": {
           "url": "https://uaa.sys.ap3.hsdp.io"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.ap3.hsdp.io"
+        }
+      }
+    },
+    "ca1": {
+      "env": {
+        "prod": {
+          "service": {
+            "iam": {
+              "url": "https://iam-service.ca1.hsdp.io"
+            },
+            "idm": {
+              "url": "https://idm-service.ca1.hsdp.io"
+            },
+            "kibana": {
+              "url": "https://kibana.ca1.hsdp.io"
+            },
+            "logging": {
+              "url": "https://logingestor2.ca1.hsdp.io"
+            },
+            "logquery": {
+              "url": "https://logquery.ca1.hsdp.io"
+            },
+            "notification": {
+              "url": "https://notification-service.ca1.hsdp.io"
+            }
+          }
+        }
+      },
+      "service": {
+        "cartel": {
+          "host": "cartel-ca1.cloud.phsdp.com"
+        },
+        "cf": {
+          "domain": "ca1.hsdp.io",
+          "url": "https://api.sys.ca1.hsdp.io"
+        },
+        "console": {
+          "url": "https://console.ca1.hsdp.io"
+        },
+        "docker-registry": {
+          "host": "docker.ca1.hsdp.io"
+        },
+        "gateway": {
+          "domain": "ca1.phsdp.com",
+          "host": "gw-ca1.phsdp.com"
+        },
+        "uaa": {
+          "url": "https://uaa.sys.ca1.hsdp.io"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.ca1.hsdp.io"
         }
       }
     },
@@ -69,6 +123,11 @@
               "url": "https://s3creds-service.cn1.philips-healthsuite.com.cn"
             }
           }
+        }
+      },
+      "service": {
+        "vault-proxy": {
+          "url": "https://vproxy.cn1.philips-healthsuite.com.cn"
         }
       }
     },
@@ -176,6 +235,9 @@
         },
         "uaa": {
           "url": "https://uaa.eu1.phsdp.com"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.eu-west.philips-healthsuite.com"
         }
       }
     },
@@ -231,6 +293,9 @@
         },
         "uaa": {
           "url": "https://uaa.sys.sa1.hsdp.io"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.sa1.hsdp.io"
         }
       }
     },
@@ -337,6 +402,16 @@
         },
         "uaa": {
           "url": "https://uaa.cloud.pcftest.com"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.us-east.philips-healthsuite.com"
+        }
+      }
+    },
+    "us-west": {
+      "service": {
+        "vault-proxy": {
+          "url": "https://vproxy.cloud.phsdp.com"
         }
       }
     }

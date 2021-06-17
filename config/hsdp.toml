@@ -71,6 +71,10 @@ domain = "sa1.hsdp.io"
 [region.apac3.service.cf]
 url = "https://api.sys.ap3.hsdp.io"
 domain = "ap3.hsdp.io"
+[region.ca1.service.cf]
+url = "https://api.sys.ca1.hsdp.io"
+domain = "ca1.hsdp.io"
+
 
 # Service DOCKER-REGISTRY
 [region.us-east.service.docker-registry]
@@ -81,6 +85,8 @@ host = "docker.eu1.hsdp.io"
 host = "docker.sa1.hsdp.io"
 [region.apac3.service.docker-registry]
 host = "docker.ap3.hsdp.io"
+[region.ca1.service.docker-registry]
+host = "docker.ca1.hsdp.io"
 
 # Service CONSOLE
 [region.us-east.service.console]
@@ -91,6 +97,8 @@ url = "https://console.eu1.hsdp.io"
 url = "https://console.sa1.hsdp.io"
 [region.apac3.service.console]
 url = "https://console.ap3.hsdp.io"
+[region.ca1.service.console]
+url = "https://console.ca1.hsdp.io"
 
 # Service STL
 [region.dev.service.stl]
@@ -114,6 +122,8 @@ url = "https://uaa.sys.sa1.hsdp.io"
 url = "https://uaa.sys.ap3.hsdp.io"
 [region.dev.service.uaa]
 url = "https://uaa.cloud.phsdp.com"
+[region.ca1.service.uaa]
+url = "https://uaa.sys.ca1.hsdp.io"
 
 # Notification
 [region.us-east.env.client-test.service.notification]
@@ -132,6 +142,8 @@ url = "https://notification-service.sa1.hsdp.io"
 url = "https://notification-service.cn1.philips-healthsuite.com.cn"
 [region.apac3.env.prod.service.notification]
 url = "https://notification-service.ap3.hsdp.io"
+[region.ca1.env.prod.service.notification]
+url = "https://notification-service.ca1.hsdp.io"
 
 # Service IAM
 [region.us-east.env.client-test.service.iam]
@@ -150,6 +162,8 @@ url = "https://iam-service.ap3.hsdp.io"
 url = "https://iam-development.us-east.philips-healthsuite.com"
 [region.cn1.env.prod.service.iam]
 url = "https://iam-service.cn1.philips-healthsuite.com.cn"
+[region.ca1.env.prod.service.iam]
+url = "https://iam-service.ca1.hsdp.io"
 
 # Service IDM
 [region.us-east.env.client-test.service.idm]
@@ -168,6 +182,8 @@ url = "https://idm-service.ap3.hsdp.io"
 url = "https://idm-development.us-east.philips-healthsuite.com"
 [region.cn1.env.prod.service.idm]
 url = "https://idm-service.cn1.philips-healthsuite.com.cn"
+[region.ca1.env.prod.service.idm]
+url = "https://idm-service.ca1.hsdp.io"
 
 # Service CARTEL
 [region.dev.service.cartel]
@@ -178,6 +194,8 @@ host = "cartel-na1.cloud.phsdp.com"
 host = "cartel-eu1.cloud.phsdp.com"
 [region.sa1.service.cartel]
 host = "cartel-sa1.cloud.phsdp.com"
+[region.ca1.service.cartel]
+host = "cartel-ca1.cloud.phsdp.com"
 
 # Service GATEWAY
 [region.dev.service.gateway]
@@ -195,6 +213,9 @@ domain = "sa1.phsdp.com"
 [region.apac3.service.gateway]
 host = "gw-apac3.phsdp.com"
 domain = "apac3.phsdp.com"
+[region.ca1.service.gateway]
+host = "gw-ca1.phsdp.com"
+domain = "ca1.phsdp.com"
 
 # Service S3CREDS
 [region.us-east.env.dev.service.s3creds]
@@ -233,6 +254,8 @@ url = "https://logingestor2.us-east.philips-healthsuite.com"
 url = "https://logingestor2.sa1.hsdp.io"
 [region.apac3.env.prod.service.logging]
 url = "https://logingestor2.ap3.hsdp.io"
+[region.ca1.env.prod.service.logging]
+url = "https://logingestor2.ca1.hsdp.io"
 
 # Service LOGQUERY
 [region.eu-west.env.client-test.service.logquery]
@@ -247,6 +270,8 @@ url = "https://logquery.us-east.philips-healthsuite.com"
 url = "https://logquery.sa1.hsdp.io"
 [region.apac3.env.prod.service.logquery]
 url = "https://logquery.ap3.hsdp.io"
+[region.ca1.env.prod.service.logquery]
+url = "https://logquery.ca1.hsdp.io"
 
 # Service KIBANA
 [region.eu-west.env.client-test.service.kibana]
@@ -263,6 +288,8 @@ url = "https://kibana-client-test.sa1.hsdp.io"
 url = "https://kibana.sa1.hsdp.io"
 [region.apac3.env.prod.service.kibana]
 url = "https://kibana.ap3.hsdp.io"
+[region.ca1.env.prod.service.kibana]
+url = "https://kibana.ca1.hsdp.io"
 
 # Service PKI
 [region.eu-west.env.client-test.service.pki]
@@ -273,3 +300,19 @@ url = "https://pki-client-test.us-east.philips-healthsuite.com"
 # Service MDM
 [region.eu-west.env.client-test.service.mdm]
 url = "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
+
+# Service VAULT-PROXY
+[region.us-east.service.vault-proxy]
+url = "https://vproxy.us-east.philips-healthsuite.com"
+[region.us-west.service.vault-proxy]
+url = "https://vproxy.cloud.phsdp.com"
+[region.eu-west.service.vault-proxy]
+url = "https://vproxy.eu-west.philips-healthsuite.com"
+[region.sa1.service.vault-proxy]
+url = "https://vproxy.sa1.hsdp.io"
+[region.apac3.service.vault-proxy]
+url = "https://vproxy.ap3.hsdp.io"
+[region.cn1.service.vault-proxy]
+url = "https://vproxy.cn1.philips-healthsuite.com.cn"
+[region.ca1.service.vault-proxy]
+url = "https://vproxy.ca1.hsdp.io"
