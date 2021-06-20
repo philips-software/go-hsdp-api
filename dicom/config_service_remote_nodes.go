@@ -15,12 +15,18 @@ type NetworkConnection struct {
 	IPAddress        string `json:"ipAddress"`
 	DisableIPv6      bool   `json:"disableIpv6"`
 	AdvancedSettings struct {
-		PDULength              int `json:"pduLength"`
-		ArtimTimeOut           int `json:"artimTimeOut"`
-		AssociationIdleTimeOut int `json:"associationIdleTimeOut"`
+		PDULength                     int             `json:"pduLength"`
+		ArtimTimeOut                  int             `json:"artimTimeOut"`
+		AssociationIdleTimeOut        int             `json:"associationIdleTimeOut"`
+		CertificateInfo               CertificateInfo `json:"certificateInfo"`
+		AuthenticateClientCertificate bool            `json:"authenticateClientCertificate"`
 	} `json:"advancedSettings"`
 	NetworkTimeout int  `json:"networkTimeout"`
 	IsSecure       bool `json:"isSecure"`
+}
+
+type CertificateInfo struct {
+	ID string `json:"id"`
 }
 
 // RemoteNode

@@ -13,12 +13,6 @@ type AdvancedSettings struct {
 	AssociationIdleTimeout int `json:"associationIdleTimeout"`
 }
 
-// UnsecuredNetworkConnection
-type UnsecuredNetworkConnection struct {
-	Port             int              `json:"port"`
-	AdvancedSettings AdvancedSettings `json:"advancedSettings"`
-}
-
 // ApplicationEntity
 type ApplicationEntity struct {
 	AllowAny           bool   `json:"allowAny"`
@@ -31,12 +25,12 @@ type ApplicationEntity struct {
 
 // SCPConfig
 type SCPConfig struct {
-	ID                        string                     `json:"id,omitempty"`
-	Title                     string                     `json:"title"`
-	Description               string                     `json:"description,omitempty"`
-	UnSecureNetworkConnection UnsecuredNetworkConnection `json:"unSecureNetworkConnection"`
-	SecureNetworkConnection   json.RawMessage            `json:"secureNetworkConnection"`
-	ApplicationEntities       []ApplicationEntity        `json:"applicationEntities"`
+	ID                        string              `json:"id,omitempty"`
+	Title                     string              `json:"title"`
+	Description               string              `json:"description,omitempty"`
+	UnSecureNetworkConnection NetworkConnection   `json:"unSecureNetworkConnection"`
+	SecureNetworkConnection   NetworkConnection   `json:"secureNetworkConnection"`
+	ApplicationEntities       []ApplicationEntity `json:"applicationEntities"`
 	// TODO: TransferCapability
 }
 
