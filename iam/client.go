@@ -541,9 +541,11 @@ func String(v string) *string {
 // ErrorResponse represents an IAM errors response
 // containing a code and a human readable message
 type ErrorResponse struct {
-	Response *http.Response `json:"-"`
-	Code     string         `json:"responseCode"`
-	Message  string         `json:"responseMessage"`
+	Response         *http.Response `json:"-"`
+	Code             string         `json:"responseCode,omitempty"`
+	Message          string         `json:"responseMessage,omitempty"`
+	ErrorString      string         `json:"error,omitempty"`
+	ErrorDescription string         `json:"error_description,omitempty"`
 }
 
 func (e *ErrorResponse) Error() string {
@@ -561,14 +563,15 @@ func checkResponse(r *http.Response) error {
 	errorResponse := &ErrorResponse{Response: r}
 	data, err := ioutil.ReadAll(r.Body)
 	if err == nil && data != nil {
+		if err := json.Unmarshal(data, errorResponse); err == nil {
+			return errorResponse
+		}
 		var raw interface{}
 		if err := json.Unmarshal(data, &raw); err != nil {
 			errorResponse.Message = "failed to parse unknown error format"
 		}
-
 		errorResponse.Message = parseError(raw)
 	}
-
 	return errorResponse
 }
 
