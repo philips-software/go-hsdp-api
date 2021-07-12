@@ -40,7 +40,7 @@ func (s *StudyService) CreateStudy(study Study) (*Study, *Response, error) {
 	resp, err := s.client.do(req, &createdStudy)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = fmt.Errorf("CreateSubscriber: %w", ErrEmptyResult)
+			err = fmt.Errorf("CreateStudy: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
