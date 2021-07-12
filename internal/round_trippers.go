@@ -17,7 +17,7 @@ type filter struct {
 
 var filterList = []filter{
 	{regexp.MustCompile(`Authorization: (.*)\n`), "Authorization: [sensitive]\n"},
-	{regexp.MustCompile(`password=\w+`), "password=sensitive"},
+	{regexp.MustCompile(`password=[\w%]+`), "password=sensitive"},
 	{regexp.MustCompile(`"refresh_token":"[^"]+"`), `"refresh_token":"[sensitive]"`},
 	{regexp.MustCompile(`"access_token":"[^"]+"`), `"access_token":"[sensitive]"`},
 	{regexp.MustCompile(`"id_token":"[^"]+"`), `"id_token":"[sensitive]"`},
