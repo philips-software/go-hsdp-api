@@ -144,7 +144,7 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 	if err != nil {
 		return err
 	}
-	parts := strings.Split(c.cdlURL.Path, "/")
+	parts := strings.Split(c.cdlStoreURL.Path, "/")
 	if len(parts) == 0 {
 		return ErrCDLURLCannotBeEmpty
 	}
