@@ -33,7 +33,7 @@ type GetOptions struct {
 }
 
 func (s *StudyService) path(components ...string) string {
-	return fmt.Sprintf("%s", path.Join(components...))
+	return fmt.Sprintf("/%s", path.Join(components...))
 }
 
 func (s *StudyService) CreateStudy(study Study) (*Study, *Response, error) {
