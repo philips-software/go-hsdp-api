@@ -96,6 +96,14 @@ func (c *Client) Close() {
 	}
 }
 
+// GetCDLURL returns the base CDL Store base URL as configured
+func (c *Client) GetCDLURL() string {
+	if c.cdlURL == nil {
+		return ""
+	}
+	return c.cdlURL.String()
+}
+
 // SetCDLURL sets the Notification URL for API requests
 func (c *Client) SetCDLURL(urlStr string) error {
 	if urlStr == "" {
@@ -108,6 +116,36 @@ func (c *Client) SetCDLURL(urlStr string) error {
 	var err error
 	c.cdlURL, err = url.Parse(urlStr)
 	return err
+}
+
+// GetEndpointURL returns the CDL Store URL including the tenant ID
+func (c *Client) GetEndpointURL() string {
+	return c.GetCDLURL() + c.config.OrganizationID
+}
+
+// SetEndpointURL sets the CDL endpoint URL for API requests to a custom endpoint. urlStr
+// should always be specified with a trailing slash.
+func (c *Client) SetEndpointURL(urlStr string) error {
+	if urlStr == "" {
+		return ErrCDLURLCannotBeEmpty
+	}
+	// Make sure the given URL end with a slash
+	if !strings.HasSuffix(urlStr, "/") {
+		urlStr += "/"
+	}
+	var err error
+	c.cdlURL, err = url.Parse(urlStr)
+	if err != nil {
+		return err
+	}
+	parts := strings.Split(c.cdlURL.Path, "/")
+	if len(parts) == 0 {
+		return ErrCDLURLCannotBeEmpty
+	}
+	c.config.OrganizationID = parts[len(parts)-1]
+	newParts := parts[:len(parts)-1]
+	c.cdlURL.Path = strings.Join(newParts, "/")
+	return nil
 }
 
 func (c *Client) newCDLRequest(method, path string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
