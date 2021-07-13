@@ -75,7 +75,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 
-	c.Study = &StudyService{client: c, validate: validator.New()}
+	c.Study = &StudyService{client: c, validate: validator.New(), config: config}
 
 	return c, nil
 }
