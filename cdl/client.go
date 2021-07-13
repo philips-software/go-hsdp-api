@@ -140,7 +140,7 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 		urlStr += "/"
 	}
 	var err error
-	c.cdlURL, err = url.Parse(urlStr)
+	c.cdlStoreURL, err = url.Parse(urlStr)
 	if err != nil {
 		return err
 	}
@@ -150,7 +150,7 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 	}
 	c.config.OrganizationID = parts[len(parts)-1]
 	newParts := parts[:len(parts)-1]
-	c.cdlURL.Path = strings.Join(newParts, "/")
+	c.cdlStoreURL.Path = strings.Join(newParts, "/")
 	return nil
 }
 
