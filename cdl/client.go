@@ -33,6 +33,7 @@ type Config struct {
 	Environment    string
 	OrganizationID string `validate:"required"`
 	CDLURL         string
+	CDLStore       string
 	DebugLog       string
 	Retry          int
 }
@@ -45,6 +46,8 @@ type Client struct {
 	config *Config
 
 	cdlURL *url.URL
+
+	cdlStoreURL *url.URL
 
 	// User agent used when communicating with the HSDP Notification API
 	UserAgent string
@@ -64,8 +67,11 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	doAutoconf(config)
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
-
-	if err := c.SetCDLURL(config.CDLURL); err != nil {
+	cdlStore := config.CDLStore
+	if cdlStore == "" {
+		cdlStore = config.CDLURL + "/store/cdl/"
+	}
+	if err := c.SetCDLStoreURL(cdlStore); err != nil {
 		return nil, err
 	}
 
@@ -148,10 +154,33 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 	return nil
 }
 
+// GetCDLStoreURL returns the base CDL Store base URL as configured
+func (c *Client) GetCDLStoreURL() string {
+	if c.cdlStoreURL == nil {
+		return ""
+	}
+	return c.cdlStoreURL.String()
+}
+
+// SetCDLStoreURL sets the CDL store URL for API requests to a custom endpoint. urlStr
+// should always be specified with a trailing slash.
+func (c *Client) SetCDLStoreURL(urlStr string) error {
+	if urlStr == "" {
+		return ErrCDLURLCannotBeEmpty
+	}
+	// Make sure the given URL end with a slash
+	if !strings.HasSuffix(urlStr, "/") {
+		urlStr += "/"
+	}
+	var err error
+	c.cdlStoreURL, err = url.Parse(urlStr)
+	return err
+}
+
 func (c *Client) newCDLRequest(method, path string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
-	u := *c.cdlURL
+	u := *c.cdlStoreURL
 	// Set the encoded opaque data
-	u.Opaque = c.cdlURL.Path + path
+	u.Opaque = c.cdlStoreURL.Path + path
 
 	if opt != nil {
 		q, err := query.Values(opt)
