@@ -15,12 +15,14 @@ type AdvancedSettings struct {
 
 // ApplicationEntity
 type ApplicationEntity struct {
-	AllowAny           bool   `json:"allowAny"`
-	AeTitle            string `json:"aeTitle"`
-	OrganizationID     string `json:"organizationId"`
-	AdditionalSettings struct {
-		ServiceTimeout int `json:"serviceTimeout"`
-	} `json:"additionalSettings"`
+	AllowAny           bool               `json:"allowAny"`
+	AeTitle            string             `json:"aeTitle"`
+	OrganizationID     string             `json:"organizationId"`
+	AdditionalSettings AdditionalSettings `json:"additionalSettings"`
+}
+
+type AdditionalSettings struct {
+	ServiceTimeout int `json:"serviceTimeout"`
 }
 
 // SCPConfig
