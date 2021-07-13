@@ -13,10 +13,12 @@ type Period struct {
 }
 
 type Study struct {
-	Title       string `json:"title" validate:"required"`
-	Description string `json:"description,omitempty"`
-	StudyOwner  string `json:"studyOwner" validate:"required"`
-	Period      Period `json:"period" validate:"required"`
+	ID           string `json:"id,omitempty"`
+	Title        string `json:"title" validate:"required"`
+	Description  string `json:"description,omitempty"`
+	Organization string `json:"organization,omitempty"`
+	StudyOwner   string `json:"studyOwner" validate:"required"`
+	Period       Period `json:"period" validate:"required"`
 }
 
 type StudyService struct {
