@@ -126,7 +126,7 @@ func (c *Client) SetCDLURL(urlStr string) error {
 
 // GetEndpointURL returns the CDL Store URL including the tenant ID
 func (c *Client) GetEndpointURL() string {
-	return c.GetCDLURL() + c.config.OrganizationID
+	return c.GetCDLStoreURL() + c.config.OrganizationID
 }
 
 // SetEndpointURL sets the CDL endpoint URL for API requests to a custom endpoint. urlStr
