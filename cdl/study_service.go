@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"path"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -31,8 +32,8 @@ type StudyService struct {
 type GetOptions struct {
 }
 
-func (s *StudyService) path(remainder string) string {
-	return fmt.Sprintf("store/cdl/%s/%s", s.config.OrganizationID, remainder)
+func (s *StudyService) path(components ...string) string {
+	return fmt.Sprintf("store/cdl/%s/%s", s.config.OrganizationID, path.Join(components...))
 }
 
 func (s *StudyService) CreateStudy(study Study) (*Study, *Response, error) {
@@ -54,6 +55,42 @@ func (s *StudyService) CreateStudy(study Study) (*Study, *Response, error) {
 		return nil, resp, err
 	}
 	return &createdStudy, resp, nil
+}
+
+func (s *StudyService) GetStudyByID(id string) (*Study, *Response, error) {
+	req, err := s.client.newCDLRequest("GET", s.path("Study", id), nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Api-Version", "2")
+
+	var foundStudy Study
+	resp, err := s.client.do(req, &foundStudy)
+	if (err != nil && err != io.EOF) || resp == nil {
+		if resp == nil && err != nil {
+			err = fmt.Errorf("GetStudyByID: %w", ErrEmptyResult)
+		}
+		return nil, resp, err
+	}
+	return &foundStudy, resp, nil
+}
+
+func (s *StudyService) UpdateStudy(study Study) (*Study, *Response, error) {
+	req, err := s.client.newCDLRequest("PUT", s.path("Study", study.ID), study, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Api-Version", "2")
+
+	var updated Study
+	resp, err := s.client.do(req, &updated)
+	if (err != nil && err != io.EOF) || resp == nil {
+		if resp == nil && err != nil {
+			err = fmt.Errorf("UpdateStudy: %w", ErrEmptyResult)
+		}
+		return nil, resp, err
+	}
+	return &updated, resp, nil
 }
 
 func (s *StudyService) GetStudies(opt *GetOptions, options ...OptionFunc) ([]Study, *Response, error) {
