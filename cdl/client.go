@@ -69,7 +69,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
 	cdlStore := config.CDLStore
 	if cdlStore == "" {
-		cdlStore = config.CDLURL + "/store/cdl/" + config.OrganizationID
+		cdlStore = config.CDLURL + "/store/cdl/" + c.config.OrganizationID
 	}
 	if err := c.SetCDLStoreURL(cdlStore); err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func (c *Client) SetCDLURL(urlStr string) error {
 
 // GetEndpointURL returns the CDL Store URL including the tenant ID
 func (c *Client) GetEndpointURL() string {
-	return c.GetCDLStoreURL() + c.config.OrganizationID
+	return c.GetCDLStoreURL()
 }
 
 // SetEndpointURL sets the CDL endpoint URL for API requests to a custom endpoint. urlStr
