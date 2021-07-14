@@ -69,7 +69,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
 	cdlStore := config.CDLStore
 	if cdlStore == "" {
-		cdlStore = config.CDLURL + "/store/cdl/"
+		cdlStore = config.CDLURL + "/store/cdl/" + config.OrganizationID
 	}
 	if err := c.SetCDLStoreURL(cdlStore); err != nil {
 		return nil, err
@@ -150,7 +150,7 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 	}
 	c.config.OrganizationID = parts[len(parts)-1]
 	newParts := parts[:len(parts)-1]
-	c.cdlStoreURL.Path = strings.Join(newParts, "/")
+	c.cdlStoreURL.Path = strings.Join(newParts, "/") + "/"
 	return nil
 }
 
