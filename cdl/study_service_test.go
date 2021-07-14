@@ -28,7 +28,7 @@ func TestResearchStudiesCRD(t *testing.T) {
 	muxCDL.HandleFunc("/store/cdl/"+cdlTenantID+"/Study/"+studyID, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
-		case "GET":
+		case "GET", "PUT":
 			w.WriteHeader(http.StatusOK)
 			io.WriteString(w, `{
   "id": "`+studyID+`",
@@ -122,6 +122,18 @@ func TestResearchStudiesCRD(t *testing.T) {
 	assert.Equal(t, created.ID, studyID)
 
 	item, resp, err := cdlClient.Study.GetStudyByID(studyID)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, item) {
+		return
+	}
+	assert.Equal(t, studyID, item.ID)
+
+	item, resp, err = cdlClient.Study.UpdateStudy(*item)
 	if !assert.Nil(t, err) {
 		return
 	}
