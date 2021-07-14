@@ -10,25 +10,25 @@ import (
 	_ "os"
 	"testing"
 
+	"github.com/philips-software/go-hsdp-api/cdl"
 	"github.com/philips-software/go-hsdp-api/iam"
-	"github.com/philips-software/go-hsdp-api/notification"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	muxIAM             *http.ServeMux
-	serverIAM          *httptest.Server
-	muxIDM             *http.ServeMux
-	serverIDM          *httptest.Server
-	muxNotification    *http.ServeMux
-	serverNotification *httptest.Server
+	muxIAM    *http.ServeMux
+	serverIAM *httptest.Server
+	muxIDM    *http.ServeMux
+	serverIDM *httptest.Server
+	muxCDL    *http.ServeMux
+	serverCDL *httptest.Server
 
-	iamClient          *iam.Client
-	notificationClient *notification.Client
-	notificationOrgID  = "48a0183d-a588-41c2-9979-737d15e9e860"
-	userUUID           = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
-	token              string
-	refreshToken       string
+	iamClient    *iam.Client
+	cdlClient    *cdl.Client
+	cdlTenantID  = "48a0183d-a588-41c2-9979-737d15e9e860"
+	userUUID     = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
+	token        string
+	refreshToken string
 )
 
 func setup(t *testing.T) func() {
@@ -36,8 +36,8 @@ func setup(t *testing.T) func() {
 	serverIAM = httptest.NewServer(muxIAM)
 	muxIDM = http.NewServeMux()
 	serverIDM = httptest.NewServer(muxIDM)
-	muxNotification = http.NewServeMux()
-	serverNotification = httptest.NewServer(muxNotification)
+	muxCDL = http.NewServeMux()
+	serverCDL = httptest.NewServer(muxCDL)
 
 	var err error
 	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
@@ -89,10 +89,10 @@ func setup(t *testing.T) func() {
   "sub": "`+userUUID+`",
   "iss": "https://iam-client-test.us-east.philips-healthsuite.com/oauth2/access_token",
   "organizations": {
-    "managingOrganization": "`+notificationOrgID+`",
+    "managingOrganization": "`+cdlTenantID+`",
     "organizationList": [
       {
-        "organizationId": "`+notificationOrgID+`",
+        "organizationId": "`+cdlTenantID+`",
         "permissions": [
           "USER.READ",
           "GROUP.WRITE",
@@ -133,15 +133,16 @@ func setup(t *testing.T) func() {
 	err = iamClient.Login("username", "password")
 	assert.Nil(t, err)
 
-	notificationClient, err = notification.NewClient(iamClient, &notification.Config{
-		NotificationURL: serverNotification.URL,
+	cdlClient, err = cdl.NewClient(iamClient, &cdl.Config{
+		CDLURL:         serverCDL.URL,
+		OrganizationID: cdlTenantID,
 	})
 	assert.Nilf(t, err, "failed to create notificationClient: %v", err)
 
 	return func() {
 		serverIAM.Close()
 		serverIDM.Close()
-		serverNotification.Close()
+		serverCDL.Close()
 	}
 }
 
@@ -167,15 +168,15 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 
-	notificationClient, err = notification.NewClient(iamClient, &notification.Config{
-		NotificationURL: serverNotification.URL,
-		DebugLog:        tmpfile.Name(),
+	cdlClient, err = cdl.NewClient(iamClient, &cdl.Config{
+		CDLStore: serverCDL.URL,
+		DebugLog: tmpfile.Name(),
 	})
 	if !assert.Nil(t, err) {
 		return
 	}
 
-	defer notificationClient.Close()
+	defer cdlClient.Close()
 	defer func() {
 		_ = os.Remove(tmpfile.Name())
 	}() // clean up
@@ -185,7 +186,7 @@ func TestDebug(t *testing.T) {
 		return
 	}
 
-	_, _, _ = notificationClient.Topic.GetTopics(&notification.GetOptions{})
+	_, _, _ = cdlClient.Study.GetStudies(&cdl.GetOptions{})
 
 	fi, err := tmpfile.Stat()
 	assert.Nil(t, err)
