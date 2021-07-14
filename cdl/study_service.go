@@ -1,6 +1,7 @@
 package cdl
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -123,4 +124,55 @@ func (s *StudyService) GetStudies(opt *GetOptions, options ...OptionFunc) ([]Stu
 		}
 	}
 	return studies, resp, err
+}
+
+func (s *StudyService) GetPermissions(study Study, opt *GetOptions, options ...OptionFunc) (RoleAssignmentResult, *Response, error) {
+	req, err := s.client.newCDLRequest("GET", s.path("Study", study.ID, "Permission"), opt, options...)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Api-Version", "2")
+
+	var bundleResponse RoleAssignmentResult
+
+	resp, err := s.client.do(req, &bundleResponse)
+	if err != nil {
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
+			return nil, resp, ErrEmptyResult
+		}
+		return nil, resp, err
+	}
+	return bundleResponse, resp, err
+}
+
+func (s *StudyService) GrantPermission(study Study, request RoleRequest, options ...OptionFunc) (bool, *Response, error) {
+	req, err := s.client.newCDLRequest("POST", s.path("Study", study.ID, "Permission", "$grant"), request, options...)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("Api-Version", "2")
+
+	var bundleResponse bytes.Buffer
+
+	resp, err := s.client.do(req, &bundleResponse)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return false, resp, nil
+	}
+	return true, resp, nil
+}
+
+func (s *StudyService) RevokePermission(study Study, request RoleRequest, options ...OptionFunc) (bool, *Response, error) {
+	req, err := s.client.newCDLRequest("POST", s.path("Study", study.ID, "Permission", "$revoke"), request, options...)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("Api-Version", "2")
+
+	var bundleResponse bytes.Buffer
+
+	resp, err := s.client.do(req, &bundleResponse)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return false, resp, nil
+	}
+	return true, resp, nil
 }
