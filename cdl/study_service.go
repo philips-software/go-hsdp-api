@@ -1,12 +1,14 @@
 package cdl
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"path"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 type Period struct {
@@ -95,8 +97,6 @@ func (s *StudyService) UpdateStudy(study Study) (*Study, *Response, error) {
 }
 
 func (s *StudyService) GetStudies(opt *GetOptions, options ...OptionFunc) ([]Study, *Response, error) {
-	var studies []Study
-
 	req, err := s.client.newCDLRequest("GET", s.path("Study"), opt, options...)
 	if err != nil {
 		return nil, nil, err
@@ -104,10 +104,9 @@ func (s *StudyService) GetStudies(opt *GetOptions, options ...OptionFunc) ([]Stu
 	req.Header.Set("Api-Version", "3")
 
 	var bundleResponse struct {
-		ResourceType string  `json:"resourceType,omitempty"`
-		Type         string  `json:"type,omitempty"`
-		Total        int     `json:"total"`
-		Entry        []Study `json:"entry"`
+		ResourceType string                 `json:"resourceType,omitempty"`
+		Type         string                 `json:"type,omitempty"`
+		Entry        []internal.BundleEntry `json:"entry"`
 	}
 	resp, err := s.client.do(req, &bundleResponse)
 	if err != nil {
@@ -116,11 +115,12 @@ func (s *StudyService) GetStudies(opt *GetOptions, options ...OptionFunc) ([]Stu
 		}
 		return nil, resp, err
 	}
-	if bundleResponse.Total == 0 {
-		return studies, resp, ErrEmptyResult
-	}
+	var studies []Study
 	for _, e := range bundleResponse.Entry {
-		studies = append(studies, e)
+		var study Study
+		if err := json.Unmarshal(e.Resource, &study); err == nil {
+			studies = append(studies, study)
+		}
 	}
 	return studies, resp, err
 }
