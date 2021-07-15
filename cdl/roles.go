@@ -23,7 +23,7 @@ type RoleAssignment struct {
 
 type RoleAssignmentResult []RoleAssignment
 
-func (r RoleAssignmentResult) Role(userUUID string) []string {
+func (r RoleAssignmentResult) Roles(userUUID string) []string {
 	for _, role := range r {
 		if role.IAMUserUUID == userUUID {
 			var roles []string
