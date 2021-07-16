@@ -132,6 +132,7 @@ func (s *StudyService) GetPermissions(study Study, opt *GetOptions, options ...O
 		return nil, nil, err
 	}
 	req.Header.Set("Api-Version", "2")
+	req.Header.Set("Content-Type", "application/json") // To prevent HTTP 415
 
 	var bundleResponse RoleAssignmentResult
 
