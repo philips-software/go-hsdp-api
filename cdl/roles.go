@@ -35,3 +35,17 @@ func (r RoleAssignmentResult) Roles(userUUID string) []string {
 	}
 	return []string{}
 }
+
+// Equal compares role requests
+func (r RoleRequest) Equal(other RoleRequest) bool {
+	if !r.EqualEnough(other) {
+		return false
+	}
+	return r.Email == other.Email && r.InstituteID == other.InstituteID
+}
+
+// EqualEnough returns true if user and role match up
+func (r RoleRequest) EqualEnough(other RoleRequest) bool {
+	// We ignore instituteID and email in this comparison
+	return r.Role == other.Role && r.IAMUserUUID == other.IAMUserUUID
+}
