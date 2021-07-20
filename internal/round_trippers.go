@@ -24,6 +24,7 @@ var filterList = []filter{
 	{regexp.MustCompile(`"token":"[^"]+"`), `"token":"[sensitive]"`},
 	{regexp.MustCompile(`token=\w+`), `token=sensitive`},
 	{regexp.MustCompile(`id_token_hint=\w+`), `id_token_hint=sensitive`},
+	{regexp.MustCompile(`assertion=[\w%.-]+`), `assertion=sensitive`},
 }
 
 type HeaderRoundTripper struct {
