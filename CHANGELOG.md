@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.41.1
+- Security: migrate to github.com/golang-jwt/jwt
+
 ## v0.41.0
 - Preliminary support for Clinical Data Lake (CDL) Resource studies
 
