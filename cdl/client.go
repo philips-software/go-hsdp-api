@@ -55,7 +55,8 @@ type Client struct {
 	debugFile *os.File
 	validate  *validator.Validate
 
-	Study *StudyService
+	Study              *StudyService
+	DataTypeDefinition *DatatypeDefinitionService
 }
 
 // NewClient returns a new HSDP CDL API client. A configured IAM client
@@ -76,7 +77,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	}
 
 	c.Study = &StudyService{client: c, validate: validator.New(), config: config}
-
+	c.DataTypeDefinition = &DatatypeDefinitionService{client: c, validate: validator.New(), config: config}
 	return c, nil
 }
 
@@ -229,7 +230,6 @@ func (c *Client) newCDLRequest(method, path string, opt interface{}, options ...
 		if fn == nil {
 			continue
 		}
-
 		if err := fn(req); err != nil {
 			return nil, err
 		}
