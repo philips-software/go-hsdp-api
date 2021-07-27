@@ -1,6 +1,7 @@
 package cdl
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"io"
@@ -9,14 +10,14 @@ import (
 )
 
 type DataTypeDefinition struct {
-	ID string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	JsonSchema interface{} `json:"jsonSchema,omitempty"`
-	CreatedOn string `json:"createdOn,omitempty"`
-	CreatedBy string `json:"createdBy,omitempty"`
-	UpdatedOn string `json:"updatedOn,omitempty"`
-	UpdatedBy string `json:"updatedBy,omitempty"`
+	ID          string          `json:"id,omitempty"`
+	Name        string          `json:"name,omitempty"`
+	Description string          `json:"description,omitempty"`
+	JsonSchema  json.RawMessage `json:"jsonSchema,omitempty"`
+	CreatedOn   string          `json:"createdOn,omitempty"`
+	CreatedBy   string          `json:"createdBy,omitempty"`
+	UpdatedOn   string          `json:"updatedOn,omitempty"`
+	UpdatedBy   string          `json:"updatedBy,omitempty"`
 }
 
 type DatatypeDefinitionService struct {
