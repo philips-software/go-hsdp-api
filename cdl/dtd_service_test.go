@@ -18,7 +18,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
 	updatedDtdDescription := "dtd for tf test updated"
 
 	dataTypeDefToCreate := cdl.DataTypeDefinition{
-		Name: "dtdtestingonetwothree",
+		Name:        "dtdtestingonetwothree",
 		Description: "dtd for tf test",
 	}
 

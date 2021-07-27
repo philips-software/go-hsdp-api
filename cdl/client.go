@@ -55,7 +55,7 @@ type Client struct {
 	debugFile *os.File
 	validate  *validator.Validate
 
-	Study *StudyService
+	Study              *StudyService
 	DataTypeDefinition *DatatypeDefinitionService
 }
 
