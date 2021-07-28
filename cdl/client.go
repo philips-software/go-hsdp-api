@@ -57,6 +57,7 @@ type Client struct {
 
 	Study              *StudyService
 	DataTypeDefinition *DatatypeDefinitionService
+	LabelDefinition *LabelDefinitionService
 }
 
 // NewClient returns a new HSDP CDL API client. A configured IAM client
@@ -78,7 +79,35 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 	c.Study = &StudyService{client: c, validate: validator.New(), config: config}
 	c.DataTypeDefinition = &DatatypeDefinitionService{client: c, validate: validator.New(), config: config}
+	c.LabelDefinition = &LabelDefinitionService{client: c, validate: validator.New(), config: config}
+	_ = c.LabelDefinition.validate.RegisterValidation("labelDefValidationHanlder", LabelDefValidationHanlder)
 	return c, nil
+}
+
+func LabelDefValidationHanlder(f1 validator.FieldLevel) bool {
+	switch f1.FieldName() {
+	case "LabelDefName":
+		return len(f1.Field().String()) > 0
+	case "Description":
+		return len(f1.Field().String()) != 0
+	case "LabelScope":
+		labelScope := f1.Field().Interface().(LabelScope)
+		return len(labelScope.Type) != 0
+	case "Label":
+		return len(f1.Field().String()) != 0
+	case "Type":
+		return len(f1.Field().String()) != 0
+	case "Labels":
+		labelsArray := f1.Field().Interface().([]LabelsArrayElem)
+		for _, i := range labelsArray {
+			if len(i.Label) == 0{
+				return false
+			}
+		}
+		return len(labelsArray) != 0
+	default:
+		return false
+	}
 }
 
 func doAutoconf(config *Config) {
