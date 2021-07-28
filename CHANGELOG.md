@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## v0.42.1
+- CDL: label definitions
+
 ## v0.42.0
 - Improve error messages by returning the request body as part of the error
 

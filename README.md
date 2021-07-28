@@ -54,6 +54,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [x] Clinical Data Lake (CDL) management
   - [x] Research Studies
   - [x] Data Type Definitions
+  - [x] Label Definitions
   
 
 ## Usage
