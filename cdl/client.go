@@ -268,7 +268,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	err = checkResponse(resp)
+	err = internal.CheckResponse(resp)
 	if err != nil {
 		// even though there was an error, we still return the response
 		// in case the caller wants to inspect it further
@@ -285,19 +285,4 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
-}
-
-// checkResponse checks the API response for errors, and returns them if present.
-func checkResponse(r *http.Response) error {
-	switch r.StatusCode {
-	case 200, 201, 202, 204, 207, 304:
-		return nil
-	case 400:
-		return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrBadRequest)
-	case 403:
-		return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrCDLForbidden)
-	case 409:
-		return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrConflict)
-	}
-	return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrNonHttp20xResponse)
 }

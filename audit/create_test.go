@@ -160,7 +160,7 @@ func TestBadRequest(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(operationOutcome))
+			_, _ = w.Write([]byte(operationOutcome))
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -169,14 +169,14 @@ func TestBadRequest(t *testing.T) {
 		Id: &dstu2dt.Id{Value: "someID"},
 	}
 	contained, resp, err := auditClient.CreateAuditEvent(event)
-	if !assert.Equal(t, audit.ErrBadRequest, err) {
+	if !assert.NotNil(t, err) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.NotNil(t, contained) {
+	if !assert.Equal(t, http.StatusBadRequest, resp.StatusCode) {
 		return
 	}
-
+	assert.Nil(t, contained)
 }

@@ -5,8 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/philips-software/go-hsdp-api/internal"
-	"golang.org/x/oauth2"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,6 +13,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/philips-software/go-hsdp-api/internal"
+	"golang.org/x/oauth2"
 
 	validator "github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
@@ -420,15 +421,6 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 			return response, err
 		}
 	}
-	err = checkResponse(resp)
+	err = internal.CheckResponse(resp)
 	return response, err
-}
-
-// CheckResponse checks the API response for errors, and returns them if present.
-func checkResponse(r *http.Response) error {
-	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
-		return nil
-	}
-	return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrNonHttp20xResponse)
 }

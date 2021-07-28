@@ -163,17 +163,8 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 			return response, fmt.Errorf("client.do decode body: %w", err)
 		}
 	}
-	err = checkResponse(resp)
+	err = internal.CheckResponse(resp)
 	return response, err
-}
-
-// checkResponse checks the API response for errors, and returns them if present.
-func checkResponse(r *http.Response) error {
-	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
-		return nil
-	}
-	return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrNonHttp20xResponse)
 }
 
 // newRequest creates an API request. A relative URL path can be provided in
