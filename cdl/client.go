@@ -80,11 +80,11 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.Study = &StudyService{client: c, validate: validator.New(), config: config}
 	c.DataTypeDefinition = &DatatypeDefinitionService{client: c, validate: validator.New(), config: config}
 	c.LabelDefinition = &LabelDefinitionService{client: c, validate: validator.New(), config: config}
-	_ = c.LabelDefinition.validate.RegisterValidation("labelDefValidationHanlder", LabelDefValidationHanlder)
+	_ = c.LabelDefinition.validate.RegisterValidation("labelDefValidationHandler", labelDefValidationHandler)
 	return c, nil
 }
 
-func LabelDefValidationHanlder(f1 validator.FieldLevel) bool {
+func labelDefValidationHandler(f1 validator.FieldLevel) bool {
 	switch f1.FieldName() {
 	case "LabelDefName":
 		return len(f1.Field().String()) > 0

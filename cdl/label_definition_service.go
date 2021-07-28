@@ -3,20 +3,21 @@ package cdl
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"io"
 	"net/http"
 	"path"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type LabelDefinition struct {
 	ID           string            `json:"id,omitempty"`
-	LabelDefName string            `json:"labelDefName" validate:"labelDefValidationHanlder"`
+	LabelDefName string            `json:"labelDefName" validate:"labelDefValidationHandler"`
 	Description  string            `json:"description,omitempty"`
-	LabelScope   LabelScope        `json:"labelScope" validate:"labelDefValidationHanlder"`
+	LabelScope   LabelScope        `json:"labelScope" validate:"labelDefValidationHandler"`
 	Label        string            `json:"label" validate:"required"`
 	Type         string            `json:"type" validate:"required"`
-	Labels       []LabelsArrayElem `json:"labels" validate:"labelDefValidationHanlder"`
+	Labels       []LabelsArrayElem `json:"labels" validate:"labelDefValidationHandler"`
 	CreatedBy    string            `json:"createdBy,omitempty"`
 	CreatedOn    string            `json:"createdOn,omitempty"`
 }
