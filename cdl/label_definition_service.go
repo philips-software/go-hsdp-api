@@ -10,15 +10,15 @@ import (
 )
 
 type LabelDefinition struct {
-	ID string `json:"id,omitempty"`
-	LabelDefName string `json:"labelDefName" validate:"labelDefValidationHanlder"`
-	Description string `json:"description,omitempty"`
-	LabelScope LabelScope `json:"labelScope" validate:"labelDefValidationHanlder"`
-	Label string `json:"label" validate:"required"`
-	Type string `json:"type" validate:"required"`
-	Labels []LabelsArrayElem `json:"labels" validate:"labelDefValidationHanlder"`
-	CreatedBy string `json:"createdBy,omitempty"`
-	CreatedOn string `json:"createdOn,omitempty"`
+	ID           string            `json:"id,omitempty"`
+	LabelDefName string            `json:"labelDefName" validate:"labelDefValidationHanlder"`
+	Description  string            `json:"description,omitempty"`
+	LabelScope   LabelScope        `json:"labelScope" validate:"labelDefValidationHanlder"`
+	Label        string            `json:"label" validate:"required"`
+	Type         string            `json:"type" validate:"required"`
+	Labels       []LabelsArrayElem `json:"labels" validate:"labelDefValidationHanlder"`
+	CreatedBy    string            `json:"createdBy,omitempty"`
+	CreatedOn    string            `json:"createdOn,omitempty"`
 }
 
 type BundleEntry struct {
@@ -27,11 +27,11 @@ type BundleEntry struct {
 }
 
 type LabelDefBundleResponse struct {
-	ResourceType string  			`json:"resourceType,omitempty"`
-	Id 			 string				`json:"id,omitempty"`
-	Type		 string				`json:"type,omitempty"`
-	Link		 json.RawMessage 	`json:"link,omitempty"`
-	Entry	 	 []BundleEntry 		`json:"entry,required"`
+	ResourceType string          `json:"resourceType,omitempty"`
+	Id           string          `json:"id,omitempty"`
+	Type         string          `json:"type,omitempty"`
+	Link         json.RawMessage `json:"link,omitempty"`
+	Entry        []BundleEntry   `json:"entry,required"`
 }
 
 type LabelScope struct {

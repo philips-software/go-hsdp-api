@@ -17,12 +17,12 @@ func TestLabelDefinitionCRD(t *testing.T) {
 
 	labelDef := cdl.LabelDefinition{
 		LabelDefName: "labeldefname",
-		Description: "desc",
+		Description:  "desc",
 		LabelScope: cdl.LabelScope{
 			Type: "DataObject.DICOM",
 		},
 		Label: "label4",
-		Type: "cdl/video-classification",
+		Type:  "cdl/video-classification",
 		Labels: []cdl.LabelsArrayElem{
 			cdl.LabelsArrayElem{
 				"labelarrayelem1",
@@ -32,8 +32,6 @@ func TestLabelDefinitionCRD(t *testing.T) {
 			},
 		},
 	}
-
-
 
 	muxCDL.HandleFunc("/store/cdl/"+cdlTenantID+"/Study/"+studyID+"/LabelDef", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -198,6 +196,5 @@ func TestLabelDefinitionCRD(t *testing.T) {
 	}
 	assert.Equal(t, labelDefID, items[0].ID)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-
 
 }

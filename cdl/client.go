@@ -57,7 +57,7 @@ type Client struct {
 
 	Study              *StudyService
 	DataTypeDefinition *DatatypeDefinitionService
-	LabelDefinition *LabelDefinitionService
+	LabelDefinition    *LabelDefinitionService
 }
 
 // NewClient returns a new HSDP CDL API client. A configured IAM client
@@ -100,7 +100,7 @@ func LabelDefValidationHanlder(f1 validator.FieldLevel) bool {
 	case "Labels":
 		labelsArray := f1.Field().Interface().([]LabelsArrayElem)
 		for _, i := range labelsArray {
-			if len(i.Label) == 0{
+			if len(i.Label) == 0 {
 				return false
 			}
 		}
