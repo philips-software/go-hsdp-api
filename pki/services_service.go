@@ -13,7 +13,6 @@ import (
 )
 
 type ServicesService struct {
-	orgID  string
 	client *Client
 
 	validate *validator.Validate

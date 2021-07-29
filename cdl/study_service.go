@@ -37,7 +37,7 @@ type GetOptions struct {
 }
 
 func (s *StudyService) path(components ...string) string {
-	return fmt.Sprintf("%s", path.Join(components...))
+	return path.Join(components...)
 }
 
 func (s *StudyService) CreateStudy(study Study) (*Study, *Response, error) {
@@ -157,7 +157,7 @@ func (s *StudyService) GrantPermission(study Study, request RoleRequest, options
 
 	resp, err := s.client.do(req, &bundleResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, resp, nil
+		return false, resp, err
 	}
 	return true, resp, nil
 }
@@ -173,7 +173,7 @@ func (s *StudyService) RevokePermission(study Study, request RoleRequest, option
 
 	resp, err := s.client.do(req, &bundleResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, resp, nil
+		return false, resp, err
 	}
 	return true, resp, nil
 }

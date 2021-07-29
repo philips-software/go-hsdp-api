@@ -9,25 +9,13 @@ import (
 
 	"github.com/philips-software/go-hsdp-api/audit"
 
-	"github.com/google/fhir/go/jsonformat"
-
-	"github.com/philips-software/go-hsdp-api/iam"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	muxAudit    *http.ServeMux
 	serverAudit *httptest.Server
-
-	iamClient    *iam.Client
-	auditClient  *audit.Client
-	cdrOrgID     = "48a0183d-a588-41c2-9979-737d15e9e860"
-	userUUID     = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
-	timeZone     = "UTC"
-	token        string
-	refreshToken string
-	ma           *jsonformat.Marshaller
-	um           *jsonformat.Unmarshaller
+	auditClient *audit.Client
 )
 
 func setup(t *testing.T) func() {
@@ -43,15 +31,6 @@ func setup(t *testing.T) func() {
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
 	}
-	ma, err = jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
-	if !assert.Nil(t, err) {
-		t.Fatalf("failed to create marshaller")
-	}
-	um, err = jsonformat.NewUnmarshaller("Europe/Amsterdam", jsonformat.STU3)
-	if !assert.Nil(t, err) {
-		t.Fatalf("failed to create unmarshaller")
-	}
-
 	return func() {
 		serverAudit.Close()
 	}
@@ -66,7 +45,7 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 
-	auditClient.CreateAuditEvent(nil)
+	_, _, _ = auditClient.CreateAuditEvent(nil)
 
 	defer auditClient.Close()
 	defer os.Remove(tmpfile.Name()) // clean up

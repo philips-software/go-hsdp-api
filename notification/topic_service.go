@@ -102,9 +102,7 @@ func (p *TopicService) GetTopics(opt *GetOptions, options ...OptionFunc) ([]Topi
 	if bundleResponse.Total == 0 {
 		return topics, resp, ErrEmptyResult
 	}
-	for _, e := range bundleResponse.Entry {
-		topics = append(topics, e)
-	}
+	topics = append(topics, bundleResponse.Entry...)
 	return topics, resp, err
 }
 

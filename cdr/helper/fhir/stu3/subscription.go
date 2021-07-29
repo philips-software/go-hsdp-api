@@ -124,8 +124,8 @@ func WithContact(system, value, use string) WithFunc {
 			sub.Contact = make([]*stu3dt.ContactPoint, 0)
 		}
 		rank := len(sub.Contact) + 1
-		useCode := stu3dt.ContactPointUseCode_HOME
-		useSystem := stu3dt.ContactPointSystemCode_EMAIL
+		useCode := stu3dt.ContactPointUseCode_INVALID_UNINITIALIZED
+		useSystem := stu3dt.ContactPointSystemCode_INVALID_UNINITIALIZED
 
 		switch use {
 		case "work":
@@ -138,8 +138,6 @@ func WithContact(system, value, use string) WithFunc {
 			useCode = stu3dt.ContactPointUseCode_OLD
 		case "temp":
 			useCode = stu3dt.ContactPointUseCode_TEMP
-		default:
-			useCode = stu3dt.ContactPointUseCode_INVALID_UNINITIALIZED
 		}
 		switch system {
 		case "email":
@@ -156,8 +154,6 @@ func WithContact(system, value, use string) WithFunc {
 			useSystem = stu3dt.ContactPointSystemCode_SMS
 		case "other":
 			useSystem = stu3dt.ContactPointSystemCode_OTHER
-		default:
-			useSystem = stu3dt.ContactPointSystemCode_INVALID_UNINITIALIZED
 		}
 		sub.Contact = append(sub.Contact, &stu3dt.ContactPoint{
 			Rank:   &stu3dt.PositiveInt{Value: uint32(rank)},

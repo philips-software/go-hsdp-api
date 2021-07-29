@@ -32,7 +32,7 @@ type LabelDefBundleResponse struct {
 	Id           string          `json:"id,omitempty"`
 	Type         string          `json:"type,omitempty"`
 	Link         json.RawMessage `json:"link,omitempty"`
-	Entry        []BundleEntry   `json:"entry,required"`
+	Entry        []BundleEntry   `json:"entry" validate:"required"`
 }
 
 type LabelScope struct {
@@ -50,7 +50,7 @@ type LabelDefinitionService struct {
 }
 
 func (l *LabelDefinitionService) path(components ...string) string {
-	return fmt.Sprintf("%s", path.Join(components...))
+	return path.Join(components...)
 }
 
 func (l *LabelDefinitionService) CreateLabelDefinition(studyId string, labelDef LabelDefinition) (*LabelDefinition, *Response, error) {

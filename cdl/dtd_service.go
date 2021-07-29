@@ -3,10 +3,11 @@ package cdl
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"io"
 	"net/http"
 	"path"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type DataTypeDefinition struct {
@@ -27,7 +28,7 @@ type DatatypeDefinitionService struct {
 }
 
 func (dtd *DatatypeDefinitionService) path(components ...string) string {
-	return fmt.Sprintf("%s", path.Join(components...))
+	return path.Join(components...)
 }
 
 func (dtd *DatatypeDefinitionService) GetDataTypeDefinitions(opt *GetOptions, options ...OptionFunc) ([]DataTypeDefinition, *Response, error) {

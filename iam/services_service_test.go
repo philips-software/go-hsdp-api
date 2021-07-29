@@ -104,6 +104,9 @@ func TestServicesCRUD(t *testing.T) {
 	assert.Equal(t, service.ID, foundService.ID)
 
 	services, resp, err := client.Services.GetServicesByApplicationID(applicationID)
+	if !assert.Nil(t, err) {
+		return
+	}
 	if !assert.NotNil(t, resp) {
 		return
 	}
@@ -247,13 +250,13 @@ H4N1gfoHxQbN34YNKoAzQbode9Xv1p9CAPi2v9VlNen2
 	r.ID = id
 
 	service, resp, err := client.Services.UpdateServiceCertificate(r, privateKey)
-	if ok := assert.Nil(t, err); !ok {
+	if !assert.Nil(t, err) {
 		return
 	}
-	if ok := assert.NotNil(t, resp); !ok {
+	if !assert.NotNil(t, resp) {
 		return
 	}
-	if ok := assert.NotNil(t, service); !ok {
+	if !assert.NotNil(t, service) {
 		return
 	}
 }
