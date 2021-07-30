@@ -103,12 +103,12 @@ func parsePrivateKey(privKey []byte) (key *rsa.PrivateKey, err error) {
 }
 
 func parsePublicKey(pubKey []byte) (key *rsa.PublicKey, err error) {
-	rsaBlock, rest := pem.Decode(pubKey)
+	rsaBlock, _ := pem.Decode(pubKey)
 	if rsaBlock == nil {
 		fixed := FormatBrokenPubkey(pubKey)
-		rsaBlock, rest = pem.Decode(fixed)
+		rsaBlock, _ = pem.Decode(fixed)
 		if rsaBlock == nil {
-			return nil, fmt.Errorf("error parsing after FormatBrokenPubkey: %s", string(rest))
+			return nil, fmt.Errorf("error parsing after FormatBrokenPubkey")
 		}
 	}
 	rsaKey, err := x509.ParsePKIXPublicKey(rsaBlock.Bytes)

@@ -1,11 +1,12 @@
 package cdl_test
 
 import (
-	"github.com/philips-software/go-hsdp-api/cdl"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/philips-software/go-hsdp-api/cdl"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLabelDefinitionCRD(t *testing.T) {
@@ -24,10 +25,10 @@ func TestLabelDefinitionCRD(t *testing.T) {
 		Label: "label4",
 		Type:  "cdl/video-classification",
 		Labels: []cdl.LabelsArrayElem{
-			cdl.LabelsArrayElem{
+			{
 				"labelarrayelem1",
 			},
-			cdl.LabelsArrayElem{
+			{
 				"labelarrayelem2",
 			},
 		},
@@ -38,7 +39,7 @@ func TestLabelDefinitionCRD(t *testing.T) {
 		switch r.Method {
 		case "POST":
 			w.WriteHeader(http.StatusCreated)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
     "id": "f23843d0-e654-4033-9a35-8b9c497eaa66",
     "labelDefName": "TF2",
     "description": "TF TEST",
@@ -70,7 +71,7 @@ func TestLabelDefinitionCRD(t *testing.T) {
 }`)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
     "resourceType": "Bundle",
     "id": "b6d0c8e6-6df4-42ae-a239-898e92c5814d",
     "type": "searchset",
@@ -123,7 +124,7 @@ func TestLabelDefinitionCRD(t *testing.T) {
 		switch r.Method {
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
       "id": "f23843d0-e654-4033-9a35-8b9c497eaa66",
       "resourceType": "LabelDef",
       "labelDefName": "TF1",

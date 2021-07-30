@@ -11,7 +11,6 @@ import (
 )
 
 type TenantService struct {
-	orgID  string
 	client *Client
 
 	validate *validator.Validate

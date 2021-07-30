@@ -85,9 +85,7 @@ func (p *ProducerService) GetProducers(opt *GetOptions, options ...OptionFunc) (
 	if bundleResponse.Total == 0 {
 		return producers, resp, ErrEmptyResult
 	}
-	for _, e := range bundleResponse.Entry {
-		producers = append(producers, e)
-	}
+	producers = append(producers, bundleResponse.Entry...)
 	return producers, resp, err
 }
 

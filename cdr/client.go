@@ -199,6 +199,14 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
+// TokenRefresh forces a refresh of the IAM access token
+func (c *Client) TokenRefresh() error {
+	if c.iamClient == nil {
+		return fmt.Errorf("invalid IAM client, cannot refresh token")
+	}
+	return c.iamClient.TokenRefresh()
+}
+
 // do executes a http request. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
@@ -210,7 +218,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	err = checkResponse(resp)
+	err = internal.CheckResponse(resp)
 	if err != nil {
 		// even though there was an error, we still return the response
 		// in case the caller wants to inspect it further
@@ -227,13 +235,4 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
-}
-
-// checkResponse checks the API response for errors, and returns them if present.
-func checkResponse(r *http.Response) error {
-	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
-		return nil
-	}
-	return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrNonHttp20xResponse)
 }

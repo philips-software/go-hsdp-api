@@ -72,9 +72,7 @@ func (p *SubscriberService) GetSubscribers(opt *GetOptions, options ...OptionFun
 	if bundleResponse.Total == 0 {
 		return subscribers, resp, ErrEmptyResult
 	}
-	for _, e := range bundleResponse.Entry {
-		subscribers = append(subscribers, e)
-	}
+	subscribers = append(subscribers, bundleResponse.Entry...)
 	return subscribers, resp, err
 }
 

@@ -2,9 +2,10 @@ package iam
 
 import (
 	"fmt"
-	validator "github.com/go-playground/validator/v10"
 	"net/http"
 	"strconv"
+
+	validator "github.com/go-playground/validator/v10"
 )
 
 const (
@@ -257,9 +258,7 @@ func (u *UsersService) GetAllUsers(opts *GetUserOptions, options ...OptionFunc) 
 		if err != nil {
 			return users, resp, err
 		}
-		for _, u := range userList.UserUUIDs {
-			users = append(users, u)
-		}
+		users = append(users, userList.UserUUIDs...)
 		if !userList.HasNextPage {
 			return users, resp, nil
 		}

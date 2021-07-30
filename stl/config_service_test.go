@@ -2,11 +2,12 @@ package stl_test
 
 import (
 	"context"
-	"github.com/philips-software/go-hsdp-api/stl"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/philips-software/go-hsdp-api/stl"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUpdateAppLoggingInputValidate(t *testing.T) {
@@ -75,6 +76,9 @@ func TestUpdateAppFirewallExceptions(t *testing.T) {
 			UDP: []int{},
 		},
 	})
+	if !assert.Nil(t, err) {
+		return
+	}
 	assert.Equal(t, 2, len(fw.TCP))
 	assert.Equal(t, 0, len(fw.UDP))
 	assert.Equal(t, 8080, fw.TCP[0])
@@ -209,6 +213,9 @@ func TestUpdateAppLogging(t *testing.T) {
 			RawConfig: "[OUTPUT]",
 		},
 	})
+	if !assert.Nil(t, err) {
+		return
+	}
 	assert.Equal(t, "[OUTPUT]", logging.RawConfig)
 }
 

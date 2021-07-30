@@ -7,8 +7,8 @@ release will receive security related patches.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.25.x  | :white_check_mark: |
-| < 0.25  | :x:                |
+| 0.41.x  | :white_check_mark: |
+| < 0.41  | :x:                |
 
 ## Reporting a Vulnerability
 

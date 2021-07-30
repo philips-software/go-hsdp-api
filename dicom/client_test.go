@@ -1,7 +1,6 @@
 package dicom_test
 
 import (
-	"github.com/philips-software/go-hsdp-api/dicom"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -9,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/google/fhir/go/jsonformat"
+	"github.com/philips-software/go-hsdp-api/dicom"
 
 	"github.com/philips-software/go-hsdp-api/iam"
 	"github.com/stretchr/testify/assert"
@@ -23,14 +22,10 @@ var (
 	muxDICOM    *http.ServeMux
 	serverDICOM *httptest.Server
 
-	iamClient    *iam.Client
-	dicomClient  *dicom.Client
-	cdrOrgID     = "48a0183d-a588-41c2-9979-737d15e9e860"
-	userUUID     = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
-	token        string
-	refreshToken string
-	ma           *jsonformat.Marshaller
-	um           *jsonformat.Unmarshaller
+	iamClient   *iam.Client
+	dicomClient *dicom.Client
+	cdrOrgID    = "48a0183d-a588-41c2-9979-737d15e9e860"
+	userUUID    = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
 )
 
 func setup(t *testing.T) func() {
@@ -42,8 +37,6 @@ func setup(t *testing.T) func() {
 	serverDICOM = httptest.NewServer(muxDICOM)
 
 	var err error
-	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
-	refreshToken = "31f1a449-ef8e-4bfc-a227-4f2353fde547"
 
 	iamClient, err = iam.NewClient(nil, &iam.Config{
 		OAuth2ClientID: "TestClient",
@@ -141,14 +134,6 @@ func setup(t *testing.T) func() {
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
 	}
-	ma, err = jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
-	if !assert.Nil(t, err) {
-		t.Fatalf("failed to create marshaller")
-	}
-	um, err = jsonformat.NewUnmarshaller("Europe/Amsterdam", jsonformat.STU3)
-	if !assert.Nil(t, err) {
-		t.Fatalf("failed to create unmarshaller")
-	}
 
 	return func() {
 		serverIAM.Close()
@@ -235,4 +220,32 @@ func TestGeneratedURLs(t *testing.T) {
 	assert.Equal(t, "https: //dss-qido-share-tst.foo.io", dicomClient.GetQIDOURL())
 	assert.Equal(t, "https: //dss-stow-share-tst.foo.io", dicomClient.GetSTOWURL())
 	assert.Equal(t, "https: //dss-wado-share-tst.foo.io", dicomClient.GetWADOURL())
+}
+
+func TestErrorResponse(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	muxDICOM.HandleFunc("/store/dicom/config/dicom/production/remoteNodes", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/fhir+json")
+		w.WriteHeader(http.StatusConflict)
+		_, _ = io.WriteString(w, `{"error":"something unexpected happened"}`)
+	})
+
+	_, resp, err := dicomClient.Config.CreateRemoteNode(dicom.RemoteNode{
+		Title: "Some Title here",
+		NetworkConnection: dicom.NetworkConnection{
+			Port:     31337,
+			HostName: "foo.com",
+		},
+		AETitle: "AE Title here",
+	}, nil)
+	if !assert.NotNil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusConflict, resp.StatusCode)
+	assert.Equal(t, err.Error(), `POST : StatusCode 409, Body: {"error":"something unexpected happened"}`)
 }

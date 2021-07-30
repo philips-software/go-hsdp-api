@@ -55,7 +55,7 @@ func TestProducersCRD(t *testing.T) {
 			_, _ = io.WriteString(w, string(resp))
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
   "resourceType": "Bundle",
   "type": "searchset",
   "total": 1,

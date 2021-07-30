@@ -3,11 +3,12 @@ package cdl_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/philips-software/go-hsdp-api/cdl"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/philips-software/go-hsdp-api/cdl"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDataTypeDefinitionCRD(t *testing.T) {
@@ -32,7 +33,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
 		switch r.Method {
 		case "POST":
 			w.WriteHeader(http.StatusCreated)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
         "id": "123aa456-ba82-485e-ac5d-014b4df33c4e",
         "name": "dtdtestingonetwothree",
         "description": "dtd for tf test",
@@ -46,7 +47,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
     }`)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `[{
+			_, _ = io.WriteString(w, `[{
         "id": "123aa456-ba82-485e-ac5d-014b4df33c4e",
         "name": "dtdtestingonetwothree",
         "description": "dtd for tf test",
@@ -68,7 +69,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
 		switch r.Method {
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
         "id": "123aa456-ba82-485e-ac5d-014b4df33c4e",
         "name": "dtdtestingonetwothree",
         "description": "dtd for tf test",
@@ -82,7 +83,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
     }`)
 		case "PUT":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
         "id": "123aa456-ba82-485e-ac5d-014b4df33c4e",
         "name": "dtdtestingonetwothree",
         "description": "dtd for tf test updated",

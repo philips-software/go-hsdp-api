@@ -185,7 +185,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	doErr := checkResponse(resp)
+	doErr := internal.CheckResponse(resp)
 
 	if v != nil {
 		defer resp.Body.Close() // Only close if we plan to read it
@@ -200,14 +200,4 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, doErr
-}
-
-func checkResponse(r *http.Response) error {
-	switch r.StatusCode {
-	case 200, 201, 202, 204, 304:
-		return nil
-	case 400:
-		return ErrBadRequest
-	}
-	return fmt.Errorf("%s %s: StatusCode %d: %w", r.Request.Method, r.Request.RequestURI, r.StatusCode, ErrNonHttp20xResponse)
 }

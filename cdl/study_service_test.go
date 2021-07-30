@@ -30,7 +30,7 @@ func TestResearchStudiesCRD(t *testing.T) {
 		switch r.Method {
 		case "GET", "PUT":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
   "id": "`+studyID+`",
   "title": "`+studyTitle+`",
   "description": "`+studyDescription+`",
@@ -74,7 +74,7 @@ func TestResearchStudiesCRD(t *testing.T) {
 			_, _ = io.WriteString(w, string(resp))
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
   "resourceType": "Bundle",
   "id": "38c0fc92-a083-412f-a04d-b0b5035e7d88",
   "type": "searchset",

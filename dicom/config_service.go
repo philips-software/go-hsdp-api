@@ -6,11 +6,10 @@ import (
 
 // ConfigService
 type ConfigService struct {
-	client   *Client
-	timeZone string
-	profile  string
-	ma       *jsonformat.Marshaller
-	um       *jsonformat.Unmarshaller
+	client  *Client
+	profile string
+	ma      *jsonformat.Marshaller
+	um      *jsonformat.Unmarshaller
 }
 
 // QueryOptions holds optional query options for requests
