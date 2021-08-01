@@ -153,6 +153,8 @@ func TestLabelDefinitionCRD(t *testing.T) {
       "createdOn": "2021-07-28T08:59:33.960+00:00"
     }
   }`)
+		case "DELETE":
+			w.WriteHeader(http.StatusNoContent)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -197,5 +199,14 @@ func TestLabelDefinitionCRD(t *testing.T) {
 	}
 	assert.Equal(t, labelDefID, items[0].ID)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	resp, err = cdlClient.LabelDefinition.DeleteLabelDefinitionById(studyID, labelDefID)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
 }

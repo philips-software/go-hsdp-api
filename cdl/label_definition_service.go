@@ -115,3 +115,20 @@ func (l *LabelDefinitionService) GetLabelDefinitionByID(studyId string, labelDef
 	}
 	return &labelDefinition, resp, nil
 }
+
+func (l *LabelDefinitionService) DeleteLabelDefinitionById(studyId string, labelDefId string) (*Response, error) {
+	req, err := l.client.newCDLRequest("DELETE", l.path("Study", studyId, "LabelDef", labelDefId), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Api-Version", "1")
+
+	resp, err := l.client.do(req, nil)
+	if (err != nil && err != io.EOF) || resp == nil {
+		if resp == nil && err != nil {
+			err = fmt.Errorf("deleteLabelDefinitionById: %w", ErrEmptyResult)
+		}
+		return resp, err
+	}
+	return resp, nil
+}
