@@ -55,6 +55,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Research Studies
   - [x] Data Type Definitions
   - [x] Label Definitions
+  - [x] Export Routes
   
 
 ## Usage
