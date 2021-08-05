@@ -19,12 +19,12 @@ func TestExportRouteCRD(t *testing.T) {
 		Description:     "description11",
 		DisplayName:     "DisplayName",
 		Source: cdl.Source{
-			CdlResearchStudy: cdl.ExportResearchStudySource{
+			CDLResearchStudy: cdl.ExportResearchStudySource{
 				Endpoint: "https://cicd-datalake.cloud.pcftest.com/store/cdl/1f5be763-f896-4883-80fa-5593cd69556d/Study/a1467792-ef81-11eb-8ac2-477a9e3b09aa",
 			},
 		},
 		Destination: cdl.Destination{
-			CdlResearchStudy: cdl.ExportResearchStudyDestination{
+			CDLResearchStudy: cdl.ExportResearchStudyDestination{
 				Endpoint: "https://cicd-datalake.cloud.pcftest.com/store/cdl/1f5be763-f896-4883-80fa-5593cd69556d/Study/5c8431e2-f4f1-11eb-bf8f-b799651c8a11",
 			},
 		},
@@ -165,7 +165,7 @@ func TestExportRouteCRD(t *testing.T) {
 	assert.Equal(t, exportRouteID, items[0].ID)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	resp, err = cdlClient.ExportRoute.DeleteExportRouteById(exportRouteID)
+	resp, err = cdlClient.ExportRoute.DeleteExportRouteByID(exportRouteID)
 	if !assert.Nil(t, err) {
 		return
 	}

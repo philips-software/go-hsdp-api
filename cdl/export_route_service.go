@@ -24,11 +24,11 @@ type ExportRoute struct {
 }
 
 type Source struct {
-	CdlResearchStudy ExportResearchStudySource `json:"cdlResearchStudy" validate:"required"`
+	CDLResearchStudy ExportResearchStudySource `json:"cdlResearchStudy" validate:"required"`
 }
 
 type Destination struct {
-	CdlResearchStudy ExportResearchStudyDestination `json:"cdlResearchStudy" validate:"required"`
+	CDLResearchStudy ExportResearchStudyDestination `json:"cdlResearchStudy" validate:"required"`
 }
 
 type ExportResearchStudySource struct {
@@ -82,7 +82,7 @@ type ExportRouteBundleEntry struct {
 
 type LinkElementType struct {
 	Relation string `json:"relation"`
-	Url      string `json:"url"`
+	URL      string `json:"url"`
 }
 
 type ExportRouteBundleResponse struct {
@@ -90,7 +90,7 @@ type ExportRouteBundleResponse struct {
 	Id           string                   `json:"id,omitempty"`
 	Type         string                   `json:"type,omitempty"`
 	Link         []LinkElementType        `json:"link,omitempty"`
-	Entry        []ExportRouteBundleEntry `json:"entry,required"`
+	Entry        []ExportRouteBundleEntry `json:"entry" validate:"required"`
 }
 
 func (exp *ExportRouteService) CreateExportRoute(exportRoute ExportRoute) (*ExportRoute, *Response, error) {
@@ -172,7 +172,7 @@ func (exp *ExportRouteService) GetExportRouteByID(exportRouteId string) (*Export
 	}
 }
 
-func (exp *ExportRouteService) DeleteExportRouteById(exportRouteId string) (*Response, error) {
+func (exp *ExportRouteService) DeleteExportRouteByID(exportRouteId string) (*Response, error) {
 	req, err := exp.client.newCDLRequest("DELETE", exp.path("ExportRoute", exportRouteId), nil, nil)
 	if err != nil {
 		return nil, err
@@ -182,7 +182,7 @@ func (exp *ExportRouteService) DeleteExportRouteById(exportRouteId string) (*Res
 	resp, err := exp.client.do(req, nil)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = fmt.Errorf("DeleteExportRouteById: %w", ErrEmptyResult)
+			err = fmt.Errorf("DeleteExportRouteByID: %w", ErrEmptyResult)
 		}
 		return resp, err
 	}
