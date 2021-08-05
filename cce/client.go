@@ -13,8 +13,8 @@ import (
 	"os"
 	"strings"
 
+        "github.com/philips-software/go-hsdp-api/internal"
 	"github.com/google/go-querystring/query"
-	"github.com/philips-software/go-hsdp-api/fhir"
 	"github.com/philips-software/go-hsdp-api/iam"
 )
 
@@ -99,6 +99,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	// IAM token
 	iamClient, err := iam.NewClient(config.client, &iam.Config{
 		IAMURL:   strings.TrimSuffix(c.Endpoints.TokenEndpoint, iamTokenPath),
+		IDMURL:   strings.TrimSuffix(c.Endpoints.TokenEndpoint, iamTokenPath),
 		Debug:    config.Debug,
 		DebugLog: config.DebugLog,
 	})
@@ -281,7 +282,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 
 	response := newResponse(resp)
 
-	err = fhir.CheckResponse(resp)
+	err = internal.CheckResponse(resp)
 	if err != nil {
 		// even though there was an error, we still return the response
 		// in case the caller wants to inspect it further
