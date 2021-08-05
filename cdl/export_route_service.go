@@ -55,7 +55,7 @@ type ExportLabel struct {
 }
 
 type ExportServiceAccount struct {
-	CdlServiceAccount ExportServiceAccountDetails `json:"cdlServiceAccount" validate:"required"`
+	CDLServiceAccount ExportServiceAccountDetails `json:"cdlServiceAccount" validate:"required"`
 }
 
 type ExportServiceAccountDetails struct {

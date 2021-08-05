@@ -29,7 +29,7 @@ func TestExportRouteCRD(t *testing.T) {
 			},
 		},
 		ServiceAccount: cdl.ExportServiceAccount{
-			CdlServiceAccount: cdl.ExportServiceAccountDetails{
+			CDLServiceAccount: cdl.ExportServiceAccountDetails{
 				ServiceId:           "eng_cdl_tenant_1_ser.eng__cdl__tenant__1__app.eng__cdl__tenant__1@eng__cdl__tenant__1.cdal.philips-healthsuite.com",
 				PrivateKey:          "-----BEGIN RSA PRIVATE KEY-----SERVICE_KEY-----END RSA PRIVATE KEY-----",
 				AccessTokenEndPoint: "https://iam-development.us-east.philips-healthsuite.com/oauth2/access_token",
