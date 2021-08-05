@@ -59,7 +59,7 @@ type ExportServiceAccount struct {
 }
 
 type ExportServiceAccountDetails struct {
-	ServiceId           string `json:"serviceId" validate:"required"`
+	ServiceID           string `json:"serviceId" validate:"required"`
 	PrivateKey          string `json:"privateKey" validate:"required"`
 	AccessTokenEndPoint string `json:"accessTokenEndPoint" validate:"required"`
 	TokenEndPoint       string `json:"tokenEndPoint" validate:"required"`
@@ -87,7 +87,7 @@ type LinkElementType struct {
 
 type ExportRouteBundleResponse struct {
 	ResourceType string                   `json:"resourceType,omitempty"`
-	Id           string                   `json:"id,omitempty"`
+	ID           string                   `json:"id,omitempty"`
 	Type         string                   `json:"type,omitempty"`
 	Link         []LinkElementType        `json:"link,omitempty"`
 	Entry        []ExportRouteBundleEntry `json:"entry" validate:"required"`
