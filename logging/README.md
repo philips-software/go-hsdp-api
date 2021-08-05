@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-        client, err := logging.NewClient(http.DefaultClient, logging.Config{
+        client, err := logging.NewClient(http.DefaultClient, &logging.Config{
                 SharedKey:    "YourSharedKeyHere=",
                 SharedSecret: "YourSharedSecretHere==",
                 BaseURL:      "https://logingestor-xx.host.com",
