@@ -43,7 +43,7 @@ func TestExportRouteCRD(t *testing.T) {
 		switch r.Method {
 		case "POST":
 			w.WriteHeader(http.StatusCreated)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
       "id": "1ee7eb94-3eab-4c1c-9a1c-7c5347ab538d",
       "resourceType": "ExportRoute",
       "name": "ExportTrial_for_demo74",
@@ -69,7 +69,7 @@ func TestExportRouteCRD(t *testing.T) {
 }`)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
-			io.WriteString(w, `{
+			_, _ = io.WriteString(w, `{
   "resourceType": "Bundle",
   "id": "b6d0c8e6-6df4-42ae-a239-898e92c5814d",
   "type": "searchset",
