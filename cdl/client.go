@@ -58,6 +58,7 @@ type Client struct {
 	Study              *StudyService
 	DataTypeDefinition *DatatypeDefinitionService
 	LabelDefinition    *LabelDefinitionService
+	ExportRoute        *ExportRouteService
 }
 
 // NewClient returns a new HSDP CDL API client. A configured IAM client
@@ -81,6 +82,8 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.DataTypeDefinition = &DatatypeDefinitionService{client: c, validate: validator.New(), config: config}
 	c.LabelDefinition = &LabelDefinitionService{client: c, validate: validator.New(), config: config}
 	_ = c.LabelDefinition.validate.RegisterValidation("labelDefValidationHandler", labelDefValidationHandler)
+
+	c.ExportRoute = &ExportRouteService{client: c, validate: validator.New(), config: config}
 	return c, nil
 }
 
