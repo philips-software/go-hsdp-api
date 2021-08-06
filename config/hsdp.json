@@ -153,6 +153,9 @@
       "env": {
         "client-test": {
           "service": {
+            "ai-inference": {
+              "url": "https://client-test-aiinference-service.eu-west.philips-healthsuite.com"
+            },
             "has": {
               "url": "https://has-client-test.eu-west.philips-healthsuite.com"
             },
@@ -187,6 +190,9 @@
         },
         "prod": {
           "service": {
+            "ai-inference": {
+              "url": "https://aiinference-service.eu-west.philips-healthsuite.com"
+            },
             "iam": {
               "url": "https://iam-service.eu-west.philips-healthsuite.com"
             },
@@ -303,6 +309,9 @@
       "env": {
         "client-test": {
           "service": {
+            "ai-inference": {
+              "url": "https://client-test-aiinference-service.us-east.philips-healthsuite.com"
+            },
             "iam": {
               "url": "https://iam-client-test.us-east.philips-healthsuite.com"
             },
@@ -347,6 +356,9 @@
         },
         "prod": {
           "service": {
+            "ai-inference": {
+              "url": "https://aiinference-service.us-east.philips-healthsuite.com"
+            },
             "iam": {
               "url": "https://iam-service.us-east.philips-healthsuite.com"
             },

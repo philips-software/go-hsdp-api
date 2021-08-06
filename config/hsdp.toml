@@ -1,23 +1,23 @@
 # This is a global registry for public HSDP services
-# containing most static configuration. Its main purpose is to 
-# reduce configuration parameters and drive automation of the 
+# containing most static configuration. Its main purpose is to
+# reduce configuration parameters and drive automation of the
 # platform further by having a human and machine readable source of
 # common configuration parameters
-# 
+#
 # Before using it as your source of truth please confirm it has
 # the expected values.
 #
 # Also it goes without saying, but we will say it anyway:
-# It is your responsibilty to ensure correct configuration of 
+# It is your responsibilty to ensure correct configuration of
 # your deployments.
 #
-# If you spot errors or incomplete information please raise a 
+# If you spot errors or incomplete information please raise a
 # PR. Thanks!
 #
 # Definitions:
 #
 # Region - a geographical region where services are deployed
-# Environment - a stage within a geographical region to aid in phased deployment 
+# Environment - a stage within a geographical region to aid in phased deployment
 # Service - a consumable software service
 # Instance - a specific deployment of a service
 #
@@ -38,7 +38,7 @@
 #         idm
 #         cartel
 #         cdr
-#       
+#
 #   Region eu-west
 #     Environment client-test
 #       Service
@@ -50,7 +50,7 @@
 #         iam
 #         idm
 #         s3cred
-# 
+#
 # Nesting syntax: [region.environment.service.instance]
 #
 # Services can be tied to a region or an environment
@@ -316,3 +316,13 @@ url = "https://vproxy.ap3.hsdp.io"
 url = "https://vproxy.cn1.philips-healthsuite.com.cn"
 [region.ca1.service.vault-proxy]
 url = "https://vproxy.ca1.hsdp.io"
+
+# Service AI-INFERENCE
+[region.us-east.env.client-test.service.ai-inference]
+url = "https://client-test-aiinference-service.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.ai-inference]
+url = "https://aiinference-service.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.ai-inference]
+url = "https://client-test-aiinference-service.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.ai-inference]
+url = "https://aiinference-service.eu-west.philips-healthsuite.com"
