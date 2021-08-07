@@ -113,7 +113,7 @@ func (c *Client) SetInferenceURL(urlStr string) error {
 func (c *Client) newInferenceRequest(method, path string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
 	u := *c.inferenceURL
 	// Set the encoded opaque data
-	u.Opaque = c.inferenceURL.Path + path
+	u.Opaque = c.inferenceURL.Path + c.config.OrganizationID + "/" + path
 
 	if opt != nil {
 		q, err := query.Values(opt)
