@@ -53,7 +53,7 @@ func (s *ComputeEnvironmentService) CreateComputeEnvironment(env ComputeEnvironm
 	resp, err := s.client.do(req, &createdEnv)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = fmt.Errorf("CreateStudy: %w", ErrEmptyResult)
+			err = fmt.Errorf("CreateComputeEnvironment: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}

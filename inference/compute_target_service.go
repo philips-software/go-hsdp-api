@@ -47,7 +47,7 @@ func (s *ComputeTargetService) CreateComputeTarget(target ComputeTarget) (*Compu
 	resp, err := s.client.do(req, &createdTarget)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = fmt.Errorf("CreateStudy: %w", ErrEmptyResult)
+			err = fmt.Errorf("CreateComputeTarget: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
