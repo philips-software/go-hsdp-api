@@ -11,57 +11,51 @@ import (
 	"github.com/philips-software/go-hsdp-api/internal"
 )
 
-type ComputeEnvironmentService struct {
+type ComputeTargetService struct {
 	client *Client
 
 	validate *validator.Validate
 }
 
-type ComputeEnvironment struct {
+type ComputeTarget struct {
 	ID           string `json:"id,omitempty"`
 	ResourceType string `json:"resourceType" validate:"required"`
 	Name         string `json:"name" validate:"required"`
 	Description  string `json:"description"`
-	Image        string `json:"image" validate:"required"`
+	Instancetype string `json:"instanceType" validate:"required"`
+	Storage      int    `json:"storage,omitempty"`
 	IsFactory    bool   `json:"isFactory,omitempty"`
 	Created      string `json:"created,omitempty"`
 	CreatedBy    string `json:"createdBy,omitempty"`
 }
 
-// GetOptions describes the fields on which you can search for producers
-type GetOptions struct {
-	Page  *string `url:"_page,omitempty"`
-	Count *string `url:"_count,omitempty"`
-	Sort  *string `url:"_sort,omitempty"`
-}
-
-func (s *ComputeEnvironmentService) path(components ...string) string {
+func (s *ComputeTargetService) path(components ...string) string {
 	return path.Join(components...)
 }
 
-func (s *ComputeEnvironmentService) CreateComputeEnvironment(env ComputeEnvironment) (*ComputeEnvironment, *Response, error) {
-	if err := s.validate.Struct(env); err != nil {
+func (s *ComputeTargetService) CreateComputeTarget(target ComputeTarget) (*ComputeTarget, *Response, error) {
+	if err := s.validate.Struct(target); err != nil {
 		return nil, nil, err
 	}
-	req, err := s.client.newInferenceRequest("POST", s.path("ComputeEnvironment"), env, nil)
+	req, err := s.client.newInferenceRequest("POST", s.path("ComputeTarget"), target, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	var createdEnv ComputeEnvironment
-	resp, err := s.client.do(req, &createdEnv)
+	var createdTarget ComputeTarget
+	resp, err := s.client.do(req, &createdTarget)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = fmt.Errorf("CreateStudy: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
-	return &createdEnv, resp, nil
+	return &createdTarget, resp, nil
 }
 
-func (s *ComputeEnvironmentService) DeleteComputeEnvironment(env ComputeEnvironment) (*Response, error) {
-	req, err := s.client.newInferenceRequest("DELETE", s.path("ComputeEnvironment", env.ID), nil, nil)
+func (s *ComputeTargetService) DeleteComputeTarget(target ComputeTarget) (*Response, error) {
+	req, err := s.client.newInferenceRequest("DELETE", s.path("ComputeTarget", target.ID), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -70,33 +64,33 @@ func (s *ComputeEnvironmentService) DeleteComputeEnvironment(env ComputeEnvironm
 	resp, err := s.client.do(req, nil)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = fmt.Errorf("DeleteComputeEnvironment: %w", ErrEmptyResult)
+			err = fmt.Errorf("DeleteComputeTarget: %w", ErrEmptyResult)
 		}
 		return resp, err
 	}
 	return resp, nil
 }
 
-func (s *ComputeEnvironmentService) GetComputeEnvironmentByID(id string) (*ComputeEnvironment, *Response, error) {
-	req, err := s.client.newInferenceRequest("GET", s.path("ComputeEnvironment", id), nil, nil)
+func (s *ComputeTargetService) GetComputeTargetByID(id string) (*ComputeTarget, *Response, error) {
+	req, err := s.client.newInferenceRequest("GET", s.path("ComputeTarget", id), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	var foundEnv ComputeEnvironment
-	resp, err := s.client.do(req, &foundEnv)
+	var foundTarget ComputeTarget
+	resp, err := s.client.do(req, &foundTarget)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = fmt.Errorf("GetComputeEnvironmentByID: %w", ErrEmptyResult)
+			err = fmt.Errorf("GetComputeTargetByID: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
-	return &foundEnv, resp, nil
+	return &foundTarget, resp, nil
 }
 
-func (s *ComputeEnvironmentService) GetComputeEnvironments(opt *GetOptions, options ...OptionFunc) ([]ComputeEnvironment, *Response, error) {
-	req, err := s.client.newInferenceRequest("GET", s.path("ComputeEnvironment"), opt, options...)
+func (s *ComputeTargetService) GetComputeTargets(opt *GetOptions, options ...OptionFunc) ([]ComputeTarget, *Response, error) {
+	req, err := s.client.newInferenceRequest("GET", s.path("ComputeTarget"), opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -115,12 +109,12 @@ func (s *ComputeEnvironmentService) GetComputeEnvironments(opt *GetOptions, opti
 		}
 		return nil, resp, err
 	}
-	var envs []ComputeEnvironment
+	var targets []ComputeTarget
 	for _, e := range bundleResponse.Entry {
-		var env ComputeEnvironment
-		if err := json.Unmarshal(e.Resource, &env); err == nil {
-			envs = append(envs, env)
+		var target ComputeTarget
+		if err := json.Unmarshal(e.Resource, &target); err == nil {
+			targets = append(targets, target)
 		}
 	}
-	return envs, resp, err
+	return targets, resp, err
 }
