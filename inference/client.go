@@ -51,6 +51,11 @@ type Client struct {
 
 	debugFile *os.File
 	validate  *validator.Validate
+
+	ComputeTarget      *ComputeTargetService
+	ComputeEnvironment *ComputeEnvironmentService
+	ComputeProvider    *ComputeProviderService
+	Job                *JobService
 }
 
 // NewClient returns a new HSDP AI-Inference API client. A configured IAM client
@@ -62,6 +67,11 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	doAutoconf(config)
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
+
+	c.Job = &JobService{client: c, validate: validator.New()}
+	c.ComputeProvider = &ComputeProviderService{client: c, validate: validator.New()}
+	c.ComputeTarget = &ComputeTargetService{client: c, validate: validator.New()}
+	c.ComputeEnvironment = &ComputeEnvironmentService{client: c, validate: validator.New()}
 
 	return c, nil
 }
