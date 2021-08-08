@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -68,6 +69,10 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	doAutoconf(config)
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
 
+	if err := c.SetInferenceURL(config.InferenceURL); err != nil {
+		return nil, err
+	}
+
 	c.Job = &JobService{client: c, validate: validator.New()}
 	c.ComputeProvider = &ComputeProviderService{client: c, validate: validator.New()}
 	c.ComputeTarget = &ComputeTargetService{client: c, validate: validator.New()}
@@ -118,6 +123,38 @@ func (c *Client) SetInferenceURL(urlStr string) error {
 	var err error
 	c.inferenceURL, err = url.Parse(urlStr)
 	return err
+}
+
+// GetEndpointURL returns the FHIR Store Endpoint URL as configured
+func (c *Client) GetEndpointURL() string {
+	return c.GetInferenceURL() + path.Join("analyze", "inference", c.config.OrganizationID)
+}
+
+// SetEndpointURL sets the Inference endpoint URL for API requests to a custom endpoint. urlStr
+// should always be specified with a trailing slash.
+func (c *Client) SetEndpointURL(urlStr string) error {
+	if urlStr == "" {
+		return ErrInferenceURLCannotBeEmpty
+	}
+	// Make sure the given URL ends with a slash
+	if !strings.HasSuffix(urlStr, "/") {
+		urlStr += "/"
+	}
+	var err error
+	c.inferenceURL, err = url.Parse(urlStr)
+	if err != nil {
+		return err
+	}
+	parts := strings.Split(c.inferenceURL.Path, "/")
+	if len(parts) == 0 {
+		return ErrInferenceURLCannotBeEmpty
+	}
+	if len(parts) < 5 {
+		return ErrInvalidEndpointURL
+	}
+	c.config.OrganizationID = parts[len(parts)-2]
+	c.inferenceURL.Path = "/"
+	return nil
 }
 
 func (c *Client) newInferenceRequest(method, path string, opt interface{}, options ...OptionFunc) (*http.Request, error) {

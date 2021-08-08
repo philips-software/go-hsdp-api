@@ -8,4 +8,5 @@ import (
 var (
 	ErrInferenceURLCannotBeEmpty = errors.New("base Inference URL cannot be empty")
 	ErrEmptyResult               = errors.New("empty result")
+	ErrInvalidEndpointURL        = errors.New("invalid endpoint URL")
 )

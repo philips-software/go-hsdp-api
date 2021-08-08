@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	_ "os"
+	"path"
 	"testing"
 
 	"github.com/philips-software/go-hsdp-api/iam"
@@ -153,6 +154,20 @@ func TestLogin(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, token, iamClient.Token())
+}
+
+func TestEndpoint(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	endpoint := serverInference.URL + "/" + path.Join("analyze", "inference", inferenceTenantID)
+
+	assert.Equal(t, endpoint, inferenceClient.GetEndpointURL())
+	err := inferenceClient.SetEndpointURL(endpoint)
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, endpoint, inferenceClient.GetEndpointURL())
 }
 
 func TestDebug(t *testing.T) {
