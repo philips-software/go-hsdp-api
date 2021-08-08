@@ -41,11 +41,11 @@ func (s *ComputeEnvironmentService) path(components ...string) string {
 
 func (s *ComputeEnvironmentService) CreateComputeEnvironment(env ComputeEnvironment) (*ComputeEnvironment, *Response, error) {
 	if err := s.validate.Struct(env); err != nil {
-		return nil, nil, err
+		return nil, &Response{}, err
 	}
 	req, err := s.client.newInferenceRequest("POST", s.path("ComputeEnvironment"), env, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, &Response{}, err
 	}
 	req.Header.Set("Api-Version", APIVersion)
 

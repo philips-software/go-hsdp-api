@@ -170,6 +170,26 @@ func TestEndpoint(t *testing.T) {
 	assert.Equal(t, endpoint, inferenceClient.GetEndpointURL())
 }
 
+func TestMethodNotAllowed(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	muxInference.HandleFunc("/analyze/inference/"+inferenceTenantID+"/ComputeEnvironment", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	})
+
+	_, resp, err := inferenceClient.ComputeEnvironment.CreateComputeEnvironment(inference.ComputeEnvironment{
+		ResourceType: "ComputeEnvironment",
+		Name:         "test",
+		Image:        "test",
+		Description:  "test",
+	})
+	assert.NotNil(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+}
+
 func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()

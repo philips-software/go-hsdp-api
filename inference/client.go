@@ -157,10 +157,10 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 	return nil
 }
 
-func (c *Client) newInferenceRequest(method, path string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
+func (c *Client) newInferenceRequest(method, requestPath string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
 	u := *c.inferenceURL
 	// Set the encoded opaque data
-	u.Opaque = c.inferenceURL.Path + c.config.OrganizationID + "/" + path
+	u.Opaque = path.Join(c.inferenceURL.Path, "analyze", "inference", c.config.OrganizationID, requestPath)
 
 	if opt != nil {
 		q, err := query.Values(opt)
