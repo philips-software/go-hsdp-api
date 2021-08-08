@@ -317,12 +317,12 @@ url = "https://vproxy.cn1.philips-healthsuite.com.cn"
 [region.ca1.service.vault-proxy]
 url = "https://vproxy.ca1.hsdp.io"
 
-# Service AI-INFERENCE
-[region.us-east.env.client-test.service.ai-inference]
+# Service INFERENCE
+[region.us-east.env.client-test.service.inference]
 url = "https://client-test-aiinference-service.us-east.philips-healthsuite.com"
-[region.us-east.env.prod.service.ai-inference]
+[region.us-east.env.prod.service.inference]
 url = "https://aiinference-service.us-east.philips-healthsuite.com"
-[region.eu-west.env.client-test.service.ai-inference]
+[region.eu-west.env.client-test.service.inference]
 url = "https://client-test-aiinference-service.eu-west.philips-healthsuite.com"
-[region.eu-west.env.prod.service.ai-inference]
+[region.eu-west.env.prod.service.inference]
 url = "https://aiinference-service.eu-west.philips-healthsuite.com"
