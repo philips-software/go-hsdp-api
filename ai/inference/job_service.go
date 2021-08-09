@@ -143,3 +143,20 @@ func (s *JobService) GetJobs(opt *GetOptions, options ...OptionFunc) ([]Job, *Re
 	}
 	return jobs, resp, err
 }
+
+func (s *JobService) TerminateJob(job Job) (*Response, error) {
+	req, err := s.client.newInferenceRequest("POST", s.path("InferenceJob", job.ID, "$terminate"), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Api-Version", APIVersion)
+
+	resp, err := s.client.do(req, nil)
+	if (err != nil && err != io.EOF) || resp == nil {
+		if resp == nil && err != nil {
+			err = fmt.Errorf("TerminateJob: %w", ErrEmptyResult)
+		}
+		return resp, err
+	}
+	return resp, nil
+}
