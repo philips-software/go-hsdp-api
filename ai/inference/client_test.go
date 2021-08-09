@@ -11,8 +11,8 @@ import (
 	"path"
 	"testing"
 
+	inference2 "github.com/philips-software/go-hsdp-api/ai/inference"
 	"github.com/philips-software/go-hsdp-api/iam"
-	"github.com/philips-software/go-hsdp-api/inference"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,7 +25,7 @@ var (
 	serverInference *httptest.Server
 
 	iamClient         *iam.Client
-	inferenceClient   *inference.Client
+	inferenceClient   *inference2.Client
 	inferenceTenantID = "48a0183d-a588-41c2-9979-737d15e9e860"
 	userUUID          = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
 )
@@ -130,7 +130,7 @@ func setup(t *testing.T) func() {
 	err = iamClient.Login("username", "password")
 	assert.Nil(t, err)
 
-	inferenceClient, err = inference.NewClient(iamClient, &inference.Config{
+	inferenceClient, err = inference2.NewClient(iamClient, &inference2.Config{
 		InferenceURL:   serverInference.URL,
 		OrganizationID: inferenceTenantID,
 	})
@@ -179,7 +179,7 @@ func TestMethodNotAllowed(t *testing.T) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	})
 
-	_, resp, err := inferenceClient.ComputeEnvironment.CreateComputeEnvironment(inference.ComputeEnvironment{
+	_, resp, err := inferenceClient.ComputeEnvironment.CreateComputeEnvironment(inference2.ComputeEnvironment{
 		ResourceType: "ComputeEnvironment",
 		Name:         "test",
 		Image:        "test",
@@ -199,7 +199,7 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 
-	inferenceClient, err = inference.NewClient(iamClient, &inference.Config{
+	inferenceClient, err = inference2.NewClient(iamClient, &inference2.Config{
 		InferenceURL: serverInference.URL,
 		DebugLog:     tmpfile.Name(),
 	})
