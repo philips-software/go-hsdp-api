@@ -78,6 +78,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.ComputeProvider = &ComputeProviderService{client: c, validate: validator.New()}
 	c.ComputeTarget = &ComputeTargetService{client: c, validate: validator.New()}
 	c.ComputeEnvironment = &ComputeEnvironmentService{client: c, validate: validator.New()}
+	c.Model = &ModelService{client: c, validate: validator.New()}
 
 	return c, nil
 }
