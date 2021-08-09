@@ -48,6 +48,8 @@ type Model struct {
 	Labels                  []string                    `json:"labels"`
 	Type                    string                      `json:"type"`
 	AdditionalConfiguration string                      `json:"additionalConfiguration,omitempty"`
+	Created                 string                      `json:"created,omitempty"`
+	CreatedBy               string                      `json:"createdBy,omitempty"`
 }
 
 func (s *ModelService) path(components ...string) string {
