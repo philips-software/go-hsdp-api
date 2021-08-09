@@ -22,7 +22,7 @@ type ComputeTarget struct {
 	ResourceType string `json:"resourceType" validate:"required"`
 	Name         string `json:"name" validate:"required"`
 	Description  string `json:"description"`
-	Instancetype string `json:"instanceType" validate:"required"`
+	InstanceType string `json:"instanceType" validate:"required"`
 	Storage      int    `json:"storage,omitempty"`
 	IsFactory    bool   `json:"isFactory,omitempty"`
 	Created      string `json:"created,omitempty"`
