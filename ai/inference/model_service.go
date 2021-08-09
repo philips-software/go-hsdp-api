@@ -39,14 +39,14 @@ type Model struct {
 	ResourceType            string                      `json:"resourceType"`
 	Name                    string                      `json:"name" validate:"required"`
 	Version                 string                      `json:"version" validate:"required"`
-	Description             string                      `json:"description"`
+	Description             string                      `json:"description,omitempty"`
 	ComputeEnvironment      ReferenceComputeEnvironment `json:"computeEnvironment" validate:"required"`
-	ArtifactPath            string                      `json:"artifactPath"`
+	ArtifactPath            string                      `json:"artifactPath,omitempty"`
 	Sourcecode              Sourcecode                  `json:"sourceCode"`
 	EntryCommands           []string                    `json:"entryCommands" validate:"required"`
 	EnvVars                 []EnvironmentVariable       `json:"envVars,omitempty"`
-	Labels                  []string                    `json:"labels"`
-	Type                    string                      `json:"type"`
+	Labels                  []string                    `json:"labels,omitempty"`
+	Type                    string                      `json:"type,omitempty"`
 	AdditionalConfiguration string                      `json:"additionalConfiguration,omitempty"`
 	Created                 string                      `json:"created,omitempty"`
 	CreatedBy               string                      `json:"createdBy,omitempty"`
