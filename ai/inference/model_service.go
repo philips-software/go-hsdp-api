@@ -22,11 +22,11 @@ type ReferenceComputeEnvironment struct {
 	Identifier string `json:"identifier,omitempty"`
 }
 
-type Sourcecode struct {
+type SourceCode struct {
 	URL      string `json:"url" validate:"required"`
-	Branch   string `json:"branch"`
-	CommitID string `json:"commitID"`
-	SSHKey   string `json:"sshKey"`
+	Branch   string `json:"branch,omitempty"`
+	CommitID string `json:"commitID,omitempty"`
+	SSHKey   string `json:"sshKey,omitempty"`
 }
 
 type EnvironmentVariable struct {
@@ -42,7 +42,7 @@ type Model struct {
 	Description             string                      `json:"description,omitempty"`
 	ComputeEnvironment      ReferenceComputeEnvironment `json:"computeEnvironment" validate:"required"`
 	ArtifactPath            string                      `json:"artifactPath,omitempty"`
-	Sourcecode              Sourcecode                  `json:"sourceCode"`
+	SourceCode              SourceCode                  `json:"sourceCode"`
 	EntryCommands           []string                    `json:"entryCommands" validate:"required"`
 	EnvVars                 []EnvironmentVariable       `json:"envVars,omitempty"`
 	Labels                  []string                    `json:"labels,omitempty"`
