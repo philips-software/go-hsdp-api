@@ -27,31 +27,37 @@ type OutputEntry struct {
 	URL  string `json:"url"`
 }
 
+type ReferenceComputeModel struct {
+	Reference  string `json:"reference"`
+	Identifier string `json:"identifier,omitempty"`
+}
+
+type ReferenceComputeTarget struct {
+	Reference  string `json:"reference"`
+	Identifier string `json:"identifier,omitempty"`
+}
+
 type Job struct {
-	ID           string `json:"id,omitempty"`
-	ResourceType string `json:"resourceType"`
-	Name         string `json:"name"`
-	Description  string `json:"description"`
-	Type         string `json:"type"`
-	Model        struct {
-		Reference string `json:"reference"`
-	} `json:"model"`
-	ComputeTarget struct {
-		Reference string `json:"reference"`
-	} `json:"computeTarget"`
-	Input                   []InputEntry          `json:"input"`
-	Output                  []OutputEntry         `json:"output"`
-	EnvVars                 []EnvironmentVariable `json:"envVars"`
-	CommandArgs             []string              `json:"commandArgs"`
-	Status                  string                `json:"status,omitempty"`
-	StatusMessage           string                `json:"statusMessage,omitempty"`
-	Labels                  []string              `json:"labels,omitempty"`
-	CreatedBy               string                `json:"createdBy,omitempty"`
-	Created                 string                `json:"created,omitempty"`
-	Completed               string                `json:"completed,omitempty"`
-	Duration                int                   `json:"duration,omitempty"`
-	Timeout                 int                   `json:"timeOut,omitempty"`
-	AdditionalConfiguration string                `json:"additionalConfiguration,omitempty"`
+	ID                      string                 `json:"id,omitempty"`
+	ResourceType            string                 `json:"resourceType"`
+	Name                    string                 `json:"name"`
+	Description             string                 `json:"description"`
+	Type                    string                 `json:"type"`
+	Model                   ReferenceComputeModel  `json:"model"`
+	ComputeTarget           ReferenceComputeTarget `json:"computeTarget"`
+	Input                   []InputEntry           `json:"input"`
+	Output                  []OutputEntry          `json:"output"`
+	EnvVars                 []EnvironmentVariable  `json:"envVars"`
+	CommandArgs             []string               `json:"commandArgs"`
+	Status                  string                 `json:"status,omitempty"`
+	StatusMessage           string                 `json:"statusMessage,omitempty"`
+	Labels                  []string               `json:"labels,omitempty"`
+	CreatedBy               string                 `json:"createdBy,omitempty"`
+	Created                 string                 `json:"created,omitempty"`
+	Completed               string                 `json:"completed,omitempty"`
+	Duration                int                    `json:"duration,omitempty"`
+	Timeout                 int                    `json:"timeOut,omitempty"`
+	AdditionalConfiguration string                 `json:"additionalConfiguration,omitempty"`
 }
 
 func (s *JobService) path(components ...string) string {
