@@ -56,6 +56,7 @@ type Client struct {
 	ComputeTarget      *ComputeTargetService
 	ComputeEnvironment *ComputeEnvironmentService
 	ComputeProvider    *ComputeProviderService
+	Model              *ModelService
 	Job                *JobService
 }
 
