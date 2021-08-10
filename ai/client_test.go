@@ -136,7 +136,6 @@ func setup(t *testing.T) func() {
 	})
 	if !assert.Nilf(t, err, "failed to create notificationClient: %v", err) {
 		return func() {
-			return
 		}
 	}
 
