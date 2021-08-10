@@ -1,4 +1,4 @@
-package inference
+package training
 
 import (
 	"github.com/go-playground/validator/v10"
@@ -6,28 +6,25 @@ import (
 	"github.com/philips-software/go-hsdp-api/iam"
 )
 
-// A Client manages communication with HSDP AI-Inference API
+// A Client manages communication with HSDP AI-Training API
 type Client struct {
 	*ai.Client
 	ComputeEnvironment *ai.ComputeEnvironmentService
-	Model              *ModelService
 	Job                *ai.JobService
 }
 
-// NewClient returns a new HSDP AI-Inference API client. A configured IAM client
+// NewClient returns a new HSDP AI-Training API client. A configured IAM client
 // must be provided as the underlying API requires an IAM token
 func NewClient(iamClient *iam.Client, config *ai.Config) (*Client, error) {
-	config.Service = "inference"
+	config.Service = "training"
 	client, err := ai.NewClient(iamClient, config)
 	if err != nil {
 		return nil, err
 	}
-	inferenceClient := &Client{
+	trainingClient := &Client{
 		Client:             client,
-		Model:              &ModelService{client: client, validate: validator.New()},
-		Job:                &ai.JobService{Client: client, Validate: validator.New(), Path: "JobService"},
+		Job:                &ai.JobService{Client: client, Validate: validator.New(), Path: "Job"},
 		ComputeEnvironment: &ai.ComputeEnvironmentService{Client: client, Validate: validator.New()},
 	}
-
-	return inferenceClient, nil
+	return trainingClient, nil
 }

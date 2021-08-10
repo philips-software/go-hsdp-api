@@ -1,4 +1,4 @@
-package inference_test
+package training_test
 
 import (
 	"io"
@@ -12,22 +12,22 @@ import (
 	"testing"
 
 	"github.com/philips-software/go-hsdp-api/ai"
-	"github.com/philips-software/go-hsdp-api/ai/inference"
+	"github.com/philips-software/go-hsdp-api/ai/training"
 	"github.com/philips-software/go-hsdp-api/iam"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	muxIAM          *http.ServeMux
-	serverIAM       *httptest.Server
-	muxIDM          *http.ServeMux
-	serverIDM       *httptest.Server
-	muxInference    *http.ServeMux
-	serverInference *httptest.Server
+	muxIAM         *http.ServeMux
+	serverIAM      *httptest.Server
+	muxIDM         *http.ServeMux
+	serverIDM      *httptest.Server
+	muxTraining    *http.ServeMux
+	serverTraining *httptest.Server
 
 	iamClient         *iam.Client
-	inferenceClient   *inference.Client
-	inferenceTenantID = "48a0183d-a588-41c2-9979-737d15e9e860"
+	trainingClient    *training.Client
+	traiiningTenantID = "48a0183d-a588-41c2-9979-737d15e9e860"
 	userUUID          = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
 )
 
@@ -36,8 +36,8 @@ func setup(t *testing.T) func() {
 	serverIAM = httptest.NewServer(muxIAM)
 	muxIDM = http.NewServeMux()
 	serverIDM = httptest.NewServer(muxIDM)
-	muxInference = http.NewServeMux()
-	serverInference = httptest.NewServer(muxInference)
+	muxTraining = http.NewServeMux()
+	serverTraining = httptest.NewServer(muxTraining)
 
 	var err error
 
@@ -87,10 +87,10 @@ func setup(t *testing.T) func() {
   "sub": "`+userUUID+`",
   "iss": "https://iam-client-test.us-east.philips-healthsuite.com/oauth2/access_token",
   "organizations": {
-    "managingOrganization": "`+inferenceTenantID+`",
+    "managingOrganization": "`+traiiningTenantID+`",
     "organizationList": [
       {
-        "organizationId": "`+inferenceTenantID+`",
+        "organizationId": "`+traiiningTenantID+`",
         "permissions": [
           "USER.READ",
           "GROUP.WRITE",
@@ -131,9 +131,9 @@ func setup(t *testing.T) func() {
 	err = iamClient.Login("username", "password")
 	assert.Nil(t, err)
 
-	inferenceClient, err = inference.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverInference.URL,
-		OrganizationID: inferenceTenantID,
+	trainingClient, err = training.NewClient(iamClient, &ai.Config{
+		AnalyzeURL:     serverTraining.URL,
+		OrganizationID: traiiningTenantID,
 	})
 	if !assert.Nilf(t, err, "failed to create notificationClient: %v", err) {
 		return func() {
@@ -144,7 +144,7 @@ func setup(t *testing.T) func() {
 	return func() {
 		serverIAM.Close()
 		serverIDM.Close()
-		serverInference.Close()
+		serverTraining.Close()
 	}
 }
 
@@ -165,26 +165,26 @@ func TestEndpoint(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	endpoint := serverInference.URL + "/" + path.Join("analyze", "inference", inferenceTenantID)
+	endpoint := serverTraining.URL + "/" + path.Join("analyze", "training", traiiningTenantID)
 
-	assert.Equal(t, endpoint, inferenceClient.GetEndpointURL())
-	err := inferenceClient.SetEndpointURL(endpoint)
+	assert.Equal(t, endpoint, trainingClient.GetEndpointURL())
+	err := trainingClient.SetEndpointURL(endpoint)
 	if !assert.Nil(t, err) {
 		return
 	}
-	assert.Equal(t, endpoint, inferenceClient.GetEndpointURL())
+	assert.Equal(t, endpoint, trainingClient.GetEndpointURL())
 }
 
 func TestMethodNotAllowed(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	muxInference.HandleFunc("/analyze/inference/"+inferenceTenantID+"/ComputeEnvironment", func(w http.ResponseWriter, r *http.Request) {
+	muxTraining.HandleFunc("/analyze/training/"+traiiningTenantID+"/ComputeEnvironment", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	})
 
-	_, resp, err := inferenceClient.ComputeEnvironment.CreateComputeEnvironment(ai.ComputeEnvironment{
+	_, resp, err := trainingClient.ComputeEnvironment.CreateComputeEnvironment(ai.ComputeEnvironment{
 		ResourceType: "ComputeEnvironment",
 		Name:         "test",
 		Image:        "test",
@@ -204,8 +204,8 @@ func TestDebug(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 
-	inferenceClient, err = inference.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverInference.URL,
+	trainingClient, err = training.NewClient(iamClient, &ai.Config{
+		AnalyzeURL:     serverTraining.URL,
 		DebugLog:       tmpfile.Name(),
 		OrganizationID: "xxx",
 	})
@@ -213,7 +213,7 @@ func TestDebug(t *testing.T) {
 		return
 	}
 
-	defer inferenceClient.Close()
+	defer trainingClient.Close()
 	defer func() {
 		_ = os.Remove(tmpfile.Name())
 	}() // clean up

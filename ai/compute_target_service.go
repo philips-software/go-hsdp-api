@@ -1,4 +1,4 @@
-package inference
+package ai
 
 import (
 	"encoding/json"
@@ -19,10 +19,10 @@ type ComputeTargetService struct {
 
 type ComputeTarget struct {
 	ID           string `json:"id,omitempty"`
-	ResourceType string `json:"resourceType" validate:"required"`
-	Name         string `json:"name" validate:"required"`
+	ResourceType string `json:"resourceType" Validate:"required"`
+	Name         string `json:"name" Validate:"required"`
 	Description  string `json:"description"`
-	InstanceType string `json:"instanceType" validate:"required"`
+	InstanceType string `json:"instanceType" Validate:"required"`
 	Storage      int    `json:"storage,omitempty"`
 	IsFactory    bool   `json:"isFactory,omitempty"`
 	Created      string `json:"created,omitempty"`
@@ -37,14 +37,14 @@ func (s *ComputeTargetService) CreateComputeTarget(target ComputeTarget) (*Compu
 	if err := s.validate.Struct(target); err != nil {
 		return nil, nil, err
 	}
-	req, err := s.client.newInferenceRequest("POST", s.path("ComputeTarget"), target, nil)
+	req, err := s.client.NewAIRequest("POST", s.path("ComputeTarget"), target, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
 	var createdTarget ComputeTarget
-	resp, err := s.client.do(req, &createdTarget)
+	resp, err := s.client.Do(req, &createdTarget)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = fmt.Errorf("CreateComputeTarget: %w", ErrEmptyResult)
@@ -55,13 +55,13 @@ func (s *ComputeTargetService) CreateComputeTarget(target ComputeTarget) (*Compu
 }
 
 func (s *ComputeTargetService) DeleteComputeTarget(target ComputeTarget) (*Response, error) {
-	req, err := s.client.newInferenceRequest("DELETE", s.path("ComputeTarget", target.ID), nil, nil)
+	req, err := s.client.NewAIRequest("DELETE", s.path("ComputeTarget", target.ID), nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
-	resp, err := s.client.do(req, nil)
+	resp, err := s.client.Do(req, nil)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = fmt.Errorf("DeleteComputeTarget: %w", ErrEmptyResult)
@@ -72,14 +72,14 @@ func (s *ComputeTargetService) DeleteComputeTarget(target ComputeTarget) (*Respo
 }
 
 func (s *ComputeTargetService) GetComputeTargetByID(id string) (*ComputeTarget, *Response, error) {
-	req, err := s.client.newInferenceRequest("GET", s.path("ComputeTarget", id), nil, nil)
+	req, err := s.client.NewAIRequest("GET", s.path("ComputeTarget", id), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
 	var foundTarget ComputeTarget
-	resp, err := s.client.do(req, &foundTarget)
+	resp, err := s.client.Do(req, &foundTarget)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = fmt.Errorf("GetComputeTargetByID: %w", ErrEmptyResult)
@@ -90,7 +90,7 @@ func (s *ComputeTargetService) GetComputeTargetByID(id string) (*ComputeTarget, 
 }
 
 func (s *ComputeTargetService) GetComputeTargets(opt *GetOptions, options ...OptionFunc) ([]ComputeTarget, *Response, error) {
-	req, err := s.client.newInferenceRequest("GET", s.path("ComputeTarget"), opt, options...)
+	req, err := s.client.NewAIRequest("GET", s.path("ComputeTarget"), opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -102,7 +102,7 @@ func (s *ComputeTargetService) GetComputeTargets(opt *GetOptions, options ...Opt
 		Total        int                    `json:"total,omitempty"`
 		Entry        []internal.BundleEntry `json:"entry"`
 	}
-	resp, err := s.client.do(req, &bundleResponse)
+	resp, err := s.client.Do(req, &bundleResponse)
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return nil, resp, ErrEmptyResult

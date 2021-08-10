@@ -1,4 +1,4 @@
-package inference
+package ai
 
 import (
 	"bytes"
@@ -16,8 +16,8 @@ type ComputeProviderService struct {
 }
 
 type UpdateRequest struct {
-	AccessKey string `json:"accessKey" validate:"required"`
-	SecretKey string `json:"secretKey" validate:"required"`
+	AccessKey string `json:"accessKey" Validate:"required"`
+	SecretKey string `json:"secretKey" Validate:"required"`
 }
 
 func (s *ComputeProviderService) path(components ...string) string {
@@ -28,14 +28,14 @@ func (s *ComputeProviderService) UpdateProvider(request UpdateRequest) (bool, *R
 	if err := s.validate.Struct(request); err != nil {
 		return false, nil, err
 	}
-	req, err := s.client.newInferenceRequest("POST", s.path("ComputeProvider"), request, nil)
+	req, err := s.client.NewAIRequest("POST", s.path("ComputeProvider"), request, nil)
 	if err != nil {
 		return false, nil, err
 	}
 	req.Header.Set("Api-Version", APIVersion)
 
 	var operationOutcome bytes.Buffer
-	resp, err := s.client.do(req, &operationOutcome)
+	resp, err := s.client.Do(req, &operationOutcome)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
 			err = fmt.Errorf("UpdateProvider: %w", ErrEmptyResult)
