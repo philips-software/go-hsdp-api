@@ -25,10 +25,10 @@ var (
 	muxTraining    *http.ServeMux
 	serverTraining *httptest.Server
 
-	iamClient         *iam.Client
-	trainingClient    *training.Client
-	traiiningTenantID = "48a0183d-a588-41c2-9979-737d15e9e860"
-	userUUID          = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
+	iamClient        *iam.Client
+	trainingClient   *training.Client
+	trainingTenantID = "48a0183d-a588-41c2-9979-737d15e9e860"
+	userUUID         = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
 )
 
 func setup(t *testing.T) func() {
@@ -87,10 +87,10 @@ func setup(t *testing.T) func() {
   "sub": "`+userUUID+`",
   "iss": "https://iam-client-test.us-east.philips-healthsuite.com/oauth2/access_token",
   "organizations": {
-    "managingOrganization": "`+traiiningTenantID+`",
+    "managingOrganization": "`+trainingTenantID+`",
     "organizationList": [
       {
-        "organizationId": "`+traiiningTenantID+`",
+        "organizationId": "`+trainingTenantID+`",
         "permissions": [
           "USER.READ",
           "GROUP.WRITE",
@@ -133,7 +133,7 @@ func setup(t *testing.T) func() {
 
 	trainingClient, err = training.NewClient(iamClient, &ai.Config{
 		AnalyzeURL:     serverTraining.URL,
-		OrganizationID: traiiningTenantID,
+		OrganizationID: trainingTenantID,
 	})
 	if !assert.Nilf(t, err, "failed to create notificationClient: %v", err) {
 		return func() {
@@ -164,7 +164,7 @@ func TestEndpoint(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	endpoint := serverTraining.URL + "/" + path.Join("analyze", "training", traiiningTenantID)
+	endpoint := serverTraining.URL + "/" + path.Join("analyze", "training", trainingTenantID)
 
 	assert.Equal(t, endpoint, trainingClient.GetEndpointURL())
 	err := trainingClient.SetEndpointURL(endpoint)
@@ -178,7 +178,7 @@ func TestMethodNotAllowed(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	muxTraining.HandleFunc("/analyze/training/"+traiiningTenantID+"/ComputeEnvironment", func(w http.ResponseWriter, r *http.Request) {
+	muxTraining.HandleFunc("/analyze/training/"+trainingTenantID+"/ComputeEnvironment", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	})

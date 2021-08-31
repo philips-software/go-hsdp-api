@@ -163,14 +163,14 @@ func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	tmpfile, err := ioutil.TempFile("", "example")
+	tempFile, err := ioutil.TempFile("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
 
 	aiClient, err = ai.NewClient(iamClient, &ai.Config{
 		AnalyzeURL:     serverAI.URL,
-		DebugLog:       tmpfile.Name(),
+		DebugLog:       tempFile.Name(),
 		Service:        "inference",
 		OrganizationID: "xxx",
 	})
@@ -180,7 +180,7 @@ func TestDebug(t *testing.T) {
 
 	defer aiClient.Close()
 	defer func() {
-		_ = os.Remove(tmpfile.Name())
+		_ = os.Remove(tempFile.Name())
 	}() // clean up
 
 	err = iamClient.Login("username", "password")
