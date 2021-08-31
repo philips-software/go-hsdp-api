@@ -116,15 +116,13 @@ func (c *Client) Close() {
 	}
 }
 
-// SetBaseTDRURL sets the base URL for API requests to a custom endpoint. urlStr
+// SetBaseIronURL sets the base URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseIronURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrBaseIRONURLCannotBeEmpty
 	}
-	if strings.HasSuffix(urlStr, "/") {
-		urlStr = strings.TrimSuffix(urlStr, "/")
-	}
+	urlStr = strings.TrimSuffix(urlStr, "/")
 
 	var err error
 	c.baseIRONURL, err = url.Parse(urlStr)

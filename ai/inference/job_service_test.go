@@ -42,7 +42,7 @@ func TestJobCRD(t *testing.T) {
 				Status:        "Completed",
 				StatusMessage: "SomethingSomething",
 				EnvVars: []ai.EnvironmentVariable{
-					{"Foo", "Bar"},
+					{Name: "Foo", Value: "Bar"},
 				},
 				Created:   "2021-08-31 16:42:00",
 				CreatedBy: "test",
@@ -105,7 +105,7 @@ func TestJobCRD(t *testing.T) {
 		Status:        "Completed",
 		StatusMessage: "SomethingSomething",
 		EnvVars: []ai.EnvironmentVariable{
-			{"Foo", "Bar"},
+			{Name: "Foo", Value: "Bar"},
 		},
 	}
 
