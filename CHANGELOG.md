@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+# v0.43.0
+- AI Inference: initial support
+- AI Training: initial support
+- AI Workspace: initial support
+
 # v0.42.3
 - CDL: add Export Routes CRD
 
