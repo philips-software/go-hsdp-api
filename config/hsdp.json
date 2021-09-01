@@ -162,6 +162,9 @@
             "idm": {
               "url": "https://idm-client-test.eu-west.philips-healthsuite.com"
             },
+            "inference": {
+              "url": "https://client-test-aiinference-service.eu-west.philips-healthsuite.com"
+            },
             "kibana": {
               "url": "https://kibana-client-test.eu-west.philips-healthsuite.com"
             },
@@ -192,6 +195,9 @@
             },
             "idm": {
               "url": "https://idm-service.eu-west.philips-healthsuite.com"
+            },
+            "inference": {
+              "url": "https://aiinference-service.eu-west.philips-healthsuite.com"
             },
             "kibana": {
               "url": "https://kibana.eu-west.philips-healthsuite.com"
@@ -309,6 +315,9 @@
             "idm": {
               "url": "https://idm-client-test.us-east.philips-healthsuite.com"
             },
+            "inference": {
+              "url": "https://client-test-aiinference-service.us-east.philips-healthsuite.com"
+            },
             "kibana": {
               "url": "https://kibana-client-test.us-east.philips-healthsuite.com"
             },
@@ -352,6 +361,9 @@
             },
             "idm": {
               "url": "https://idm-service.us-east.philips-healthsuite.com"
+            },
+            "inference": {
+              "url": "https://aiinference-service.us-east.philips-healthsuite.com"
             },
             "kibana": {
               "url": "https://kibana.us-east.philips-healthsuite.com"

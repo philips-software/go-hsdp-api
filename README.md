@@ -56,7 +56,17 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Data Type Definitions
   - [x] Label Definitions
   - [x] Export Routes
-  
+- [x] AI Inference
+  - [x] Compute Environment management
+  - [x] Compute Target managements
+  - [x] Model management
+  - [x] Inference Job management
+- [x] AI Training
+  - [x] Compute Environment management
+  - [x] Model management
+- [x] AI Workspace
+  - [x] Compute Target management
+  - [x] Workspace management
 
 ## Usage
 
