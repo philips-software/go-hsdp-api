@@ -52,6 +52,9 @@ func (c *Client) ServiceLogin(service Service) error {
 	body += "&"
 	body += form.Encode()
 
+	// Remove Authorization header
+	req.Header.Del("Authorization")
+
 	req.Body = ioutil.NopCloser(strings.NewReader(body))
 	req.ContentLength = int64(len(body))
 	c.service = service // Save service so we can refresh later!
