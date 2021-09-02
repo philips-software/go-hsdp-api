@@ -57,6 +57,7 @@ type LoggingRoundTripper struct {
 	logFile *os.File
 	id      int64
 	prefix  string
+	debug   bool
 }
 
 func NewLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *LoggingRoundTripper {
@@ -67,6 +68,7 @@ func NewLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *LoggingRo
 		next:    next,
 		logFile: logFile,
 		prefix:  uuid.New().String(),
+		debug:   os.Getenv("SOMETIMES_YOU_GOT_TO_STOP_THINKING_ABOUT_SOMETHING_TO_FIGURE_IT_OUT") == "true",
 	}
 }
 
@@ -79,8 +81,10 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 		out := ""
 		dumped, err := httputil.DumpRequest(req, true)
 		filtered := string(dumped)
-		for _, f := range filterList {
-			filtered = f.Regex.ReplaceAllString(filtered, f.Replace)
+		if !rt.debug {
+			for _, f := range filterList {
+				filtered = f.Regex.ReplaceAllString(filtered, f.Replace)
+			}
 		}
 		if err != nil {
 			out = fmt.Sprintf("[go-hsdp-api %s] --- Request dump error: %v\n", id, err)
