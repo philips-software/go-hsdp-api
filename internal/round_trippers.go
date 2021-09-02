@@ -103,8 +103,10 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 		out := ""
 		dumped, err := httputil.DumpResponse(resp, true)
 		filtered := string(dumped)
-		for _, f := range filterList {
-			filtered = f.Regex.ReplaceAllString(filtered, f.Replace)
+		if !rt.debug {
+			for _, f := range filterList {
+				filtered = f.Regex.ReplaceAllString(filtered, f.Replace)
+			}
 		}
 		if err != nil {
 			out = fmt.Sprintf("[go-hsdp-api %s] --- Response dump error: %v\n", id, err)
