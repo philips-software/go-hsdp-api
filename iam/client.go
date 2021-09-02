@@ -218,8 +218,6 @@ func (c *Client) Token() string {
 			return ""
 		}
 	}
-	c.Lock()
-	defer c.Unlock()
 
 	return c.token
 }
