@@ -88,7 +88,11 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 	}
 	ac.ID = id
 	if len(scopes) > 0 {
-		_, _, _ = c.UpdateScopes(ac, scopes, defaultScopes)
+		_, resp, err := c.UpdateScopes(ac, scopes, defaultScopes)
+		if err != nil {
+			_, _, _ = c.DeleteClient(ac) // Clean up
+			return nil, resp, fmt.Errorf("CreateClient.UpdateScopes: %w", err)
+		}
 	}
 	return c.GetClientByID(id)
 }
