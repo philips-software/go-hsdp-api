@@ -11,17 +11,17 @@ import (
 // NetworkConnection
 type NetworkConnection struct {
 	Port             int    `json:"port"`
-	HostName         string `json:"hostName"`
-	IPAddress        string `json:"ipAddress"`
-	DisableIPv6      bool   `json:"disableIpv6"`
+	HostName         string `json:"hostName,omitempty"`
+	IPAddress        string `json:"ipAddress,omitempty"`
+	DisableIPv6      bool   `json:"disableIpv6,omitempty"`
 	AdvancedSettings struct {
 		PDULength              int `json:"pduLength"`
 		ArtimTimeOut           int `json:"artimTimeOut"`
 		AssociationIdleTimeOut int `json:"associationIdleTimeOut"`
 	} `json:"advancedSettings"`
-	CertificateInfo               CertificateInfo `json:"certificateInfo"`
-	AuthenticateClientCertificate bool            `json:"authenticateClientCertificate"`
-	NetworkTimeout                int             `json:"networkTimeout"`
+	CertificateInfo               CertificateInfo `json:"certificateInfo,omitempty"`
+	AuthenticateClientCertificate bool            `json:"authenticateClientCertificate,omitempty"`
+	NetworkTimeout                int             `json:"networkTimeout,omitempty"`
 	IsSecure                      bool            `json:"isSecure"`
 }
 
