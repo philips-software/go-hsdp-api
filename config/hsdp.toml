@@ -326,3 +326,23 @@ url = "https://aiinference-service.us-east.philips-healthsuite.com"
 url = "https://client-test-aiinference-service.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.inference]
 url = "https://aiinference-service.eu-west.philips-healthsuite.com"
+
+# Service WORKSPACE
+[region.us-east.env.client-test.service.workspace]
+url = "https://client-test-aiworkspace-service.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.workspace]
+url = "https://aiworkspace-service.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.workspace]
+url = "https://client-test-aiworkspace-service.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.workspace]
+url = "https://aiworkspace-service.eu-west.philips-healthsuite.com"
+
+# Service TRAINING
+[region.us-east.env.client-test.service.training]
+url = "https://client-test-training-service.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.training]
+url = "https://training-service.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.training]
+url = "https://client-test-training-service.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.training]
+url = "https://training-service.eu-west.philips-healthsuite.com"

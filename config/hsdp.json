@@ -185,6 +185,12 @@
             },
             "s3creds": {
               "url": "https://s3creds-client-test.eu-west.philips-healthsuite.com"
+            },
+            "training": {
+              "url": "https://client-test-training-service.eu-west.philips-healthsuite.com"
+            },
+            "workspace": {
+              "url": "https://client-test-aiworkspace-service.eu-west.philips-healthsuite.com"
             }
           }
         },
@@ -213,6 +219,12 @@
             },
             "s3creds": {
               "url": "https://s3creds-service.eu-west.philips-healthsuite.com"
+            },
+            "training": {
+              "url": "https://training-service.eu-west.philips-healthsuite.com"
+            },
+            "workspace": {
+              "url": "https://aiworkspace-service.eu-west.philips-healthsuite.com"
             }
           }
         }
@@ -335,6 +347,12 @@
             },
             "s3creds": {
               "url": "https://s3creds-client-test.us-east.philips-healthsuite.com"
+            },
+            "training": {
+              "url": "https://client-test-training-service.us-east.philips-healthsuite.com"
+            },
+            "workspace": {
+              "url": "https://client-test-aiworkspace-service.us-east.philips-healthsuite.com"
             }
           }
         },
@@ -379,6 +397,12 @@
             },
             "s3creds": {
               "url": "https://s3creds-service.us-east.philips-healthsuite.com"
+            },
+            "training": {
+              "url": "https://training-service.us-east.philips-healthsuite.com"
+            },
+            "workspace": {
+              "url": "https://aiworkspace-service.us-east.philips-healthsuite.com"
             }
           }
         },
