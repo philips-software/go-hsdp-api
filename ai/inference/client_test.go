@@ -132,7 +132,7 @@ func setup(t *testing.T) func() {
 	assert.Nil(t, err)
 
 	inferenceClient, err = inference.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverInference.URL,
+		BaseURL:        serverInference.URL,
 		OrganizationID: inferenceTenantID,
 	})
 	if !assert.Nilf(t, err, "failed to create notificationClient: %v", err) {
@@ -204,7 +204,7 @@ func TestDebug(t *testing.T) {
 	}
 
 	inferenceClient, err = inference.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverInference.URL,
+		BaseURL:        serverInference.URL,
 		DebugLog:       tempFile.Name(),
 		OrganizationID: "xxx",
 	})

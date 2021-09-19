@@ -130,7 +130,7 @@ func setup(t *testing.T) func() {
 	assert.Nil(t, err)
 
 	aiClient, err = ai.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverAI.URL,
+		BaseURL:        serverAI.URL,
 		OrganizationID: aiTenantID,
 		Service:        "inference",
 	})
@@ -169,7 +169,7 @@ func TestDebug(t *testing.T) {
 	}
 
 	aiClient, err = ai.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverAI.URL,
+		BaseURL:        serverAI.URL,
 		DebugLog:       tempFile.Name(),
 		Service:        "inference",
 		OrganizationID: "xxx",

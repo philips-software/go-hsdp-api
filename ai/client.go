@@ -33,18 +33,18 @@ type Config struct {
 	Region         string
 	Environment    string
 	OrganizationID string `Validate:"required"`
-	AnalyzeURL     string
+	BaseURL        string
 	Service        string `Validate:"required"`
 	DebugLog       string
 	Retry          int
 }
 
-// A Client manages communication with HSDP AI Analyze API
+// A Client manages communication with HSDP AI APIs
 type Client struct {
 	// HTTP Client used to communicate with IAM API
-	iamClient  *iam.Client
-	config     *Config
-	analyzeURL *url.URL
+	iamClient *iam.Client
+	config    *Config
+	baseURL   *url.URL
 
 	// User agent used when communicating with the HSDP Notification API
 	UserAgent string
@@ -65,7 +65,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	doAutoconf(config)
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
 
-	if err := c.SetAnalyzeURL(config.AnalyzeURL); err != nil {
+	if err := c.SetBaseURL(config.BaseURL); err != nil {
 		return nil, err
 	}
 
@@ -81,9 +81,9 @@ func doAutoconf(config *Config) {
 			autoconf.WithRegion(config.Region),
 			autoconf.WithEnv(config.Environment))
 		if err == nil {
-			analyzeService := c.Service(config.Service)
-			if analyzeService.URL != "" && config.AnalyzeURL == "" {
-				config.AnalyzeURL = analyzeService.URL
+			theService := c.Service(config.Service)
+			if theService.URL != "" && config.BaseURL == "" {
+				config.BaseURL = theService.URL
 			}
 		}
 	}
@@ -97,64 +97,64 @@ func (c *Client) Close() {
 	}
 }
 
-// GetAnalyzeURL returns the base CDL Store base URL as configured
-func (c *Client) GetAnalyzeURL() string {
-	if c.analyzeURL == nil {
+// GetBaseURL returns the base URL as configured
+func (c *Client) GetBaseURL() string {
+	if c.baseURL == nil {
 		return ""
 	}
-	return c.analyzeURL.String()
+	return c.baseURL.String()
 }
 
-// SetAnalyzeURL sets the Notification URL for API requests
-func (c *Client) SetAnalyzeURL(urlStr string) error {
+// SetBaseURL sets the base URL for API requests
+func (c *Client) SetBaseURL(urlStr string) error {
 	if urlStr == "" {
-		return ErrAnalyzeURLCannotBeEmpty
+		return ErrBaseURLCannotBeEmpty
 	}
 	// Make sure the given URL end with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
 	var err error
-	c.analyzeURL, err = url.Parse(urlStr)
+	c.baseURL, err = url.Parse(urlStr)
 	return err
 }
 
 // GetEndpointURL returns the FHIR Store Endpoint URL as configured
 func (c *Client) GetEndpointURL() string {
-	return c.GetAnalyzeURL() + path.Join("analyze", c.config.Service, c.config.OrganizationID)
+	return c.GetBaseURL() + path.Join("analyze", c.config.Service, c.config.OrganizationID)
 }
 
 // SetEndpointURL sets the endpoint URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
 func (c *Client) SetEndpointURL(urlStr string) error {
 	if urlStr == "" {
-		return ErrAnalyzeURLCannotBeEmpty
+		return ErrBaseURLCannotBeEmpty
 	}
 	// Make sure the given URL ends with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
 	var err error
-	c.analyzeURL, err = url.Parse(urlStr)
+	c.baseURL, err = url.Parse(urlStr)
 	if err != nil {
 		return err
 	}
-	parts := strings.Split(c.analyzeURL.Path, "/")
+	parts := strings.Split(c.baseURL.Path, "/")
 	if len(parts) == 0 {
-		return ErrAnalyzeURLCannotBeEmpty
+		return ErrBaseURLCannotBeEmpty
 	}
 	if len(parts) < 5 {
 		return ErrInvalidEndpointURL
 	}
 	c.config.OrganizationID = parts[len(parts)-2]
-	c.analyzeURL.Path = "/"
+	c.baseURL.Path = "/"
 	return nil
 }
 
 func (c *Client) NewAIRequest(method, requestPath string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
-	u := *c.analyzeURL
+	u := *c.baseURL
 	// Set the encoded opaque data
-	u.Opaque = path.Join(c.analyzeURL.Path, "analyze", c.config.Service, c.config.OrganizationID, requestPath)
+	u.Opaque = path.Join(c.baseURL.Path, "analyze", c.config.Service, c.config.OrganizationID, requestPath)
 
 	if opt != nil {
 		q, err := query.Values(opt)

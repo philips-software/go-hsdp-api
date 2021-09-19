@@ -132,7 +132,7 @@ func setup(t *testing.T) func() {
 	assert.Nil(t, err)
 
 	workspaceClient, err = workspace.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverWorkspace.URL,
+		BaseURL:        serverWorkspace.URL,
 		OrganizationID: workspaceTenantID,
 	})
 	if !assert.Nilf(t, err, "failed to create notificationClient: %v", err) {
@@ -203,7 +203,7 @@ func TestDebug(t *testing.T) {
 	}
 
 	workspaceClient, err = workspace.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverWorkspace.URL,
+		BaseURL:        serverWorkspace.URL,
 		DebugLog:       tmpfile.Name(),
 		OrganizationID: "xxx",
 	})

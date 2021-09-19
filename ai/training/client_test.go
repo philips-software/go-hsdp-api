@@ -132,7 +132,7 @@ func setup(t *testing.T) func() {
 	assert.Nil(t, err)
 
 	trainingClient, err = training.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverTraining.URL,
+		BaseURL:        serverTraining.URL,
 		OrganizationID: trainingTenantID,
 	})
 	if !assert.Nilf(t, err, "failed to create notificationClient: %v", err) {
@@ -204,7 +204,7 @@ func TestDebug(t *testing.T) {
 	}
 
 	trainingClient, err = training.NewClient(iamClient, &ai.Config{
-		AnalyzeURL:     serverTraining.URL,
+		BaseURL:        serverTraining.URL,
 		DebugLog:       tmpfile.Name(),
 		OrganizationID: "xxx",
 	})
