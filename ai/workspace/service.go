@@ -33,6 +33,14 @@ type Workspace struct {
 	LastUpdated             string                    `json:"lastUpdated,omitempty"`
 }
 
+type AccessURL struct {
+	URL string `json:"url"`
+}
+
+type LogArtefact struct {
+	StartupLog []string `json:"startupLog"`
+}
+
 func (s *Service) path(components ...string) string {
 	return path.Join(components...)
 }
@@ -121,4 +129,60 @@ func (s *Service) GetWorkspaces(opt *ai.GetOptions, options ...ai.OptionFunc) ([
 		}
 	}
 	return workspaces, resp, err
+}
+
+func (s *Service) StartWorkspace(ws Workspace) (*ai.Response, error) {
+	req, err := s.client.NewAIRequest("POST", s.path("Workspace", ws.ID, "$start"), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Api-Version", ai.APIVersion)
+
+	return s.client.Do(req, nil)
+}
+
+func (s *Service) StopWorkspace(ws Workspace) (*ai.Response, error) {
+	req, err := s.client.NewAIRequest("POST", s.path("Workspace", ws.ID, "$stop"), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Api-Version", ai.APIVersion)
+
+	return s.client.Do(req, nil)
+}
+
+func (s *Service) GetWorkspaceAccessURL(ws Workspace) (*AccessURL, *ai.Response, error) {
+	req, err := s.client.NewAIRequest("POST", s.path("Workspace", ws.ID, "$accessUrl"), nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Api-Version", ai.APIVersion)
+
+	var accessURL AccessURL
+	resp, err := s.client.Do(req, &accessURL)
+	if err != nil {
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
+			return nil, resp, ai.ErrEmptyResult
+		}
+		return nil, resp, err
+	}
+	return &accessURL, resp, err
+}
+
+func (s *Service) GetWorkspaceLogs(ws Workspace) (*LogArtefact, *ai.Response, error) {
+	req, err := s.client.NewAIRequest("POST", s.path("Workspace", ws.ID, "$logs"), nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Api-Version", ai.APIVersion)
+
+	var artefact LogArtefact
+	resp, err := s.client.Do(req, &artefact)
+	if err != nil {
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
+			return nil, resp, ai.ErrEmptyResult
+		}
+		return nil, resp, err
+	}
+	return &artefact, resp, err
 }
