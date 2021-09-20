@@ -8,17 +8,17 @@ import (
 
 // AdvancedSettings
 type AdvancedSettings struct {
-	PDULength              int `json:"pduLength"`
-	ArtimTimeout           int `json:"artimTimeout"`
-	AssociationIdleTimeout int `json:"associationIdleTimeout"`
+	PDULength              int `json:"pduLength,omitempty"`
+	ArtimTimeout           int `json:"artimTimeout,omitempty"`
+	AssociationIdleTimeout int `json:"associationIdleTimeout,omitempty"`
 }
 
 // ApplicationEntity
 type ApplicationEntity struct {
-	AllowAny           bool               `json:"allowAny"`
-	AeTitle            string             `json:"aeTitle"`
-	OrganizationID     string             `json:"organizationId"`
-	AdditionalSettings AdditionalSettings `json:"additionalSettings"`
+	AllowAny           bool                `json:"allowAny"`
+	AeTitle            string              `json:"aeTitle"`
+	OrganizationID     string              `json:"organizationId"`
+	AdditionalSettings *AdditionalSettings `json:"additionalSettings"`
 }
 
 type AdditionalSettings struct {
@@ -30,8 +30,8 @@ type SCPConfig struct {
 	ID                        string              `json:"id,omitempty"`
 	Title                     string              `json:"title"`
 	Description               string              `json:"description,omitempty"`
-	UnSecureNetworkConnection NetworkConnection   `json:"unSecureNetworkConnection,omitempty"`
-	SecureNetworkConnection   NetworkConnection   `json:"secureNetworkConnection,omitempty"`
+	UnSecureNetworkConnection *NetworkConnection  `json:"unSecureNetworkConnection,omitempty"`
+	SecureNetworkConnection   *NetworkConnection  `json:"secureNetworkConnection,omitempty"`
 	ApplicationEntities       []ApplicationEntity `json:"applicationEntities,omitempty"`
 	// TODO: TransferCapability
 }

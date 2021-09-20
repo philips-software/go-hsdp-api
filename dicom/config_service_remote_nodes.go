@@ -10,19 +10,15 @@ import (
 
 // NetworkConnection
 type NetworkConnection struct {
-	Port             int    `json:"port,omitempty"`
-	HostName         string `json:"hostName,omitempty"`
-	IPAddress        string `json:"ipAddress,omitempty"`
-	DisableIPv6      bool   `json:"disableIpv6,omitempty"`
-	AdvancedSettings struct {
-		PDULength              int `json:"pduLength,omitempty"`
-		ArtimTimeOut           int `json:"artimTimeOut,omitempty"`
-		AssociationIdleTimeOut int `json:"associationIdleTimeOut,omitempty"`
-	} `json:"advancedSettings,omitempty"`
-	CertificateInfo               CertificateInfo `json:"certificateInfo,omitempty"`
-	AuthenticateClientCertificate bool            `json:"authenticateClientCertificate,omitempty"`
-	NetworkTimeout                int             `json:"networkTimeout,omitempty"`
-	IsSecure                      bool            `json:"isSecure"`
+	Port                          int               `json:"port,omitempty"`
+	HostName                      string            `json:"hostName,omitempty"`
+	IPAddress                     string            `json:"ipAddress,omitempty"`
+	DisableIPv6                   bool              `json:"disableIpv6,omitempty"`
+	AdvancedSettings              *AdvancedSettings `json:"advancedSettings,omitempty"`
+	CertificateInfo               *CertificateInfo  `json:"certificateInfo,omitempty"`
+	AuthenticateClientCertificate bool              `json:"authenticateClientCertificate,omitempty"`
+	NetworkTimeout                int               `json:"networkTimeout,omitempty"`
+	IsSecure                      bool              `json:"isSecure"`
 }
 
 type CertificateInfo struct {
