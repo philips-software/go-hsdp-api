@@ -30,9 +30,9 @@ type SCPConfig struct {
 	ID                        string              `json:"id,omitempty"`
 	Title                     string              `json:"title"`
 	Description               string              `json:"description,omitempty"`
-	UnSecureNetworkConnection NetworkConnection   `json:"unSecureNetworkConnection"`
-	SecureNetworkConnection   NetworkConnection   `json:"secureNetworkConnection"`
-	ApplicationEntities       []ApplicationEntity `json:"applicationEntities"`
+	UnSecureNetworkConnection NetworkConnection   `json:"unSecureNetworkConnection,omitempty"`
+	SecureNetworkConnection   NetworkConnection   `json:"secureNetworkConnection,omitempty"`
+	ApplicationEntities       []ApplicationEntity `json:"applicationEntities,omitempty"`
 	// TODO: TransferCapability
 }
 

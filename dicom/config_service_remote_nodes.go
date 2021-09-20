@@ -10,15 +10,15 @@ import (
 
 // NetworkConnection
 type NetworkConnection struct {
-	Port             int    `json:"port"`
+	Port             int    `json:"port,omitempty"`
 	HostName         string `json:"hostName,omitempty"`
 	IPAddress        string `json:"ipAddress,omitempty"`
 	DisableIPv6      bool   `json:"disableIpv6,omitempty"`
 	AdvancedSettings struct {
-		PDULength              int `json:"pduLength"`
-		ArtimTimeOut           int `json:"artimTimeOut"`
-		AssociationIdleTimeOut int `json:"associationIdleTimeOut"`
-	} `json:"advancedSettings"`
+		PDULength              int `json:"pduLength,omitempty"`
+		ArtimTimeOut           int `json:"artimTimeOut,omitempty"`
+		AssociationIdleTimeOut int `json:"associationIdleTimeOut,omitempty"`
+	} `json:"advancedSettings,omitempty"`
 	CertificateInfo               CertificateInfo `json:"certificateInfo,omitempty"`
 	AuthenticateClientCertificate bool            `json:"authenticateClientCertificate,omitempty"`
 	NetworkTimeout                int             `json:"networkTimeout,omitempty"`
@@ -26,7 +26,7 @@ type NetworkConnection struct {
 }
 
 type CertificateInfo struct {
-	ID string `json:"id"`
+	ID string `json:"id,omitempty"`
 }
 
 // RemoteNode
