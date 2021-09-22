@@ -18,7 +18,6 @@ type NetworkConnection struct {
 	CertificateInfo               *CertificateInfo  `json:"certificateInfo,omitempty"`
 	AuthenticateClientCertificate bool              `json:"authenticateClientCertificate,omitempty"`
 	NetworkTimeout                int               `json:"networkTimeout,omitempty"`
-	IsSecure                      bool              `json:"isSecure"`
 }
 
 type CertificateInfo struct {
