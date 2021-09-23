@@ -37,7 +37,7 @@ func (c *ConfigService) GetMoveService(opt *QueryOptions, options ...OptionFunc)
 		return nil, nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	var service SCPConfig
+	var service []SCPConfig
 	resp, err := c.client.do(req, &service)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
@@ -45,5 +45,8 @@ func (c *ConfigService) GetMoveService(opt *QueryOptions, options ...OptionFunc)
 		}
 		return nil, resp, err
 	}
-	return &service, resp, nil
+	if len(service) == 0 {
+		return nil, resp, ErrEmptyResult
+	}
+	return &service[0], resp, nil
 }
