@@ -42,11 +42,13 @@ func TestMoveServiceGetSet(t *testing.T) {
 			}
 			_, _ = io.WriteString(w, string(resp))
 		case "GET":
-			store := dicom.SCPConfig{
-				ID:          serviceID,
-				Description: "Some description",
+			stores := []dicom.SCPConfig{
+				{
+					ID:          serviceID,
+					Description: "Some description",
+				},
 			}
-			resp, err := json.Marshal(&store)
+			resp, err := json.Marshal(&stores)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
