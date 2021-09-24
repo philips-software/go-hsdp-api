@@ -82,6 +82,9 @@ func WithRegion(region string) OptionFunc {
 
 // WithEnv sets the environment of the newly created Config instance
 func WithEnv(env string) OptionFunc {
+	if env == "production" {
+		env = "prod"
+	}
 	return func(c *Config) error {
 		c.environment = env
 		return nil
