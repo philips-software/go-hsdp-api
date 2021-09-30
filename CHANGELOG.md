@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+# v0.45.0
+- CDR: Support for R4
+
+# v0.44.0
+- DICOM Gateway fixes
+
 # v0.43.0
 - AI Inference: initial support
 - AI Training: initial support

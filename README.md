@@ -38,6 +38,8 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Subscription management
   - [x] FHIR CRUD
   - [x] FHIR Patch
+  - [x] STU3
+  - [x] R4
 - [x] Telemetry Data Repository (TDR)
   - [x] Contract management
   - [x] Data Item management
