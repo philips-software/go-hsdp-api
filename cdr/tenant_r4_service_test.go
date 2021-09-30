@@ -7,22 +7,21 @@ import (
 	"testing"
 
 	"github.com/google/fhir/go/jsonformat"
-	r4 "github.com/philips-software/go-hsdp-api/cdr/helper/fhir/stu3"
-
+	"github.com/philips-software/go-hsdp-api/cdr/helper/fhir/r4"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTenantService(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+func TestR4TenantService(t *testing.T) {
+	teardown := setup(t, jsonformat.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
 
 	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/fhir+json")
+		w.Header().Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 		switch r.Method {
 		case "PUT":
-			if !assert.Equal(t, "application/fhir+json", r.Header.Get("Content-Type")) {
+			if !assert.Equal(t, "application/fhir+json;fhirVersion=4.0", r.Header.Get("Content-Type")) {
 				w.WriteHeader(http.StatusUnsupportedMediaType)
 				return
 			}
@@ -64,7 +63,7 @@ func TestTenantService(t *testing.T) {
 	if !assert.NotNil(t, org) {
 		return
 	}
-	newOrg, resp, err := cdrClient.TenantSTU3.Onboard(org)
+	newOrg, resp, err := cdrClient.TenantR4.Onboard(org)
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -76,7 +75,7 @@ func TestTenantService(t *testing.T) {
 	}
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
-	foundOrg, resp, err := cdrClient.TenantSTU3.GetOrganizationByID(orgID)
+	foundOrg, resp, err := cdrClient.TenantR4.GetOrganizationByID(orgID)
 	if !assert.Nil(t, err) {
 		return
 	}

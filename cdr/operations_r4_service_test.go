@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/fhir/go/jsonformat"
-	stu3pb "github.com/google/fhir/go/proto/google/fhir/proto/stu3/resources_go_proto"
+	r4pb "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/bundle_and_contained_resource_go_proto"
 
 	"github.com/philips-software/go-hsdp-api/cdr"
 
@@ -15,14 +15,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPatchOperation(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+func TestR4PatchOperation(t *testing.T) {
+	teardown := setup(t, jsonformat.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
 
 	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/fhir+json")
+		w.Header().Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 		switch r.Method {
 		case "PATCH":
 			if !assert.Equal(t, "application/json-patch+json", r.Header.Get("Content-Type")) {
@@ -66,7 +66,7 @@ func TestPatchOperation(t *testing.T) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
-	patched, resp, err := cdrClient.OperationsSTU3.Patch("Organization/"+orgID, []byte(`{"op": "replace","path": "/name","value": "Hospital2"}
+	patched, resp, err := cdrClient.OperationsR4.Patch("Organization/"+orgID, []byte(`{"op": "replace","path": "/name","value": "Hospital2"}
 `))
 	if !assert.Nil(t, err) {
 		return
@@ -80,17 +80,17 @@ func TestPatchOperation(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
-func TestPostOperation(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+func TestR4PostOperation(t *testing.T) {
+	teardown := setup(t, jsonformat.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
 
 	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/fhir+json")
+		w.Header().Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 		switch r.Method {
 		case "POST":
-			if !assert.Equal(t, "application/fhir+json", r.Header.Get("Content-Type")) {
+			if !assert.Equal(t, "application/fhir+json;fhirVersion=4.0", r.Header.Get("Content-Type")) {
 				w.WriteHeader(http.StatusUnsupportedMediaType)
 				return
 			}
@@ -108,7 +108,7 @@ func TestPostOperation(t *testing.T) {
 				w.WriteHeader(http.StatusUnprocessableEntity)
 				return
 			}
-			contained := unmarshalled.(*stu3pb.ContainedResource)
+			contained := unmarshalled.(*r4pb.ContainedResource)
 			onboardedOrg := contained.GetOrganization()
 			jsonOrg, err := ma.MarshalResource(onboardedOrg)
 			if !assert.Nil(t, err) {
@@ -121,7 +121,7 @@ func TestPostOperation(t *testing.T) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
-	patched, resp, err := cdrClient.OperationsSTU3.Post("Organization/"+orgID, []byte(`{
+	patched, resp, err := cdrClient.OperationsR4.Post("Organization/"+orgID, []byte(`{
   "resourceType": "Organization",
   "id": "dae89cf0-888d-4a26-8c1d-578e97365efc",
   "meta": {
@@ -150,17 +150,17 @@ func TestPostOperation(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 }
 
-func TestGetOperation(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+func TestR4GetOperation(t *testing.T) {
+	teardown := setup(t, jsonformat.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
 
 	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/fhir+json")
+		w.Header().Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 		switch r.Method {
 		case "GET":
-			if !assert.Equal(t, "application/fhir+json", r.Header.Get("Content-Type")) {
+			if !assert.Equal(t, "application/fhir+json;fhirVersion=4.0", r.Header.Get("Content-Type")) {
 				w.WriteHeader(http.StatusUnsupportedMediaType)
 				return
 			}
@@ -191,7 +191,7 @@ func TestGetOperation(t *testing.T) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
-	retrieved, resp, err := cdrClient.OperationsSTU3.Get("Organization/" + orgID)
+	retrieved, resp, err := cdrClient.OperationsR4.Get("Organization/" + orgID)
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -206,14 +206,14 @@ func TestGetOperation(t *testing.T) {
 	assert.Equal(t, "Hospital2", org.Name.Value)
 }
 
-func TestDeleteOperation(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+func TestR4DeleteOperation(t *testing.T) {
+	teardown := setup(t, jsonformat.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
 
 	muxCDR.HandleFunc("/store/fhir/"+cdrOrgID+"/Organization/"+orgID, func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/fhir+json")
+		w.Header().Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 		switch r.Method {
 		case "DELETE":
 			if !assert.Equal(t, cdr.APIVersion, r.Header.Get("API-Version")) {
@@ -225,7 +225,7 @@ func TestDeleteOperation(t *testing.T) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
-	ok, resp, err := cdrClient.OperationsSTU3.Delete("Organization/" + orgID)
+	ok, resp, err := cdrClient.OperationsR4.Delete("Organization/" + orgID)
 	if !assert.Nil(t, err) {
 		return
 	}

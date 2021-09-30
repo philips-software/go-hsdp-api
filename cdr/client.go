@@ -52,6 +52,9 @@ type Client struct {
 
 	TenantSTU3     *TenantSTU3Service
 	OperationsSTU3 *OperationsSTU3Service
+
+	TenantR4     *TenantR4Service
+	OperationsR4 *OperationsR4Service
 }
 
 // NewClient returns a new HSDP CDR API client. Configured console and IAM clients
@@ -69,17 +72,27 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	if err := c.SetFHIRStoreURL(fhirStore); err != nil {
 		return nil, err
 	}
-	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
+	maSTU3, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
 	}
-	um, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
+	umSTU3, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
+	if err != nil {
+		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
+	}
+	maR4, err := jsonformat.NewMarshaller(false, "", "", jsonformat.R4)
+	if err != nil {
+		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
+	}
+	umR4, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.R4)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
 
-	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
-	c.OperationsSTU3 = &OperationsSTU3Service{timeZone: config.TimeZone, client: c, ma: ma, um: um}
+	c.TenantSTU3 = &TenantSTU3Service{timeZone: config.TimeZone, client: c, ma: maSTU3, um: umSTU3}
+	c.OperationsSTU3 = &OperationsSTU3Service{timeZone: config.TimeZone, client: c, ma: maSTU3, um: umSTU3}
+	c.TenantR4 = &TenantR4Service{timeZone: config.TimeZone, client: c, ma: maR4, um: umR4}
+	c.OperationsR4 = &OperationsR4Service{timeZone: config.TimeZone, client: c, ma: maR4, um: umR4}
 
 	return c, nil
 }
@@ -177,7 +190,6 @@ func (c *Client) newCDRRequest(method, path string, bodyBytes []byte, options []
 		req.ContentLength = int64(bodyReader.Len())
 	}
 
-	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
 	req.Header.Set("API-Version", APIVersion)
 
@@ -211,6 +223,10 @@ func (c *Client) TokenRefresh() error {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
+	if req.Header.Get("Accept") == "" {
+		return nil, ErrMissingAcceptHeader
+	}
+
 	resp, err := c.iamClient.HttpClient().Do(req)
 	if err != nil {
 		return nil, err

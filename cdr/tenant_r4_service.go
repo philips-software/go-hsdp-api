@@ -8,10 +8,11 @@ import (
 
 	"github.com/google/fhir/go/jsonformat"
 
-	stu3pb "github.com/google/fhir/go/proto/google/fhir/proto/stu3/resources_go_proto"
+	r4bundle "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/bundle_and_contained_resource_go_proto"
+	r4pb "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/organization_go_proto"
 )
 
-type TenantSTU3Service struct {
+type TenantR4Service struct {
 	client   *Client
 	timeZone string
 	ma       *jsonformat.Marshaller
@@ -19,7 +20,7 @@ type TenantSTU3Service struct {
 }
 
 // Onboard onboards the organization on the CDR under the rootOrgID
-func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options ...OptionFunc) (*stu3pb.Organization, *Response, error) {
+func (t *TenantR4Service) Onboard(organization *r4pb.Organization, options ...OptionFunc) (*r4pb.Organization, *Response, error) {
 	organizationJSON, err := t.ma.MarshalResource(organization)
 	if err != nil {
 		return nil, nil, err
@@ -30,8 +31,8 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("Accept", "application/fhir+json")
-	req.Header.Set("Content-Type", "application/fhir+json")
+	req.Header.Set("Accept", "application/fhir+json;fhirVersion=4.0")
+	req.Header.Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 
 	var onboardResponse bytes.Buffer
 	resp, err := t.client.do(req, &onboardResponse)
@@ -45,18 +46,18 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	if err != nil {
 		return nil, resp, err
 	}
-	contained := unmarshalled.(*stu3pb.ContainedResource)
-	onboardedOrg := contained.GetOrganization()
-	return onboardedOrg, resp, nil
+	contained := unmarshalled.(*r4bundle.ContainedResource)
+	organization = contained.GetOrganization()
+	return organization, resp, nil
 }
 
-func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organization, *Response, error) {
+func (t *TenantR4Service) GetOrganizationByID(orgID string) (*r4pb.Organization, *Response, error) {
 	req, err := t.client.newCDRRequest(http.MethodGet, fmt.Sprintf("Organization/%s", orgID), nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("Accept", "application/fhir+json")
-	req.Header.Set("Content-Type", "application/fhir+json")
+	req.Header.Set("Accept", "application/fhir+json;fhirVersion=4.0")
+	req.Header.Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 
 	var getResponse bytes.Buffer
 	resp, err := t.client.do(req, &getResponse)
@@ -70,7 +71,7 @@ func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organizat
 	if err != nil {
 		return nil, resp, err
 	}
-	contained := unmarshalled.(*stu3pb.ContainedResource)
-	cdrOrg := contained.GetOrganization()
-	return cdrOrg, resp, nil
+	contained := unmarshalled.(*r4bundle.ContainedResource)
+	organization := contained.GetOrganization()
+	return organization, resp, nil
 }

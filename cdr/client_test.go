@@ -24,18 +24,16 @@ var (
 	muxCDR    *http.ServeMux
 	serverCDR *httptest.Server
 
-	iamClient    *iam.Client
-	cdrClient    *cdr.Client
-	cdrOrgID     = "48a0183d-a588-41c2-9979-737d15e9e860"
-	userUUID     = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
-	timeZone     = "Europe/Amsterdam"
-	token        string
-	refreshToken string
-	ma           *jsonformat.Marshaller
-	um           *jsonformat.Unmarshaller
+	iamClient *iam.Client
+	cdrClient *cdr.Client
+	cdrOrgID  = "48a0183d-a588-41c2-9979-737d15e9e860"
+	userUUID  = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
+	timeZone  = "Europe/Amsterdam"
+	ma        *jsonformat.Marshaller
+	um        *jsonformat.Unmarshaller
 )
 
-func setup(t *testing.T) func() {
+func setup(t *testing.T, version jsonformat.Version) func() {
 	muxIAM = http.NewServeMux()
 	serverIAM = httptest.NewServer(muxIAM)
 	muxIDM = http.NewServeMux()
@@ -44,8 +42,6 @@ func setup(t *testing.T) func() {
 	serverCDR = httptest.NewServer(muxCDR)
 
 	var err error
-	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
-	refreshToken = "31f1a449-ef8e-4bfc-a227-4f2353fde547"
 
 	iamClient, err = iam.NewClient(nil, &iam.Config{
 		OAuth2ClientID: "TestClient",
@@ -145,11 +141,11 @@ func setup(t *testing.T) func() {
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid client")
 	}
-	ma, err = jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
+	ma, err = jsonformat.NewMarshaller(false, "", "", version)
 	if !assert.Nil(t, err) {
 		t.Fatalf("failed to create marshaller")
 	}
-	um, err = jsonformat.NewUnmarshaller("Europe/Amsterdam", jsonformat.STU3)
+	um, err = jsonformat.NewUnmarshaller("Europe/Amsterdam", version)
 	if !assert.Nil(t, err) {
 		t.Fatalf("failed to create unmarshaller")
 	}
@@ -162,7 +158,7 @@ func setup(t *testing.T) func() {
 }
 
 func TestLogin(t *testing.T) {
-	teardown := setup(t)
+	teardown := setup(t, jsonformat.STU3)
 	defer teardown()
 
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
@@ -175,7 +171,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestDebug(t *testing.T) {
-	teardown := setup(t)
+	teardown := setup(t, jsonformat.STU3)
 	defer teardown()
 
 	tmpfile, err := ioutil.TempFile("", "example")
@@ -192,7 +188,9 @@ func TestDebug(t *testing.T) {
 	}
 
 	defer cdrClient.Close()
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer func() {
+		_ = os.Remove(tmpfile.Name())
+	}() // clean up
 
 	err = iamClient.Login("username", "password")
 	if !assert.Nil(t, err) {
@@ -205,7 +203,7 @@ func TestDebug(t *testing.T) {
 }
 
 func TestEndpoints(t *testing.T) {
-	teardown := setup(t)
+	teardown := setup(t, jsonformat.STU3)
 	defer teardown()
 
 	rootOrgID := "foo"
