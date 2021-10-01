@@ -9,8 +9,8 @@ import (
 // AdvancedSettings
 type AdvancedSettings struct {
 	PDULength              int `json:"pduLength,omitempty"`
-	ArtimTimeout           int `json:"artimTimeout,omitempty"`
-	AssociationIdleTimeout int `json:"associationIdleTimeout,omitempty"`
+	ArtimTimeout           int `json:"artimTimeOut,omitempty"`
+	AssociationIdleTimeout int `json:"associationIdleTimeOut,omitempty"`
 }
 
 // ApplicationEntity
