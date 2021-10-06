@@ -7,7 +7,7 @@ import (
 )
 
 // SetQueryService
-func (c *ConfigService) SetQueryService(svc SCPConfig, opt *QueryOptions, options ...OptionFunc) (*SCPConfig, *Response, error) {
+func (c *ConfigService) SetQueryService(svc BrokenSCPConfig, opt *QueryOptions, options ...OptionFunc) (*BrokenSCPConfig, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)
 	if err != nil {
 		return nil, nil, err
@@ -17,7 +17,7 @@ func (c *ConfigService) SetQueryService(svc SCPConfig, opt *QueryOptions, option
 		return nil, nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	var createdService SCPConfig
+	var createdService BrokenSCPConfig
 	resp, err := c.client.do(req, &createdService)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
@@ -30,14 +30,14 @@ func (c *ConfigService) SetQueryService(svc SCPConfig, opt *QueryOptions, option
 }
 
 // GetQueryService
-func (c *ConfigService) GetQueryService(opt *QueryOptions, options ...OptionFunc) (*SCPConfig, *Response, error) {
+func (c *ConfigService) GetQueryService(opt *QueryOptions, options ...OptionFunc) (*BrokenSCPConfig, *Response, error) {
 	bodyBytes := []byte("")
 	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/queryService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	var service SCPConfig
+	var service BrokenSCPConfig
 	resp, err := c.client.do(req, &service)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {

@@ -2,11 +2,12 @@ package dicom_test
 
 import (
 	"encoding/json"
-	"github.com/philips-software/go-hsdp-api/dicom"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/philips-software/go-hsdp-api/dicom"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestQueryServiceGetSet(t *testing.T) {
@@ -42,7 +43,7 @@ func TestQueryServiceGetSet(t *testing.T) {
 			}
 			_, _ = io.WriteString(w, string(resp))
 		case "GET":
-			store := dicom.SCPConfig{
+			store := dicom.BrokenSCPConfig{
 				ID:          serviceID,
 				Description: "Some description",
 			}
@@ -58,7 +59,7 @@ func TestQueryServiceGetSet(t *testing.T) {
 		}
 	})
 
-	created, resp, err := dicomClient.Config.SetQueryService(dicom.SCPConfig{
+	created, resp, err := dicomClient.Config.SetQueryService(dicom.BrokenSCPConfig{
 		Title:       "A title here",
 		Description: "A description here",
 		ApplicationEntities: []dicom.ApplicationEntity{

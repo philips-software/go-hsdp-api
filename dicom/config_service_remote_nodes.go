@@ -8,18 +8,6 @@ import (
 	"net/http"
 )
 
-// NetworkConnection
-type NetworkConnection struct {
-	Port             int               `json:"port,omitempty"`
-	HostName         string            `json:"hostName,omitempty"`
-	IPAddress        string            `json:"ipAddress,omitempty"`
-	DisableIPv6      bool              `json:"disableIpv6"`
-	IsSecure         bool              `json:"isSecure"`
-	AdvancedSettings *AdvancedSettings `json:"advancedSettings,omitempty"`
-	CertificateInfo  *CertificateInfo  `json:"certificateInfo,omitempty"`
-	NetworkTimeout   int               `json:"networkTimeout,omitempty"`
-}
-
 type CertificateInfo struct {
 	ID string `json:"id,omitempty"`
 }
