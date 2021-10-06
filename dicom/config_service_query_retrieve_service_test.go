@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestQueryServiceGetSet(t *testing.T) {
+func TestMoveServiceGetSet(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
 	serviceID := "f5a1e608-6787-4af1-a94a-4cbda7677a9c"
 
-	muxDICOM.HandleFunc("/store/dicom/config/dicom/production/queryService", func(w http.ResponseWriter, r *http.Request) {
+	muxDICOM.HandleFunc("/store/dicom/config/dicom/production/moveService", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/fhir+json")
 		switch r.Method {
 		case "POST":
@@ -43,11 +43,13 @@ func TestQueryServiceGetSet(t *testing.T) {
 			}
 			_, _ = io.WriteString(w, string(resp))
 		case "GET":
-			store := dicom.BrokenSCPConfig{
-				ID:          serviceID,
-				Description: "Some description",
+			stores := []dicom.SCPConfig{
+				{
+					ID:          serviceID,
+					Description: "Some description",
+				},
 			}
-			resp, err := json.Marshal(&store)
+			resp, err := json.Marshal(&stores)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -59,7 +61,7 @@ func TestQueryServiceGetSet(t *testing.T) {
 		}
 	})
 
-	created, resp, err := dicomClient.Config.SetQueryService(dicom.BrokenSCPConfig{
+	created, resp, err := dicomClient.Config.SetQueryRetrieveService(dicom.SCPConfig{
 		Title:       "A title here",
 		Description: "A description here",
 		ApplicationEntities: []dicom.ApplicationEntity{
@@ -69,7 +71,7 @@ func TestQueryServiceGetSet(t *testing.T) {
 			},
 		},
 	}, nil)
-	if !assert.Nil(t, err) {
+	if !assert.Equal(t, nil, err) {
 		return
 	}
 	if !assert.NotNil(t, resp) {
@@ -81,7 +83,7 @@ func TestQueryServiceGetSet(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, created.ID, serviceID)
 
-	services, resp, err := dicomClient.Config.GetQueryService(nil)
+	services, resp, err := dicomClient.Config.GetQueryRetrieveService(nil)
 	if !assert.Nil(t, err) {
 		return
 	}
