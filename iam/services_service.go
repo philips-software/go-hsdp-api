@@ -200,7 +200,33 @@ func (p *ServicesService) DeleteService(service Service) (bool, *Response, error
 	return true, resp, nil
 }
 
-// UpdateServiceCertificate updates the associated public key of the service
+// UpdateServiceCertificateDER updates the associated certificate of the service using raw DER
+func (p *ServicesService) UpdateServiceCertificateDER(service Service, derBytes []byte) (*Service, *Response, error) {
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+
+	var request = struct {
+		Certificate string `json:"certificate"`
+	}{
+		Certificate: string(certPEM),
+	}
+	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Service/"+service.ID+"/$update-certificate", request, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", servicesAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+	var updateResponse bytes.Buffer
+	resp, err := p.client.do(req, &updateResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	if resp == nil || resp.StatusCode != http.StatusOK {
+		return nil, resp, err
+	}
+	return p.GetServiceByID(service.ID)
+}
+
+// UpdateServiceCertificate updates the associated certificate of the service
 func (p *ServicesService) UpdateServiceCertificate(service Service, privateKey *rsa.PrivateKey, options ...CertificateOptionFunc) (*Service, *Response, error) {
 	keyUsage := x509.KeyUsageDigitalSignature
 	keyUsage |= x509.KeyUsageKeyEncipherment
@@ -232,28 +258,7 @@ func (p *ServicesService) UpdateServiceCertificate(service Service, privateKey *
 	if err != nil {
 		return nil, nil, err
 	}
-	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
-
-	var request = struct {
-		Certificate string `json:"certificate"`
-	}{
-		Certificate: string(certPEM),
-	}
-	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Service/"+service.ID+"/$update-certificate", request, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("api-version", servicesAPIVersion)
-	req.Header.Set("Content-Type", "application/json")
-	var updateResponse bytes.Buffer
-	resp, err := p.client.do(req, &updateResponse)
-	if err != nil {
-		return nil, resp, err
-	}
-	if resp == nil || resp.StatusCode != http.StatusOK {
-		return nil, resp, err
-	}
-	return p.GetServiceByID(service.ID)
+	return p.UpdateServiceCertificateDER(service, derBytes)
 }
 
 // AddScopes add scopes to the service
