@@ -61,7 +61,7 @@ func TestMoveServiceGetSet(t *testing.T) {
 		}
 	})
 
-	created, resp, err := dicomClient.Config.SetQueryRetrieveService(dicom.SCPConfig{
+	created, resp, err := dicomClient.Config.SetQueryRetrieveService(dicom.BrokenSCPConfig{
 		Title:       "A title here",
 		Description: "A description here",
 		ApplicationEntities: []dicom.ApplicationEntity{
