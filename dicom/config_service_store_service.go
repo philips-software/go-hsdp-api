@@ -37,7 +37,7 @@ type BrokenNetworkConnection struct {
 // This is a subtle but significant issue i.e. we can't use the regular SCPConfig struct
 // in places where the different cased JSON fields are expected. Fixing the API would
 // also mean bumping the version number. Until that time we will keep the BrokenSCPConfig
-// definition here. We have prefixed it so it stays on the radar.
+// definition here. We have prefixed it, so it stays on the radar.
 type BrokenSCPConfig struct {
 	ID                        string                   `json:"id,omitempty"`
 	Title                     string                   `json:"title"`
