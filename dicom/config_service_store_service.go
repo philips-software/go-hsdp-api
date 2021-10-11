@@ -32,12 +32,12 @@ type SCPConfig struct {
 }
 
 // SetStoreService
-func (c *ConfigService) SetStoreService(svc SCPConfig, options ...OptionFunc) (*SCPConfig, *Response, error) {
+func (c *ConfigService) SetStoreService(svc SCPConfig, opt *QueryOptions, options ...OptionFunc) (*SCPConfig, *Response, error) {
 	bodyBytes, err := json.Marshal(svc)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/storeService", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/storeService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
