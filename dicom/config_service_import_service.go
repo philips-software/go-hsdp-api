@@ -7,8 +7,9 @@ import (
 )
 
 type ImportService struct {
-	ID      string `json:"id,omitempty"`
-	AETitle string `json:"aeTitle"`
+	ID          string `json:"id,omitempty"`
+	AETitle     string `json:"aeTitle"`
+	Description string `json:"description,omitempty"`
 }
 
 // SetImportService
