@@ -93,9 +93,9 @@ func (c *ConfigService) SetStoreService(svc BrokenSCPConfig, opt *QueryOptions, 
 }
 
 // GetStoreService
-func (c *ConfigService) GetStoreService(options ...OptionFunc) (*BrokenSCPConfig, *Response, error) {
+func (c *ConfigService) GetStoreService(opt *QueryOptions, options ...OptionFunc) (*BrokenSCPConfig, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/storeService", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/storeService", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
