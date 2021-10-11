@@ -13,14 +13,14 @@ type AdvancedSettings struct {
 	AssociationIdleTimeout int `json:"associationIdleTimeOut,omitempty"`
 }
 
-// AdvancedSettings
+// BrokenAdvancedSettings
 type BrokenAdvancedSettings struct {
 	PDULength              int `json:"pduLength,omitempty"`
 	ArtimTimeout           int `json:"artimTimeout,omitempty"`
 	AssociationIdleTimeout int `json:"associationIdleTimeout,omitempty"`
 }
 
-// NetworkConnection
+// BrokenNetworkConnection
 type BrokenNetworkConnection struct {
 	Port             int                     `json:"port,omitempty"`
 	HostName         string                  `json:"hostName,omitempty"`
@@ -30,7 +30,14 @@ type BrokenNetworkConnection struct {
 	NetworkTimeout   int                     `json:"networkTimeout,omitempty"`
 }
 
-// SCPConfig
+// BrokenSCPConfig
+//
+// The backstory of the 'Broken' prefix is that at least one JSON field has a difference in casing
+// usage e.g.: 'associationIdleTimeout' vs 'associationIdleTimeOut'
+// This is a subtle but significant issue i.e. we can't use the regular SCPConfig struct
+// in places where the different cased JSON fields are expected. Fixing the API would
+// also mean bumping the version number. Until that time we will keep the BrokenSCPConfig
+// definition here. We have prefixed it so it stays on the radar.
 type BrokenSCPConfig struct {
 	ID                        string                   `json:"id,omitempty"`
 	Title                     string                   `json:"title"`
