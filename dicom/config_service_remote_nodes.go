@@ -21,12 +21,12 @@ type RemoteNode struct {
 }
 
 // CreateRemoteNode
-func (c *ConfigService) CreateRemoteNode(node RemoteNode, options ...OptionFunc) (*RemoteNode, *Response, error) {
+func (c *ConfigService) CreateRemoteNode(node RemoteNode, opt *QueryOptions, options ...OptionFunc) (*RemoteNode, *Response, error) {
 	bodyBytes, err := json.Marshal(node)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("POST", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -45,7 +45,7 @@ func (c *ConfigService) CreateRemoteNode(node RemoteNode, options ...OptionFunc)
 // GetRemoteNodes
 func (c *ConfigService) GetRemoteNodes(opt *QueryOptions, options ...OptionFunc) (*[]RemoteNode, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/remoteNodes", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -84,9 +84,9 @@ func (c *ConfigService) GetRemoteNode(id string, opt *QueryOptions, options ...O
 }
 
 // DeleteRemoteNode
-func (c *ConfigService) DeleteRemoteNode(node RemoteNode, options ...OptionFunc) (bool, *Response, error) {
+func (c *ConfigService) DeleteRemoteNode(node RemoteNode, opt *QueryOptions, options ...OptionFunc) (bool, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/remoteNodes/"+node.ID, bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/remoteNodes/"+node.ID, bodyBytes, opt, options...)
 	if err != nil {
 		return false, nil, err
 	}
