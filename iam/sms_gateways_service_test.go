@@ -21,9 +21,9 @@ const (
   },
   "provider": "twilio",
   "properties": {
-    "sid": "***REMOVED***",
+    "sid": "wUWcn4hjWIhMM8KhRTQTnv9IfUFNTOSY9O0etw5jdF3BJ8aR",
     "endpoint": "https://api.twilio.com/SubOrg2/sendsms",
-    "fromNumber": "+447380336672"
+    "fromNumber": "+4412345682"
   },
   "credentials": {
     "token": "[sensitive]"
@@ -89,7 +89,7 @@ func TestCreateSMSGateway(t *testing.T) {
 		},
 		Active: true,
 		Properties: ProviderProperties{
-			SID:        "***REMOVED***",
+			SID:        "wUWcn4hjWIhMM8KhRTQTnv9IfUFNTOSY9O0etw5jdF3BJ8aR",
 			Endpoint:   "https://api.twilio.com/SubOrg2/sendsms",
 			FromNumber: "+447380336672",
 		},
