@@ -54,6 +54,15 @@ type GetSMSGatewayOptions struct {
 	ExcludedAttributes *string `url:"excludedAttributes,omitempty"`
 }
 
+func SMSGatewayFilterOrgEq(orgID string) *GetSMSGatewayOptions {
+	query := "id eq \"" + orgID + "\""
+	attributes := "id"
+	return &GetSMSGatewayOptions{
+		Filter:     &query,
+		Attributes: &attributes,
+	}
+}
+
 // CreateSMSGateway creates a SMS gateway for IAM
 func (o *SMSGatewaysService) CreateSMSGateway(gw SMSGateway) (*SMSGateway, *Response, error) {
 	gw.Schemas = []string{
@@ -83,8 +92,8 @@ func (o *SMSGatewaysService) CreateSMSGateway(gw SMSGateway) (*SMSGateway, *Resp
 }
 
 // DeleteSMSGateway deletes the SMS gateway
-func (o *SMSGatewaysService) DeleteSMSGateway(org Organization) (bool, *Response, error) {
-	req, err := o.client.newRequest(IDM, "DELETE", "authorize/scim/v2/Configurations/SMSGateway/"+org.ID, nil, nil)
+func (o *SMSGatewaysService) DeleteSMSGateway(gw SMSGateway) (bool, *Response, error) {
+	req, err := o.client.newRequest(IDM, "DELETE", "authorize/scim/v2/Configurations/SMSGateway/"+gw.ID, nil, nil)
 	if err != nil {
 		return false, nil, err
 	}
