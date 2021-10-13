@@ -30,6 +30,7 @@ type SMSTemplate struct {
 	Type         string            `json:"type" validate:"required,oneof=PHONE_VERIFICATION LOGIN_OTP PASSWORD_RECOVERY PASSWORD_FAILED_ATTEMPTS"`
 	Message      string            `json:"message" validate:"required"`
 	Locale       string            `json:"locale" validate:"required"`
+	Meta         *Meta             `json:"meta,omitempty"`
 }
 
 // GetSMSTemplateOptions describes the criteria for looking up SMS templates
@@ -106,6 +107,7 @@ func (o *SMSTemplatesService) UpdateSMSGateway(template SMSTemplate) (*SMSTempla
 	}
 	req.Header.Set("api-version", smsServicesAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("If-Match", template.Meta.Version)
 
 	var updatedTemplate SMSTemplate
 

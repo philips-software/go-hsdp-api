@@ -121,6 +121,7 @@ func (o *SMSGatewaysService) UpdateSMSGateway(gw SMSGateway) (*SMSGateway, *Resp
 	}
 	req.Header.Set("api-version", smsServicesAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("If-Match", gw.Meta.Version)
 
 	var updatedGW SMSGateway
 
