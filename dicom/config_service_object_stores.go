@@ -40,7 +40,7 @@ type StaticAccess struct {
 type ObjectStore struct {
 	ID                string              `json:"id,omitempty"`
 	Description       string              `json:"description,omitempty"`
-	AccessType        string              `json:"accessType" validate:"required,enum" enum:"direct,s3Creds"`
+	AccessType        string              `json:"accessType" validate:"required,oneof=direct s3Creds"`
 	CredServiceAccess *CredsServiceAccess `json:"credServiceAccess,omitempty"`
 	StaticAccess      *StaticAccess       `json:"staticAccess,omitempty"`
 	ErrorResponse
