@@ -92,6 +92,7 @@ type Client struct {
 	Devices          *DevicesService
 	EmailTemplates   *EmailTemplatesService
 	SMSGateways      *SMSGatewaysService
+	SMSTemplates     *SMSTemplatesService
 
 	sync.Mutex
 }
@@ -151,6 +152,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Devices = &DevicesService{client: c, validate: validator.New()}
 	c.EmailTemplates = &EmailTemplatesService{client: c, validate: validator.New()}
 	c.SMSGateways = &SMSGatewaysService{client: c, validate: validator.New()}
+	c.SMSTemplates = &SMSTemplatesService{client: c, validate: validator.New()}
 	return c, nil
 }
 

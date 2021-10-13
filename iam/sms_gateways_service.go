@@ -39,7 +39,7 @@ type SMSGateway struct {
 	ID               string              `json:"id,omitempty"`
 	Organization     OrganizationValue   `json:"organization" validate:"required"`
 	ExternalID       string              `json:"externalId,omitempty"`
-	Provider         string              `json:"provider" validate:"required,oneof='twilio'"`
+	Provider         string              `json:"provider" validate:"required,oneof=twilio"`
 	Properties       ProviderProperties  `json:"properties"`
 	Credentials      ProviderCredentials `json:"credentials" validate:"required"`
 	Active           bool                `json:"active"`

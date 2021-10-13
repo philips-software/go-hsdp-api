@@ -15,12 +15,19 @@ type SMSTemplatesService struct {
 	validate *validator.Validate
 }
 
+const (
+	TypePhoneVerification      = "PHONE_VERIFICATION"
+	TypeLoginOTP               = "LOGIN_OTP"
+	TypePasswordRecovery       = "PASSWORD_RECOVERY"
+	TypePasswordFailedAttempts = "PASSWORD_FAILED_ATTEMPTS"
+)
+
 type SMSTemplate struct {
 	Schemas      []string          `json:"schemas" validate:"required"`
 	ID           string            `json:"id,omitempty"`
 	Organization OrganizationValue `json:"organization" validate:"required"`
 	ExternalID   string            `json:"externalId,omitempty"`
-	Type         string            `json:"type" validate:"required"`
+	Type         string            `json:"type" validate:"required,oneof=PHONE_VERIFICATION LOGIN_OTP PASSWORD_RECOVERY PASSWORD_FAILED_ATTEMPTS"`
 	Message      string            `json:"message" validate:"required"`
 	Locale       string            `json:"locale" validate:"required"`
 }

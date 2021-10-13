@@ -32,7 +32,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Password Policies
   - [x] Email Templates
   - [x] SMS Gateways
-  - [ ] SMS Templates
+  - [x] SMS Templates
 - [x] Logging ([examples](logging/README.md))
 - [x] Auditing ([examples](audit/README.md))
 - [x] Clinical Data Repository (CDR)

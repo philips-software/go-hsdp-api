@@ -39,7 +39,7 @@ const (
     "resourceType": "SmsGatewayConfiguration",
     "created": "2021-10-12T18:48:11.888Z",
     "lastModified": "2021-10-12T18:48:11.888Z",
-    "location": "https://idm-client-test.us-east.philips-healthsuite.com/authorize/scim/v2/Configurations/SMSGateway/d7d4b8c2-e883-4fe8-9dcc-ccc3b072a1e7",
+    "location": "https://foo.bar.com/authorize/scim/v2/Configurations/SMSGateway/d7d4b8c2-e883-4fe8-9dcc-ccc3b072a1e7",
     "version": "W/\"\"-456396008\"\""
   },
   "active": true
