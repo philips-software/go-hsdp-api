@@ -112,6 +112,9 @@ func (o *SMSGatewaysService) DeleteSMSGateway(gw SMSGateway) (bool, *Response, e
 
 // UpdateSMSGateway updates the SMS gateway
 func (o *SMSGatewaysService) UpdateSMSGateway(gw SMSGateway) (*SMSGateway, *Response, error) {
+	gw.Schemas = []string{
+		"urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:SMSGateway",
+	}
 	req, err := o.client.newRequest(IDM, "PUT", "authorize/scim/v2/Configurations/SMSGateway/"+gw.ID, &gw, nil)
 	if err != nil {
 		return nil, nil, err

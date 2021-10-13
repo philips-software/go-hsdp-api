@@ -97,6 +97,9 @@ func (o *SMSTemplatesService) DeleteSMSTemplate(template SMSTemplate) (bool, *Re
 
 // UpdateSMSGateway updates the SMS gateway
 func (o *SMSTemplatesService) UpdateSMSGateway(template SMSTemplate) (*SMSTemplate, *Response, error) {
+	template.Schemas = []string{
+		"urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:SMSTemplate",
+	}
 	req, err := o.client.newRequest(IDM, "PUT", "authorize/scim/v2/Configurations/SMSTemplate/"+template.ID, &template, nil)
 	if err != nil {
 		return nil, nil, err
