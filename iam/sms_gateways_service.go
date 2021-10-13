@@ -37,7 +37,7 @@ type OrganizationValue struct {
 type SMSGateway struct {
 	Schemas          []string            `json:"schemas" validate:"required"`
 	ID               string              `json:"id,omitempty"`
-	Organization     OrganizationValue   `json:"organization"`
+	Organization     OrganizationValue   `json:"organization" validate:"required"`
 	ExternalID       string              `json:"externalId,omitempty"`
 	Provider         string              `json:"provider" validate:"required,oneof='twilio'"`
 	Properties       ProviderProperties  `json:"properties"`
@@ -147,7 +147,7 @@ func (o *SMSGatewaysService) GetSMSGatewayByID(id string) (*SMSGateway, *Respons
 	return &foundGW, resp, nil
 }
 
-// GetSMSGateway retrieves an organization based on the GetSMSGatewayOptions parameters.
+// GetSMSGateway retrieves an SMS gateway based on the GetSMSGatewayOptions parameters.
 func (o *SMSGatewaysService) GetSMSGateway(opt *GetSMSGatewayOptions, options ...OptionFunc) (*SMSGateway, *Response, error) {
 	req, err := o.client.newRequest(IDM, "GET", "authorize/scim/v2/Configurations/SMSGateway", opt, options)
 	if err != nil {
