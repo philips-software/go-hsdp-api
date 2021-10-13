@@ -85,7 +85,7 @@ func TestCreateSMSGateway(t *testing.T) {
 		},
 		Provider: "twilio",
 		Credentials: ProviderCredentials{
-			Token: "***REMOVED***",
+			Token: "[sensitive]",
 		},
 		Active: true,
 		Properties: ProviderProperties{
