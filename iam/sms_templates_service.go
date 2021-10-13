@@ -40,10 +40,10 @@ type GetSMSTemplateOptions struct {
 	ExcludedAttributes *string `url:"excludedAttributes,omitempty"`
 }
 
-func SMSTemplateFilterOrgTypeLang(orgID, templateType, locale string) *GetSMSGatewayOptions {
+func SMSTemplateFilterOrgTypeLang(orgID, templateType, locale string) *GetSMSTemplateOptions {
 	query := "organization.value eq \"" + orgID + "\" and type eq \"" + templateType + "\" and locale eq \"" + locale + "\""
 	attributes := "id"
-	return &GetSMSGatewayOptions{
+	return &GetSMSTemplateOptions{
 		Filter:     &query,
 		Attributes: &attributes,
 	}
@@ -72,7 +72,7 @@ func (o *SMSTemplatesService) CreateSMSTemplate(template SMSTemplate) (*SMSTempl
 		return nil, resp, err
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, resp, fmt.Errorf("error creating sms gateway: %d", resp.StatusCode)
+		return nil, resp, fmt.Errorf("error creating sms template: %d", resp.StatusCode)
 	}
 	return &newTemplate, resp, err
 }
@@ -96,8 +96,8 @@ func (o *SMSTemplatesService) DeleteSMSTemplate(template SMSTemplate) (bool, *Re
 	return resp.StatusCode == http.StatusAccepted, resp, nil
 }
 
-// UpdateSMSGateway updates the SMS gateway
-func (o *SMSTemplatesService) UpdateSMSGateway(template SMSTemplate) (*SMSTemplate, *Response, error) {
+// UpdateSMSTemplate updates the SMS template
+func (o *SMSTemplatesService) UpdateSMSTemplate(template SMSTemplate) (*SMSTemplate, *Response, error) {
 	template.Schemas = []string{
 		"urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:SMSTemplate",
 	}
