@@ -29,7 +29,7 @@ type SMSTemplate struct {
 	ExternalID   string            `json:"externalId,omitempty"`
 	Type         string            `json:"type" validate:"required,oneof=PHONE_VERIFICATION LOGIN_OTP PASSWORD_RECOVERY PASSWORD_FAILED_ATTEMPTS"`
 	Message      string            `json:"message" validate:"required"`
-	Locale       string            `json:"locale" validate:"required"`
+	Locale       string            `json:"locale,omitempty"`
 	Meta         *Meta             `json:"meta,omitempty"`
 }
 
