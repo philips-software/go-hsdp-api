@@ -6,33 +6,53 @@ import (
 
 // User represents a user profile in IAM
 type User struct {
-	PreferredLanguage    string `json:"preferredLanguage"`
-	EmailAddress         string `json:"emailAddress"`
-	ID                   string `json:"id"`
-	LoginID              string `json:"loginId"`
-	Name                 Name   `json:"name"`
-	ManagingOrganization string `json:"managingOrganization"`
-	PasswordStatus       struct {
-		PasswordExpiresOn time.Time `json:"passwordExpiresOn"`
-		PasswordChangedOn time.Time `json:"passwordChangedOn"`
-	} `json:"passwordStatus"`
-	Memberships []struct {
-		OrganizationID   string   `json:"organizationId"`
-		OrganizationName string   `json:"organizationName"`
-		Roles            []string `json:"roles"`
-		Groups           []string `json:"groups"`
-	} `json:"memberships"`
-	AccountStatus struct {
-		LastLoginTime          time.Time `json:"lastLoginTime"`
-		MfaStatus              string    `json:"mfaStatus"`
-		EmailVerified          bool      `json:"emailVerified"`
-		Disabled               bool      `json:"disabled"`
-		AccountLockedOn        time.Time `json:"accountLockedOn"`
-		AccountLockedUntil     time.Time `json:"accountLockedUntil"`
-		NumberOfInvalidAttempt int       `json:"numberOfInvalidAttempt"`
-		LastInvalidAttemptedOn time.Time `json:"lastInvalidAttemptedOn"`
-	} `json:"accountStatus"`
-	ConsentedApps []string `json:"consentedApps"`
+	PreferredLanguage             string             `json:"preferredLanguage"`
+	PreferredCommunicationChannel string             `json:"preferredCommunicationChannel,omitempty"`
+	EmailAddress                  string             `json:"emailAddress"`
+	PhoneNumber                   string             `json:"phoneNumber,omitempty"`
+	ID                            string             `json:"id"`
+	LoginID                       string             `json:"loginId"`
+	Name                          Name               `json:"name"`
+	ManagingOrganization          string             `json:"managingOrganization"`
+	PasswordStatus                UserPasswordStatus `json:"passwordStatus"`
+	Memberships                   []UserMembership   `json:"memberships,omitempty"`
+	AccountStatus                 UserAccountStatus  `json:"accountStatus"`
+	ConsentedApps                 []string           `json:"consentedApps,omitempty"`
+	Delegations                   UserDelegation     `json:"delegations,omitempty"`
+}
+
+type UserDelegation struct {
+	Granted  []UserDelegator `json:"granted"`
+	Received []UserDelegator `json:"received"`
+}
+
+type UserDelegator struct {
+	DelegateeID string `json:"delegateeId"`
+	ValidFrom   string `json:"validFrom"`
+	ValidUntil  string `json:"validUntil"`
+}
+
+type UserMembership struct {
+	OrganizationID   string   `json:"organizationId"`
+	OrganizationName string   `json:"organizationName"`
+	Roles            []string `json:"roles"`
+	Groups           []string `json:"groups"`
+}
+
+type UserAccountStatus struct {
+	LastLoginTime          time.Time `json:"lastLoginTime"`
+	MfaStatus              string    `json:"mfaStatus"`
+	EmailVerified          bool      `json:"emailVerified"`
+	Disabled               bool      `json:"disabled"`
+	AccountLockedOn        time.Time `json:"accountLockedOn"`
+	AccountLockedUntil     time.Time `json:"accountLockedUntil"`
+	NumberOfInvalidAttempt int       `json:"numberOfInvalidAttempt"`
+	LastInvalidAttemptedOn time.Time `json:"lastInvalidAttemptedOn"`
+}
+
+type UserPasswordStatus struct {
+	PasswordExpiresOn time.Time `json:"passwordExpiresOn"`
+	PasswordChangedOn time.Time `json:"passwordChangedOn"`
 }
 
 // Person represents an IAM user resource

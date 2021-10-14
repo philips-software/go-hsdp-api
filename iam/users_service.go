@@ -316,7 +316,7 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 		ProfileType: String("all"),
 	}
 	req, _ := u.client.newRequest(IDM, "GET", "authorize/identity/User", opt, nil)
-	req.Header.Set("api-version", userAPIVersion)
+	req.Header.Set("api-version", "3")
 
 	var responseStruct struct {
 		Total int    `json:"total"`
