@@ -349,6 +349,10 @@ func (u *UsersService) GetUserIDByLoginID(loginID string) (string, *Response, er
 func (u *UsersService) LegacyUpdateUser(profile Profile) (*Profile, *Response, error) {
 	// don't send blank addresses
 	profile.PruneBlankAddresses()
+	// Also clear out un-settable fields
+	profile.VerifiedMobilePhoneStatus = ""
+	profile.EmailVerifiedStatus = ""
+	profile.MustChangePassword = ""
 
 	req, _ := u.client.newRequest(IDM, "PUT", "security/users/"+profile.ID, profile, nil)
 	req.Header.Set("api-version", "2")
