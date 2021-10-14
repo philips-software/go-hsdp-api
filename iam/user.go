@@ -112,17 +112,22 @@ type Period struct {
 // Profile describes the response from legacy User APIs
 // The response does not correspond to the object that is used to create a user
 type Profile struct {
-	ID                string     `json:"-"`
-	GivenName         string     `json:"givenName"`
-	MiddleName        string     `json:"middleName"`
-	FamilyName        string     `json:"familyName"`
-	BirthDay          *time.Time `json:"birthDay,omitempty"`
-	DisplayName       string     `json:"displayName,omitempty"`
-	Gender            string     `json:"gender,omitempty" enum:"Male|Female"`
-	Country           string     `json:"country,omitempty"`
-	Contact           Contact    `json:"contact,omitempty"`
-	Addresses         []Address  `json:"addresses,omitempty"`
-	PreferredLanguage string     `json:"preferredLanguage,omitempty"`
+	ID                            string     `json:"-"`
+	GivenName                     string     `json:"givenName"`
+	MiddleName                    string     `json:"middleName"`
+	FamilyName                    string     `json:"familyName"`
+	BirthDay                      *time.Time `json:"birthDay,omitempty"`
+	DisplayName                   string     `json:"displayName,omitempty"`
+	Gender                        string     `json:"gender,omitempty" enum:"Male|Female"`
+	Country                       string     `json:"country,omitempty"`
+	Contact                       Contact    `json:"contact,omitempty"`
+	Addresses                     []Address  `json:"addresses,omitempty"`
+	Disabled                      *bool      `json:"disabled,omitempty"`
+	PreferredLanguage             string     `json:"preferredLanguage,omitempty"`
+	PreferredCommunicationChannel string     `json:"preferredCommunicationChannel,omitempty"`
+	VerifiedMobilePhoneStatus     string     `json:"verifiedMobilePhoneStatus,omitempty"`
+	EmailVerifiedStatus           string     `json:"emailVerifiedStatus,omitempty"`
+	MustChangePassword            string     `json:"mustChangePassword,omitempty"`
 }
 
 // PruneBlankAddresses removes addresses which are blank
@@ -146,7 +151,7 @@ func (p *Profile) PruneBlankAddresses() {
 func (p *Profile) MergeUser(user *User) {
 	p.GivenName = user.Name.Given
 	p.FamilyName = user.Name.Family
-	// See INC0058741 for backround for this workaround
+	// See INC0058741 for background for this workaround
 	if p.MiddleName == "" {
 		p.MiddleName = " "
 	}

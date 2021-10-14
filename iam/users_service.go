@@ -351,7 +351,7 @@ func (u *UsersService) LegacyUpdateUser(profile Profile) (*Profile, *Response, e
 	profile.PruneBlankAddresses()
 
 	req, _ := u.client.newRequest(IDM, "PUT", "security/users/"+profile.ID, profile, nil)
-	req.Header.Set("api-version", "1")
+	req.Header.Set("api-version", "2")
 
 	var responseStruct struct {
 		Exchange struct {
@@ -375,7 +375,7 @@ func (u *UsersService) LegacyUpdateUser(profile Profile) (*Profile, *Response, e
 // LegacyGetUserByUUID looks the a user by UUID using the legacy API
 func (u *UsersService) LegacyGetUserByUUID(uuid string) (*Profile, *Response, error) {
 	req, _ := u.client.newRequest(IDM, "GET", "security/users/"+uuid, nil, nil)
-	req.Header.Set("api-version", "1")
+	req.Header.Set("api-version", userAPIVersion)
 
 	var responseStruct struct {
 		Exchange struct {
