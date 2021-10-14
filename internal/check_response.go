@@ -19,7 +19,7 @@ func CheckResponse(r *http.Response) error {
 		data = []byte(err.Error())
 	}
 	if data == nil {
-		data = []byte("nil body")
+		data = []byte("empty")
 	}
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(data)) // Preserve body
 	return fmt.Errorf("%s %s: StatusCode %d, Body: %s", r.Request.Method, r.Request.RequestURI, r.StatusCode, string(data))

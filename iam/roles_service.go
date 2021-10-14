@@ -111,9 +111,9 @@ func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
 
 	resp, err := p.client.do(req, &deleteResponse)
 	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, resp, nil
+		return false, resp, err
 	}
-	return true, resp, err
+	return true, resp, nil
 }
 
 // GetRolePermissions retrieves the permissions associated with the Role

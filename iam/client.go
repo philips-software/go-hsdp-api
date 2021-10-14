@@ -512,7 +512,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		return response, err
 	}
 
-	if v != nil {
+	if v != nil && response.StatusCode != http.StatusNoContent {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {
