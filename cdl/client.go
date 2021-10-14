@@ -273,6 +273,7 @@ func (c *Client) newCDLRequest(method, path string, opt interface{}, options ...
 // returned from HSDP IAM and provides convenient access to things like errors
 type Response struct {
 	*http.Response
+	Link []LinkElementType
 }
 
 // newResponse creates a new Response for the provided http.Response.

@@ -101,51 +101,88 @@ func (s *StudyService) UpdateStudy(study Study) (*Study, *Response, error) {
 func (s *StudyService) GetStudies(opt *GetOptions, options ...OptionFunc) ([]Study, *Response, error) {
 	var studies []Study
 	var resp *Response
-	page := 0
 
-	if opt != nil && opt.Page != nil {
-		page = *opt.Page
+	req, err := s.client.newCDLRequest("GET", s.path("Study"), opt, options...)
+	if err != nil {
+		return nil, nil, err
 	}
-	if opt == nil {
-		opt = &GetOptions{
-			Page: &page,
+	req.Header.Set("Api-Version", "3")
+
+	var bundleResponse struct {
+		ResourceType string                 `json:"resourceType,omitempty"`
+		Type         string                 `json:"type,omitempty"`
+		Link         []LinkElementType      `json:"link,omitempty"`
+		Entry        []internal.BundleEntry `json:"entry"`
+	}
+	resp, err = s.client.do(req, &bundleResponse)
+	if err != nil {
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
+			return nil, resp, ErrEmptyResult
 		}
+		return nil, resp, err
+	}
+	resp.Link = bundleResponse.Link
+	for _, e := range bundleResponse.Entry {
+		var study Study
+		if err := json.Unmarshal(e.Resource, &study); err == nil {
+			studies = append(studies, study)
+		}
+	}
+	return studies, resp, err
+}
+
+func (s *StudyService) GetAllStudies(options ...OptionFunc) ([]Study, *Response, error) {
+	var allStudies []Study
+	page := 0
+	opt := &GetOptions{
+		Page: &page,
 	}
 	for {
-		req, err := s.client.newCDLRequest("GET", s.path("Study"), opt, options...)
+		studies, resp, err := s.GetStudies(opt, options...)
 		if err != nil {
-			return nil, nil, err
+			return allStudies, resp, err
 		}
-		req.Header.Set("Api-Version", "3")
+		allStudies = append(allStudies, studies...)
 
-		var bundleResponse struct {
-			ResourceType string                 `json:"resourceType,omitempty"`
-			Type         string                 `json:"type,omitempty"`
-			Link         []LinkElementType      `json:"link,omitempty"`
-			Entry        []internal.BundleEntry `json:"entry"`
-		}
-		resp, err = s.client.do(req, &bundleResponse)
-		if err != nil {
-			if resp != nil && resp.StatusCode == http.StatusNotFound {
-				return nil, resp, ErrEmptyResult
-			}
-			return nil, resp, err
-		}
-		for _, e := range bundleResponse.Entry {
-			var study Study
-			if err := json.Unmarshal(e.Resource, &study); err == nil {
-				studies = append(studies, study)
-			}
-		}
 		lastPage := true
-		for _, link := range bundleResponse.Link {
+		for _, link := range resp.Link {
 			if link.Relation == "next" {
 				lastPage = false
 				page += 1
 			}
 		}
 		if lastPage {
-			return studies, resp, err
+			return allStudies, resp, err
+		}
+	}
+}
+
+func (s *StudyService) GetStudyByTitle(title string, options ...OptionFunc) (*Study, *Response, error) {
+	page := 0
+	opt := &GetOptions{
+		Page: &page,
+	}
+
+	for {
+		studies, resp, err := s.GetStudies(opt, options...)
+		if err != nil {
+			return nil, resp, err
+		}
+		// Try to find in this badge
+		for _, study := range studies {
+			if study.Title == title {
+				return &study, resp, nil
+			}
+		}
+		lastPage := true
+		for _, link := range resp.Link {
+			if link.Relation == "next" {
+				lastPage = false
+				page += 1
+			}
+		}
+		if lastPage {
+			return nil, resp, fmt.Errorf("study not found")
 		}
 	}
 }
