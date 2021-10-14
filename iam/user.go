@@ -39,18 +39,19 @@ type User struct {
 type Person struct {
 	ID string `json:"id,omitempty" validate:"omitempty"`
 	// Pattern: ^((?![~`!#%^&*()+={}[\\]|/\\\\<>,;:\"'?])[\\S])*$
-	LoginID              string         `json:"loginId" validate:"required"`
-	ResourceType         string         `json:"resourceType,omitempty" validate:"required" enum:"Person"`
-	Name                 Name           `json:"name" validate:"required"`
-	Telecom              []TelecomEntry `json:"telecom,omitempty" validate:"min=1"`
-	Address              []AddressEntry `json:"address,omitempty"`
-	Description          string         `json:"description,omitempty"`
-	ManagingOrganization string         `json:"managingOrganization,omitempty"`
-	PreferredLanguage    string         `json:"preferredLanguage,omitempty"`
-	IsAgeValidated       string         `json:"isAgeValidated,omitempty"`
-	Password             string         `json:"password,omitempty"`
-	Disabled             bool           `json:"disabled"`
-	Loaded               bool           `json:"-"`
+	LoginID                       string         `json:"loginId" validate:"required"`
+	ResourceType                  string         `json:"resourceType,omitempty" validate:"required" enum:"Person"`
+	Name                          Name           `json:"name" validate:"required"`
+	Telecom                       []TelecomEntry `json:"telecom,omitempty" validate:"min=1"`
+	Address                       []AddressEntry `json:"address,omitempty"`
+	Description                   string         `json:"description,omitempty"`
+	ManagingOrganization          string         `json:"managingOrganization,omitempty"`
+	PreferredLanguage             string         `json:"preferredLanguage,omitempty"`
+	PreferredCommunicationChannel string         `json:"preferredCommunicationChannel,omitempty"`
+	IsAgeValidated                string         `json:"isAgeValidated,omitempty"`
+	Password                      string         `json:"password,omitempty"`
+	Disabled                      bool           `json:"disabled"`
+	Loaded                        bool           `json:"-"`
 }
 
 // Contact describes contact details of a Profile
