@@ -3,49 +3,70 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+# v0.46.1
+
+- CDL: Get all study pages
+- CDL: Add GetStudyByTitle method
+- IAM SMS Templates: locale and template fixes
+- IAM SMS: Add If-Match pre-condition
+
 # v0.46.0
+ 
 - DICOM: Breaking API changes
 - IAM SMS Gateway: Initial support
 - IAM SMS Templates: Initial support
 
 # v0.45.0
+- 
 - CDR: Support for R4
 
 # v0.44.0
+
 - DICOM Gateway fixes
 
 # v0.43.0
+ 
 - AI Inference: initial support
 - AI Training: initial support
 - AI Workspace: initial support
 
 # v0.42.3
+ 
 - CDL: add Export Routes CRD
 
 ## v0.42.2
+ 
 - CDL: delete call for label definitions
 
 ## v0.42.1
+ 
 - CDL: label definitions
 
 ## v0.42.0
+ 
 - Improve error messages by returning the request body as part of the error
 
 ## v0.41.2
+
 - CDL: add DTD support
 
 ## v0.41.1
+
 - Security: migrate to github.com/golang-jwt/jwt
 
 ## v0.41.0
+
 - Preliminary support for Clinical Data Lake (CDL) Resource studies
 
 ## v0.40.1
+
 - Debug log filtering improvements
 - Dependency upgrades
 - DICOM Remote nodes API call fix
 
 ## v0.40.0
+
 - Add Canada (ca1) region to service discovery
 - Add vault-proxy service
 
