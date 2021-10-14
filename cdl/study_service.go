@@ -34,6 +34,7 @@ type StudyService struct {
 
 // GetOptions describes the fields on which you can search for studies
 type GetOptions struct {
+	Page *int `url:"page,omitempty"`
 }
 
 func (s *StudyService) path(components ...string) string {
@@ -98,32 +99,55 @@ func (s *StudyService) UpdateStudy(study Study) (*Study, *Response, error) {
 }
 
 func (s *StudyService) GetStudies(opt *GetOptions, options ...OptionFunc) ([]Study, *Response, error) {
-	req, err := s.client.newCDLRequest("GET", s.path("Study"), opt, options...)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("Api-Version", "3")
-
-	var bundleResponse struct {
-		ResourceType string                 `json:"resourceType,omitempty"`
-		Type         string                 `json:"type,omitempty"`
-		Entry        []internal.BundleEntry `json:"entry"`
-	}
-	resp, err := s.client.do(req, &bundleResponse)
-	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return nil, resp, ErrEmptyResult
-		}
-		return nil, resp, err
-	}
 	var studies []Study
-	for _, e := range bundleResponse.Entry {
-		var study Study
-		if err := json.Unmarshal(e.Resource, &study); err == nil {
-			studies = append(studies, study)
+	var resp *Response
+	page := 0
+
+	if opt != nil && opt.Page != nil {
+		page = *opt.Page
+	}
+	if opt == nil {
+		opt = &GetOptions{
+			Page: &page,
 		}
 	}
-	return studies, resp, err
+	for {
+		req, err := s.client.newCDLRequest("GET", s.path("Study"), opt, options...)
+		if err != nil {
+			return nil, nil, err
+		}
+		req.Header.Set("Api-Version", "3")
+
+		var bundleResponse struct {
+			ResourceType string                 `json:"resourceType,omitempty"`
+			Type         string                 `json:"type,omitempty"`
+			Link         []LinkElementType      `json:"link,omitempty"`
+			Entry        []internal.BundleEntry `json:"entry"`
+		}
+		resp, err = s.client.do(req, &bundleResponse)
+		if err != nil {
+			if resp != nil && resp.StatusCode == http.StatusNotFound {
+				return nil, resp, ErrEmptyResult
+			}
+			return nil, resp, err
+		}
+		for _, e := range bundleResponse.Entry {
+			var study Study
+			if err := json.Unmarshal(e.Resource, &study); err == nil {
+				studies = append(studies, study)
+			}
+		}
+		lastPage := true
+		for _, link := range bundleResponse.Link {
+			if link.Relation == "next" {
+				lastPage = false
+				page += 1
+			}
+		}
+		if lastPage {
+			return studies, resp, err
+		}
+	}
 }
 
 func (s *StudyService) GetPermissions(study Study, opt *GetOptions, options ...OptionFunc) (RoleAssignmentResult, *Response, error) {
