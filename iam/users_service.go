@@ -161,9 +161,9 @@ func (u *UsersService) ChangeLoginID(user Person, newLoginID string) (bool, *Res
 	if !u.client.validSigner() {
 		doFunc = u.client.do
 	}
-	resp, _ := doFunc(req, &bundleResponse)
+	resp, err := doFunc(req, &bundleResponse)
 	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
-	return ok, resp, nil
+	return ok, resp, err
 }
 
 // ResendActivation re-sends an activation email to the given user
