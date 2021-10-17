@@ -41,8 +41,10 @@ type UserMembership struct {
 
 type UserAccountStatus struct {
 	LastLoginTime          time.Time `json:"lastLoginTime"`
-	MfaStatus              string    `json:"mfaStatus"`
+	MFAStatus              string    `json:"mfaStatus"`
 	EmailVerified          bool      `json:"emailVerified"`
+	PhoneVerified          bool      `json:"phoneVerified"`
+	MustChangePassword     bool      `json:"mustChangePassword"`
 	Disabled               bool      `json:"disabled"`
 	AccountLockedOn        time.Time `json:"accountLockedOn"`
 	AccountLockedUntil     time.Time `json:"accountLockedUntil"`
