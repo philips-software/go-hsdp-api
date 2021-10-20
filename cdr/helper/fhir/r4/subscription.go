@@ -82,7 +82,7 @@ func WithDeleteEndpoint(endpoint string) WithFunc {
 			Value: codes_go_proto.SubscriptionChannelTypeCode_REST_HOOK,
 		}
 		sub.Channel.Payload = &r4pbsub.Subscription_Channel_PayloadCode{
-			Value: "application/fhir+json;fhirVersion=4.0",
+			Value: "application/fhir+json",
 		}
 
 		return nil
