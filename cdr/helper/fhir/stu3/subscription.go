@@ -71,7 +71,7 @@ func WithDeleteEndpoint(endpoint string) WithFunc {
 			sub.Channel.Extension = make([]*stu3dt.Extension, 0)
 		}
 		sub.Channel.Extension = append(sub.Channel.Extension, &stu3dt.Extension{
-			Url: &stu3dt.Uri{Value: "http://hsdp.com/cdr/Subscription/deletionUri"},
+			Url: &stu3dt.Uri{Value: ExtDeleteURL},
 			Value: &stu3dt.Extension_ValueX{
 				Choice: &stu3dt.Extension_ValueX_Uri{
 					Uri: &stu3dt.Uri{Value: endpoint},
