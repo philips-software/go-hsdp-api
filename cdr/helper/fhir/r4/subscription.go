@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	ExtDeleteURL = "http://hsdp.com/cdr/Subscription/deletionUri"
+	ExtDeleteURL = "http://hsdp.com/cdr/4.0/Subscription/deletionUri"
 )
 
 type WithFunc func(sub *r4pbsub.Subscription) error
