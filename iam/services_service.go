@@ -76,8 +76,14 @@ func (s *Service) Valid() bool {
 	return true
 }
 
-// GetToken returns a JWT which can be exchanged for an access token
-func (s *Service) GetToken(accessTokenEndpoint string) (string, error) {
+// GetToken returns a JWT which can be exchanged for access token
+func (s *Service) GetToken(accessTokenEndpoint string) (signedString string, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			signedString = ""
+			err = fmt.Errorf("recovering from panic in GetToken: %v", r)
+		}
+	}()
 	// Decode private key
 	block, _ := pem.Decode([]byte(FixPEM(s.PrivateKey)))
 	if block == nil {
@@ -94,11 +100,11 @@ func (s *Service) GetToken(accessTokenEndpoint string) (string, error) {
 		"sub": s.ServiceID,
 		"exp": time.Now().Add(time.Minute * 60).Unix(),
 	})
-	signedString, err := token.SignedString(key)
+	signedString, err = token.SignedString(key)
 	if err != nil {
 		return "", err
 	}
-	return signedString, nil
+	return
 }
 
 // GetServiceByID looks up a service by ID
