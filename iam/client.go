@@ -209,7 +209,10 @@ func (c *Client) WithLogin(username, password string) (*Client, error) {
 }
 
 func (c *Client) accessTokenEndpoint() string {
-	return c.baseIAMURL.String() + "oauth2/access_token"
+	if c.baseIAMURL != nil {
+		return c.baseIAMURL.String() + "oauth2/access_token"
+	}
+	return ""
 }
 
 // Token returns the current token
