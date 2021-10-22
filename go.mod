@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/cenkalti/backoff/v4 v4.1.1
-	github.com/evanphx/json-patch/v5 v5.5.0
+	github.com/evanphx/json-patch/v5 v5.6.0
 	github.com/gin-gonic/gin v1.7.0 // indirect
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
