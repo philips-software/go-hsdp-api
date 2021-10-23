@@ -35,6 +35,8 @@ type Resource struct {
 	ServerName          string                 `json:"serverName"`          // app.example.com
 	LogTime             string                 `json:"logTime"`             // 2017-01-31T08:00:00Z
 	Severity            string                 `json:"severity"`            // INFO
+	TraceID             string                 `json:"traceId"`             // xxx
+	SpanID              string                 `json:"spanId"`              // yyy
 	LogData             LogData                `json:"logData"`             // Log data
 	Custom              json.RawMessage        `json:"custom,omitempty"`    // Custom log fields
 	Meta                map[string]interface{} `json:"-"`
