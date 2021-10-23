@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+# v0.47.0
+
+- Logging: Add traceId and spanId fields
+- Console: add alerts structure
+- IAM Service: recover from panicky pem.Decode
+- CDR: Update delete extension URI
+- IAM: Add new fields
+- IAM: Ipdate LegacyUserUpdate to (undocumented) API v2
+- IAM: update GetUser to v3 API
+- IAM: support for preferredCommunicationChannel field
+
 # v0.46.2
 
 - CDR: R4 fixes
