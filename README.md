@@ -108,7 +108,7 @@ func main() {
 
 ## Issues
 
-- If you have an issue: report it on the [issue tracker](https://github.com/philips-software/go-hsdp-api/issues)
+- If you discover an issue: report it on the [issue tracker](https://github.com/philips-software/go-hsdp-api/issues)
 
 ## Contact / Getting help
 
