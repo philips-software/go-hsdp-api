@@ -26,7 +26,7 @@ var (
 
 	consoleClient *console.Client
 	client        *docker.Client
-	tmpfile       *os.File
+	tmpFile       *os.File
 )
 
 func setup(t *testing.T) (func(), error) {
@@ -40,14 +40,14 @@ func setup(t *testing.T) (func(), error) {
 
 	assert.Nil(t, err)
 
-	tmpfile, err = ioutil.TempFile("", "example")
+	tmpFile, err = ioutil.TempFile("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
 	consoleClient, err = console.NewClient(nil, &console.Config{
 		UAAURL:         serverUAA.URL,
 		BaseConsoleURL: serverCONSOLE.URL,
-		DebugLog:       tmpfile.Name(),
+		DebugLog:       tmpFile.Name(),
 	})
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid consoleClient")
@@ -94,7 +94,7 @@ func setup(t *testing.T) (func(), error) {
 		serverUAA.Close()
 		serverCONSOLE.Close()
 		serverDocker.Close()
-		_ = os.Remove(tmpfile.Name())
+		_ = os.Remove(tmpFile.Name())
 	}, nil
 }
 
@@ -122,7 +122,7 @@ func TestDebug(t *testing.T) {
 	err = client.Query(context.Background(), &query, nil)
 	assert.NotNil(t, err)
 
-	fi, err := tmpfile.Stat()
+	fi, err := tmpFile.Stat()
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
