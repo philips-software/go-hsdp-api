@@ -41,7 +41,8 @@
           "url": "https://console.ap3.hsdp.io"
         },
         "docker-registry": {
-          "host": "docker.ap3.hsdp.io"
+          "host": "docker.ap3.hsdp.io",
+          "url": "https://console.ap3.hsdp.io/api/docker/graphql"
         },
         "gateway": {
           "domain": "apac3.phsdp.com",
@@ -92,7 +93,8 @@
           "url": "https://console.ca1.hsdp.io"
         },
         "docker-registry": {
-          "host": "docker.ca1.hsdp.io"
+          "host": "docker.ca1.hsdp.io",
+          "url": "https://console.ca1.hsdp.io/api/docker/graphql"
         },
         "gateway": {
           "domain": "ca1.phsdp.com",
@@ -241,7 +243,8 @@
           "url": "https://console.eu1.hsdp.io"
         },
         "docker-registry": {
-          "host": "docker.eu1.hsdp.io"
+          "host": "docker.eu1.hsdp.io",
+          "url": "https://console.eu1.hsdp.io/api/docker/graphql"
         },
         "gateway": {
           "domain": "emea1.phsdp.com",
@@ -303,7 +306,8 @@
           "url": "https://console.sa1.hsdp.io"
         },
         "docker-registry": {
-          "host": "docker.sa1.hsdp.io"
+          "host": "docker.sa1.hsdp.io",
+          "url": "https://console.sa1.hsdp.io/api/docker/graphql"
         },
         "gateway": {
           "domain": "sa1.phsdp.com",
@@ -426,7 +430,8 @@
           "url": "https://console.na1.hsdp.io"
         },
         "docker-registry": {
-          "host": "docker.na1.hsdp.io"
+          "host": "docker.na1.hsdp.io",
+          "url": "https://console.na1.hsdp.io/api/docker/graphql"
         },
         "gateway": {
           "domain": "na1.phsdp.com",

@@ -1,5 +1,5 @@
-// Package stl provides support for HSDP STL services
-package stl
+// Package docker provides support for HSDP Docker Registry services
+package docker
 
 import (
 	"context"
@@ -10,11 +10,10 @@ import (
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 	"github.com/philips-software/go-hsdp-api/console"
 	"github.com/philips-software/go-hsdp-api/internal"
-	"golang.org/x/oauth2"
 )
 
 const (
-	userAgent = "go-hsdp-api/edge/" + internal.LibraryVersion
+	userAgent = "go-hsdp-api/docker/" + internal.LibraryVersion
 )
 
 // OptionFunc is the function signature function for options
@@ -22,13 +21,12 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a consoleClient
 type Config struct {
-	Region      string
-	Environment string
-	STLAPIURL   string
-	DebugLog    string
+	Region       string
+	DockerAPIURL string
+	DebugLog     string
 }
 
-// A Client manages communication with HSDP Edge API
+// A Client manages communication with HSDP DICOM API
 type Client struct {
 	// HTTP consoleClient used to communicate with IAM API
 	consoleClient *console.Client
@@ -37,44 +35,41 @@ type Client struct {
 
 	config *Config
 
-	// User agent used when communicating with the HSDP Edge API.
+	// User agent used when communicating with the HSDP DICOM API.
 	UserAgent string
 
 	debugFile *os.File
 
-	Devices *DevicesService
-	Apps    *AppsService
-	Config  *ConfigService
-	Certs   *CertsService
+	ServiceKeys *ServiceKeyService
 }
 
-// NewClient returns a new HSDP Edge API consoleClient. Configured console and IAM clients
-// must be provided as the underlying API requires tokens from respective services
+// NewClient returns a new HSDP Docker Registry API client. A configured console client
+// must be provided as the underlying API requires tokens from respective service
 func NewClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	return newClient(consoleClient, config)
 }
 
 func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	doAutoconf(config)
+
 	c := &Client{consoleClient: consoleClient, config: config, UserAgent: userAgent}
-	httpClient := oauth2.NewClient(context.Background(), consoleClient)
 
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
-		}
-	}
 	header := make(http.Header)
-	header.Set("User-Agent", userAgent)
-	httpClient.Transport = internal.NewHeaderRoundTripper(httpClient.Transport, header)
+	header.Set("Accept", "*/*")
 
-	c.gql = graphql.NewClient(config.STLAPIURL, httpClient)
-	c.Devices = &DevicesService{client: c}
-	c.Apps = &AppsService{client: c}
-	c.Config = &ConfigService{client: c}
-	c.Certs = &CertsService{client: c}
+	// Injecting these headers so we satisfy the proxies
+	consoleClient.Transport = internal.NewHeaderRoundTripper(consoleClient.Transport, header, func(req *http.Request) error {
+		token, err := consoleClient.Token()
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "bearer "+token.AccessToken)
+		req.Header.Set("X-User-Access-Token", token.AccessToken)
+		return nil
+	})
+
+	c.gql = graphql.NewClient(config.DockerAPIURL, consoleClient.Client)
+	c.ServiceKeys = &ServiceKeyService{client: c}
 
 	return c, nil
 }
@@ -84,9 +79,9 @@ func doAutoconf(config *Config) {
 		c, err := autoconf.New(
 			autoconf.WithRegion(config.Region))
 		if err == nil {
-			stlService := c.Service("stl")
-			if config.STLAPIURL == "" {
-				config.STLAPIURL = stlService.URL
+			dockerService := c.Service("docker-registry")
+			if config.DockerAPIURL == "" {
+				config.DockerAPIURL = dockerService.URL
 			}
 		}
 	}

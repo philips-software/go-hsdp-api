@@ -17,6 +17,7 @@ type filter struct {
 
 var filterList = []filter{
 	{regexp.MustCompile(`Authorization: (.*)\n`), "Authorization: [sensitive]\n"},
+	{regexp.MustCompile(`X-User-Access-Token: (.*)\n`), "X-User-Access-Token: [sensitive]\n"},
 	{regexp.MustCompile(`password=[\w%]+`), "password=sensitive"},
 	{regexp.MustCompile(`"refresh_token":"[^"]+"`), `"refresh_token":"[sensitive]"`},
 	{regexp.MustCompile(`"access_token":"[^"]+"`), `"access_token":"[sensitive]"`},
@@ -28,18 +29,22 @@ var filterList = []filter{
 	{regexp.MustCompile(`"privateKey":\s*"[^"]+"`), `"privateKey": "[sensitive]"`},
 }
 
+type HeaderFunc func(req *http.Request) error
+
 type HeaderRoundTripper struct {
-	next   http.RoundTripper
-	Header http.Header
+	next            http.RoundTripper
+	Header          http.Header
+	HeaderFunctions []HeaderFunc
 }
 
-func NewHeaderRoundTripper(next http.RoundTripper, Header http.Header) *HeaderRoundTripper {
+func NewHeaderRoundTripper(next http.RoundTripper, Header http.Header, functions ...HeaderFunc) *HeaderRoundTripper {
 	if next == nil {
 		next = http.DefaultTransport
 	}
 	return &HeaderRoundTripper{
-		next:   next,
-		Header: Header,
+		next:            next,
+		Header:          Header,
+		HeaderFunctions: functions,
 	}
 }
 
@@ -48,6 +53,9 @@ func (rt *HeaderRoundTripper) RoundTrip(req *http.Request) (resp *http.Response,
 		for k, v := range rt.Header {
 			req.Header[k] = v
 		}
+	}
+	for _, f := range rt.HeaderFunctions {
+		_ = f(req)
 	}
 	return rt.next.RoundTrip(req)
 }

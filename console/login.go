@@ -32,7 +32,7 @@ func (c *Client) Login(username, password string) error {
 
 // WithLogin returns a cloned client with new login
 func (c *Client) WithLogin(username, password string) (*Client, error) {
-	client, err := NewClient(c.client, c.config)
+	client, err := NewClient(c.Client, c.config)
 	if err != nil {
 		return nil, err
 	}

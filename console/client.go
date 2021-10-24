@@ -101,7 +101,7 @@ type OptionFunc func(*http.Request) error
 // A Client manages communication with HSDP IAM API
 type Client struct {
 	// HTTP client used to communicate with the API.
-	client *http.Client
+	*http.Client
 
 	config *Config
 
@@ -154,7 +154,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if config.UAAURL == "" {
 		return nil, ErrUAAURLCannotBeEmpty
 	}
-	c := &Client{client: httpClient, config: config, UserAgent: userAgent}
+	c := &Client{Client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseUAAURL(c.config.UAAURL); err != nil {
 		return nil, err
 	}
@@ -204,10 +204,10 @@ func (c *Client) Close() {
 
 // Returns the http Client used for connections
 func (c *Client) HttpClient() *http.Client {
-	return c.client
+	return c.Client
 }
 
-// Token returns the current token. It also confirms to TokenSource
+// Token returns the current token. It also conforms to TokenSource
 func (c *Client) Token() (*oauth2.Token, error) {
 	c.Lock()
 	defer c.Unlock()
@@ -403,7 +403,7 @@ func newResponse(r *http.Response) *Response {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	resp, err := c.client.Do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -54,6 +54,8 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
 - [x] Console settings
   - [ ] Metrics Alerts
   - [x] Metrics Autoscalers
+- [x] Docker Registry
+  - [x] Service Keys management
 - [x] IronIO tasks, codes and schedules management ([examples](iron/README.md))
 - [x] Clinical Data Lake (CDL) management
   - [x] Research Studies

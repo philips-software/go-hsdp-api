@@ -40,7 +40,6 @@ type Config struct {
 	Environment string
 	PKIURL      string
 	UAAURL      string
-	Debug       bool
 	DebugLog    string
 }
 
