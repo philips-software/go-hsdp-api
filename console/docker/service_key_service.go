@@ -44,6 +44,33 @@ func (a *ServiceKeyService) GetServiceKeys(ctx context.Context) (*[]ServiceKeyNo
 	return &keys, nil
 }
 
+func (a *ServiceKeyService) GetServiceKeyByID(ctx context.Context, id int) (*ServiceKeyNode, error) {
+	// TODO: https://github.com/philips-internal/hsdp-docker-api/pull/3
+	/*
+		var query struct {
+			ServiceKeyNode ServiceKeyNode `graphql:"serviceKey(id: $keyId)"`
+		}
+		err := a.client.gql.Query(ctx, &query, map[string]interface{}{
+			"keyId": graphql.String(strconv.Itoa(id)),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("service key read: %w", err)
+		}
+		return &query.ServiceKeyNode, nil
+	*/
+	// Simulate for now
+	keys, err := a.GetServiceKeys(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, k := range *keys {
+		if k.ID == id {
+			return &k, nil
+		}
+	}
+	return nil, fmt.Errorf("simulated serviceKey(id: $id) did not find a match for '%d'", id)
+}
+
 func (a *ServiceKeyService) CreateServiceKey(ctx context.Context, description string) (*ServiceKey, error) {
 	var mutation struct {
 		CreateServiceKey struct {
