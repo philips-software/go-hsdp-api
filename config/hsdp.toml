@@ -78,14 +78,19 @@ domain = "ca1.hsdp.io"
 
 # Service DOCKER-REGISTRY
 [region.us-east.service.docker-registry]
+url = "https://console.na1.hsdp.io/api/docker/graphql"
 host = "docker.na1.hsdp.io"
 [region.eu-west.service.docker-registry]
+url = "https://console.eu1.hsdp.io/api/docker/graphql"
 host = "docker.eu1.hsdp.io"
 [region.sa1.service.docker-registry]
+url = "https://console.sa1.hsdp.io/api/docker/graphql"
 host = "docker.sa1.hsdp.io"
 [region.apac3.service.docker-registry]
+url = "https://console.ap3.hsdp.io/api/docker/graphql"
 host = "docker.ap3.hsdp.io"
 [region.ca1.service.docker-registry]
+url = "https://console.ca1.hsdp.io/api/docker/graphql"
 host = "docker.ca1.hsdp.io"
 
 # Service CONSOLE

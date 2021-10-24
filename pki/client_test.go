@@ -210,7 +210,7 @@ func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	tmpfile, err := ioutil.TempFile("", "example")
+	tmpFile, err := ioutil.TempFile("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
@@ -218,8 +218,7 @@ func TestDebug(t *testing.T) {
 	pkiClient, err = pki.NewClient(nil, iamClient, &pki.Config{
 		PKIURL:   serverPKI.URL,
 		UAAURL:   serverUAA.URL,
-		Debug:    true,
-		DebugLog: tmpfile.Name(),
+		DebugLog: tmpFile.Name(),
 	})
 	if !assert.Nil(t, err) {
 		return
@@ -227,7 +226,7 @@ func TestDebug(t *testing.T) {
 
 	defer pkiClient.Close()
 	defer func() {
-		_ = os.Remove(tmpfile.Name())
+		_ = os.Remove(tmpFile.Name())
 	}() // clean up
 
 	err = iamClient.Login("username", "password")
@@ -237,7 +236,7 @@ func TestDebug(t *testing.T) {
 
 	_, _, _, _ = pkiClient.Services.GetRootCA()
 
-	fi, err := tmpfile.Stat()
+	fi, err := tmpFile.Stat()
 	assert.Nil(t, err)
 	assert.NotEqual(t, 0, fi.Size(), "Expected something to be written to DebugLog")
 }
