@@ -1,15 +1,14 @@
-[![Build Status](https://travis-ci.com/philips-software/go-hsdp-api.svg?branch=master)](https://travis-ci.com/philips-software/go-hsdp-api)
 [![Maintainability](https://api.codeclimate.com/v1/badges/125caa4282d4d82b84cd/maintainability)](https://codeclimate.com/github/philips-software/go-hsdp-api/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/125caa4282d4d82b84cd/test_coverage)](https://codeclimate.com/github/philips-software/go-hsdp-api/test_coverage)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/philips-software/go-hsdp-api)](https://pkg.go.dev/github.com/philips-software/go-hsdp-api)
 
 # go-hsdp-api
 
-A HSDP API client enabling Go programs to interact with various HSDP APIs in a simple and uniform way
+A HSDP API client library enabling Go programs to interact with various HSDP APIs in a simple and uniform way
 
 ## Supported APIs
 
-The current implement covers only a subset of HSDP APIs. Basically we implement functionality as needed.
+The current implement covers only a subset of HSDP APIs. Basically, we implement functionality as needed.
 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
 - [x] Secure Transport Layer (STL) / Edge 
@@ -74,7 +73,7 @@ The current implement covers only a subset of HSDP APIs. Basically we implement 
   - [x] Compute Target management
   - [x] Workspace management
 
-## Usage
+## Example usage
 
 ```go
 package main
@@ -87,14 +86,12 @@ import (
 
 func main() {
         client, _ := iam.NewClient(nil, &iam.Config{
+                Region:         "us-east",
+                Environment:    "client-test",
                 OAuth2ClientID: "ClientID",
                 OAuth2Secret:   "ClientPWD",
-                SharedKey:      "KeyHere",
-                SecretKey:      "SecretHere",
-                IAMURL:         "https://iam-stage.foo-bar.com",
-                IDMURL:         "https://idm-stage.foo-bar.com",
         })
-        err := client.Login("iam.login@aemian.com", "Password!@#")
+        err := client.Login("iam.login@hospital1.com", "Password!@#")
         if err != nil {
                 fmt.Printf("Error logging in: %v\n", err)
                 return
