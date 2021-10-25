@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/golang-jwt/jwt"
 )
 
 // Login logs in a user with `username` and `password`
@@ -88,4 +90,15 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 	c.expiresAt = time.Now().Add(time.Duration(tokenResponse.ExpiresIn) * time.Second)
 	c.scopes = strings.Split(tokenResponse.Scope, " ")
 	return nil
+}
+
+func (c *Client) UserID() (string, error) {
+	token, _ := jwt.Parse(c.IDToken(), func(token *jwt.Token) (interface{}, error) {
+		return nil, nil
+	})
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || claims["sub"] == "" {
+		return "", fmt.Errorf("invalid claims")
+	}
+	return claims["sub"].(string), nil
 }
