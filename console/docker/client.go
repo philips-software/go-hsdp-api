@@ -29,7 +29,7 @@ type Config struct {
 // A Client manages communication with HSDP DICOM API
 type Client struct {
 	// HTTP consoleClient used to communicate with IAM API
-	consoleClient *console.Client
+	*console.Client
 
 	gql *graphql.Client
 
@@ -40,7 +40,8 @@ type Client struct {
 
 	debugFile *os.File
 
-	ServiceKeys *ServiceKeyService
+	ServiceKeys *ServiceKeysService
+	Namespaces  *NamespacesService
 }
 
 // NewClient returns a new HSDP Docker Registry API client. A configured console client
@@ -52,7 +53,7 @@ func NewClient(consoleClient *console.Client, config *Config) (*Client, error) {
 func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	doAutoconf(config)
 
-	c := &Client{consoleClient: consoleClient, config: config, UserAgent: userAgent}
+	c := &Client{Client: consoleClient, config: config, UserAgent: userAgent}
 
 	header := make(http.Header)
 	header.Set("Accept", "*/*")
@@ -69,7 +70,8 @@ func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	})
 
 	c.gql = graphql.NewClient(config.DockerAPIURL, consoleClient.Client)
-	c.ServiceKeys = &ServiceKeyService{client: c}
+	c.ServiceKeys = &ServiceKeysService{client: c}
+	c.Namespaces = &NamespacesService{client: c}
 
 	return c, nil
 }

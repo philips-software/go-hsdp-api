@@ -8,7 +8,7 @@ import (
 	"github.com/hasura/go-graphql-client"
 )
 
-type ServiceKeyService struct {
+type ServiceKeysService struct {
 	client *Client
 }
 
@@ -27,7 +27,7 @@ type ServiceKeyNode struct {
 	CreatedAt   time.Time `json:"createdAt"`
 }
 
-func (a *ServiceKeyService) GetServiceKeys(ctx context.Context) (*[]ServiceKeyNode, error) {
+func (a *ServiceKeysService) GetServiceKeys(ctx context.Context) (*[]ServiceKeyNode, error) {
 	var query struct {
 		Resources []struct {
 			ServiceKeyNode
@@ -44,7 +44,7 @@ func (a *ServiceKeyService) GetServiceKeys(ctx context.Context) (*[]ServiceKeyNo
 	return &keys, nil
 }
 
-func (a *ServiceKeyService) GetServiceKeyByID(ctx context.Context, id int) (*ServiceKeyNode, error) {
+func (a *ServiceKeysService) GetServiceKeyByID(ctx context.Context, id int) (*ServiceKeyNode, error) {
 	// TODO: https://github.com/philips-internal/hsdp-docker-api/pull/3
 	/*
 		var query struct {
@@ -71,7 +71,7 @@ func (a *ServiceKeyService) GetServiceKeyByID(ctx context.Context, id int) (*Ser
 	return nil, fmt.Errorf("simulated serviceKey(id: $id) did not find a match for '%d'", id)
 }
 
-func (a *ServiceKeyService) CreateServiceKey(ctx context.Context, description string) (*ServiceKey, error) {
+func (a *ServiceKeysService) CreateServiceKey(ctx context.Context, description string) (*ServiceKey, error) {
 	var mutation struct {
 		CreateServiceKey struct {
 			ServiceKey
@@ -89,7 +89,7 @@ func (a *ServiceKeyService) CreateServiceKey(ctx context.Context, description st
 	return &mutation.CreateServiceKey.ServiceKey, nil
 }
 
-func (a *ServiceKeyService) DeleteServiceKey(ctx context.Context, key ServiceKey) error {
+func (a *ServiceKeysService) DeleteServiceKey(ctx context.Context, key ServiceKey) error {
 	var mutation struct {
 		DeleteServiceKey bool `graphql:"deleteServiceKey(id: $id)"`
 	}
