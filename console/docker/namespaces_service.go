@@ -28,12 +28,14 @@ type UserNamespaceAccessInput struct {
 	IsAdmin   bool `json:"isAdmin"`
 }
 
+type UpdateUserNamespacesAccessInput struct {
+	ID int `json:"id"`
+	UserNamespaceAccessInput
+}
+
 type NamespaceAccess struct {
-	ID        int  `json:"id"`
-	CanPull   bool `json:"canPull"`
-	CanPush   bool `json:"canPush"`
-	CanDelete bool `json:"canDelete"`
-	IsAdmin   bool `json:"isAdmin"`
+	ID int `json:"id"`
+	UserNamespaceAccessInput
 }
 
 type NamespaceUser struct {
@@ -44,12 +46,9 @@ type NamespaceUser struct {
 }
 
 type NamespaceUserResult struct {
-	ID        int    `json:"id"`
-	UserID    string `json:"userId"`
-	CanPull   bool   `json:"canPull"`
-	CanPush   bool   `json:"canPush"`
-	CanDelete bool   `json:"canDelete"`
-	IsAdmin   bool   `json:"isAdmin"`
+	ID     int    `json:"id"`
+	UserID string `json:"userId"`
+	UserNamespaceAccessInput
 }
 
 func (s *NamespacesService) GetNamespaces(ctx context.Context) (*[]Namespace, error) {
@@ -166,13 +165,30 @@ func (s *NamespacesService) GetRepositories(ctx context.Context, namespaceId str
 	return &repositories, nil
 }
 
-func (s *NamespacesService) DeleteNamespaceUser(ctx context.Context, namespaceID, username string) error {
+func (s *NamespacesService) UpdateNamespaceUserAccess(ctx context.Context, id int, access UserNamespaceAccessInput) error {
+	var mutation struct {
+		UpdateNamespaceUserAccess NamespaceUserResult `graphql:"updateUserNamespaceAccess(id: $id, userAccess: $access)"`
+	}
+	err := s.client.gql.Mutate(ctx, &mutation, map[string]interface{}{
+		"id":     graphql.Int(id),
+		"access": access,
+	})
+	if err != nil {
+		return err
+	}
+	if mutation.UpdateNamespaceUserAccess.ID == 0 {
+		return fmt.Errorf("error updating namespace user access")
+	}
+	return nil
+}
+
+func (s *NamespacesService) DeleteNamespaceUser(ctx context.Context, namespaceID, userId string) error {
 	var mutation struct {
 		DeleteUserFromNamespace bool `graphql:"removeUserFromNamespace(namespaceId: $namespaceId, userId: $userId)"`
 	}
 	err := s.client.gql.Mutate(ctx, &mutation, map[string]interface{}{
 		"namespaceId": graphql.String(namespaceID),
-		"userId":      graphql.String(username),
+		"userId":      graphql.String(userId),
 	})
 	if err != nil {
 		return fmt.Errorf("eror removing user from namespace: %w", err)
