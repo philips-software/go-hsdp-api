@@ -162,9 +162,7 @@ func (s *NamespacesService) GetRepositories(ctx context.Context, namespaceId str
 		return nil, err
 	}
 	repositories := make([]Repository, 0)
-	for _, a := range query.Resources.Repositories {
-		repositories = append(repositories, a)
-	}
+	repositories = append(repositories, query.Resources.Repositories...)
 	return &repositories, nil
 }
 

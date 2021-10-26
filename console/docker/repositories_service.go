@@ -122,8 +122,6 @@ func (r *RepositoriesService) GetTags(ctx context.Context, repositoryId string) 
 		return nil, err
 	}
 	tags := make([]Tag, 0)
-	for _, a := range query.Tags {
-		tags = append(tags, a)
-	}
+	tags = append(tags, query.Tags...)
 	return &tags, nil
 }
