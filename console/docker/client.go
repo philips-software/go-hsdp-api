@@ -40,8 +40,9 @@ type Client struct {
 
 	debugFile *os.File
 
-	ServiceKeys *ServiceKeysService
-	Namespaces  *NamespacesService
+	ServiceKeys  *ServiceKeysService
+	Namespaces   *NamespacesService
+	Repositories *RepositoriesService
 }
 
 // NewClient returns a new HSDP Docker Registry API client. A configured console client
@@ -72,6 +73,7 @@ func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	c.gql = graphql.NewClient(config.DockerAPIURL, consoleClient.Client)
 	c.ServiceKeys = &ServiceKeysService{client: c}
 	c.Namespaces = &NamespacesService{client: c}
+	c.Repositories = &RepositoriesService{client: c}
 
 	return c, nil
 }
