@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+# v0.48.0
+
+- Docker Registry: service keys, namespace and repository management
+
 # v0.47.0
 
 - Logging: Add traceId and spanId fields

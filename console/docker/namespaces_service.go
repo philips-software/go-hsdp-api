@@ -149,6 +149,23 @@ func (s *NamespacesService) AddNamespaceUser(ctx context.Context, namespaceID, u
 	return &mutation.AddUserToNamespace, nil
 }
 
+func (s *NamespacesService) GetRepositories(ctx context.Context, namespaceId string) (*[]Repository, error) {
+	var query struct {
+		Resources struct {
+			Repositories []Repository
+		} `graphql:"namespace(id: $namespaceId)"`
+	}
+	err := s.client.gql.Query(ctx, &query, map[string]interface{}{
+		"namespaceId": graphql.String(namespaceId),
+	})
+	if err != nil {
+		return nil, err
+	}
+	repositories := make([]Repository, 0)
+	repositories = append(repositories, query.Resources.Repositories...)
+	return &repositories, nil
+}
+
 func (s *NamespacesService) DeleteNamespaceUser(ctx context.Context, namespaceID, username string) error {
 	var mutation struct {
 		DeleteUserFromNamespace bool `graphql:"removeUserFromNamespace(namespaceId: $namespaceId, userId: $userId)"`
