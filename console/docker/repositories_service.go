@@ -13,11 +13,13 @@ type RepositoriesService struct {
 }
 
 type Repository struct {
-	ID          string `json:"id"`
-	NamespaceId string `json:"namespaceId"`
-	Name        string `json:"name"`
-	NumPulls    int    `json:"numPulls"`
-	NumTags     int    `json:"numTags"`
+	ID           string                 `json:"id"`
+	NamespaceId  string                 `json:"namespaceId"`
+	Name         string                 `json:"name"`
+	NumPulls     int                    `json:"numPulls"`
+	NumTags      int                    `json:"numTags"`
+	LastPushedAt time.Time              `json:"lastPushedAt"`
+	Details      RepositoryDetailsInput `json:"details"`
 }
 
 type Tag struct {
