@@ -94,9 +94,9 @@ type GetEmailTemplatesOptions struct {
 	Locale         *string `url:"locale,omitempty"`
 }
 
-// GetTemplate finds EmailTemplate based on search criteria
+// GetTemplates finds EmailTemplate based on search criteria
 // Any user with EMAILTEMPLATE.WRITE or EMAILTEMPLATE.READ permission can retrieve the template information.
-func (e *EmailTemplatesService) GetTemplate(opt *GetEmailTemplatesOptions, options ...OptionFunc) (*EmailTemplate, *Response, error) {
+func (e *EmailTemplatesService) GetTemplates(opt *GetEmailTemplatesOptions, options ...OptionFunc) (*[]EmailTemplate, *Response, error) {
 	req, err := e.client.newRequest(IDM, "GET", "authorize/identity/EmailTemplate", opt, options)
 	if err != nil {
 		return nil, nil, err
@@ -109,6 +109,7 @@ func (e *EmailTemplatesService) GetTemplate(opt *GetEmailTemplatesOptions, optio
 			ID string `json:"id"`
 		} `json:"entry"`
 	}
+	var templates []EmailTemplate
 
 	resp, err := e.client.do(req, &bundleResponse)
 	if err != nil {
@@ -117,7 +118,14 @@ func (e *EmailTemplatesService) GetTemplate(opt *GetEmailTemplatesOptions, optio
 	if bundleResponse.Total == 0 {
 		return nil, resp, ErrNotFound
 	}
-	return e.GetTemplateByID(bundleResponse.Entry[0].ID)
+	for _, t := range bundleResponse.Entry {
+		template, _, err := e.GetTemplateByID(t.ID)
+		if err != nil {
+			continue
+		}
+		templates = append(templates, *template)
+	}
+	return &templates, resp, nil
 }
 
 func (e *EmailTemplatesService) GetTemplateByID(ID string) (*EmailTemplate, *Response, error) {

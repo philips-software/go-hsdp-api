@@ -127,19 +127,21 @@ func TestEmailTemplateCreateDelete(t *testing.T) {
 	}
 	assert.Equal(t, template.ID, foundTemplate.ID)
 
-	template, resp, err = client.EmailTemplates.GetTemplate(&GetEmailTemplatesOptions{
+	templates, resp, err := client.EmailTemplates.GetTemplates(&GetEmailTemplatesOptions{
 		OrganizationID: &orgID,
 	})
+	if !assert.Nil(t, err) {
+		return
+	}
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	if !assert.NotNil(t, template) {
+	if !assert.Len(t, *templates, 1) {
 		return
 	}
 
-	ok, resp, err := client.EmailTemplates.DeleteTemplate(*template)
+	ok, resp, err := client.EmailTemplates.DeleteTemplate((*templates)[0])
 	if !assert.NotNil(t, resp) {
 		return
 	}
