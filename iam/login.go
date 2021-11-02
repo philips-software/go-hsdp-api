@@ -33,7 +33,7 @@ func (c *Client) CodeLogin(code string, redirectURI string) error {
 // ServiceLogin logs a service in using a JWT signed with the service private key
 func (c *Client) ServiceLogin(service Service) error {
 	accessTokenEndpoint := c.accessTokenEndpoint()
-	token, err := service.GetToken(accessTokenEndpoint)
+	token, err := service.GenerateJWT(accessTokenEndpoint)
 	if err != nil {
 		return err
 	}

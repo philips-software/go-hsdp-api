@@ -231,6 +231,9 @@ func (c *Client) Token() string {
 
 // TokenRefresh forces a token refresh
 func (c *Client) TokenRefresh() error {
+	c.Lock()
+	defer c.Unlock()
+
 	if c.refreshToken == "" {
 		if c.service.Valid() { // Possible service
 			return c.ServiceLogin(c.service)
