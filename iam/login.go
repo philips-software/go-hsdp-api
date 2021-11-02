@@ -38,10 +38,17 @@ func (c *Client) ServiceLogin(service Service) error {
 		return err
 	}
 	// Authorize
-	c.tokenType = JWTToken // IMPORTANT: needs to be refactored. If we don't set this, we deadlock in refresh
-	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
+	u := *c.baseIAMURL
+	u.Opaque = c.baseIAMURL.Path + "authorize/oauth2/token"
+
+	req := &http.Request{
+		Method:     "POST",
+		URL:        &u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Host:       u.Host,
 	}
 	form := url.Values{}
 	if len(c.config.Scopes) > 0 {
