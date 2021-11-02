@@ -17,7 +17,7 @@ import (
 
 	"github.com/philips-software/go-hsdp-api/internal"
 
-	validator "github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 	hsdpsigner "github.com/philips-software/go-hsdp-signer"
@@ -50,7 +50,7 @@ type OptionFunc func(*http.Request) error
 // A Client manages communication with HSDP IAM API
 type Client struct {
 	// HTTP client used to communicate with the API.
-	client *http.Client
+	*http.Client
 
 	config *Config
 
@@ -113,7 +113,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		}
 	}
 	doAutoconf(config)
-	c := &Client{client: httpClient, config: config, UserAgent: userAgent}
+	c := &Client{Client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseIAMURL(c.config.IAMURL); err != nil {
 		return nil, err
 	}
@@ -186,21 +186,21 @@ func (c *Client) Close() {
 	}
 }
 
-// Returns the http Client used for connections
+// HttpClient returns the http Client used for connections
 func (c *Client) HttpClient() *http.Client {
-	return c.client
+	return c.Client
 }
 
 // WithToken returns a cloned client with the token set
 func (c *Client) WithToken(token string) *Client {
-	client, _ := NewClient(c.client, c.config)
+	client, _ := NewClient(c.Client, c.config)
 	client.SetToken(token)
 	return client
 }
 
 // WithLogin returns a cloned client with new login
 func (c *Client) WithLogin(username, password string) (*Client, error) {
-	client, err := NewClient(c.client, c.config)
+	client, err := NewClient(c.Client, c.config)
 	if err != nil {
 		return nil, err
 	}
@@ -283,12 +283,12 @@ func (c *Client) HasScopes(scopes ...string) bool {
 
 // HasPermissions returns true if all permissions are there for the client
 func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
-	intr, _, err := c.Introspect()
+	introspect, _, err := c.Introspect()
 	if err != nil {
 		return false
 	}
 	foundOrg := false
-	for _, org := range intr.Organizations.OrganizationList {
+	for _, org := range introspect.Organizations.OrganizationList {
 		if org.OrganizationID != orgID {
 			continue
 		}
@@ -362,7 +362,7 @@ func (c *Client) SetBaseIAMURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrBaseIAMCannotBeEmpty
 	}
-	// Make sure the given URL end with a slash
+	// Make sure the given URL ends with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
@@ -378,7 +378,7 @@ func (c *Client) SetBaseIDMURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrBaseIDMCannotBeEmpty
 	}
-	// Make sure the given URL end with a slash
+	// Make sure the given URL ends with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
@@ -491,13 +491,8 @@ func (c *Client) doSigned(req *http.Request, v interface{}) (*Response, error) {
 	return c.do(req, v)
 }
 
-// do sends an API request and returns the API response. The API response is
-// JSON decoded and stored in the value pointed to by v, or returned as an
-// error if an API error has occurred. If v implements the io.Writer
-// interface, the raw response body will be written to v, without attempting to
-// first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	resp, err := c.client.Do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -540,7 +535,7 @@ func String(v string) *string {
 }
 
 // ErrorResponse represents an IAM errors response
-// containing a code and a human readable message
+// containing a code and a human-readable message
 type ErrorResponse struct {
 	Response         *http.Response `json:"-"`
 	Code             string         `json:"responseCode,omitempty"`
