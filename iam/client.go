@@ -231,9 +231,6 @@ func (c *Client) Token() string {
 
 // TokenRefresh forces a token refresh
 func (c *Client) TokenRefresh() error {
-	c.Lock()
-	defer c.Unlock()
-
 	if c.refreshToken == "" {
 		if c.service.Valid() { // Possible service
 			return c.ServiceLogin(c.service)
@@ -317,7 +314,7 @@ func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 // SetToken sets the token
 func (c *Client) SetToken(token string) {
 	c.token = token
-	c.expiresAt = time.Now().Add(86400 * time.Minute)
+	c.expiresAt = time.Now().Add(86400 * time.Second)
 	c.tokenType = oAuthToken
 }
 
