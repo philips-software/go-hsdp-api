@@ -78,10 +78,10 @@ func (c *Config) Valid() (bool, error) {
 
 // Client holds the client state
 type Client struct {
+	*iam.Client
 	config     *Config
 	url        *url.URL
 	httpClient *http.Client
-	iamClient  *iam.Client
 	httpSigner *signer.Signer
 }
 
@@ -138,7 +138,7 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 		if config.IAMClient == nil {
 			return nil, ErrMissingCredentialsOrIAMClient
 		}
-		logger.iamClient = config.IAMClient
+		logger.Client = config.IAMClient
 	}
 
 	logger.url = parsedURL
@@ -265,7 +265,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 			return nil, err
 		}
 	} else {
-		req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
+		req.Header.Set("Authorization", "Bearer "+c.Token())
 	}
 	return c.performAndParseResponse(req, msgs)
 }
