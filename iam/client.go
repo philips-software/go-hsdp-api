@@ -41,7 +41,8 @@ type tokenResponse struct {
 }
 
 const (
-	oAuthToken tokenType = iota
+	OAuthToken tokenType = iota
+	JWTToken   tokenType = 1
 )
 
 // OptionFunc is the function signature function for options
@@ -318,7 +319,7 @@ func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 func (c *Client) SetToken(token string) {
 	c.token = token
 	c.expiresAt = time.Now().Add(86400 * time.Second)
-	c.tokenType = oAuthToken
+	c.tokenType = OAuthToken
 }
 
 // SetTokens sets the token
@@ -329,7 +330,7 @@ func (c *Client) SetTokens(accessToken, refreshToken, idToken string, expiresAt 
 	c.refreshToken = refreshToken
 	c.idToken = idToken
 	c.expiresAt = time.Unix(expiresAt, 0)
-	c.tokenType = oAuthToken
+	c.tokenType = OAuthToken
 }
 
 // RefreshToken returns the refresh token
@@ -463,7 +464,7 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 	req.Header.Set("Accept", "application/json")
 
 	switch c.tokenType {
-	case oAuthToken:
+	case OAuthToken:
 		if token := c.Token(); token != "" {
 			req.Header.Set("Authorization", "Bearer "+c.token)
 		}

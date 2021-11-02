@@ -38,6 +38,7 @@ func (c *Client) ServiceLogin(service Service) error {
 		return err
 	}
 	// Authorize
+	c.tokenType = JWTToken // IMPORTANT: needs to be refactored. If we don't set this, we deadlock in refresh
 	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
 	if err != nil {
 		return err
@@ -174,7 +175,7 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 	if tokenResponse.AccessToken == "" {
 		return ErrNotAuthorized
 	}
-	c.tokenType = oAuthToken
+	c.tokenType = OAuthToken
 	c.token = tokenResponse.AccessToken
 	if tokenResponse.RefreshToken != "" { // Doesn't always contain new refresh token
 		c.refreshToken = tokenResponse.RefreshToken
