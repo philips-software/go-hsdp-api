@@ -63,7 +63,7 @@ func FixPEM(pemString string) string {
 	if !strings.Contains(pre, "\n"+end) {
 		return strings.Replace(pre,
 			end,
-			"\n"+end, -1)
+			"\n"+end, 1)
 	}
 	return pre
 }
@@ -76,17 +76,17 @@ func (s *Service) Valid() bool {
 	return true
 }
 
-// GetToken returns a JWT which can be exchanged for access token
-func (s *Service) GetToken(accessTokenEndpoint string) (signedString string, err error) {
+// GenerateJWT returns a JWT which can be exchanged for access token
+func (s *Service) GenerateJWT(accessTokenEndpoint string) (signedString string, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			signedString = ""
-			err = fmt.Errorf("recovering from panic in GetToken: %v", r)
+			err = fmt.Errorf("recovering from panic in GenerateJWT: %v", r)
 		}
 	}()
 	// Decode private key
 	block, _ := pem.Decode([]byte(FixPEM(s.PrivateKey)))
-	if block == nil {
+	if block == nil || len(block.Bytes) == 0 {
 		return "", fmt.Errorf("failed to parse privateKey")
 	}
 	key, err := x509.ParsePKCS1PrivateKey(block.Bytes)

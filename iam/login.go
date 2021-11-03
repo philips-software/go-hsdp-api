@@ -33,14 +33,22 @@ func (c *Client) CodeLogin(code string, redirectURI string) error {
 // ServiceLogin logs a service in using a JWT signed with the service private key
 func (c *Client) ServiceLogin(service Service) error {
 	accessTokenEndpoint := c.accessTokenEndpoint()
-	token, err := service.GetToken(accessTokenEndpoint)
+	token, err := service.GenerateJWT(accessTokenEndpoint)
 	if err != nil {
 		return err
 	}
 	// Authorize
-	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
+	u := *c.baseIAMURL
+	u.Opaque = c.baseIAMURL.Path + "authorize/oauth2/token"
+
+	req := &http.Request{
+		Method:     "POST",
+		URL:        &u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Host:       u.Host,
 	}
 	form := url.Values{}
 	if len(c.config.Scopes) > 0 {
@@ -174,7 +182,7 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 	if tokenResponse.AccessToken == "" {
 		return ErrNotAuthorized
 	}
-	c.tokenType = oAuthToken
+	c.tokenType = OAuthToken
 	c.token = tokenResponse.AccessToken
 	if tokenResponse.RefreshToken != "" { // Doesn't always contain new refresh token
 		c.refreshToken = tokenResponse.RefreshToken

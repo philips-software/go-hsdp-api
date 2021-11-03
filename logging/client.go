@@ -9,7 +9,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"regexp"
@@ -57,6 +56,7 @@ type Config struct {
 	BaseURL      string
 	ProductKey   string
 	Debug        bool
+	DebugLog     string
 }
 
 // Valid returns if all required config fields are present, false otherwise
@@ -83,6 +83,7 @@ type Client struct {
 	url        *url.URL
 	httpClient *http.Client
 	httpSigner *signer.Signer
+	debugFile  *os.File
 }
 
 // StoreResponse holds a LogEvent response
@@ -100,6 +101,8 @@ type CustomIndexBody []struct {
 
 // NewClient returns an instance of the logger client with the given Config
 func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
+	var logger Client
+
 	if httpClient == nil {
 		c := &http.Client{
 			Transport: &http.Transport{
@@ -107,6 +110,16 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 			},
 		}
 		httpClient = c
+	}
+	if config.DebugLog != "" || config.Debug {
+		var err error
+		if config.DebugLog == "" { // Simulate original behaviour
+			config.DebugLog = "/dev/stderr"
+		}
+		logger.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if err == nil {
+			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, logger.debugFile)
+		}
 	}
 	// Autoconfig
 	if config.Region != "" && config.Environment != "" {
@@ -123,7 +136,6 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if valid, err := config.Valid(); !valid {
 		return nil, err
 	}
-	var logger Client
 
 	logger.config = config
 	logger.httpClient = httpClient
@@ -154,26 +166,11 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
-	if c.config.Debug {
-		dumped, _ := httputil.DumpRequest(req, true)
-		_, _ = fmt.Fprintf(os.Stderr, "REQUEST: %s\n", string(dumped))
-	}
-
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-
-	if c.config.Debug {
-		if resp != nil {
-			dumped, _ := httputil.DumpResponse(resp, true)
-			_, _ = fmt.Fprintf(os.Stderr, "RESPONSE: %s\n", string(dumped))
-		} else {
-			_, _ = fmt.Fprintf(os.Stderr, "Error sending response: %s\n", err)
-		}
-	}
-
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)

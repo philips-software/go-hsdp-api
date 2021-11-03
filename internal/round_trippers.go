@@ -27,6 +27,7 @@ var filterList = []filter{
 	{regexp.MustCompile(`id_token_hint=\w+`), `id_token_hint=sensitive`},
 	{regexp.MustCompile(`assertion=[\w%.-]+`), `assertion=sensitive`},
 	{regexp.MustCompile(`"privateKey":\s*"[^"]+"`), `"privateKey": "[sensitive]"`},
+	{regexp.MustCompile(`"productKey":\s*"[^"]+"`), `"productKey": "[sensitive]"`},
 }
 
 type HeaderFunc func(req *http.Request) error
