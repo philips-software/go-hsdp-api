@@ -3,7 +3,6 @@ package logging
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -220,8 +219,6 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 		// Element
 		var e Element
 		e.Resource = msg
-		// Base64 encode here
-		e.Resource.LogData.Message = base64.StdEncoding.EncodeToString([]byte(msg.LogData.Message))
 		e.Resource.ResourceType = "LogEvent"
 		b.Entry[j] = e
 		j++

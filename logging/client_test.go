@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -37,7 +38,7 @@ var (
 		LogTime:             "2017-10-15T01:53:20Z",
 		Severity:            "INFO",
 		LogData: LogData{
-			Message: "aGVsbG8gd29ybGQK",
+			Message: "aGVsbG8gd29ybGQ=",
 		},
 	}
 	invalidResource = Resource{
@@ -56,7 +57,7 @@ var (
 		LogTime:             "2017-10-15T01:53:20Z",
 		Severity:            "INFO",
 		LogData: LogData{
-			Message: "aGVsbG8gd29ybGQK",
+			Message: "aGVsbG8gd29ybGQ=",
 		},
 	}
 )
@@ -102,6 +103,15 @@ func setup(t *testing.T, config *Config, method string, statusCode int, response
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
+		}
+		for _, e := range bundle.Entry {
+			data, err := base64.StdEncoding.DecodeString(e.Resource.LogData.Message)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+			if !assert.Equal(t, "hello world", string(data)) {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
 		}
 
 		if bundle.ProductKey != productKey {
