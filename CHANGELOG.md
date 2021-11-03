@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.49.1
+
+- BREAKING change Logging: support true passthrough of LogEvent (d9d9014843f)
+
 ## v0.49.0
 
 - Logging: refactor to use common debug logging code
