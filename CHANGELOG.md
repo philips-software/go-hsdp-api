@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.49.0
+
+- Logging: refactor to use common debug logging code
+- IAM Service: fix runaway recursive issue when refreshing
+
 ## v0.48.2
 
 - Docker Registries: add additional fields to Registry struct
