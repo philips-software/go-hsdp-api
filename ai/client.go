@@ -42,9 +42,9 @@ type Config struct {
 // A Client manages communication with HSDP AI APIs
 type Client struct {
 	// HTTP Client used to communicate with IAM API
-	iamClient *iam.Client
-	config    *Config
-	baseURL   *url.URL
+	*iam.Client
+	config  *Config
+	baseURL *url.URL
 
 	// User agent used when communicating with the HSDP Notification API
 	UserAgent string
@@ -63,7 +63,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 	doAutoconf(config)
-	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
+	c := &Client{Client: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
 
 	if err := c.SetBaseURL(config.BaseURL); err != nil {
 		return nil, err
@@ -194,7 +194,7 @@ func (c *Client) NewAIRequest(method, requestPath string, opt interface{}, optio
 		req.Header.Set("Content-Type", "application/json")
 	}
 	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
+	req.Header.Set("Authorization", "Bearer "+c.Token())
 	req.Header.Set("API-Version", APIVersion)
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
@@ -224,17 +224,17 @@ func newResponse(r *http.Response) *Response {
 
 // TokenRefresh forces a refresh of the IAM access token
 func (c *Client) TokenRefresh() error {
-	if c.iamClient == nil {
+	if c.Client == nil {
 		return fmt.Errorf("invalid IAM Client, cannot refresh token")
 	}
-	return c.iamClient.TokenRefresh()
+	return c.TokenRefresh()
 }
 
 // Do executes a http request. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
-	resp, err := c.iamClient.HttpClient().Do(req)
+	resp, err := c.HttpClient().Do(req)
 	if err != nil {
 		return nil, err
 	}
