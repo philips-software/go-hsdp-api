@@ -1,4 +1,4 @@
-package iam
+package mdm
 
 import (
 	"fmt"
@@ -34,7 +34,7 @@ func (p *Proposition) validate() error {
 
 // PropositionsService implements actions on IAM Proposition entities
 type PropositionsService struct {
-	client *Client
+	*Client
 }
 
 // GetPropositionsOptions specifies what search criteria
@@ -66,9 +66,9 @@ func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, option
 	return &(*props)[0], resp, nil
 }
 
-// GetPropositions search for an Proposition entity based on the GetPropositions values
+// GetPropositions search for a Proposition entity based on the GetPropositions values
 func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, options ...OptionFunc) (*[]Proposition, *Response, error) {
-	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Proposition", opt, options)
+	req, err := p.NewRequest(http.MethodGet, "/Proposition", opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -80,7 +80,7 @@ func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, optio
 		Entry []Proposition `json:"entry"`
 	}
 
-	resp, err := p.client.do(req, &bundleResponse)
+	resp, err := p.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -92,7 +92,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	if err := prop.validate(); err != nil {
 		return nil, nil, err
 	}
-	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Proposition", &prop, nil)
+	req, err := p.NewRequest(http.MethodPost, "/Proposition", &prop, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -101,7 +101,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 
 	var bundleResponse interface{}
 
-	resp, err := p.client.do(req, &bundleResponse)
+	resp, err := p.Do(req, &bundleResponse)
 	if err == io.EOF {
 		err = nil
 	}
@@ -113,7 +113,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 		return nil, resp, fmt.Errorf("CreateProposition failed: resp=%v", resp)
 	}
 	var id string
-	count, _ := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Proposition/%s", &id)
+	count, _ := fmt.Sscanf(resp.Header.Get("Location"), "/connect/mdm/Proposition/%s", &id)
 	if count == 0 {
 		return nil, resp, fmt.Errorf("CreateProposition: %w", ErrCouldNoReadResourceAfterCreate)
 	}

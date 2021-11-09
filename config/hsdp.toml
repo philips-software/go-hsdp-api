@@ -350,13 +350,13 @@ url = "https://training-service.eu-west.philips-healthsuite.com"
 
 # Service CONNECT-MDM
 [region.us-east.env.client-test.service.connect-mdm]
-url = "https://connect-mdm-client-test.us-east.philips-healthsuite.com"
+url = "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
 [region.us-east.env.prod.service.connect-mdm]
-url = "https://connect-mdm.us-east.philips-healthsuite.com"
+url = "https://connect-mdm.us-east.philips-healthsuite.com/connect/mdm"
 [region.eu-west.env.client-test.service.connect-mdm]
-url = "https://connect-mdm-client-test.eu-west.philips-healthsuite.com"
+url = "https://connect-mdm-client-test.eu-west.philips-healthsuite.com/connect/mdm"
 [region.eu-west.env.prod.service.connect-mdm]
-url = "https://connect-mdm.eu-west.philips-healthsuite.com"
+url = "https://connect-mdm.eu-west.philips-healthsuite.com/connect/mdm"
 
 # Service DISCOVERY
 [region.us-east.env.client-test.service.discovery]

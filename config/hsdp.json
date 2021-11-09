@@ -156,7 +156,7 @@
         "client-test": {
           "service": {
             "connect-mdm": {
-              "url": "https://connect-mdm-client-test.eu-west.philips-healthsuite.com"
+              "url": "https://connect-mdm-client-test.eu-west.philips-healthsuite.com/connect/mdm"
             },
             "discovery": {
               "url": "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/discovery"
@@ -202,7 +202,7 @@
         "prod": {
           "service": {
             "connect-mdm": {
-              "url": "https://connect-mdm.eu-west.philips-healthsuite.com"
+              "url": "https://connect-mdm.eu-west.philips-healthsuite.com/connect/mdm"
             },
             "iam": {
               "url": "https://iam-service.eu-west.philips-healthsuite.com"
@@ -332,7 +332,7 @@
         "client-test": {
           "service": {
             "connect-mdm": {
-              "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com"
+              "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
             },
             "discovery": {
               "url": "https://discovery-client-test.us01.connect.hsdp.io/client-test/core/discovery"
@@ -391,7 +391,7 @@
         "prod": {
           "service": {
             "connect-mdm": {
-              "url": "https://connect-mdm.us-east.philips-healthsuite.com"
+              "url": "https://connect-mdm.us-east.philips-healthsuite.com/connect/mdm"
             },
             "iam": {
               "url": "https://iam-service.us-east.philips-healthsuite.com"
