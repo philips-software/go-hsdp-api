@@ -41,7 +41,7 @@ func DataSearch(kv KeyValue) OptionFunc {
 
 // GetDataItem searches for data items in TDR
 // Use the DataSearch OptionFunc to search in the data part. When using this the
-// DataType must added as part of the options
+// DataType must be added as part of the options
 func (d *DataItemsService) GetDataItem(opt *GetDataItemOptions, options ...OptionFunc) ([]*DataItem, *Response, error) {
 	var dataItems []*DataItem
 

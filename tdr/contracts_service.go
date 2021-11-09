@@ -13,9 +13,8 @@ type ContractsService struct {
 	client *Client
 }
 
-// Constants
 const (
-	APIVersion = "4"
+	APIVersion = "5"
 )
 
 // GetContractOptions describes the fields on which you can search for contracts
