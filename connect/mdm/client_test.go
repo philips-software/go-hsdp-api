@@ -45,6 +45,9 @@ func setup(t *testing.T) func() {
 	mdmClient, err = mdm.NewClient(iamClient, &mdm.Config{
 		BaseURL: serverMDM.URL + "/connect/mdm",
 	})
+	if err != nil {
+		t.Fatalf("Failed to create mdmClient: %v", err)
+	}
 
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
 	userUUID := "33d20214-7879-4e35-923d-f9d4e01c9746"
