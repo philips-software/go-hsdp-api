@@ -174,7 +174,7 @@ func (c *Client) NewRequest(method, requestPath string, opt interface{}, options
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.Token())
 	req.Header.Set("API-Version", APIVersion)
 	if c.UserAgent != "" {
