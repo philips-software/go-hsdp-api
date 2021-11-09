@@ -55,6 +55,7 @@ type Client struct {
 	Regions           *RegionsService
 	StorageClasses    *StorageClassService
 	OAuthClientScopes *OAuthClientScopesService
+	OAuthClients      *OAuthClientsService
 }
 
 // NewClient returns a new Discovery client
@@ -75,6 +76,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.Regions = &RegionsService{Client: c}
 	c.StorageClasses = &StorageClassService{Client: c}
 	c.OAuthClientScopes = &OAuthClientScopesService{Client: c}
+	c.OAuthClients = &OAuthClientsService{Client: c, validate: validator.New()}
 
 	return c, nil
 }
