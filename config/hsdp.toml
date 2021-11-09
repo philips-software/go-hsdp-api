@@ -302,10 +302,6 @@ url = "https://pki-proxy-client-test.eu-west.philips-healthsuite.com"
 [region.us-east.env.client-test.service.pki]
 url = "https://pki-client-test.us-east.philips-healthsuite.com"
 
-# Service MDM
-[region.eu-west.env.client-test.service.mdm]
-url = "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
-
 # Service VAULT-PROXY
 [region.us-east.service.vault-proxy]
 url = "https://vproxy.us-east.philips-healthsuite.com"
@@ -351,3 +347,19 @@ url = "https://training-service.us-east.philips-healthsuite.com"
 url = "https://client-test-training-service.eu-west.philips-healthsuite.com"
 [region.eu-west.env.prod.service.training]
 url = "https://training-service.eu-west.philips-healthsuite.com"
+
+# Service CONNECT-MDM
+[region.us-east.env.client-test.service.connect-mdm]
+url = "https://connect-mdm-client-test.us-east.philips-healthsuite.com"
+[region.us-east.env.prod.service.connect-mdm]
+url = "https://connect-mdm.us-east.philips-healthsuite.com"
+[region.eu-west.env.client-test.service.connect-mdm]
+url = "https://connect-mdm-client-test.eu-west.philips-healthsuite.com"
+[region.eu-west.env.prod.service.connect-mdm]
+url = "https://connect-mdm.eu-west.philips-healthsuite.com"
+
+# Service DISCOVERY
+[region.us-east.env.client-test.service.discovery]
+url = "https://discovery-client-test.us01.connect.hsdp.io/client-test/core/discovery"
+[region.eu-west.env.client-test.service.discovery]
+url = "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/discovery"

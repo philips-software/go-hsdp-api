@@ -155,6 +155,12 @@
       "env": {
         "client-test": {
           "service": {
+            "connect-mdm": {
+              "url": "https://connect-mdm-client-test.eu-west.philips-healthsuite.com"
+            },
+            "discovery": {
+              "url": "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/discovery"
+            },
             "has": {
               "url": "https://has-client-test.eu-west.philips-healthsuite.com"
             },
@@ -176,9 +182,6 @@
             "logquery": {
               "url": "https://logquery-client-test.eu-west.philips-healthsuite.com"
             },
-            "mdm": {
-              "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
-            },
             "notification": {
               "url": "https://notification-client-test.eu-west.philips-healthsuite.com"
             },
@@ -198,6 +201,9 @@
         },
         "prod": {
           "service": {
+            "connect-mdm": {
+              "url": "https://connect-mdm.eu-west.philips-healthsuite.com"
+            },
             "iam": {
               "url": "https://iam-service.eu-west.philips-healthsuite.com"
             },
@@ -325,6 +331,12 @@
       "env": {
         "client-test": {
           "service": {
+            "connect-mdm": {
+              "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com"
+            },
+            "discovery": {
+              "url": "https://discovery-client-test.us01.connect.hsdp.io/client-test/core/discovery"
+            },
             "iam": {
               "url": "https://iam-client-test.us-east.philips-healthsuite.com"
             },
@@ -378,6 +390,9 @@
         },
         "prod": {
           "service": {
+            "connect-mdm": {
+              "url": "https://connect-mdm.us-east.philips-healthsuite.com"
+            },
             "iam": {
               "url": "https://iam-service.us-east.philips-healthsuite.com"
             },
