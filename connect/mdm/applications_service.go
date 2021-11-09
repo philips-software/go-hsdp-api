@@ -20,8 +20,9 @@ type ApplicationsService struct {
 type GetApplicationsOptions struct {
 	ID                *string `url:"_id,omitempty"`
 	PropositionID     *string `url:"propositionId,omitempty"`
-	GlobalReferenceID *string `url:"globalReferenceId,omitempty"`
+	GlobalReferenceID *string `url:"globalReferenceGuid,omitempty"`
 	Name              *string `url:"name,omitempty"`
+	DefaultGroupID    *string `url:"defaultGroupGuid,omitempty"`
 }
 
 // GetApplicationByID retrieves an Application by its ID

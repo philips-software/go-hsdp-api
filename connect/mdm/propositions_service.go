@@ -40,13 +40,14 @@ type PropositionsService struct {
 // GetPropositionsOptions specifies what search criteria
 // can be used to look for entities
 type GetPropositionsOptions struct {
-	ID                *string `url:"_id,omitempty"`
-	Count             *int    `url:"_count,omitempty"`
-	Page              *int    `url:"_page,omitempty"`
-	OrganizationID    *string `url:"organizationId,omitempty"`
-	PropositionID     *string `url:"propositionId,omitempty"`
-	GlobalReferenceID *string `url:"globalReferenceId,omitempty"`
-	Name              *string `url:"name,omitempty"`
+	ID                     *string `url:"_id,omitempty"`
+	Count                  *int    `url:"_count,omitempty"`
+	Page                   *int    `url:"_page,omitempty"`
+	OrganizationID         *string `url:"organizationGuid,omitempty"`
+	PropositionID          *string `url:"propositionGuid,omitempty"`
+	GlobalReferenceID      *string `url:"globalReferenceGuid,omitempty"`
+	Name                   *string `url:"name,omitempty"`
+	AuthenticationMethodID *string `url:"authenticationMethodId,omitempty"`
 }
 
 // GetPropositionByID retrieves an Proposition by its ID
