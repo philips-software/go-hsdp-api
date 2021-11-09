@@ -13,7 +13,7 @@ type StorageClassService struct {
 
 type StorageClass struct {
 	ResourceType string `json:"resourceType"`
-	Id           string `json:"id"`
+	ID           string `json:"id"`
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	Meta         *Meta  `json:"meta"`
@@ -28,7 +28,7 @@ type GetStorageClassOptions struct {
 }
 
 func (r *StorageClassService) GetStorageClasses(opt *GetStorageClassOptions) (*[]StorageClass, *Response, error) {
-	req, err := r.NewRequest(http.MethodGet, "/Region", opt)
+	req, err := r.NewRequest(http.MethodGet, "/StorageClass", opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -51,7 +51,7 @@ func (r *StorageClassService) GetStorageClasses(opt *GetStorageClassOptions) (*[
 	return &classes, resp, nil
 }
 
-func (r *StorageClassService) GetRegionByID(id string) (*StorageClass, *Response, error) {
+func (r *StorageClassService) GetStorageClassByID(id string) (*StorageClass, *Response, error) {
 	classes, resp, err := r.GetStorageClasses(&GetStorageClassOptions{
 		ID: &id,
 	})
