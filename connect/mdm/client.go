@@ -50,8 +50,10 @@ type Client struct {
 	debugFile *os.File
 	validate  *validator.Validate
 
-	Propositions *PropositionsService
-	Applications *ApplicationsService
+	Propositions   *PropositionsService
+	Applications   *ApplicationsService
+	Regions        *RegionsService
+	StorageClasses *StorageClassService
 }
 
 // NewClient returns a new Discovery client
@@ -69,6 +71,8 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 	c.Propositions = &PropositionsService{Client: c}
 	c.Applications = &ApplicationsService{Client: c}
+	c.Regions = &RegionsService{Client: c}
+	c.StorageClasses = &StorageClassService{Client: c}
 
 	return c, nil
 }
