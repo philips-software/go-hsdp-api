@@ -18,34 +18,23 @@ func TestServiceActionsCRUD(t *testing.T) {
 	description := "Service description"
 	organizationID := "c3fe79e6-13c2-48c1-adfa-826a01d4b31c"
 	createdService := `{
-  "resourceType": "StandardService",
+  "meta": {
+    "lastUpdated": "2021-11-10T18:47:24.059503+00:00",
+    "versionId": "ae6fabc0-3a65-4bb2-a08f-64d4e6453f0d"
+  },
   "id": "` + id + `",
+  "resourceType": "ServiceAction",
   "name": "` + name + `",
   "description": "` + description + `",
-  "trusted": true,
-  "tags": [
-    "string"
-  ],
-  "serviceUrls": [
-    {
-      "url": "string",
-      "sortOrder": 0,
-      "authenticationMethodId": {
-        "reference": "string"
-      }
-    }
-  ],
-  "meta": {
-    "lastUpdated": "2021-11-09T22:15:35.155Z",
-    "versionId": "string"
+  "ServiceActionId": {
+    "reference": "ServiceAction/7b26ddb7-910b-4faf-b122-e1fd27356b14"
   },
   "organizationGuid": {
-    "system": "string",
+    "system": "https://idm-client-test.us-east.philips-healthsuite.com/authorize/identity/Organization",
     "value": "` + organizationID + `"
   }
-}
-`
-	muxMDM.HandleFunc("/connect/mdm/StandardService", func(w http.ResponseWriter, r *http.Request) {
+}`
+	muxMDM.HandleFunc("/connect/mdm/ServiceAction", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodPost:
@@ -66,39 +55,13 @@ func TestServiceActionsCRUD(t *testing.T) {
   "entry": [
     {
       "fullUrl": "string",
-      "resource": {
-        "resourceType": "StandardService",
-        "id": "`+id+`",
-        "name": "`+name+`",
-        "description": "`+description+`",
-        "trusted": true,
-        "tags": [
-          "string"
-        ],
-        "serviceUrls": [
-          {
-            "url": "string",
-            "sortOrder": 0,
-            "authenticationMethodId": {
-              "reference": "string"
-            }
-          }
-        ],
-        "meta": {
-          "lastUpdated": "2021-11-09T22:18:19.421Z",
-          "versionId": "string"
-        },
-        "organizationGuid": {
-          "system": "string",
-          "value": "`+organizationID+`"
-        }
-      }
+      "resource": `+createdService+`
     }
   ]
 }`)
 		}
 	})
-	muxMDM.HandleFunc("/connect/mdm/StandardService/"+id, func(w http.ResponseWriter, r *http.Request) {
+	muxMDM.HandleFunc("/connect/mdm/ServiceAction/"+id, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodGet:
@@ -112,19 +75,14 @@ func TestServiceActionsCRUD(t *testing.T) {
 		}
 	})
 
-	var c mdm.StandardService
+	var c mdm.ServiceAction
 	c.Name = name
 	c.Description = description
-	c.Tags = []string{"FOO"}
-	c.ServiceUrls = append(c.ServiceUrls, mdm.ServiceURL{
-		URL:       "https://foo.bar/com",
-		SortOrder: 1,
-	})
 	c.OrganizationGuid = &mdm.Identifier{
 		Value: organizationID,
 	}
 
-	created, resp, err := mdmClient.StandardServices.CreateStandardService(c)
+	created, resp, err := mdmClient.ServiceActions.Create(c)
 	if !assert.Nilf(t, err, "unexpected error: %v", err) {
 		return
 	}
@@ -137,7 +95,7 @@ func TestServiceActionsCRUD(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, name, created.Name)
 
-	created, resp, err = mdmClient.StandardServices.GetStandardServiceByID(created.ID)
+	created, resp, err = mdmClient.ServiceActions.GetByID(created.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	if !assert.NotNil(t, createdService) {
@@ -146,7 +104,7 @@ func TestServiceActionsCRUD(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, id, created.ID)
 
-	ok, resp, err := mdmClient.StandardServices.DeleteStandardService(*created)
+	ok, resp, err := mdmClient.ServiceActions.Delete(*created)
 	assert.True(t, ok)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
