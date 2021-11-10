@@ -69,7 +69,7 @@ func (c *StandardServicesService) CreateStandardService(ac StandardService) (*St
 	return c.GetStandardServiceByID(createdService.ID)
 }
 
-// DeleteOAuthClient deletes the given Client
+// DeleteStandardService deletes the given Client
 func (c *StandardServicesService) DeleteStandardService(ac StandardService) (bool, *Response, error) {
 	req, err := c.NewRequest(http.MethodDelete, "/StandardService/"+ac.ID, nil, nil)
 	if err != nil {

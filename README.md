@@ -10,6 +10,21 @@ A HSDP API client library enabling Go programs to interact with various HSDP API
 The current implement covers only a subset of HSDP APIs. Basically, we implement functionality as needed.
 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
+- [x] Clinical Data Repository (CDR)
+  - [x] Tenant Onboarding
+  - [x] Subscription management
+  - [x] FHIR CRUD
+  - [x] FHIR Patch
+  - [x] STU3
+  - [x] R4
+- [x] Connect IoT
+  - [x] Master Data Management (MDM)
+    - [ ] Propositions
+    - [ ] Applications
+    - [x] OAuth2 clients
+    - [x] Standard Services
+    - [ ] Service Actions
+    - [x] Storage Classes
 - [x] Secure Transport Layer (STL) / Edge 
   - [x] Device queries
   - [x] Application Resources management
@@ -33,13 +48,6 @@ The current implement covers only a subset of HSDP APIs. Basically, we implement
   - [x] SMS Templates
 - [x] Logging ([examples](logging/README.md))
 - [x] Auditing ([examples](audit/README.md))
-- [x] Clinical Data Repository (CDR)
-  - [x] Tenant Onboarding
-  - [x] Subscription management
-  - [x] FHIR CRUD
-  - [x] FHIR Patch
-  - [x] STU3
-  - [x] R4
 - [x] Telemetry Data Repository (TDR)
   - [x] Contract management
   - [x] Data Item management
