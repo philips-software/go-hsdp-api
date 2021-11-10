@@ -115,12 +115,16 @@ func TestServiceActionsCRUD(t *testing.T) {
 	var c mdm.StandardService
 	c.Name = name
 	c.Description = description
+	c.ServiceUrls = append(c.ServiceUrls, mdm.ServiceURL{
+		URL:       "https://foo.bar/com",
+		SortOrder: 1,
+	})
 	c.OrganizationGuid = &mdm.Identifier{
 		Value: organizationID,
 	}
 
 	created, resp, err := mdmClient.StandardServices.CreateStandardService(c)
-	if !assert.Nil(t, err) {
+	if !assert.Nilf(t, err, "unexpected error: %v", err) {
 		return
 	}
 	if !assert.NotNil(t, resp) {

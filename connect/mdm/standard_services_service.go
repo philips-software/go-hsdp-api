@@ -20,15 +20,15 @@ type StandardService struct {
 	Description      string       `json:"description"`
 	Trusted          bool         `json:"trusted"`
 	Tags             []string     `json:"tags"`
-	ServiceUrls      []ServiceURL `json:"serviceUrls"`
+	ServiceUrls      []ServiceURL `json:"serviceUrls" validate:"required,min=1,max=5"`
 	OrganizationGuid *Identifier  `json:"organizationGuid,omitempty"`
 	Meta             *Meta        `json:"meta,omitempty"`
 }
 
 type ServiceURL struct {
-	URL                    string    `json:"url"`
-	SortOrder              int       `json:"sortOrder"`
-	AuthenticationMethodID Reference `json:"AuthenticationMethodId"`
+	URL                    string     `json:"url"`
+	SortOrder              int        `json:"sortOrder"`
+	AuthenticationMethodID *Reference `json:"AuthenticationMethodId,omitempty"`
 }
 
 // StandardServicesService provides operations on MDM standard service resources
