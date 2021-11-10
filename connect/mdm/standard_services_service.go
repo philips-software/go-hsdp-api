@@ -137,6 +137,7 @@ func (c *StandardServicesService) GetStandardServices(opt *GetStandardServiceOpt
 
 // Update updates a standard service
 func (c *StandardServicesService) Update(ac StandardService) (*StandardService, *Response, error) {
+	ac.ResourceType = "StandardService"
 	if err := c.validate.Struct(ac); err != nil {
 		return nil, nil, err
 	}

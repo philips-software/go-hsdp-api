@@ -126,6 +126,7 @@ func (c *ServiceActionsService) Find(opt *GetServiceActionOptions, options ...Op
 
 // Update updates a standard service
 func (c *ServiceActionsService) Update(ac ServiceAction) (*ServiceAction, *Response, error) {
+	ac.ResourceType = "ServiceAction"
 	if err := c.validate.Struct(ac); err != nil {
 		return nil, nil, err
 	}
