@@ -14,12 +14,12 @@ var (
 )
 
 type StandardService struct {
-	ResourceType     string       `json:"resourceType"`
+	ResourceType     string       `json:"resourceType" validate:"required"`
 	ID               string       `json:"id,omitempty"`
-	Name             string       `json:"name"`
+	Name             string       `json:"name" validate:"required"`
 	Description      string       `json:"description"`
 	Trusted          bool         `json:"trusted"`
-	Tags             []string     `json:"tags"`
+	Tags             []string     `json:"tags" validate:"required,min=1,max=1"`
 	ServiceUrls      []ServiceURL `json:"serviceUrls" validate:"required,min=1,max=5"`
 	OrganizationGuid *Identifier  `json:"organizationGuid,omitempty"`
 	Meta             *Meta        `json:"meta,omitempty"`

@@ -19,7 +19,7 @@ var (
 )
 
 type ServiceAction struct {
-	ResourceType      string     `json:"resourceType"`
+	ResourceType      string     `json:"resourceType" validate:"required"`
 	ID                string     `json:"id,omitempty"`
 	Name              string     `json:"name"`
 	Description       string     `json:"description"`
