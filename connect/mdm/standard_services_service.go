@@ -48,6 +48,7 @@ type GetStandardServiceOptions struct {
 
 // CreateStandardService creates a Client
 func (c *StandardServicesService) CreateStandardService(ac StandardService) (*StandardService, *Response, error) {
+	ac.ResourceType = "StandardService"
 	if err := c.validate.Struct(ac); err != nil {
 		return nil, nil, err
 	}

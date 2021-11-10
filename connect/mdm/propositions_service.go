@@ -93,6 +93,7 @@ func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, optio
 
 // CreateProposition creates a Proposition
 func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition, *Response, error) {
+	prop.ResourceType = "Proposition"
 	if err := p.validate.Struct(prop); err != nil {
 		return nil, nil, err
 	}

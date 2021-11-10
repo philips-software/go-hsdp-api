@@ -76,6 +76,7 @@ func (a *ApplicationsService) GetApplications(opt *GetApplicationsOptions, optio
 
 // CreateApplication creates a Application
 func (a *ApplicationsService) CreateApplication(app Application) (*Application, *Response, error) {
+	app.ResourceType = "Application"
 	if err := a.validate.Struct(app); err != nil {
 		return nil, nil, err
 	}

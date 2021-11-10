@@ -37,6 +37,7 @@ type GetServiceActionOptions struct {
 
 // Create creates a ServiceAction
 func (c *ServiceActionsService) Create(ac ServiceAction) (*ServiceAction, *Response, error) {
+	ac.ResourceType = "ServiceAction"
 	if err := c.validate.Struct(ac); err != nil {
 		return nil, nil, err
 	}
