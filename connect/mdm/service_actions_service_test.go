@@ -115,6 +115,7 @@ func TestServiceActionsCRUD(t *testing.T) {
 	var c mdm.StandardService
 	c.Name = name
 	c.Description = description
+	c.Tags = []string{"FOO"}
 	c.ServiceUrls = append(c.ServiceUrls, mdm.ServiceURL{
 		URL:       "https://foo.bar/com",
 		SortOrder: 1,

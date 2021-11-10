@@ -19,12 +19,12 @@ var (
 )
 
 type ServiceAction struct {
-	ResourceType      string     `json:"resourceType" validate:"required"`
-	ID                string     `json:"id,omitempty"`
-	Name              string     `json:"name"`
-	Description       string     `json:"description"`
-	OrganizationGuid  Identifier `json:"organizationGuid"`
-	StandardServiceId Reference  `json:"standardServiceId"`
+	ResourceType      string      `json:"resourceType" validate:"required"`
+	ID                string      `json:"id,omitempty"`
+	Name              string      `json:"name" validate:"required"`
+	Description       string      `json:"description"`
+	OrganizationGuid  *Identifier `json:"organizationGuid,omitempty"`
+	StandardServiceId Reference   `json:"standardServiceId"`
 }
 
 // GetServiceActionOptions struct { describes search criteria for looking up service actions
