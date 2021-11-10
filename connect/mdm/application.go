@@ -4,14 +4,14 @@ import "time"
 
 // Application represents an MDM Application entity
 type Application struct {
-	ResourceType      string     `json:"resourceType"`
 	ID                string     `json:"id,omitempty"`
-	Name              string     `json:"name" validate:"required"`
+	ResourceType      string     `json:"resourceType"`
+	Name              string     `json:"name"`
 	Description       string     `json:"description"`
-	PropositionID     string     `json:"propositionId" validate:"required"`
-	GlobalReferenceID string     `json:"globalReferenceId" validate:"required"`
-	ApplicationGUID   Identifier `json:"applicationGuid"`
-	DefaultGroupGUID  Identifier `json:"defaultGroupGuid"`
+	PropositionID     Reference  `json:"propositionId"`
+	ApplicationGuid   Identifier `json:"applicationGuid"`
+	GlobalReferenceID string     `json:"globalReferenceId"`
+	DefaultGroupGuid  Identifier `json:"defaultGroupGuid"`
 	Meta              *Meta      `json:"meta,omitempty"`
 }
 

@@ -14,9 +14,58 @@ func TestCreateApplication(t *testing.T) {
 	defer teardown()
 
 	appID := "10dc5e2f-3940-4cd8-b0ef-297e12ad2f3c"
-	propID := "3af7143e-de76-11e8-9681-6a0002b8cb70"
+	propID := "Proposition/d9001b60-e4dc-420a-8176-333186898030"
 	description := "TESTPROP Application"
 	globalReferenceID := "TESTAPPREF"
+	bundleResponse := `{
+  "meta": {
+    "lastUpdated": "2021-11-10T00:10:09.479525+00:00"
+  },
+  "id": "51951097-eecb-4b03-9e1b-68d1dc437cb7",
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "entry": [
+    {
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "meta": {
+          "lastUpdated": "2021-11-09T23:36:40.988817+00:00",
+          "versionId": "77d25cb2-d035-4dab-b20d-333133a3995d"
+        },
+        "id": "` + appID + `",
+        "resourceType": "Application",
+        "name": "First",
+        "description": "First app",
+        "propositionId": {
+          "reference": "` + propID + `"
+        },
+        "applicationGuid": {
+          "system": "https://idm-client-test.us-east.philips-healthsuite.com/authorize/identity/",
+          "value": "ca277a24-22a4-4dd0-b8d5-bc961b74635a"
+        },
+        "globalReferenceId": "` + globalReferenceID + `",
+        "defaultGroupGuid": {
+          "system": "https://idm-client-test.us-east.philips-healthsuite.com",
+          "value": "060e2ec0-8775-41db-8372-007de2b7dbef"
+        }
+      },
+      "fullUrl": "Application/` + appID + `"
+    }
+  ],
+  "link": [
+    {
+      "url": "Application?name=First&propositionId=d9001b60-e4dc-420a-8176-333186898030",
+      "relation": "self"
+    },
+    {
+      "url": "Application?name=First&propositionId=d9001b60-e4dc-420a-8176-333186898030&_page=1",
+      "relation": "first"
+    }
+  ],
+  "pageTotal": 1
+}`
 
 	muxMDM.HandleFunc("/connect/mdm/Application", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -26,22 +75,7 @@ func TestCreateApplication(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, `{
-                                     "total": 1,
-                                     "entry": [
-                                       {
-                                         "name": "TESTAPP",
-                                         "description": "`+description+`",
-                                         "propositionId": "`+propID+`",
-                                         "globalReferenceId": "`+globalReferenceID+`",
-                                         "id": "`+appID+`",
-                                         "meta": {
-                                           "versionId": "0",
-                                           "lastModified": "2018-11-02T05:48:410.042Z"
-                                         }
-                                       }
-                                     ]
-                                   }`)
+			_, _ = io.WriteString(w, bundleResponse)
 		case "POST":
 			w.Header().Set("Content-Type", "application/json")
 			w.Header().Set("Location", "/connect/mdm/Application/"+appID)
@@ -50,23 +84,19 @@ func TestCreateApplication(t *testing.T) {
 	})
 
 	var app = mdm.Application{
-		Description:       description,
-		PropositionID:     propID,
+		Description: description,
+		PropositionID: mdm.Reference{
+			Reference: propID,
+		},
 		GlobalReferenceID: globalReferenceID,
-		ApplicationGUID: mdm.Identifier{
+		ApplicationGuid: mdm.Identifier{
 			System: "foo",
 			Value:  "bar",
 		},
-		DefaultGroupGUID: mdm.Identifier{
+		DefaultGroupGuid: mdm.Identifier{
 			System: "foo",
 			Value:  "bar",
 		},
-	}
-
-	// Test validation
-	_, _, err := mdmClient.Applications.CreateApplication(app)
-	if err == nil {
-		t.Error("Expected validation error")
 	}
 
 	app.Name = "TESTAPP"
@@ -81,7 +111,7 @@ func TestCreateApplication(t *testing.T) {
 		return
 	}
 	assert.Equal(t, appID, createdApp.ID)
-	assert.Equal(t, propID, createdApp.PropositionID)
+	assert.Equal(t, propID, createdApp.PropositionID.Reference)
 	assert.Equal(t, globalReferenceID, createdApp.GlobalReferenceID)
 }
 

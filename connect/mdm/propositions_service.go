@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/philips-software/go-hsdp-api/internal"
 )
 
@@ -20,7 +21,6 @@ type Proposition struct {
 	Name                            string     `json:"name"`
 	Description                     string     `json:"description"`
 	OrganizationGuid                Identifier `json:"organizationGuid"`
-	PropositionGuid                 Identifier `json:"propositionGuid"`
 	GlobalReferenceID               string     `json:"globalReferenceId"`
 	DefaultCustomerOrganizationGuid Identifier `json:"defaultCustomerOrganizationGuid"`
 	Status                          string     `json:"status,omitempty"`
@@ -29,22 +29,11 @@ type Proposition struct {
 	Meta                            *Meta      `json:"meta,omitempty"`
 }
 
-func (p *Proposition) validate() error {
-	if p.Name == "" {
-		return ErrMissingName
-	}
-	if p.OrganizationGuid.Value == "" {
-		return ErrMissingOrganization
-	}
-	if p.GlobalReferenceID == "" {
-		return ErrMissingGlobalReference
-	}
-	return nil
-}
-
 // PropositionsService implements actions on IAM Proposition entities
 type PropositionsService struct {
 	*Client
+
+	validate *validator.Validate
 }
 
 // GetPropositionsOptions specifies what search criteria
@@ -104,7 +93,7 @@ func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, optio
 
 // CreateProposition creates a Proposition
 func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition, *Response, error) {
-	if err := prop.validate(); err != nil {
+	if err := p.validate.Struct(prop); err != nil {
 		return nil, nil, err
 	}
 	req, err := p.NewRequest(http.MethodPost, "/Proposition", &prop, nil)

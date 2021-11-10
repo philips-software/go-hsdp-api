@@ -72,8 +72,8 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 
-	c.Propositions = &PropositionsService{Client: c}
-	c.Applications = &ApplicationsService{Client: c}
+	c.Propositions = &PropositionsService{Client: c, validate: validator.New()}
+	c.Applications = &ApplicationsService{Client: c, validate: validator.New()}
 	c.Regions = &RegionsService{Client: c}
 	c.StorageClasses = &StorageClassService{Client: c}
 	c.OAuthClientScopes = &OAuthClientScopesService{Client: c}

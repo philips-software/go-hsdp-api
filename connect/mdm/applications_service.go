@@ -1,9 +1,13 @@
 package mdm
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 const (
@@ -13,6 +17,8 @@ const (
 // ApplicationsService implements actions on IAM Application entities
 type ApplicationsService struct {
 	*Client
+
+	validate *validator.Validate
 }
 
 // GetApplicationsOptions specifies what search criteria
@@ -28,23 +34,23 @@ type GetApplicationsOptions struct {
 // GetApplicationByID retrieves an Application by its ID
 func (a *ApplicationsService) GetApplicationByID(id string) (*Application, *Response, error) {
 	apps, resp, err := a.GetApplications(&GetApplicationsOptions{ID: &id}, nil)
-	if len(apps) == 0 {
+	if apps == nil || len(*apps) == 0 {
 		return nil, resp, ErrNotFound
 	}
-	return apps[0], resp, err
+	return &(*apps)[0], resp, err
 }
 
 // GetApplicationByName retrieves an Application by its Name
 func (a *ApplicationsService) GetApplicationByName(name string) (*Application, *Response, error) {
 	apps, resp, err := a.GetApplications(&GetApplicationsOptions{ID: &name}, nil)
-	if len(apps) == 0 {
+	if apps == nil || len(*apps) == 0 {
 		return nil, resp, ErrNotFound
 	}
-	return apps[0], resp, err
+	return &(*apps)[0], resp, err
 }
 
 // GetApplications search for an Applications entity based on the GetApplicationsOptions values
-func (a *ApplicationsService) GetApplications(opt *GetApplicationsOptions, options ...OptionFunc) ([]*Application, *Response, error) {
+func (a *ApplicationsService) GetApplications(opt *GetApplicationsOptions, options ...OptionFunc) (*[]Application, *Response, error) {
 	req, err := a.NewRequest(http.MethodGet, "/Application", opt, options...)
 	if err != nil {
 		return nil, nil, err
@@ -52,20 +58,20 @@ func (a *ApplicationsService) GetApplications(opt *GetApplicationsOptions, optio
 	req.Header.Set("api-version", applicationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse struct {
-		Total int
-		Entry []*Application
-	}
+	var bundleResponse internal.Bundle
 
 	resp, err := a.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	if bundleResponse.Total == 0 {
-		return nil, resp, ErrEmptyResults
+	var apps []Application
+	for _, a := range bundleResponse.Entry {
+		var app Application
+		if err := json.Unmarshal(a.Resource, &app); err == nil {
+			apps = append(apps, app)
+		}
 	}
-
-	return bundleResponse.Entry, resp, nil
+	return &apps, resp, nil
 }
 
 // CreateApplication creates a Application

@@ -87,10 +87,11 @@ func TestCreateProposition(t *testing.T) {
 	})
 
 	var prop = mdm.Proposition{
-		Name:              "TESTPROP",
-		Description:       description,
-		OrganizationGuid:  mdm.Identifier{Value: orgID},
-		GlobalReferenceID: "TESTPROPREF",
+		Name:                            "TESTPROP",
+		Description:                     description,
+		OrganizationGuid:                mdm.Identifier{Value: orgID},
+		GlobalReferenceID:               "TESTPROPREF",
+		DefaultCustomerOrganizationGuid: mdm.Identifier{Value: "foo"},
 	}
 	createdProp, resp, err := mdmClient.Propositions.CreateProposition(prop)
 	if err != nil {
