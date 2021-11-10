@@ -21,7 +21,8 @@ type StandardService struct {
 	Trusted          bool         `json:"trusted"`
 	Tags             []string     `json:"tags"`
 	ServiceUrls      []ServiceURL `json:"serviceUrls"`
-	OrganizationGuid Identifier   `json:"organizationGuid"`
+	OrganizationGuid *Identifier  `json:"organizationGuid,omitempty"`
+	Meta             *Meta        `json:"meta,omitempty"`
 }
 
 type ServiceURL struct {

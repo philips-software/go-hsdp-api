@@ -115,7 +115,7 @@ func TestServiceActionsCRUD(t *testing.T) {
 	var c mdm.StandardService
 	c.Name = name
 	c.Description = description
-	c.OrganizationGuid = mdm.Identifier{
+	c.OrganizationGuid = &mdm.Identifier{
 		Value: organizationID,
 	}
 
