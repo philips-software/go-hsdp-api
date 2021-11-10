@@ -4,7 +4,6 @@ package mdm
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -201,14 +200,6 @@ type Response struct {
 func newResponse(r *http.Response) *Response {
 	response := &Response{Response: r}
 	return response
-}
-
-// TokenRefresh forces a refresh of the IAM access token
-func (c *Client) TokenRefresh() error {
-	if c.Client == nil {
-		return fmt.Errorf("invalid IAM Client, cannot refresh token")
-	}
-	return c.TokenRefresh()
 }
 
 // Do executes a http request. If v implements the io.Writer

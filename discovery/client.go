@@ -198,14 +198,6 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
-// TokenRefresh forces a refresh of the IAM access token
-func (c *Client) TokenRefresh() error {
-	if c.Client == nil {
-		return fmt.Errorf("invalid IAM Client, cannot refresh token")
-	}
-	return c.TokenRefresh()
-}
-
 // Do executes a http request. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
