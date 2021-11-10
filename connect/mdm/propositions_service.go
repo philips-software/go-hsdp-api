@@ -1,29 +1,39 @@
 package mdm
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 const (
 	propositionAPIVersion = "1"
 )
 
-// Proposition represents an IAM Proposition entity
+// Proposition represents a MDM Proposition entity
 type Proposition struct {
-	ID                string `json:"id,omitempty"`
-	Name              string `json:"name"`
-	Description       string `json:"description"`
-	OrganizationID    string `json:"organizationId"`
-	GlobalReferenceID string `json:"globalReferenceId"`
+	ID                              string     `json:"id,omitempty"`
+	ResourceType                    string     `json:"resourceType"`
+	Name                            string     `json:"name"`
+	Description                     string     `json:"description"`
+	OrganizationGuid                Identifier `json:"organizationGuid"`
+	PropositionGuid                 Identifier `json:"propositionGuid"`
+	GlobalReferenceID               string     `json:"globalReferenceId"`
+	DefaultCustomerOrganizationGuid Identifier `json:"defaultCustomerOrganizationGuid"`
+	Status                          string     `json:"status,omitempty"`
+	ValidationEnabled               bool       `json:"validationEnabled"`
+	NotificationEnabled             bool       `json:"notificationEnabled"`
+	Meta                            *Meta      `json:"meta,omitempty"`
 }
 
 func (p *Proposition) validate() error {
 	if p.Name == "" {
 		return ErrMissingName
 	}
-	if p.OrganizationID == "" {
+	if p.OrganizationGuid.Value == "" {
 		return ErrMissingOrganization
 	}
 	if p.GlobalReferenceID == "" {
@@ -50,7 +60,7 @@ type GetPropositionsOptions struct {
 	AuthenticationMethodID *string `url:"authenticationMethodId,omitempty"`
 }
 
-// GetPropositionByID retrieves an Proposition by its ID
+// GetPropositionByID retrieves a Proposition by its ID
 func (p *PropositionsService) GetPropositionByID(id string) (*Proposition, *Response, error) {
 	return p.GetProposition(&GetPropositionsOptions{ID: &id}, nil)
 }
@@ -76,16 +86,20 @@ func (p *PropositionsService) GetPropositions(opt *GetPropositionsOptions, optio
 	req.Header.Set("api-version", propositionAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse struct {
-		Total int           `json:"total"`
-		Entry []Proposition `json:"entry"`
-	}
+	var bundleResponse internal.Bundle
 
 	resp, err := p.Do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	return &bundleResponse.Entry, resp, err
+	var props []Proposition
+	for _, p := range bundleResponse.Entry {
+		var prop Proposition
+		if err := json.Unmarshal(p.Resource, &prop); err == nil {
+			props = append(props, prop)
+		}
+	}
+	return &props, resp, err
 }
 
 // CreateProposition creates a Proposition
