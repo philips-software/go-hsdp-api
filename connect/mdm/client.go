@@ -56,6 +56,7 @@ type Client struct {
 	OAuthClientScopes *OAuthClientScopesService
 	OAuthClients      *OAuthClientsService
 	StandardServices  *StandardServicesService
+	ServiceActions    *ServiceActionsService
 }
 
 // NewClient returns a new Discovery client
@@ -78,6 +79,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.OAuthClientScopes = &OAuthClientScopesService{Client: c}
 	c.OAuthClients = &OAuthClientsService{Client: c, validate: validator.New()}
 	c.StandardServices = &StandardServicesService{Client: c, validate: validator.New()}
+	c.ServiceActions = &ServiceActionsService{Client: c, validate: validator.New()}
 
 	return c, nil
 }
