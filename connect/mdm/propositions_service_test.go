@@ -59,11 +59,11 @@ func TestCreateProposition(t *testing.T) {
   ],
   "link": [
     {
-      "url": "Proposition?name=First&organizationGuid=dae89cf0-888d-4a26-8c1d-578e97365efc",
+      "url": "Proposition?name=First&organizationGuid=` + orgID + `",
       "relation": "self"
     },
     {
-      "url": "Proposition?name=First&organizationGuid=dae89cf0-888d-4a26-8c1d-578e97365efc&_page=1",
+      "url": "Proposition?name=First&organizationGuid=` + orgID + `&_page=1",
       "relation": "first"
     }
   ],
@@ -81,8 +81,33 @@ func TestCreateProposition(t *testing.T) {
 			_, _ = io.WriteString(w, bundleResponse)
 		case http.MethodPost:
 			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Location", "/connect/mdm/Proposition/"+propID)
 			w.WriteHeader(http.StatusCreated)
+			_, _ = io.WriteString(w, `{
+  "meta": {
+    "lastUpdated": "2021-11-09T23:37:13.643501+00:00",
+    "versionId": "db393c1f-c8e8-4609-b8ae-143584010326"
+  },
+  "id": "`+propID+`",
+  "resourceType": "Proposition",
+  "name": "First",
+  "description": "Description here",
+  "organizationGuid": {
+    "system": "https://iam-client-test.us-east.philips-healthsuite.com",
+    "value": "`+orgID+`"
+  },
+  "propositionGuid": {
+    "system": "https://idm-client-test.us-east.philips-healthsuite.com/authorize/identity/",
+    "value": "64e403e6-d215-457a-bf12-2a4f49038208"
+  },
+  "globalReferenceId": "be5ea8a2-e8ad-483b-a6d2-77e38a6c25b9",
+  "defaultCustomerOrganizationGuid": {
+    "system": "https://iam-client-test.us-east.philips-healthsuite.com",
+    "value": "`+orgID+`"
+  },
+  "status": "ACTIVE",
+  "validationEnabled": false,
+  "notificationEnabled": false
+}`)
 		}
 	})
 

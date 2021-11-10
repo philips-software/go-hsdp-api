@@ -69,17 +69,38 @@ func TestCreateApplication(t *testing.T) {
 
 	muxMDM.HandleFunc("/connect/mdm/Application", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case "GET":
+		case http.MethodGet:
 			if r.URL.Query().Get("_id") != appID {
 				w.WriteHeader(http.StatusNotFound)
 				return
 			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = io.WriteString(w, bundleResponse)
-		case "POST":
+		case http.MethodPost:
 			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Location", "/connect/mdm/Application/"+appID)
 			w.WriteHeader(http.StatusCreated)
+			_, _ = io.WriteString(w, `{
+  "meta": {
+    "lastUpdated": "2021-11-09T23:36:40.988817+00:00",
+    "versionId": "77d25cb2-d035-4dab-b20d-333133a3995d"
+  },
+  "id": "`+appID+`",
+  "resourceType": "Application",
+  "name": "First",
+  "description": "First app",
+  "propositionId": {
+    "reference": "Proposition/d9001b60-e4dc-420a-8176-333186898030"
+  },
+  "applicationGuid": {
+    "system": "https://idm-client-test.us-east.philips-healthsuite.com/authorize/identity/",
+    "value": "`+appID+`"
+  },
+  "globalReferenceId": "9d4c533b-168c-4458-b8b8-2e211154f76a",
+  "defaultGroupGuid": {
+    "system": "https://idm-client-test.us-east.philips-healthsuite.com",
+    "value": "060e2ec0-8775-41db-8372-007de2b7dbef"
+  }
+}`)
 		}
 	})
 

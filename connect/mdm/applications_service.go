@@ -86,9 +86,9 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 	req.Header.Set("api-version", applicationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse interface{}
+	var created Application
 
-	resp, err := a.Do(req, &bundleResponse)
+	resp, err := a.Do(req, &created)
 	if err == io.EOF { // EOF is not an error in this case
 		err = nil
 	}
@@ -102,13 +102,5 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 	if !ok {
 		return nil, resp, fmt.Errorf("CreateApplication: failed with StatusCode=%d", resp.StatusCode)
 	}
-	var id string
-	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/connect/mdm/Application/%s", &id)
-	if err != nil {
-		return nil, resp, err
-	}
-	if count == 0 {
-		return nil, resp, fmt.Errorf("CreateApplication: %w", ErrCouldNoReadResourceAfterCreate)
-	}
-	return a.GetApplicationByID(id)
+	return a.GetApplicationByID(created.ID)
 }

@@ -103,9 +103,9 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	req.Header.Set("api-version", "1")
 	req.Header.Set("Content-Type", "application/json")
 
-	var bundleResponse interface{}
+	var created Proposition
 
-	resp, err := p.Do(req, &bundleResponse)
+	resp, err := p.Do(req, &created)
 	if err == io.EOF {
 		err = nil
 	}
@@ -116,10 +116,5 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	if !ok {
 		return nil, resp, fmt.Errorf("CreateProposition failed: resp=%v", resp)
 	}
-	var id string
-	count, _ := fmt.Sscanf(resp.Header.Get("Location"), "/connect/mdm/Proposition/%s", &id)
-	if count == 0 {
-		return nil, resp, fmt.Errorf("CreateProposition: %w", ErrCouldNoReadResourceAfterCreate)
-	}
-	return p.GetPropositionByID(id)
+	return p.GetPropositionByID(created.ID)
 }
