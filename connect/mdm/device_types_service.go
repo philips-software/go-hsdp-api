@@ -32,8 +32,8 @@ type DeviceType struct {
 	Description          string          `json:"description"`
 	CTN                  string          `json:"ctn"` // Commercial Type Number
 	DeviceGroupId        Reference       `json:"deviceGroupId"`
-	DefaultGroupGuid     Identifier      `json:"defaultGroupGuid"`
-	CustomTypeAttributes json.RawMessage `json:"customTypeAttributes"`
+	DefaultGroupGuid     *Identifier     `json:"defaultGroupGuid,omitempty"`
+	CustomTypeAttributes json.RawMessage `json:"customTypeAttributes,omitempty"`
 	Meta                 *Meta           `json:"meta,omitempty"`
 }
 
