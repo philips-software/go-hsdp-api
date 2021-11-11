@@ -146,7 +146,7 @@ func TestClientCRUD(t *testing.T) {
 	c.Description = clientDescription
 	c.ClientID = clientID
 	c.GlobalReferenceID = globalReferenceID
-	c.BootstrapClientGuid = mdm.Identifier{
+	c.BootstrapClientGuid = &mdm.Identifier{
 		Value: "foo",
 	}
 	c.ClientGuid = &mdm.Identifier{

@@ -49,7 +49,8 @@ func (r *OAuthClientScopesService) GetOAuthClientScopes(opt *GetOAuthClientScope
 	var scopes []OAuthClientScope
 	for _, s := range bundleResponse.Entry {
 		var scope OAuthClientScope
-		if err := json.Unmarshal(s.Resource, &scopes); err == nil {
+		err := json.Unmarshal(s.Resource, &scope)
+		if err == nil {
 			scopes = append(scopes, scope)
 		}
 	}
