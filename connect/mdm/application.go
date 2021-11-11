@@ -21,6 +21,6 @@ type Meta struct {
 }
 
 type Identifier struct {
-	System string `json:"system"`
+	System string `json:"system,omitempty"`
 	Value  string `json:"value" validate:"required"`
 }
