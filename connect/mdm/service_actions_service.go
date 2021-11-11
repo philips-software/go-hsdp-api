@@ -27,7 +27,7 @@ type ServiceAction struct {
 	StandardServiceId Reference   `json:"standardServiceId"`
 }
 
-// GetServiceActionOptions struct { describes search criteria for looking up service actions
+// GetServiceActionOptions struct describes search criteria for looking up service actions
 type GetServiceActionOptions struct {
 	ID                *string `url:"_id,omitempty"`
 	Name              *string `url:"name,omitempty"`
