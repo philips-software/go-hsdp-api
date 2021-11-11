@@ -24,7 +24,7 @@ type OAuthClient struct {
 	RedirectionURIs        []string    `json:"redirectionURIs"`
 	ResponseTypes          []string    `json:"responseTypes"`
 	UserClient             bool        `json:"userClient"`
-	BootstrapClientGuid    Identifier  `json:"bootstrapClientGuid,omitempty"`
+	BootstrapClientGuid    *Identifier `json:"bootstrapClientGuid,omitempty"`
 	BootstrapClientID      string      `json:"bootstrapClientId,omitempty"`
 	BootstrapClientSecret  string      `json:"bootstrapClientSecret,omitempty"`
 	BootstrapClientRevoked bool        `json:"bootstrapClientRevoked,omitempty"`
