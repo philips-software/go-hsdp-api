@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO replace with DeviceType capture
 func TestDeviceTypesCRUD(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
@@ -17,25 +16,21 @@ func TestDeviceTypesCRUD(t *testing.T) {
 	id := "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 	name := "TestDeviceType"
 	description := "Device Type description"
-	organizationID := "c3fe79e6-13c2-48c1-adfa-826a01d4b31c"
 	createdResource := `{
   "meta": {
-    "lastUpdated": "2021-11-10T18:47:24.059503+00:00",
-    "versionId": "ae6fabc0-3a65-4bb2-a08f-64d4e6453f0d"
+    "lastUpdated": "2021-11-11T11:07:42.351502+00:00",
+    "versionId": "449be385-9799-49c8-893e-c53d51f1e6ce"
   },
   "id": "` + id + `",
-  "resourceType": "ServiceAction",
+  "resourceType": "DeviceType",
   "name": "` + name + `",
   "description": "` + description + `",
-  "ServiceActionId": {
-    "reference": "ServiceAction/7b26ddb7-910b-4faf-b122-e1fd27356b14"
+  "deviceGroupId": {
+    "reference": "DeviceGroup/73c8df4a-703f-42ba-bdf2-40577a22e690"
   },
-  "organizationGuid": {
-    "system": "https://idm-client-test.us-east.philips-healthsuite.com/authorize/identity/Organization",
-    "value": "` + organizationID + `"
-  }
+  "ctn": "WATCH1"
 }`
-	muxMDM.HandleFunc("/connect/mdm/ServiceAction", func(w http.ResponseWriter, r *http.Request) {
+	muxMDM.HandleFunc("/connect/mdm/DeviceType", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodPost:
@@ -62,7 +57,7 @@ func TestDeviceTypesCRUD(t *testing.T) {
 }`)
 		}
 	})
-	muxMDM.HandleFunc("/connect/mdm/ServiceAction/"+id, func(w http.ResponseWriter, r *http.Request) {
+	muxMDM.HandleFunc("/connect/mdm/DeviceType/"+id, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodGet:
@@ -76,14 +71,12 @@ func TestDeviceTypesCRUD(t *testing.T) {
 		}
 	})
 
-	var c mdm.ServiceAction
+	var c mdm.DeviceType
 	c.Name = name
 	c.Description = description
-	c.OrganizationGuid = &mdm.Identifier{
-		Value: organizationID,
-	}
+	c.CTN = "WATCH1"
 
-	created, resp, err := mdmClient.ServiceActions.Create(c)
+	created, resp, err := mdmClient.DeviceTypes.Create(c)
 	if !assert.Nilf(t, err, "unexpected error: %v", err) {
 		return
 	}
@@ -96,7 +89,7 @@ func TestDeviceTypesCRUD(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, name, created.Name)
 
-	created, resp, err = mdmClient.ServiceActions.GetByID(created.ID)
+	created, resp, err = mdmClient.DeviceTypes.GetByID(created.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	if !assert.NotNil(t, createdResource) {
@@ -105,7 +98,7 @@ func TestDeviceTypesCRUD(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, id, created.ID)
 
-	ok, resp, err := mdmClient.ServiceActions.Delete(*created)
+	ok, resp, err := mdmClient.DeviceTypes.Delete(*created)
 	assert.True(t, ok)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)

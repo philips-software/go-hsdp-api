@@ -149,7 +149,7 @@ func TestClientCRUD(t *testing.T) {
 	c.BootstrapClientGuid = mdm.Identifier{
 		Value: "foo",
 	}
-	c.ClientGuid = mdm.Identifier{
+	c.ClientGuid = &mdm.Identifier{
 		Value: "bar",
 	}
 

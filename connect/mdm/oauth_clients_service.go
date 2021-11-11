@@ -15,24 +15,24 @@ var (
 )
 
 type OAuthClient struct {
-	ResourceType           string     `json:"resourceType"`
-	ID                     string     `json:"id,omitempty"`
-	Name                   string     `json:"name"`
-	Description            string     `json:"description"`
-	ApplicationId          Reference  `json:"applicationId"`
-	GlobalReferenceID      string     `json:"globalReferenceId"`
-	RedirectionURIs        []string   `json:"redirectionURIs"`
-	ResponseTypes          []string   `json:"responseTypes"`
-	UserClient             bool       `json:"userClient"`
-	BootstrapClientGuid    Identifier `json:"bootstrapClientGuid"`
-	BootstrapClientID      string     `json:"bootstrapClientId"`
-	BootstrapClientSecret  string     `json:"bootstrapClientSecret"`
-	BootstrapClientRevoked bool       `json:"bootstrapClientRevoked"`
-	ClientGuid             Identifier `json:"clientGuid"`
-	ClientID               string     `json:"clientId"`
-	ClientSecret           string     `json:"clientSecret"`
-	ClientRevoked          bool       `json:"clientRevoked"`
-	Meta                   *Meta      `json:"meta"`
+	ResourceType           string      `json:"resourceType" validate:"required"`
+	ID                     string      `json:"id,omitempty"`
+	Name                   string      `json:"name" validate:"required"`
+	Description            string      `json:"description"`
+	ApplicationId          Reference   `json:"applicationId" validate:"required"`
+	GlobalReferenceID      string      `json:"globalReferenceId" validate:"required"`
+	RedirectionURIs        []string    `json:"redirectionURIs"`
+	ResponseTypes          []string    `json:"responseTypes"`
+	UserClient             bool        `json:"userClient"`
+	BootstrapClientGuid    Identifier  `json:"bootstrapClientGuid,omitempty"`
+	BootstrapClientID      string      `json:"bootstrapClientId,omitempty"`
+	BootstrapClientSecret  string      `json:"bootstrapClientSecret,omitempty"`
+	BootstrapClientRevoked bool        `json:"bootstrapClientRevoked,omitempty"`
+	ClientGuid             *Identifier `json:"clientGuid,omitempty"`
+	ClientID               string      `json:"clientId,omitempty"`
+	ClientSecret           string      `json:"clientSecret,omitempty"`
+	ClientRevoked          bool        `json:"clientRevoked"`
+	Meta                   *Meta       `json:"meta,omitempty"`
 }
 
 type Reference struct {
@@ -42,7 +42,6 @@ type Reference struct {
 // OAuthClientsService provides operations on IAM roles resources
 type OAuthClientsService struct {
 	*Client
-
 	validate *validator.Validate
 }
 
@@ -56,6 +55,7 @@ type GetOAuthClientsOptions struct {
 
 // CreateOAuthClient creates a Client
 func (c *OAuthClientsService) CreateOAuthClient(ac OAuthClient) (*OAuthClient, *Response, error) {
+	ac.ResourceType = "OAuthClient"
 	if err := c.validate.Struct(ac); err != nil {
 		return nil, nil, err
 	}
@@ -171,6 +171,7 @@ func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, scopes []string, defa
 
 // Update updates a client
 func (c *OAuthClientsService) Update(ac OAuthClient) (*OAuthClient, *Response, error) {
+	ac.ResourceType = "OAuthClient"
 	if err := c.validate.Struct(ac); err != nil {
 		return nil, nil, err
 	}
