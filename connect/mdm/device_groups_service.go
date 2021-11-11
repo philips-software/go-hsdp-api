@@ -19,12 +19,12 @@ var (
 )
 
 type DeviceGroup struct {
-	ResourceType     string     `json:"resourceType" validate:"required"`
-	ID               string     `json:"id,omitempty"`
-	Name             string     `json:"name" validate:"required"`
-	Description      string     `json:"description"`
-	ApplicationId    Reference  `json:"applicationId"`
-	DefaultGroupGuid Identifier `json:"defaultGroupGuid"`
+	ResourceType     string      `json:"resourceType" validate:"required"`
+	ID               string      `json:"id,omitempty"`
+	Name             string      `json:"name" validate:"required"`
+	Description      string      `json:"description"`
+	ApplicationId    Reference   `json:"applicationId"`
+	DefaultGroupGuid *Identifier `json:"defaultGroupGuid,omitempty"`
 }
 
 // GetDeviceGroupOptions struct describes search criteria for looking up device group
