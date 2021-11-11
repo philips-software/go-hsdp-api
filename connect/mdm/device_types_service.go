@@ -30,7 +30,7 @@ type DeviceType struct {
 	ID                   string          `json:"id,omitempty"`
 	Name                 string          `json:"name" validate:"required"`
 	Description          string          `json:"description"`
-	CTN                  string          `json:"ctn"` // Commercial Type Number
+	CTN                  string          `json:"ctn" validate:"required"` // Commercial Type Number
 	DeviceGroupId        Reference       `json:"deviceGroupId"`
 	DefaultGroupGuid     *Identifier     `json:"defaultGroupGuid,omitempty"`
 	CustomTypeAttributes json.RawMessage `json:"customTypeAttributes,omitempty"`
@@ -62,7 +62,7 @@ func (c *DeviceTypesService) Create(ac DeviceType) (*DeviceType, *Response, erro
 	return c.GetByID(created.ID)
 }
 
-// Delete deletes the given ServiceAction
+// Delete deletes the given DeviceType
 func (c *DeviceTypesService) Delete(ac DeviceType) (bool, *Response, error) {
 	req, err := c.NewRequest(http.MethodDelete, "/DeviceType/"+ac.ID, nil, nil)
 	if err != nil {
@@ -101,7 +101,7 @@ func (c *DeviceTypesService) GetByID(id string) (*DeviceType, *Response, error) 
 	return &resource, resp, nil
 }
 
-// Find looks up services based on GetServiceActionOptions
+// Find looks up services based on GetDeviceTypeOptions
 func (c *DeviceTypesService) Find(opt *GetDeviceTypeOptions, options ...OptionFunc) (*[]DeviceType, *Response, error) {
 	req, err := c.NewRequest(http.MethodGet, "/DeviceType", opt, options...)
 	if err != nil {
