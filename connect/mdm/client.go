@@ -49,16 +49,17 @@ type Client struct {
 	debugFile *os.File
 	validate  *validator.Validate
 
-	Propositions      *PropositionsService
-	Applications      *ApplicationsService
-	Regions           *RegionsService
-	StorageClasses    *StorageClassService
-	OAuthClientScopes *OAuthClientScopesService
-	OAuthClients      *OAuthClientsService
-	StandardServices  *StandardServicesService
-	ServiceActions    *ServiceActionsService
-	DeviceGroups      *DeviceGroupsService
-	DeviceTypes       *DeviceTypesService
+	Propositions          *PropositionsService
+	Applications          *ApplicationsService
+	Regions               *RegionsService
+	StorageClasses        *StorageClassService
+	OAuthClientScopes     *OAuthClientScopesService
+	OAuthClients          *OAuthClientsService
+	StandardServices      *StandardServicesService
+	ServiceActions        *ServiceActionsService
+	DeviceGroups          *DeviceGroupsService
+	DeviceTypes           *DeviceTypesService
+	AuthenticationMethods *AuthenticationMethodsService
 }
 
 // NewClient returns a new Discovery client
@@ -84,6 +85,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.ServiceActions = &ServiceActionsService{Client: c, validate: validator.New()}
 	c.DeviceGroups = &DeviceGroupsService{Client: c, validate: validator.New()}
 	c.DeviceTypes = &DeviceTypesService{Client: c, validate: validator.New()}
+	c.AuthenticationMethods = &AuthenticationMethodsService{Client: c, validate: validator.New()}
 
 	return c, nil
 }
