@@ -20,11 +20,11 @@ type StorageClass struct {
 }
 
 type GetStorageClassOptions struct {
-	LastUpdate     *string `url:"_lastUpdated"`
-	ReverseInclude *string `url:"_revinclude"`
-	Include        *string `url:"_include"`
-	ID             *string `url:"_id"`
-	Name           *string `url:"name"`
+	LastUpdate     *string `url:"_lastUpdated,omitempty"`
+	ReverseInclude *string `url:"_revinclude,omitempty"`
+	Include        *string `url:"_include,omitempty"`
+	ID             *string `url:"_id,omitempty"`
+	Name           *string `url:"name,omitempty"`
 }
 
 func (r *StorageClassService) GetStorageClasses(opt *GetStorageClassOptions) (*[]StorageClass, *Response, error) {

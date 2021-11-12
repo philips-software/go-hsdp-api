@@ -12,9 +12,9 @@ type RegionsService struct {
 }
 
 type Region struct {
-	ResourceType string `json:"resourceType"`
-	Id           string `json:"id"`
-	Name         string `json:"name"`
+	ResourceType string `json:"resourceType" validate:"required"`
+	ID           string `json:"id,omitempty"`
+	Name         string `json:"name" validate:"required"`
 	Description  string `json:"description"`
 	Category     string `json:"category"`
 	HsdpEnabled  bool   `json:"hsdpEnabled"`
@@ -22,13 +22,13 @@ type Region struct {
 }
 
 type GetRegionOptions struct {
-	LastUpdate     *string `url:"_lastUpdated"`
-	ReverseInclude *string `url:"_revinclude"`
-	Include        *string `url:"_include"`
-	ID             *string `url:"_id"`
-	Name           *string `url:"name"`
-	Category       *string `url:"category"`
-	HSDPEnabled    *bool   `url:"hsdpEnabled"`
+	LastUpdate     *string `url:"_lastUpdated,omitempty"`
+	ReverseInclude *string `url:"_revinclude,omitempty"`
+	Include        *string `url:"_include,omitempty"`
+	ID             *string `url:"_id,omitempty"`
+	Name           *string `url:"name,omitempty"`
+	Category       *string `url:"category,omitempty"`
+	HSDPEnabled    *bool   `url:"hsdpEnabled,omitempty"`
 }
 
 func (r *RegionsService) GetRegions(opt *GetRegionOptions) (*[]Region, *Response, error) {

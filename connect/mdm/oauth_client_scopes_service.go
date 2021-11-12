@@ -12,7 +12,7 @@ type OAuthClientScopesService struct {
 }
 
 type OAuthClientScope struct {
-	ResourceType     string `json:"resourceType"`
+	ResourceType     string `json:"resourceType" validate:"required"`
 	ID               string `json:"id"`
 	Organization     string `json:"organization"`
 	Proposition      string `json:"proposition"`
@@ -24,12 +24,12 @@ type OAuthClientScope struct {
 }
 
 type GetOAuthClientScopeOptions struct {
-	ID           *string `url:"_id"`
-	LastUpdate   *string `url:"_lastUpdated"`
-	Organization *string `url:"organization"`
-	Proposition  *string `url:"proposition"`
-	Action       *string `url:"service"`
-	Service      *string `url:"action"`
+	ID           *string `url:"_id,omitempty"`
+	LastUpdate   *string `url:"_lastUpdated,omitempty"`
+	Organization *string `url:"organization,omitempty"`
+	Proposition  *string `url:"proposition,omitempty"`
+	Action       *string `url:"service,omitempty"`
+	Service      *string `url:"action,omitempty"`
 }
 
 func (r *OAuthClientScopesService) GetOAuthClientScopes(opt *GetOAuthClientScopeOptions) (*[]OAuthClientScope, *Response, error) {
