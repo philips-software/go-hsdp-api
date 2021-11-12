@@ -51,9 +51,9 @@ func (c *AuthenticationMethodsService) Create(ac AuthenticationMethod) (*Authent
 	req, _ := c.NewRequest(http.MethodPost, "/AuthenticationMethod", ac, nil)
 	req.Header.Set("api-version", authenticationMethodAPIVersion)
 
-	var bundleResponse interface{}
+	var created AuthenticationMethod
 
-	resp, err := c.Do(req, &bundleResponse)
+	resp, err := c.Do(req, &created)
 
 	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
 	if !ok {
@@ -62,15 +62,7 @@ func (c *AuthenticationMethodsService) Create(ac AuthenticationMethod) (*Authent
 	if resp == nil {
 		return nil, resp, fmt.Errorf("create (resp=nil): %w", ErrCouldNoReadResourceAfterCreate)
 	}
-	var id string
-	count, err := fmt.Sscanf(resp.Header.Get("Location"), "AuthenticationMethod/%s", &id)
-	if err != nil {
-		return nil, resp, err
-	}
-	if count == 0 {
-		return nil, resp, fmt.Errorf("create: %w", ErrCouldNoReadResourceAfterCreate)
-	}
-	return c.GetByID(id)
+	return c.GetByID(created.ID)
 }
 
 // Delete deletes the given ServiceAction
