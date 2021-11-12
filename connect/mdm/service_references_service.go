@@ -28,6 +28,7 @@ type ServiceReference struct {
 	MatchingRule      string      `json:"matchingRule,omitempty"`
 	ServiceActionIDs  []Reference `json:"serviceActionIds" validate:"required,min=1,max=20"`
 	BootstrapEnabled  bool        `json:"bootstrapEnabled"`
+	Meta              *Meta       `json:"meta,omitempty"`
 }
 
 // GetServiceReferenceOptions struct describes search criteria for looking up service references
