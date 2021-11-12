@@ -60,6 +60,7 @@ type Client struct {
 	DeviceGroups          *DeviceGroupsService
 	DeviceTypes           *DeviceTypesService
 	AuthenticationMethods *AuthenticationMethodsService
+	ServiceReferences     *ServiceReferencesService
 }
 
 // NewClient returns a new Discovery client
@@ -86,6 +87,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.DeviceGroups = &DeviceGroupsService{Client: c, validate: validator.New()}
 	c.DeviceTypes = &DeviceTypesService{Client: c, validate: validator.New()}
 	c.AuthenticationMethods = &AuthenticationMethodsService{Client: c, validate: validator.New()}
+	c.ServiceReferences = &ServiceReferencesService{Client: c, validate: validator.New()}
 
 	return c, nil
 }

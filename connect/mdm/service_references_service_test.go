@@ -9,7 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAuthenticationMethodCRUD(t *testing.T) {
+// TODO replace with ServiceReference capture
+func TestServiceReferenceCRUD(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
@@ -19,26 +20,22 @@ func TestAuthenticationMethodCRUD(t *testing.T) {
 	organizationID := "c3fe79e6-13c2-48c1-adfa-826a01d4b31c"
 	createdResource := `{
   "meta": {
-    "lastUpdated": "2021-11-12T07:07:25.487503+00:00",
-    "versionId": "f90fd02f-f401-4c03-ab8a-dfdfefb6fdde"
+    "lastUpdated": "2021-11-10T18:47:24.059503+00:00",
+    "versionId": "ae6fabc0-3a65-4bb2-a08f-64d4e6453f0d"
   },
   "id": "` + id + `",
-  "resourceType": "AuthenticationMethod",
+  "resourceType": "ServiceAction",
   "name": "` + name + `",
   "description": "` + description + `",
+  "ServiceActionId": {
+    "reference": "ServiceAction/7b26ddb7-910b-4faf-b122-e1fd27356b14"
+  },
   "organizationGuid": {
     "system": "https://idm-client-test.us-east.philips-healthsuite.com/authorize/identity/Organization",
     "value": "` + organizationID + `"
-  },
-  "loginName": "ron",
-  "password": "Swanson",
-  "clientId": "unique-client-id",
-  "clientSecret": "V3ryS3Cret!",
-  "authUrl": "https://login.app.hsdp.io",
-  "authMethod": "Basic",
-  "apiVersion": "1"
+  }
 }`
-	muxMDM.HandleFunc("/connect/mdm/AuthenticationMethod", func(w http.ResponseWriter, r *http.Request) {
+	muxMDM.HandleFunc("/connect/mdm/ServiceAction", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodPost:
@@ -65,7 +62,7 @@ func TestAuthenticationMethodCRUD(t *testing.T) {
 }`)
 		}
 	})
-	muxMDM.HandleFunc("/connect/mdm/AuthenticationMethod/"+id, func(w http.ResponseWriter, r *http.Request) {
+	muxMDM.HandleFunc("/connect/mdm/ServiceAction/"+id, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodGet:
@@ -79,18 +76,14 @@ func TestAuthenticationMethodCRUD(t *testing.T) {
 		}
 	})
 
-	var c mdm.AuthenticationMethod
+	var c mdm.ServiceAction
 	c.Name = name
 	c.Description = description
-	c.LoginName = "ron"
-	c.Password = "Swanson"
-	c.ClientID = "foo"
-	c.ClientSecret = "bar"
 	c.OrganizationGuid = &mdm.Identifier{
 		Value: organizationID,
 	}
 
-	created, resp, err := mdmClient.AuthenticationMethods.Create(c)
+	created, resp, err := mdmClient.ServiceActions.Create(c)
 	if !assert.Nilf(t, err, "unexpected error: %v", err) {
 		return
 	}
@@ -103,7 +96,7 @@ func TestAuthenticationMethodCRUD(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, name, created.Name)
 
-	created, resp, err = mdmClient.AuthenticationMethods.GetByID(created.ID)
+	created, resp, err = mdmClient.ServiceActions.GetByID(created.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	if !assert.NotNil(t, createdResource) {
@@ -112,7 +105,7 @@ func TestAuthenticationMethodCRUD(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, id, created.ID)
 
-	ok, resp, err := mdmClient.AuthenticationMethods.Delete(*created)
+	ok, resp, err := mdmClient.ServiceActions.Delete(*created)
 	assert.True(t, ok)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
