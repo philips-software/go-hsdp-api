@@ -23,10 +23,10 @@ type ServiceReference struct {
 	ID                string      `json:"id,omitempty"`
 	Name              string      `json:"name" validate:"required"`
 	Description       string      `json:"description"`
-	ApplicationID     Reference   `json:"applicationId"`
-	StandardServiceID Reference   `json:"standardServiceId"`
-	MatchingRule      string      `json:"matchingRule"`
-	ServiceActionIDs  []Reference `json:"serviceActionIds"`
+	ApplicationID     Reference   `json:"applicationId" validate:"required"`
+	StandardServiceID Reference   `json:"standardServiceId" validate:"required"`
+	MatchingRule      string      `json:"matchingRule,omitempty"`
+	ServiceActionIDs  []Reference `json:"serviceActionIds" validate:"required,min=1,max=20"`
 	BootstrapEnabled  bool        `json:"bootstrapEnabled"`
 }
 
