@@ -23,8 +23,23 @@ The current implement covers only a subset of HSDP APIs. Basically, we implement
     - [ ] Applications
     - [x] OAuth2 clients
     - [x] Standard Services
-    - [ ] Service Actions
+    - [x] Service Actions
+    - [x] Service References
     - [x] Storage Classes
+    - [x] Device Groups
+    - [x] Device Types
+    - [x] Regions
+    - [x] Buckets
+    - [x] Data Types
+    - [x] Blob Data Contracts
+    - [x] Blob Subscriptions
+    - [x] Data Broker Subscriptions
+    - [x] Firmware Components
+    - [x] Firmware Component Versions
+    - [x] OAuth Client Scopes
+    - [x] Subscriber Types
+    - [x] Resources Limits
+    - [x] Authentication Methods
 - [x] Secure Transport Layer (STL) / Edge 
   - [x] Device queries
   - [x] Application Resources management
