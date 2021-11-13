@@ -81,6 +81,9 @@ func (c *DeviceTypesService) Delete(ac DeviceType) (bool, *Response, error) {
 
 // GetByID finds a client by its ID
 func (c *DeviceTypesService) GetByID(id string) (*DeviceType, *Response, error) {
+	if len(id) == 0 {
+		return nil, nil, fmt.Errorf("GetById: missing id")
+	}
 	req, err := c.NewRequest(http.MethodGet, "/DeviceType/"+id, nil)
 	if err != nil {
 		return nil, nil, err

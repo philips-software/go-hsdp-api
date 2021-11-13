@@ -2,6 +2,7 @@ package mdm
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/philips-software/go-hsdp-api/internal"
@@ -58,6 +59,9 @@ func (r *OAuthClientScopesService) GetOAuthClientScopes(opt *GetOAuthClientScope
 }
 
 func (r *OAuthClientScopesService) GetOAuthClientScopeByID(id string) (*OAuthClientScope, *Response, error) {
+	if len(id) == 0 {
+		return nil, nil, fmt.Errorf("GetOAuthClientScopeByID: missing id")
+	}
 	classes, resp, err := r.GetOAuthClientScopes(&GetOAuthClientScopeOptions{
 		ID: &id,
 	})

@@ -112,6 +112,9 @@ func (c *BucketsService) GetByID(id string) (*Bucket, *Response, error) {
 	if err != nil {
 		return nil, resp, fmt.Errorf("GetByID: %w", err)
 	}
+	if resource.ID != id {
+		return nil, nil, fmt.Errorf("returned resource does not match")
+	}
 	return &resource, resp, nil
 }
 
