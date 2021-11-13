@@ -39,7 +39,7 @@ type Bucket struct {
 	AuditingEnabled               bool                `json:"auditingEnabled"`
 	EnableCDN                     bool                `json:"enableCDN"`
 	CacheControlAge               int                 `json:"cacheControlAge,omitempty" validate:"omitempty,min=300,max=1800"`
-	CorsConfiguration             []CORSConfiguration `json:"corsConfiguration" validate:"omitempty,dive"`
+	CorsConfiguration             []CORSConfiguration `json:"corsConfiguration,omitempty" validate:"omitempty,dive"`
 	Meta                          *Meta               `json:"meta,omitempty"`
 }
 
