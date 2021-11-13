@@ -45,7 +45,7 @@ type Bucket struct {
 
 type CORSConfiguration struct {
 	AllowedOrigins []string `json:"allowedOrigins" validate:"required"`
-	AllowedMethods []string `json:"allowedMethods" validate:"required,oneof='GET POST PUT DELETE HEAD'"`
+	AllowedMethods []string `json:"allowedMethods" validate:"required,oneof=GET POST PUT DELETE HEAD"`
 	AllowedHeaders []string `json:"allowedHeaders"`
 	MaxAgeSeconds  int      `json:"maxAgeSeconds"`
 	ExposeHeaders  []string `json:"exposeHeaders"`
