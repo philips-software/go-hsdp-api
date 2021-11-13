@@ -49,20 +49,25 @@ type Client struct {
 	debugFile *os.File
 	validate  *validator.Validate
 
-	Propositions          *PropositionsService
-	Applications          *ApplicationsService
-	Regions               *RegionsService
-	StorageClasses        *StorageClassService
-	OAuthClientScopes     *OAuthClientScopesService
-	OAuthClients          *OAuthClientsService
-	StandardServices      *StandardServicesService
-	ServiceActions        *ServiceActionsService
-	DeviceGroups          *DeviceGroupsService
-	DeviceTypes           *DeviceTypesService
-	AuthenticationMethods *AuthenticationMethodsService
-	ServiceReferences     *ServiceReferencesService
-	Buckets               *BucketsService
-	DataTypes             *DataTypesService
+	Propositions              *PropositionsService
+	Applications              *ApplicationsService
+	Regions                   *RegionsService
+	StorageClasses            *StorageClassService
+	OAuthClientScopes         *OAuthClientScopesService
+	OAuthClients              *OAuthClientsService
+	StandardServices          *StandardServicesService
+	ServiceActions            *ServiceActionsService
+	DeviceGroups              *DeviceGroupsService
+	DeviceTypes               *DeviceTypesService
+	AuthenticationMethods     *AuthenticationMethodsService
+	ServiceReferences         *ServiceReferencesService
+	Buckets                   *BucketsService
+	DataTypes                 *DataTypesService
+	BlobDataContracts         *BlobDataContractsService
+	DataBrokerSubscriptions   *DataBrokerSubscriptionsService
+	BlobSubscriptions         *BlobSubscriptionsService
+	FirmwareComponents        *FirmwareComponentsService
+	FirmwareComponentVersions *FirmwareComponentVersionsService
 }
 
 // NewClient returns a new Discovery client
@@ -92,6 +97,11 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.ServiceReferences = &ServiceReferencesService{Client: c, validate: validator.New()}
 	c.Buckets = &BucketsService{Client: c, validate: validator.New()}
 	c.DataTypes = &DataTypesService{Client: c, validate: validator.New()}
+	c.BlobDataContracts = &BlobDataContractsService{Client: c, validate: validator.New()}
+	c.DataBrokerSubscriptions = &DataBrokerSubscriptionsService{Client: c, validate: validator.New()}
+	c.BlobSubscriptions = &BlobSubscriptionsService{Client: c, validate: validator.New()}
+	c.FirmwareComponents = &FirmwareComponentsService{Client: c, validate: validator.New()}
+	c.FirmwareComponentVersions = &FirmwareComponentVersionsService{Client: c, validate: validator.New()}
 
 	return c, nil
 }
