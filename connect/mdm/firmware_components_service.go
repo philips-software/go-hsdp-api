@@ -19,7 +19,7 @@ var (
 )
 
 type FirmwareComponent struct {
-	ResourceType  string    `json:"resourceType" validate:"require"`
+	ResourceType  string    `json:"resourceType" validate:"required"`
 	ID            string    `json:"id,omitempty"`
 	Name          string    `json:"name" validate:"required,max=255"`
 	Description   string    `json:"description" validate:"omitempty,max=250"`
