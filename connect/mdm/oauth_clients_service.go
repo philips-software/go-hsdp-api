@@ -153,7 +153,7 @@ func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, iamClientID string, s
 		defaultScopes,
 	}
 	var queryParams = struct {
-		ClientGUDI string `url:"queryGuid"`
+		ClientGUDI string `url:"clientGuid"`
 	}{
 		ClientGUDI: iamClientID,
 	}
