@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	validator "github.com/go-playground/validator/v10"
-	"github.com/google/go-querystring/query"
 	"github.com/philips-software/go-hsdp-api/internal"
 )
 
@@ -155,21 +154,9 @@ func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, scopes []string, defa
 		scopes,
 		defaultScopes,
 	}
-	var queryParams = struct {
-		ClientGUDI string `url:"clientGuid"`
-	}{
-		ClientGUDI: ac.ClientGuid.Value,
-	}
-	setClientID := func(r *http.Request) error {
-		q, err := query.Values(queryParams)
-		if err != nil {
-			return fmt.Errorf("setting query params: %w", err)
-		}
-		r.URL.RawQuery = q.Encode()
-		return nil
-	}
+	clientGUID := ac.ClientGuid.Value
 
-	req, err := c.NewRequest(http.MethodPut, "/OAuthClient/"+ac.ID+"/$scopes", requestBody, setClientID)
+	req, err := c.NewRequest(http.MethodPut, "/OAuthClient/"+ac.ID+"/Client/"+clientGUID+"/$scopes", requestBody)
 	if err != nil {
 		return false, nil, err
 	}
