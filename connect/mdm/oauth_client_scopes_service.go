@@ -24,6 +24,11 @@ type OAuthClientScope struct {
 	Meta             *Meta  `json:"meta"`
 }
 
+func (r *OAuthClientScope) Scope() string {
+	// {Org}.{Proposition}.{Service}.{Resource}.{Action}
+	return fmt.Sprintf("%s.%s.%s.%s.%s", r.Organization, r.Proposition, r.Service, r.Resource, r.Action)
+}
+
 type GetOAuthClientScopeOptions struct {
 	ID           *string `url:"_id,omitempty"`
 	LastUpdate   *string `url:"_lastUpdated,omitempty"`
