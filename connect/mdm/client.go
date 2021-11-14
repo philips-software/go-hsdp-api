@@ -164,14 +164,6 @@ func (c *Client) NewRequest(method, requestPath string, opt interface{}, options
 	// Set the encoded opaque data
 	u.Opaque = path.Join(c.baseURL.Path, requestPath)
 
-	if opt != nil {
-		q, err := query.Values(opt)
-		if err != nil {
-			return nil, err
-		}
-		u.RawQuery = q.Encode()
-	}
-
 	req := &http.Request{
 		Method:     method,
 		URL:        &u,
