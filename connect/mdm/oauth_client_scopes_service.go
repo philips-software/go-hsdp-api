@@ -39,27 +39,40 @@ type GetOAuthClientScopeOptions struct {
 }
 
 func (r *OAuthClientScopesService) GetOAuthClientScopes(opt *GetOAuthClientScopeOptions) (*[]OAuthClientScope, *Response, error) {
-	req, err := r.NewRequest(http.MethodGet, "/OAuthClientScope", opt)
-	if err != nil {
-		return nil, nil, err
-	}
-	var bundleResponse internal.Bundle
-
-	resp, err := r.Do(req, &bundleResponse)
-	if err != nil {
-		return nil, resp, err
-	}
-	if err := internal.CheckResponse(resp.Response); err != nil {
-		return nil, resp, err
-	}
 	var scopes []OAuthClientScope
-	for _, s := range bundleResponse.Entry {
-		var scope OAuthClientScope
-		err := json.Unmarshal(s.Resource, &scope)
-		if err == nil {
-			scopes = append(scopes, scope)
+	var resp *Response
+	var req *http.Request
+	var err error
+
+	requestPath := "OAuthClientScope"
+	for {
+		req, err = r.NewRequest(http.MethodGet, "/"+requestPath, opt)
+		if err != nil {
+			return nil, nil, err
 		}
+		var bundleResponse internal.Bundle
+
+		resp, err = r.Do(req, &bundleResponse)
+		if err != nil {
+			return nil, resp, err
+		}
+		if err := internal.CheckResponse(resp.Response); err != nil {
+			return nil, resp, err
+		}
+		for _, s := range bundleResponse.Entry {
+			var scope OAuthClientScope
+			err := json.Unmarshal(s.Resource, &scope)
+			if err == nil {
+				scopes = append(scopes, scope)
+			}
+		}
+		next := bundleResponse.Link.Next()
+		if next == nil {
+			break
+		}
+		requestPath = next.URL
 	}
+
 	return &scopes, resp, nil
 }
 
