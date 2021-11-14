@@ -143,7 +143,7 @@ func (c *OAuthClientsService) GetOAuthClients(opt *GetOAuthClientsOptions, optio
 }
 
 // UpdateScopes updates a clients scope
-func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, scopes []string, defaultScopes []string) (bool, *Response, error) {
+func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, iamClientID string, scopes []string, defaultScopes []string) (bool, *Response, error) {
 	var requestBody = struct {
 		Scopes        []string `json:"scopes"`
 		DefaultScopes []string `json:"defaultScopes"`
@@ -151,7 +151,12 @@ func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, scopes []string, defa
 		scopes,
 		defaultScopes,
 	}
-	req, err := c.NewRequest(http.MethodPut, "/OAuthClient/"+ac.ID+"/$scopes", requestBody, nil)
+	setClientID := func(r *http.Request) error {
+		r.URL.Query().Set("clientGuid", iamClientID)
+		return nil
+	}
+
+	req, err := c.NewRequest(http.MethodPut, "/OAuthClient/"+ac.ID+"/$scopes", requestBody, setClientID)
 	if err != nil {
 		return false, nil, err
 	}
