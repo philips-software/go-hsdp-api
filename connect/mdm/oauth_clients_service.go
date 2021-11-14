@@ -145,6 +145,9 @@ func (c *OAuthClientsService) GetOAuthClients(opt *GetOAuthClientsOptions, optio
 
 // UpdateScopes updates a clients scope
 func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, scopes []string, defaultScopes []string) (bool, *Response, error) {
+	if ac.ClientGuid == nil {
+		return false, nil, fmt.Errorf("missing required IAM clientGuid")
+	}
 	var requestBody = struct {
 		Scopes        []string `json:"scopes"`
 		DefaultScopes []string `json:"defaultScopes"`
@@ -155,7 +158,7 @@ func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, scopes []string, defa
 	var queryParams = struct {
 		ClientGUDI string `url:"clientGuid"`
 	}{
-		ClientGUDI: ac.ClientID,
+		ClientGUDI: ac.ClientGuid.Value,
 	}
 	setClientID := func(r *http.Request) error {
 		q, err := query.Values(queryParams)
