@@ -13,12 +13,12 @@ type DataAdaptersService struct {
 }
 
 type DataAdapter struct {
-	ResourceType   string `json:"resourceType"`
-	ID             string `json:"id"`
-	Name           string `json:"name"`
-	Description    string `json:"description"`
-	ServiceAgentID string `json:"serviceAgentId"`
-	Meta           *Meta  `json:"meta"`
+	ResourceType   string    `json:"resourceType"`
+	ID             string    `json:"id"`
+	Name           string    `json:"name"`
+	Description    string    `json:"description"`
+	ServiceAgentId Reference `json:"serviceAgentId"`
+	Meta           *Meta     `json:"meta"`
 }
 
 type GetDataAdapterOptions struct {

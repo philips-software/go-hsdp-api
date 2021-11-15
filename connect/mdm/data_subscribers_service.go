@@ -13,15 +13,13 @@ type DataSubscribersService struct {
 }
 
 type DataSubscriber struct {
-	ResourceType     string     `json:"resourceType"`
-	ID               string     `json:"id"`
-	Name             string     `json:"name"`
-	Description      string     `json:"description"`
-	SubscriberGuid   Identifier `json:"subscriberGuid"`
-	Configuration    string     `json:"configuration"`
-	ApiVersion       string     `json:"apiVersion"`
-	SubscriberTypeID string     `json:"subscriberTypeId"`
-	Meta             *Meta      `json:"meta"`
+	ResourceType     string          `json:"resourceType"`
+	ID               string          `json:"id"`
+	Name             string          `json:"name"`
+	SubscriberGuid   Identifier      `json:"subscriberGuid"`
+	SubscriberTypeId Reference       `json:"subscriberTypeId"`
+	Configuration    json.RawMessage `json:"configuration"`
+	Meta             *Meta           `json:"meta"`
 }
 
 type GetDataSubscriberOptions struct {
