@@ -70,6 +70,8 @@ type Client struct {
 	FirmwareComponentVersions *FirmwareComponentVersionsService
 	ResourcesLimits           *ResourceLimitsService
 	SubscriberTypes           *SubscriberTypesService
+	DataAdapters              *DataAdaptersService
+	DataSubscribers           *DataSubscribersService
 }
 
 // NewClient returns a new Discovery client
@@ -106,6 +108,8 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.FirmwareComponentVersions = &FirmwareComponentVersionsService{Client: c, validate: validator.New()}
 	c.ResourcesLimits = &ResourceLimitsService{Client: c}
 	c.SubscriberTypes = &SubscriberTypesService{Client: c}
+	c.DataAdapters = &DataAdaptersService{Client: c}
+	c.DataSubscribers = &DataSubscribersService{Client: c}
 
 	return c, nil
 }

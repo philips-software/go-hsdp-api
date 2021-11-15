@@ -67,7 +67,7 @@ func (r *OAuthClientScopesService) GetOAuthClientScopes(opt *GetOAuthClientScope
 			}
 		}
 		next := bundleResponse.Link.Next()
-		if next == nil {
+		if next == nil { // No next page
 			break
 		}
 		requestPath = next.URL
