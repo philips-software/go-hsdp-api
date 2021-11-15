@@ -21,6 +21,8 @@ The current implement covers only a subset of HSDP APIs. Basically, we implement
   - [x] Master Data Management (MDM)
     - [ ] Propositions
     - [ ] Applications
+    - [x] Data Adapter
+    - [x] Data Subscribers
     - [x] OAuth2 clients
     - [x] Standard Services
     - [x] Service Actions
