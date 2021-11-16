@@ -95,7 +95,7 @@ func TestCreateApplication(t *testing.T) {
     "system": "https://idm-client-test.us-east.philips-healthsuite.com/authorize/identity/",
     "value": "`+appID+`"
   },
-  "globalReferenceId": "9d4c533b-168c-4458-b8b8-2e211154f76a",
+  "globalReferenceId": "`+globalReferenceID+`",
   "defaultGroupGuid": {
     "system": "https://idm-client-test.us-east.philips-healthsuite.com",
     "value": "060e2ec0-8775-41db-8372-007de2b7dbef"
@@ -128,7 +128,7 @@ func TestCreateApplication(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusCreated, resp.StatusCode) {
 		return
 	}
 	assert.Equal(t, appID, createdApp.ID)

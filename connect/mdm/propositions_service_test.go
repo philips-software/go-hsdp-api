@@ -115,6 +115,7 @@ func TestCreateProposition(t *testing.T) {
 		Name:                            "TESTPROP",
 		Description:                     description,
 		OrganizationGuid:                mdm.Identifier{Value: orgID},
+		PropositionGuid:                 mdm.Identifier{Value: propID},
 		GlobalReferenceID:               "TESTPROPREF",
 		DefaultCustomerOrganizationGuid: mdm.Identifier{Value: "foo"},
 	}

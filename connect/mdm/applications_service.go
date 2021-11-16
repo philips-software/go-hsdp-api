@@ -99,9 +99,30 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 	if resp == nil {
 		return nil, nil, fmt.Errorf("CreateApplication: request failed")
 	}
-	ok := resp.StatusCode == http.StatusCreated
-	if !ok {
-		return nil, resp, fmt.Errorf("CreateApplication: failed with StatusCode=%d", resp.StatusCode)
+	return &created, resp, nil
+}
+
+// UpdateApplication creates a Application
+func (a *ApplicationsService) UpdateApplication(app Application) (*Application, *Response, error) {
+	app.ResourceType = "Application"
+	if err := a.validate.Struct(app); err != nil {
+		return nil, nil, err
 	}
-	return a.GetApplicationByID(created.ID)
+	req, err := a.NewRequest(http.MethodPost, "/Application", &app, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", applicationAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var updated Application
+
+	resp, err := a.Do(req, &updated)
+	if err != nil {
+		return nil, resp, err
+	}
+	if err := internal.CheckResponse(resp.Response); err != nil {
+		return nil, resp, err
+	}
+	return &updated, resp, nil
 }

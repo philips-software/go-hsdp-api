@@ -14,19 +14,24 @@ const (
 	propositionAPIVersion = "1"
 )
 
-// Proposition represents a MDM Proposition entity
+// Proposition represents an MDM Proposition entity
 type Proposition struct {
-	ID                              string     `json:"id,omitempty"`
-	ResourceType                    string     `json:"resourceType"`
-	Name                            string     `json:"name"`
-	Description                     string     `json:"description"`
-	OrganizationGuid                Identifier `json:"organizationGuid"`
-	GlobalReferenceID               string     `json:"globalReferenceId"`
-	DefaultCustomerOrganizationGuid Identifier `json:"defaultCustomerOrganizationGuid"`
-	Status                          string     `json:"status,omitempty"`
-	ValidationEnabled               bool       `json:"validationEnabled"`
-	NotificationEnabled             bool       `json:"notificationEnabled"`
-	Meta                            *Meta      `json:"meta,omitempty"`
+	ResourceType                          string      `json:"resourceType" validate:"required"`
+	ID                                    string      `json:"id,omitempty"`
+	Name                                  string      `json:"name" validate:"required"`
+	Description                           string      `json:"description"`
+	OrganizationGuid                      Identifier  `json:"organizationGuid"`
+	PropositionGuid                       Identifier  `json:"propositionGuid"`
+	GlobalReferenceID                     string      `json:"globalReferenceId"`
+	Status                                string      `json:"status,omitempty" validate:"omitempty,oneof=DRAFT ACTIVE"`
+	DefaultCustomerOrganizationGuid       Identifier  `json:"defaultCustomerOrganizationGuid"`
+	ValidationEnabled                     bool        `json:"validationEnabled"`
+	ExternalProvisionValidationURL        string      `json:"externalProvisionValidationUrl,omitempty"`
+	ExternalProvisionValidationApiVersion string      `json:"externalProvisionValidationApiVersion,omitempty"`
+	AuthenticationMethodID                Reference   `json:"authenticationMethodId,omitempty"`
+	NotificationEnabled                   bool        `json:"notificationEnabled"`
+	TopicGuid                             *Identifier `json:"topicGuid,omitempty"`
+	Meta                                  *Meta       `json:"meta"`
 }
 
 // PropositionsService implements actions on IAM Proposition entities
@@ -118,4 +123,29 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 		return nil, resp, fmt.Errorf("CreateProposition failed: resp=%v", resp)
 	}
 	return p.GetPropositionByID(created.ID)
+}
+
+// UpdateProposition creates a Proposition
+func (p *PropositionsService) UpdateProposition(prop Proposition) (*Proposition, *Response, error) {
+	prop.ResourceType = "Proposition"
+	if err := p.validate.Struct(prop); err != nil {
+		return nil, nil, err
+	}
+	req, err := p.NewRequest(http.MethodPut, "/Proposition", &prop, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", "1")
+	req.Header.Set("Content-Type", "application/json")
+
+	var updated Proposition
+
+	resp, err := p.Do(req, &updated)
+	if err != nil {
+		return nil, resp, err
+	}
+	if err := internal.CheckResponse(resp.Response); err != nil {
+		return nil, resp, err
+	}
+	return &updated, resp, nil
 }
