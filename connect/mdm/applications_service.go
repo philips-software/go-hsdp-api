@@ -42,7 +42,7 @@ func (a *ApplicationsService) GetApplicationByID(id string) (*Application, *Resp
 
 // GetApplicationByName retrieves an Application by its Name
 func (a *ApplicationsService) GetApplicationByName(name string) (*Application, *Response, error) {
-	apps, resp, err := a.GetApplications(&GetApplicationsOptions{ID: &name}, nil)
+	apps, resp, err := a.GetApplications(&GetApplicationsOptions{Name: &name}, nil)
 	if apps == nil || len(*apps) == 0 {
 		return nil, resp, ErrNotFound
 	}
