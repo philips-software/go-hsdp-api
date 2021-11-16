@@ -28,7 +28,7 @@ type Proposition struct {
 	ValidationEnabled                     bool        `json:"validationEnabled"`
 	ExternalProvisionValidationURL        string      `json:"externalProvisionValidationUrl,omitempty"`
 	ExternalProvisionValidationApiVersion string      `json:"externalProvisionValidationApiVersion,omitempty"`
-	AuthenticationMethodID                Reference   `json:"authenticationMethodId,omitempty"`
+	AuthenticationMethodID                *Reference  `json:"authenticationMethodId,omitempty"`
 	NotificationEnabled                   bool        `json:"notificationEnabled"`
 	TopicGuid                             *Identifier `json:"topicGuid,omitempty" validate:"omitempty,dive"`
 	Meta                                  *Meta       `json:"meta"`
