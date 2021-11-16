@@ -31,7 +31,7 @@ type Proposition struct {
 	AuthenticationMethodID                *Reference  `json:"authenticationMethodId,omitempty"`
 	NotificationEnabled                   bool        `json:"notificationEnabled"`
 	TopicGuid                             *Identifier `json:"topicGuid,omitempty" validate:"omitempty,dive"`
-	Meta                                  *Meta       `json:"meta"`
+	Meta                                  *Meta       `json:"meta,omitempty"`
 }
 
 // PropositionsService implements actions on IAM Proposition entities
