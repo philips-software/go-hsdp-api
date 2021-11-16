@@ -447,7 +447,7 @@ func TestUserActions(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	ok, resp, err = client.Users.SetPassword("foo@bar.com", "1234", "newp@ss", "context")
+	ok, resp, err = client.Users.SetPassword("foo@bar.com", "1234", "newp@ss", "userCreate")
 	if !assert.NotNil(t, resp) {
 		return
 	}

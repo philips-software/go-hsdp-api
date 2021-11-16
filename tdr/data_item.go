@@ -29,28 +29,24 @@ type DataItem struct {
 
 // Device describes a TDR device
 type Device struct {
-	Description string `json:"description,omitempty"`
-	System      string `json:"system"`
-	Value       string `json:"value"`
+	System string `json:"system"`
+	Value  string `json:"value"`
 }
 
 // User describes a TDR user
 type User struct {
-	Description string `json:"description,omitempty"`
-	System      string `json:"system"`
-	Value       string `json:"value"`
+	System string `json:"system"`
+	Value  string `json:"value"`
 }
 
 // RelatedPeripheral describes a TDR related peripheral
 type RelatedPeripheral struct {
-	Description string `json:"description,omitempty"`
-	System      string `json:"system"`
-	Value       string `json:"value"`
+	System string `json:"system"`
+	Value  string `json:"value"`
 }
 
 // RelatedUser describes a TDR related user
 type RelatedUser struct {
-	Description string `json:"description,omitempty"`
-	System      string `json:"system"`
-	Value       string `json:"value"`
+	System string `json:"system"`
+	Value  string `json:"value"`
 }

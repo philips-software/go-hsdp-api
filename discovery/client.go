@@ -1,9 +1,10 @@
-// Package ai provides support the HSDP AI services
-package ai
+// Package discovery provides support the HSDP Discovery services
+package discovery
 
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -20,7 +21,7 @@ import (
 )
 
 const (
-	userAgent  = "go-hsdp-api/ai/" + internal.LibraryVersion
+	userAgent  = "go-hsdp-api/discovery/" + internal.LibraryVersion
 	APIVersion = "1"
 )
 
@@ -29,13 +30,11 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a Client
 type Config struct {
-	Region         string
-	Environment    string
-	OrganizationID string `Validate:"required"`
-	BaseURL        string
-	Service        string `Validate:"required"`
-	DebugLog       string
-	Retry          int
+	Region      string
+	Environment string
+	BaseURL     string
+	DebugLog    string
+	Retry       int
 }
 
 // A Client manages communication with HSDP AI APIs
@@ -50,12 +49,20 @@ type Client struct {
 
 	debugFile *os.File
 	validate  *validator.Validate
-
-	ComputeTarget   *ComputeTargetService
-	ComputeProvider *ComputeProviderService
 }
 
-// NewClient returns a new AI base Client
+// Service describes a discovered service
+type Service struct {
+	ResourceType string   `json:"resourceType"`
+	ID           string   `json:"id"`
+	Name         string   `json:"name"`
+	Tag          string   `json:"tag"`
+	Actions      []string `json:"actions"`
+	IsTrusted    bool     `json:"isTrusted"`
+	URLS         []string `json:"urls"`
+}
+
+// NewClient returns a new Connect base Client
 func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	validate := validator.New()
 	if err := validate.Struct(config); err != nil {
@@ -68,9 +75,6 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 
-	c.ComputeProvider = &ComputeProviderService{client: c, validate: validator.New()}
-	c.ComputeTarget = &ComputeTargetService{client: c, validate: validator.New()}
-
 	return c, nil
 }
 
@@ -80,7 +84,7 @@ func doAutoconf(config *Config) {
 			autoconf.WithRegion(config.Region),
 			autoconf.WithEnv(config.Environment))
 		if err == nil {
-			theService := c.Service(config.Service)
+			theService := c.Service("discovery")
 			if theService.URL != "" && config.BaseURL == "" {
 				config.BaseURL = theService.URL
 			}
@@ -120,40 +124,13 @@ func (c *Client) SetBaseURL(urlStr string) error {
 
 // GetEndpointURL returns the FHIR Store Endpoint URL as configured
 func (c *Client) GetEndpointURL() string {
-	return c.GetBaseURL() + path.Join("analyze", c.config.Service, c.config.OrganizationID)
+	return c.GetBaseURL()
 }
 
-// SetEndpointURL sets the endpoint URL for API requests to a custom endpoint. urlStr
-// should always be specified with a trailing slash.
-func (c *Client) SetEndpointURL(urlStr string) error {
-	if urlStr == "" {
-		return ErrBaseURLCannotBeEmpty
-	}
-	// Make sure the given URL ends with a slash
-	if !strings.HasSuffix(urlStr, "/") {
-		urlStr += "/"
-	}
-	var err error
-	c.baseURL, err = url.Parse(urlStr)
-	if err != nil {
-		return err
-	}
-	parts := strings.Split(c.baseURL.Path, "/")
-	if len(parts) == 0 {
-		return ErrBaseURLCannotBeEmpty
-	}
-	if len(parts) < 5 {
-		return ErrInvalidEndpointURL
-	}
-	c.config.OrganizationID = parts[len(parts)-2]
-	c.baseURL.Path = "/"
-	return nil
-}
-
-func (c *Client) NewAIRequest(method, requestPath string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
+func (c *Client) NewRequest(method, requestPath string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
 	u := *c.baseURL
 	// Set the encoded opaque data
-	u.Opaque = path.Join(c.baseURL.Path, "analyze", c.config.Service, c.config.OrganizationID, requestPath)
+	u.Opaque = path.Join(c.baseURL.Path, requestPath)
 
 	if opt != nil {
 		q, err := query.Values(opt)
@@ -249,4 +226,33 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
+}
+
+func (c *Client) GetServices() (*[]Service, *Response, error) {
+	requiredScope := "?.?.dsc.service.readAny"
+	if !c.HasScopes(requiredScope) {
+		return nil, nil, fmt.Errorf("missing scope '%s'", requiredScope)
+	}
+
+	req, err := c.NewRequest(http.MethodGet, "Service", nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	var bundleResponse internal.Bundle
+
+	resp, err := c.Do(req, &bundleResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	if err := internal.CheckResponse(resp.Response); err != nil {
+		return nil, resp, err
+	}
+	var services []Service
+	for _, s := range bundleResponse.Entry {
+		var service Service
+		if err := json.Unmarshal(s.Resource, &service); err == nil {
+			services = append(services, service)
+		}
+	}
+	return &services, resp, nil
 }

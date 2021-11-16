@@ -10,6 +10,38 @@ A HSDP API client library enabling Go programs to interact with various HSDP API
 The current implement covers only a subset of HSDP APIs. Basically, we implement functionality as needed.
 
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
+- [x] Clinical Data Repository (CDR)
+  - [x] Tenant Onboarding
+  - [x] Subscription management
+  - [x] FHIR CRUD
+  - [x] FHIR Patch
+  - [x] STU3
+  - [x] R4
+- [x] Connect IoT
+  - [x] Master Data Management (MDM)
+    - [x] Propositions
+    - [x] Applications
+    - [x] Data Adapter
+    - [x] Data Subscribers
+    - [x] OAuth2 clients
+    - [x] Standard Services
+    - [x] Service Actions
+    - [x] Service References
+    - [x] Storage Classes
+    - [x] Device Groups
+    - [x] Device Types
+    - [x] Regions
+    - [x] Buckets
+    - [x] Data Types
+    - [x] Blob Data Contracts
+    - [x] Blob Subscriptions
+    - [x] Data Broker Subscriptions
+    - [x] Firmware Components
+    - [x] Firmware Component Versions
+    - [x] OAuth Client Scopes
+    - [x] Subscriber Types
+    - [x] Resources Limits
+    - [x] Authentication Methods
 - [x] Secure Transport Layer (STL) / Edge 
   - [x] Device queries
   - [x] Application Resources management
@@ -33,13 +65,6 @@ The current implement covers only a subset of HSDP APIs. Basically, we implement
   - [x] SMS Templates
 - [x] Logging ([examples](logging/README.md))
 - [x] Auditing ([examples](audit/README.md))
-- [x] Clinical Data Repository (CDR)
-  - [x] Tenant Onboarding
-  - [x] Subscription management
-  - [x] FHIR CRUD
-  - [x] FHIR Patch
-  - [x] STU3
-  - [x] R4
 - [x] Telemetry Data Repository (TDR)
   - [x] Contract management
   - [x] Data Item management

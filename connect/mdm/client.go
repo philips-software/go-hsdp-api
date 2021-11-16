@@ -1,5 +1,5 @@
-// Package ai provides support the HSDP AI services
-package ai
+// Package mdm provides support the HSDP Connect IoT services
+package mdm
 
 import (
 	"bytes"
@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	userAgent  = "go-hsdp-api/ai/" + internal.LibraryVersion
+	userAgent  = "go-hsdp-api/connect-mdm/" + internal.LibraryVersion
 	APIVersion = "1"
 )
 
@@ -29,13 +29,11 @@ type OptionFunc func(*http.Request) error
 
 // Config contains the configuration of a Client
 type Config struct {
-	Region         string
-	Environment    string
-	OrganizationID string `Validate:"required"`
-	BaseURL        string
-	Service        string `Validate:"required"`
-	DebugLog       string
-	Retry          int
+	Region      string
+	Environment string
+	BaseURL     string
+	DebugLog    string
+	Retry       int
 }
 
 // A Client manages communication with HSDP AI APIs
@@ -51,11 +49,32 @@ type Client struct {
 	debugFile *os.File
 	validate  *validator.Validate
 
-	ComputeTarget   *ComputeTargetService
-	ComputeProvider *ComputeProviderService
+	Propositions              *PropositionsService
+	Applications              *ApplicationsService
+	Regions                   *RegionsService
+	StorageClasses            *StorageClassService
+	OAuthClientScopes         *OAuthClientScopesService
+	OAuthClients              *OAuthClientsService
+	StandardServices          *StandardServicesService
+	ServiceActions            *ServiceActionsService
+	DeviceGroups              *DeviceGroupsService
+	DeviceTypes               *DeviceTypesService
+	AuthenticationMethods     *AuthenticationMethodsService
+	ServiceReferences         *ServiceReferencesService
+	Buckets                   *BucketsService
+	DataTypes                 *DataTypesService
+	BlobDataContracts         *BlobDataContractsService
+	DataBrokerSubscriptions   *DataBrokerSubscriptionsService
+	BlobSubscriptions         *BlobSubscriptionsService
+	FirmwareComponents        *FirmwareComponentsService
+	FirmwareComponentVersions *FirmwareComponentVersionsService
+	ResourcesLimits           *ResourceLimitsService
+	SubscriberTypes           *SubscriberTypesService
+	DataAdapters              *DataAdaptersService
+	DataSubscribers           *DataSubscribersService
 }
 
-// NewClient returns a new AI base Client
+// NewClient returns a new Discovery client
 func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	validate := validator.New()
 	if err := validate.Struct(config); err != nil {
@@ -68,8 +87,29 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 
-	c.ComputeProvider = &ComputeProviderService{client: c, validate: validator.New()}
-	c.ComputeTarget = &ComputeTargetService{client: c, validate: validator.New()}
+	c.Propositions = &PropositionsService{Client: c, validate: validator.New()}
+	c.Applications = &ApplicationsService{Client: c, validate: validator.New()}
+	c.Regions = &RegionsService{Client: c}
+	c.StorageClasses = &StorageClassService{Client: c}
+	c.OAuthClientScopes = &OAuthClientScopesService{Client: c}
+	c.OAuthClients = &OAuthClientsService{Client: c, validate: validator.New()}
+	c.StandardServices = &StandardServicesService{Client: c, validate: validator.New()}
+	c.ServiceActions = &ServiceActionsService{Client: c, validate: validator.New()}
+	c.DeviceGroups = &DeviceGroupsService{Client: c, validate: validator.New()}
+	c.DeviceTypes = &DeviceTypesService{Client: c, validate: validator.New()}
+	c.AuthenticationMethods = &AuthenticationMethodsService{Client: c, validate: validator.New()}
+	c.ServiceReferences = &ServiceReferencesService{Client: c, validate: validator.New()}
+	c.Buckets = &BucketsService{Client: c, validate: validator.New()}
+	c.DataTypes = &DataTypesService{Client: c, validate: validator.New()}
+	c.BlobDataContracts = &BlobDataContractsService{Client: c, validate: validator.New()}
+	c.DataBrokerSubscriptions = &DataBrokerSubscriptionsService{Client: c, validate: validator.New()}
+	c.BlobSubscriptions = &BlobSubscriptionsService{Client: c, validate: validator.New()}
+	c.FirmwareComponents = &FirmwareComponentsService{Client: c, validate: validator.New()}
+	c.FirmwareComponentVersions = &FirmwareComponentVersionsService{Client: c, validate: validator.New()}
+	c.ResourcesLimits = &ResourceLimitsService{Client: c}
+	c.SubscriberTypes = &SubscriberTypesService{Client: c}
+	c.DataAdapters = &DataAdaptersService{Client: c}
+	c.DataSubscribers = &DataSubscribersService{Client: c}
 
 	return c, nil
 }
@@ -80,7 +120,7 @@ func doAutoconf(config *Config) {
 			autoconf.WithRegion(config.Region),
 			autoconf.WithEnv(config.Environment))
 		if err == nil {
-			theService := c.Service(config.Service)
+			theService := c.Service("connect-mdm")
 			if theService.URL != "" && config.BaseURL == "" {
 				config.BaseURL = theService.URL
 			}
@@ -109,7 +149,7 @@ func (c *Client) SetBaseURL(urlStr string) error {
 	if urlStr == "" {
 		return ErrBaseURLCannotBeEmpty
 	}
-	// Make sure the given URL end with a slash
+	// Make sure the given URL ends with a slash
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
@@ -118,50 +158,15 @@ func (c *Client) SetBaseURL(urlStr string) error {
 	return err
 }
 
-// GetEndpointURL returns the FHIR Store Endpoint URL as configured
+// GetEndpointURL returns the Discovery Endpoint URL as configured
 func (c *Client) GetEndpointURL() string {
-	return c.GetBaseURL() + path.Join("analyze", c.config.Service, c.config.OrganizationID)
+	return c.GetBaseURL()
 }
 
-// SetEndpointURL sets the endpoint URL for API requests to a custom endpoint. urlStr
-// should always be specified with a trailing slash.
-func (c *Client) SetEndpointURL(urlStr string) error {
-	if urlStr == "" {
-		return ErrBaseURLCannotBeEmpty
-	}
-	// Make sure the given URL ends with a slash
-	if !strings.HasSuffix(urlStr, "/") {
-		urlStr += "/"
-	}
-	var err error
-	c.baseURL, err = url.Parse(urlStr)
-	if err != nil {
-		return err
-	}
-	parts := strings.Split(c.baseURL.Path, "/")
-	if len(parts) == 0 {
-		return ErrBaseURLCannotBeEmpty
-	}
-	if len(parts) < 5 {
-		return ErrInvalidEndpointURL
-	}
-	c.config.OrganizationID = parts[len(parts)-2]
-	c.baseURL.Path = "/"
-	return nil
-}
-
-func (c *Client) NewAIRequest(method, requestPath string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
+func (c *Client) NewRequest(method, requestPath string, opt interface{}, options ...OptionFunc) (*http.Request, error) {
 	u := *c.baseURL
 	// Set the encoded opaque data
-	u.Opaque = path.Join(c.baseURL.Path, "analyze", c.config.Service, c.config.OrganizationID, requestPath)
-
-	if opt != nil {
-		q, err := query.Values(opt)
-		if err != nil {
-			return nil, err
-		}
-		u.RawQuery = q.Encode()
-	}
+	u.Opaque = path.Join(c.baseURL.Path, requestPath)
 
 	req := &http.Request{
 		Method:     method,
@@ -192,7 +197,7 @@ func (c *Client) NewAIRequest(method, requestPath string, opt interface{}, optio
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.Token())
 	req.Header.Set("API-Version", APIVersion)
 	if c.UserAgent != "" {

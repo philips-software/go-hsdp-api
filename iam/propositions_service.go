@@ -54,7 +54,7 @@ func (p *PropositionsService) GetPropositionByID(id string) (*Proposition, *Resp
 	return p.GetProposition(&GetPropositionsOptions{ID: &id}, nil)
 }
 
-// GetProposition find a Proposition based on the GetPropisitions values
+// GetProposition find a Proposition based on the GetPropositions values
 func (p *PropositionsService) GetProposition(opt *GetPropositionsOptions, options ...OptionFunc) (*Proposition, *Response, error) {
 	props, resp, err := p.GetPropositions(opt, options...)
 	if err != nil {
