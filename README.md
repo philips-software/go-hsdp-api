@@ -19,8 +19,8 @@ The current implement covers only a subset of HSDP APIs. Basically, we implement
   - [x] R4
 - [x] Connect IoT
   - [x] Master Data Management (MDM)
-    - [ ] Propositions
-    - [ ] Applications
+    - [x] Propositions
+    - [x] Applications
     - [x] Data Adapter
     - [x] Data Subscribers
     - [x] OAuth2 clients
