@@ -49,29 +49,30 @@ type Client struct {
 	debugFile *os.File
 	validate  *validator.Validate
 
-	Propositions              *PropositionsService
-	Applications              *ApplicationsService
-	Regions                   *RegionsService
-	StorageClasses            *StorageClassService
-	OAuthClientScopes         *OAuthClientScopesService
-	OAuthClients              *OAuthClientsService
-	StandardServices          *StandardServicesService
-	ServiceActions            *ServiceActionsService
-	DeviceGroups              *DeviceGroupsService
-	DeviceTypes               *DeviceTypesService
-	AuthenticationMethods     *AuthenticationMethodsService
-	ServiceReferences         *ServiceReferencesService
-	Buckets                   *BucketsService
-	DataTypes                 *DataTypesService
-	BlobDataContracts         *BlobDataContractsService
-	DataBrokerSubscriptions   *DataBrokerSubscriptionsService
-	BlobSubscriptions         *BlobSubscriptionsService
-	FirmwareComponents        *FirmwareComponentsService
-	FirmwareComponentVersions *FirmwareComponentVersionsService
-	ResourcesLimits           *ResourceLimitsService
-	SubscriberTypes           *SubscriberTypesService
-	DataAdapters              *DataAdaptersService
-	DataSubscribers           *DataSubscribersService
+	Propositions                 *PropositionsService
+	Applications                 *ApplicationsService
+	Regions                      *RegionsService
+	StorageClasses               *StorageClassService
+	OAuthClientScopes            *OAuthClientScopesService
+	OAuthClients                 *OAuthClientsService
+	StandardServices             *StandardServicesService
+	ServiceActions               *ServiceActionsService
+	DeviceGroups                 *DeviceGroupsService
+	DeviceTypes                  *DeviceTypesService
+	AuthenticationMethods        *AuthenticationMethodsService
+	ServiceReferences            *ServiceReferencesService
+	Buckets                      *BucketsService
+	DataTypes                    *DataTypesService
+	BlobDataContracts            *BlobDataContractsService
+	DataBrokerSubscriptions      *DataBrokerSubscriptionsService
+	BlobSubscriptions            *BlobSubscriptionsService
+	FirmwareComponents           *FirmwareComponentsService
+	FirmwareComponentVersions    *FirmwareComponentVersionsService
+	ResourcesLimits              *ResourceLimitsService
+	SubscriberTypes              *SubscriberTypesService
+	DataAdapters                 *DataAdaptersService
+	DataSubscribers              *DataSubscribersService
+	FirmwareDistributionRequests *FirmwareDistributionRequestsService
 }
 
 // NewClient returns a new Discovery client
@@ -110,6 +111,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.SubscriberTypes = &SubscriberTypesService{Client: c}
 	c.DataAdapters = &DataAdaptersService{Client: c}
 	c.DataSubscribers = &DataSubscribersService{Client: c}
+	c.FirmwareDistributionRequests = &FirmwareDistributionRequestsService{Client: c, validate: validator.New()}
 
 	return c, nil
 }
