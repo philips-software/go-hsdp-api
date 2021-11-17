@@ -110,11 +110,7 @@ func TestCreateApplication(t *testing.T) {
 			Reference: propID,
 		},
 		GlobalReferenceID: globalReferenceID,
-		ApplicationGuid: mdm.Identifier{
-			System: "foo",
-			Value:  "bar",
-		},
-		DefaultGroupGuid: mdm.Identifier{
+		DefaultGroupGuid: &mdm.Identifier{
 			System: "foo",
 			Value:  "bar",
 		},
