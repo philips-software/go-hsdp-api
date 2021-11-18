@@ -26,19 +26,15 @@ type GetFirmwareDistributionRequestOptions struct {
 }
 
 type FirmwareDistributionRequest struct {
-	ResourceType              string               `json:"resourceType" validate:"required"`
-	ID                        string               `json:"id,omitempty"`
-	Status                    string               `json:"status" validate:"required"`
-	UserConsentRequired       bool                 `json:"userConsentRequired"`
-	DistributionTargets       []DistributionTarget `json:"distributionTarget" validate:"required,min=1,max=10"`
-	FirmwareVersion           string               `json:"firmwareVersion" validate:"required"`
-	OrchestrationMode         string               `json:"orchestrationMode" validate:"required,oneof=none continuous snapshot"`
-	FirmwareComponentVersions []Reference          `json:"firmwareComponentVersions" validate:"required,min=1,max=5"`
-	Description               string               `json:"description" validate:"omitempty,max=250"`
-}
-
-type DistributionTarget struct {
-	DeviceGroupId string `json:"deviceGroupId"`
+	ResourceType              string      `json:"resourceType" validate:"required"`
+	ID                        string      `json:"id,omitempty"`
+	Status                    string      `json:"status" validate:"required"`
+	UserConsentRequired       bool        `json:"userConsentRequired"`
+	DistributionTargets       []Reference `json:"distributionTarget" validate:"required,min=1,max=10"`
+	FirmwareVersion           string      `json:"firmwareVersion" validate:"required"`
+	OrchestrationMode         string      `json:"orchestrationMode" validate:"required,oneof=none continuous snapshot"`
+	FirmwareComponentVersions []Reference `json:"firmwareComponentVersions" validate:"required,min=1,max=5"`
+	Description               string      `json:"description" validate:"omitempty,max=250"`
 }
 
 // Create creates a FirmwareDistributionRequest
