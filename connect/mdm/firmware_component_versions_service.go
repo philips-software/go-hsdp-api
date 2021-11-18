@@ -24,7 +24,7 @@ type Fingerprint struct {
 }
 
 type EncryptionInfo struct {
-	Encrypted     bool   `json:"encrypted" validate:"required"`
+	Encrypted     bool   `json:"encrypted"`
 	Algorithm     string `json:"alg,omitempty"`
 	DecryptionKey string `json:"decryptionKey,omitempty"`
 }
