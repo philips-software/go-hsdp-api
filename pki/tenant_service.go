@@ -18,16 +18,16 @@ type TenantService struct {
 
 type Role struct {
 	Name                 string   `json:"name" validate:"required"`
-	AllowAnyName         bool     `json:"allow_any_name" validate:"required"`
-	AllowIPSans          bool     `json:"allow_ip_sans" validate:"required"`
-	AllowSubdomains      bool     `json:"allow_subdomains" validate:"required"`
+	AllowAnyName         bool     `json:"allow_any_name"`
+	AllowIPSans          bool     `json:"allow_ip_sans"`
+	AllowSubdomains      bool     `json:"allow_subdomains"`
 	AllowedDomains       []string `json:"allowed_domains,omitempty"`
 	AllowedOtherSans     []string `json:"allowed_other_sans" validate:"required"`
 	AllowedSerialNumbers []string `json:"allowed_serial_numbers,omitempty"`
 	AllowedURISans       []string `json:"allowed_uri_sans" validate:"required"`
-	ClientFlag           bool     `json:"client_flag" validate:"required"`
+	ClientFlag           bool     `json:"client_flag"`
 	Country              []string `json:"country"`
-	EnforceHostnames     bool     `json:"enforce_hostnames" validate:"required"`
+	EnforceHostnames     bool     `json:"enforce_hostnames"`
 	KeyBits              int      `json:"key_bits,omitempty"`
 	KeyType              string   `json:"key_type,omitempty"`
 	Locality             []string `json:"locality,omitempty"`

@@ -26,7 +26,7 @@ type BlobDataContract struct {
 	BucketID                      Reference `json:"bucketId" validate:"required,dive"`
 	StorageClassID                Reference `json:"storageClassId" validate:"required,dive"`
 	RootPathInBucket              string    `json:"rootPathInBucket" validate:"required,max=256"`
-	LoggingEnabled                bool      `json:"loggingEnabled" validate:"required"`
+	LoggingEnabled                bool      `json:"loggingEnabled"`
 	CrossRegionReplicationEnabled bool      `json:"crossRegionReplicationEnabled"`
 	Meta                          *Meta     `json:"meta,omitempty"`
 }
