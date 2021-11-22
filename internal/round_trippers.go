@@ -15,6 +15,10 @@ type filter struct {
 	Replace string
 }
 
+const (
+	Amos = "SOMETIMES_YOU_GOT_TO_STOP_THINKING_ABOUT_SOMETHING_TO_FIGURE_IT_OUT"
+)
+
 var filterList = []filter{
 	{regexp.MustCompile(`Authorization: (.*)\n`), "Authorization: [sensitive]\n"},
 	{regexp.MustCompile(`X-User-Access-Token: (.*)\n`), "X-User-Access-Token: [sensitive]\n"},
@@ -77,7 +81,7 @@ func NewLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *LoggingRo
 		next:    next,
 		logFile: logFile,
 		prefix:  uuid.New().String(),
-		debug:   os.Getenv("SOMETIMES_YOU_GOT_TO_STOP_THINKING_ABOUT_SOMETHING_TO_FIGURE_IT_OUT") == "true",
+		debug:   os.Getenv(Amos) == "true",
 	}
 }
 

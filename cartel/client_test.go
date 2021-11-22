@@ -80,14 +80,15 @@ func TestDebug(t *testing.T) {
 		Debug:      true,
 		DebugLog:   tmpfile.Name(),
 	})
-	var responseBody = `[{"instance_id":"i-deadbeaf","name_tag":"some.dev","owner":"xxx","role":"container-host"}]`
-
-	muxCartel.HandleFunc("/v3/api/get_all_instances", endpointMocker([]byte(sharedSecret),
-		responseBody))
 	if !assert.Nil(t, err) {
 		return
 	}
 	defer teardown()
+
+	var responseBody = `[{"instance_id":"i-deadbeaf","name_tag":"some.dev","owner":"xxx","role":"container-host"}]`
+	muxCartel.HandleFunc("/v3/api/get_all_instances", endpointMocker([]byte(sharedSecret),
+		responseBody))
+
 	_, _, err = client.GetAllInstances()
 	if !assert.Nil(t, err) {
 		return

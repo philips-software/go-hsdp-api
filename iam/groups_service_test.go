@@ -2,6 +2,7 @@ package iam
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -141,6 +142,8 @@ func TestAssignRole(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	var assignedTotal []string
+
 	roleID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
 	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
 	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID+"/$assign-role", func(w http.ResponseWriter, r *http.Request) {
@@ -162,16 +165,8 @@ func TestAssignRole(t *testing.T) {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if len(assignRequest.Roles) != 1 {
-				t.Errorf("Expected 1 role, got: %d", len(assignRequest.Roles))
-				w.WriteHeader(http.StatusBadRequest)
-				return
-			}
-			if assignRequest.Roles[0] != roleID {
-				t.Errorf("Unexpected role: %s", assignRequest.Roles[0])
-				w.WriteHeader(http.StatusUnauthorized)
-				return
-			}
+			assignedTotal = append(assignedTotal, assignRequest.Roles...)
+
 			w.WriteHeader(http.StatusOK)
 			_, _ = io.WriteString(w, `{
 				"resourceType": "OperationOutcome",
@@ -197,13 +192,15 @@ func TestAssignRole(t *testing.T) {
 	if ok := assert.NotNil(t, resp); ok {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
+	assert.Len(t, assignedTotal, 1)
 }
 
 func TestAddMembers(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	userID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
+	var assignedTotal []string
+
 	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
 	muxIDM.HandleFunc("/authorize/identity/Group/"+groupID+"/$add-members", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -245,40 +242,29 @@ func TestAddMembers(t *testing.T) {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if r := addRequest.Parameter[0].References[0].Reference; r != userID {
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = io.WriteString(w, `{
-					"resourceType": "OperationOutcome",
-					"issues": [
-						{
-							"diagnostic": "failed Operations",
-							"code": "not-found",
-							"severity": "error",
-							"location": [
-								"users/`+r+`"
-							]
-						}
-					]
-				}
-				`)
-				return
+			for _, a := range addRequest.Parameter[0].References {
+				assignedTotal = append(assignedTotal, a.Reference)
 			}
 			w.WriteHeader(http.StatusOK)
 		}
 	})
+
+	assert.Len(t, assignedTotal, 0)
+
 	var group Group
 	group.ID = groupID
-	ok, resp, err := client.Groups.AddMembers(group, userID)
+	var users []string
+	for i := 0; i < 28; i++ {
+		users = append(users, fmt.Sprintf("%s%02d", "f5fe538f-c3b5-4454-8774-cd3789f59b", i))
+	}
+	ok, resp, err := client.Groups.AddMembers(group, users...)
 	assert.NotNil(t, resp)
 	if resp != nil {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
+	assert.Len(t, assignedTotal, 28)
 	assert.True(t, ok)
 	assert.Nil(t, err)
-	ok, resp, err = client.Groups.AddMembers(group, "foo")
-	assert.NotNil(t, resp)
-	assert.False(t, ok)
-	assert.NotNil(t, err)
 }
 
 func TestRemoveMembers(t *testing.T) {
