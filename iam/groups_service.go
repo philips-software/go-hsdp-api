@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 const (
@@ -21,6 +23,12 @@ type GetGroupOptions struct {
 // GroupsService implements actions on Group entities
 type GroupsService struct {
 	client *Client
+}
+
+type Membership struct {
+	internal.OperationOutcome
+	MemberType string   `json:"memberType"`
+	Value      []string `json:"value"`
 }
 
 // GetGroupByID retrieves a Group based on the ID
@@ -242,26 +250,22 @@ type groupRequest struct {
 	Roles        []string    `json:"roles,omitempty"`
 }
 
-func (g *GroupsService) memberAction(group Group, action string, opt interface{}, options []OptionFunc) (bool, *Response, error) {
+func (g *GroupsService) memberAction(group Group, action string, opt interface{}, options []OptionFunc) (map[string]interface{}, *Response, error) {
 	req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, options)
 	if err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
 	req.Header.Set("api-version", groupAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var memberResponse interface{}
+	var memberResponse map[string]interface{}
 
 	resp, err := g.client.do(req, &memberResponse)
 
 	if err != nil && err != io.EOF { // EOF is valid
-		return false, resp, err
+		return memberResponse, resp, err
 	}
-	if resp == nil || !(resp.StatusCode == http.StatusOK ||
-		resp.StatusCode == http.StatusMultiStatus) {
-		return false, resp, err
-	}
-	return true, resp, nil
+	return memberResponse, resp, nil
 }
 
 func memberRequestBody(memberType string, identities ...string) memberRequest {
@@ -288,22 +292,24 @@ func groupRequestBody(users ...string) groupRequest {
 	return requestBody
 }
 
+type MemberResponse map[string]interface{}
+
 // AddMembers adds users to the given Group
-func (g *GroupsService) AddMembers(group Group, users ...string) (bool, *Response, error) {
-	return perSlice(users, 10, func(chunk []string) (bool, *Response, error) {
+func (g *GroupsService) AddMembers(group Group, users ...string) (MemberResponse, *Response, error) {
+	return perSlice(users, 10, func(chunk []string) (MemberResponse, *Response, error) {
 		return g.memberAction(group, "$add-members", groupRequestBody(chunk...), nil)
 	})
 }
 
 // RemoveMembers removes users from the given Group
-func (g *GroupsService) RemoveMembers(group Group, users ...string) (bool, *Response, error) {
-	return perSlice(users, 10, func(chunk []string) (bool, *Response, error) {
+func (g *GroupsService) RemoveMembers(group Group, users ...string) (MemberResponse, *Response, error) {
+	return perSlice(users, 10, func(chunk []string) (MemberResponse, *Response, error) {
 		return g.memberAction(group, "$remove-members", groupRequestBody(chunk...), nil)
 	})
 }
 
-func perSlice(slice []string, chunkSize int, fn func([]string) (bool, *Response, error)) (bool, *Response, error) {
-	var ok bool
+func perSlice(slice []string, chunkSize int, fn func([]string) (MemberResponse, *Response, error)) (MemberResponse, *Response, error) {
+	var data map[string]interface{}
 	var resp *Response
 	var err error
 	for i := 0; i < len(slice); i += chunkSize {
@@ -311,12 +317,12 @@ func perSlice(slice []string, chunkSize int, fn func([]string) (bool, *Response,
 		if end > len(slice) {
 			end = len(slice)
 		}
-		ok, resp, err = fn(slice[i:end])
+		data, resp, err = fn(slice[i:end])
 		if err != nil {
-			return ok, resp, err
+			return data, resp, err
 		}
 	}
-	return true, resp, nil
+	return data, resp, nil
 }
 
 func addIfMatchHeader(version string) OptionFunc {
@@ -327,53 +333,53 @@ func addIfMatchHeader(version string) OptionFunc {
 }
 
 // AddIdentities adds services to the given Group
-func (g *GroupsService) AddIdentities(group Group, memberType string, identities ...string) (bool, *Response, error) {
+func (g *GroupsService) AddIdentities(group Group, memberType string, identities ...string) (MemberResponse, *Response, error) {
 	_, resp, err := g.GetGroupByID(group.ID)
 	if err != nil {
-		return false, resp, err
+		return nil, resp, err
 	}
 	version := resp.Header.Get("ETag")
-	return perSlice(identities, 10, func(chunk []string) (bool, *Response, error) {
+	return perSlice(identities, 10, func(chunk []string) (MemberResponse, *Response, error) {
 		return g.memberAction(group, "$assign", memberRequestBody(memberType, chunk...), []OptionFunc{addIfMatchHeader(version)})
 	})
 }
 
 // RemoveIdentities removes services from the given Group
-func (g *GroupsService) RemoveIdentities(group Group, memberType string, identities ...string) (bool, *Response, error) {
+func (g *GroupsService) RemoveIdentities(group Group, memberType string, identities ...string) (MemberResponse, *Response, error) {
 	_, resp, err := g.GetGroupByID(group.ID)
 	if err != nil {
-		return false, resp, err
+		return nil, resp, err
 	}
 	version := resp.Header.Get("ETag")
-	return perSlice(identities, 10, func(slice []string) (bool, *Response, error) {
+	return perSlice(identities, 10, func(slice []string) (MemberResponse, *Response, error) {
 		return g.memberAction(group, "$remove", memberRequestBody(memberType, slice...), []OptionFunc{addIfMatchHeader(version)})
 	})
 }
 
 // AddDevices adds services to the given Group
-func (g *GroupsService) AddDevices(group Group, devices ...string) (bool, *Response, error) {
-	return perSlice(devices, 10, func(chunk []string) (bool, *Response, error) {
+func (g *GroupsService) AddDevices(group Group, devices ...string) (MemberResponse, *Response, error) {
+	return perSlice(devices, 10, func(chunk []string) (MemberResponse, *Response, error) {
 		return g.AddIdentities(group, "DEVICE", chunk...)
 	})
 }
 
 // RemoveDevices removes services from the given Group
-func (g *GroupsService) RemoveDevices(group Group, devices ...string) (bool, *Response, error) {
-	return perSlice(devices, 10, func(chunk []string) (bool, *Response, error) {
+func (g *GroupsService) RemoveDevices(group Group, devices ...string) (MemberResponse, *Response, error) {
+	return perSlice(devices, 10, func(chunk []string) (MemberResponse, *Response, error) {
 		return g.RemoveIdentities(group, "DEVICE", chunk...)
 	})
 }
 
 // AddServices adds services to the given Group
-func (g *GroupsService) AddServices(group Group, services ...string) (bool, *Response, error) {
-	return perSlice(services, 10, func(chunk []string) (bool, *Response, error) {
+func (g *GroupsService) AddServices(group Group, services ...string) (MemberResponse, *Response, error) {
+	return perSlice(services, 10, func(chunk []string) (MemberResponse, *Response, error) {
 		return g.AddIdentities(group, "SERVICE", chunk...)
 	})
 }
 
 // RemoveServices removes services from the given Group
-func (g *GroupsService) RemoveServices(group Group, services ...string) (bool, *Response, error) {
-	return perSlice(services, 10, func(chunk []string) (bool, *Response, error) {
+func (g *GroupsService) RemoveServices(group Group, services ...string) (MemberResponse, *Response, error) {
+	return perSlice(services, 10, func(chunk []string) (MemberResponse, *Response, error) {
 		return g.RemoveIdentities(group, "SERVICE", chunk...)
 	})
 }

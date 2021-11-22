@@ -263,7 +263,7 @@ func TestAddMembers(t *testing.T) {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
 	assert.Len(t, assignedTotal, 28)
-	assert.True(t, ok)
+	assert.Nil(t, ok)
 	assert.Nil(t, err)
 }
 
@@ -308,12 +308,13 @@ func TestRemoveMembers(t *testing.T) {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if l := len(addRequest.Parameter[0].References); l == 0 {
+			l := len(addRequest.Parameter[0].References)
+			if l == 0 {
 				t.Errorf("Expected at least 1 reference, got: %d", l)
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if r := addRequest.Parameter[0].References[0].Reference; r != userID {
+			if r := addRequest.Parameter[0].References[0].Reference; l == 1 && r != userID {
 				w.WriteHeader(http.StatusBadRequest)
 				_, _ = io.WriteString(w, `{
 					"resourceType": "OperationOutcome",
@@ -338,13 +339,13 @@ func TestRemoveMembers(t *testing.T) {
 	group.ID = groupID
 	ok, resp, err := client.Groups.RemoveMembers(group, userID)
 	assert.NotNil(t, resp)
-	assert.True(t, ok)
+	assert.Nil(t, ok)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	ok, resp, err = client.Groups.RemoveMembers(group, "foo")
 	assert.NotNil(t, resp)
-	assert.False(t, ok)
+	assert.Nil(t, ok)
 	assert.NotNil(t, err)
 }
 
@@ -534,6 +535,12 @@ func TestAddServicesAndDevices(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "value": [
+    "`+identityID+`"
+  ],
+  "type": "SERVICE"
+}`)
 		}
 	})
 	var group Group
@@ -543,11 +550,11 @@ func TestAddServicesAndDevices(t *testing.T) {
 	if resp != nil {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
-	assert.True(t, ok)
+	assert.NotNil(t, ok)
 	assert.Nil(t, err)
 	ok, resp, err = client.Groups.AddServices(group, "foo")
 	assert.NotNil(t, resp)
-	assert.False(t, ok)
+	assert.Nil(t, ok)
 	assert.NotNil(t, err)
 	group.ID = groupID
 
@@ -556,11 +563,11 @@ func TestAddServicesAndDevices(t *testing.T) {
 	if resp != nil {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	}
-	assert.True(t, ok)
+	assert.NotNil(t, ok)
 	assert.Nil(t, err)
 	ok, resp, err = client.Groups.AddDevices(group, "foo")
 	assert.NotNil(t, resp)
-	assert.False(t, ok)
+	assert.Nil(t, ok)
 	assert.NotNil(t, err)
 }
 
@@ -652,23 +659,20 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 	group.ID = groupID
 	ok, resp, err := client.Groups.RemoveServices(group, identityID)
 	assert.NotNil(t, resp)
-	assert.True(t, ok)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	ok, resp, err = client.Groups.RemoveServices(group, "foo")
 	assert.NotNil(t, resp)
-	assert.False(t, ok)
 	assert.NotNil(t, err)
 
 	ok, resp, err = client.Groups.RemoveDevices(group, identityID)
 	assert.NotNil(t, resp)
-	assert.True(t, ok)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	ok, resp, err = client.Groups.RemoveDevices(group, "foo")
 	assert.NotNil(t, resp)
-	assert.False(t, ok)
 	assert.NotNil(t, err)
+	assert.Nil(t, ok)
 }
