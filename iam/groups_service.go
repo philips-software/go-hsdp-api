@@ -18,6 +18,7 @@ type GetGroupOptions struct {
 	OrganizationID *string `url:"orgID,omitempty"`
 	Name           *string `url:"name,omitempty"`
 	MemberType     *string `url:"memberType,omitempty"`
+	MemberID       *string `url:"memberId,omitempty"`
 }
 
 // GroupsService implements actions on Group entities
