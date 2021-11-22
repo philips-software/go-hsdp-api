@@ -1,10 +1,5 @@
 package iam
 
-import (
-	"bytes"
-	"net/http"
-)
-
 var (
 	roleAPIVersion = "1"
 )
@@ -96,24 +91,24 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 	if err != nil {
 		return nil, resp, err
 	}
-	return &createdRole, resp, err
+	return &createdRole, resp, nil
 }
 
+type RoleResponse map[string]interface{}
+
 // DeleteRole deletes the given Role
-func (p *RolesService) DeleteRole(role Role) (bool, *Response, error) {
+func (p *RolesService) DeleteRole(role Role) (RoleResponse, *Response, error) {
 	req, err := p.client.newRequest(IDM, "DELETE", "authorize/identity/Role/"+role.ID, nil, nil)
 	if err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
 	req.Header.Set("api-version", roleAPIVersion)
 
-	var deleteResponse bytes.Buffer
+	var roleResponse RoleResponse
 
-	resp, err := p.client.do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
-		return false, resp, err
-	}
-	return true, resp, nil
+	resp, err := p.client.do(req, &roleResponse)
+
+	return roleResponse, resp, err
 }
 
 // GetRolePermissions retrieves the permissions associated with the Role
@@ -144,7 +139,7 @@ func (p *RolesService) GetRolePermissions(role Role) (*[]string, *Response, erro
 }
 
 // AddRolePermission adds a given permission to the Role
-func (p *RolesService) rolePermissionAction(role Role, permissions []string, action string) (bool, *Response, error) {
+func (p *RolesService) rolePermissionAction(role Role, permissions []string, action string) (RoleResponse, *Response, error) {
 	var permissionRequest struct {
 		Permissions []string `json:"permissions"`
 	}
@@ -152,25 +147,25 @@ func (p *RolesService) rolePermissionAction(role Role, permissions []string, act
 
 	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/"+action, &permissionRequest, nil)
 	if err != nil {
-		return false, nil, err
+		return nil, nil, err
 	}
 	req.Header.Set("api-version", roleAPIVersion)
 
-	var bundleResponse bytes.Buffer
+	var roleResponse RoleResponse
 
-	resp, err := p.client.do(req, &bundleResponse)
+	resp, err := p.client.do(req, &roleResponse)
 	if err != nil {
-		return false, resp, err
+		return roleResponse, resp, err
 	}
-	return true, resp, err
+	return roleResponse, resp, nil
 
 }
 
-func (p *RolesService) AddRolePermission(role Role, permission string) (bool, *Response, error) {
+func (p *RolesService) AddRolePermission(role Role, permission string) (RoleResponse, *Response, error) {
 	return p.rolePermissionAction(role, []string{permission}, "$assign-permission")
 }
 
 // RemoveRolePermission removes the permission from the Role
-func (p *RolesService) RemoveRolePermission(role Role, permission string) (bool, *Response, error) {
+func (p *RolesService) RemoveRolePermission(role Role, permission string) (RoleResponse, *Response, error) {
 	return p.rolePermissionAction(role, []string{permission}, "$remove-permission")
 }

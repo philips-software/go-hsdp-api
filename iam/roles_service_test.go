@@ -75,13 +75,14 @@ func TestRoleCRUD(t *testing.T) {
 	if role.ID != roleID {
 		t.Errorf("Expected to find role with ID: %s, Got: %s", roleID, role.ID)
 	}
-	ok, resp, _ := client.Roles.DeleteRole(*role)
+	_, resp, err = client.Roles.DeleteRole(*role)
+	if !assert.Nil(t, err) {
+		return
+	}
 	if resp.StatusCode != http.StatusNoContent {
 		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
 	}
-	if !ok {
-		t.Errorf("Expected role to be deleted")
-	}
+
 }
 
 func roleActionSuccessHandler(message string) func(http.ResponseWriter, *http.Request) {
@@ -118,28 +119,23 @@ func TestRolePermissionActions(t *testing.T) {
 	var role Role
 	role.ID = roleID
 
-	ok, resp, err := client.Roles.AddRolePermission(role, "GROUP.READ")
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
+	_, resp, err := client.Roles.AddRolePermission(role, "GROUP.READ")
+	if !assert.Nil(t, err) {
+		return
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Expected permission to be added")
-	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	ok, resp, err = client.Roles.RemoveRolePermission(role, "GROUP.READ")
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
+	_, resp, err = client.Roles.RemoveRolePermission(role, "GROUP.READ")
+	if !assert.Nil(t, err) {
+		return
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
+	if !assert.NotNil(t, resp) {
+		return
 	}
-	if !ok {
-		t.Errorf("Expected permission to be removed")
-	}
-
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
 func TestGetRolesByGroupID(t *testing.T) {
