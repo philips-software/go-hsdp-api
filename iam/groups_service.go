@@ -1,7 +1,7 @@
 package iam
 
 import (
-	"fmt"
+	"encoding/json"
 	"io"
 	"net/http"
 
@@ -50,65 +50,28 @@ func (g *GroupsService) GetGroupByID(id string) (*Group, *Response, error) {
 }
 
 // GetGroups retrieves all groups
-func (g *GroupsService) GetGroups(opt *GetGroupOptions, options ...OptionFunc) (*[]Group, *Response, error) {
+func (g *GroupsService) GetGroups(opt *GetGroupOptions, options ...OptionFunc) (*[]GroupResource, *Response, error) {
 	req, err := g.client.newRequest(IDM, "GET", "authorize/identity/Group", opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("api-version", groupAPIVersion)
 
-	var bundleResponse struct {
-		Total int `json:"total"`
-		Entry []struct {
-			Resource struct {
-				ID string `json:"_id"`
-			} `json:"resource"`
-		} `json:"entry"`
-	}
+	var bundleResponse internal.Bundle
+	var groups []GroupResource
 
 	resp, err := g.client.do(req, &bundleResponse)
 	if err != nil {
 		return nil, resp, err
 	}
-	if bundleResponse.Total == 0 {
-		return nil, resp, ErrNotFound
-	}
-	var groups []Group
 	for _, gr := range bundleResponse.Entry {
-		group, resp, err := g.GetGroupByID(gr.Resource.ID)
-		if err != nil {
-			return nil, resp, fmt.Errorf("GetGroups: GetGroupByID: %w", err)
+		var groupResource GroupResource
+		err := json.Unmarshal(gr.Resource, &groupResource)
+		if err == nil {
+			groups = append(groups, groupResource)
 		}
-		groups = append(groups, *group)
 	}
 	return &groups, resp, nil
-}
-
-// GetGroup retrieves a Group entity based on the values passed in GetGroupOptions
-func (g *GroupsService) GetGroup(opt *GetGroupOptions, options ...OptionFunc) (*Group, *Response, error) {
-	req, err := g.client.newRequest(IDM, "GET", "authorize/identity/Group", opt, options)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("api-version", groupAPIVersion)
-
-	var bundleResponse struct {
-		Total int `json:"total"`
-		Entry []struct {
-			Resource struct {
-				ID string `json:"_id"`
-			} `json:"resource"`
-		} `json:"entry"`
-	}
-
-	resp, err := g.client.do(req, &bundleResponse)
-	if err != nil {
-		return nil, resp, err
-	}
-	if bundleResponse.Total == 0 {
-		return nil, resp, ErrNotFound
-	}
-	return g.GetGroupByID(bundleResponse.Entry[0].Resource.ID)
 }
 
 // CreateGroup creates a Group

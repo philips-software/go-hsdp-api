@@ -7,3 +7,12 @@ type Group struct {
 	Description          string `json:"description,omitempty" validate:""`
 	ManagingOrganization string `json:"managingOrganization,omitempty" validate:"required"`
 }
+
+// GroupResource is the resource response of a Group search operation
+type GroupResource struct {
+	ID               string `json:"_id"`
+	ResourceType     string `json:"resourceType"`
+	GroupName        string `json:"groupName"`
+	OrgID            string `json:"orgId"`
+	GroupDescription string `json:"groupDescription"`
+}
