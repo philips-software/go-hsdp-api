@@ -646,21 +646,21 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 	})
 	var group Group
 	group.ID = groupID
-	ok, resp, err := client.Groups.RemoveServices(group, identityID)
+	_, resp, err := client.Groups.RemoveServices(group, identityID)
 	assert.NotNil(t, resp)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	ok, resp, err = client.Groups.RemoveServices(group, "foo")
+	_, resp, err = client.Groups.RemoveServices(group, "foo")
 	assert.NotNil(t, resp)
 	assert.NotNil(t, err)
 
-	ok, resp, err = client.Groups.RemoveDevices(group, identityID)
+	_, resp, err = client.Groups.RemoveDevices(group, identityID)
 	assert.NotNil(t, resp)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	ok, resp, err = client.Groups.RemoveDevices(group, "foo")
+	ok, resp, err := client.Groups.RemoveDevices(group, "foo")
 	assert.NotNil(t, resp)
 	assert.NotNil(t, err)
 	assert.Nil(t, ok)
