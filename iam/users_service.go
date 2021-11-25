@@ -328,10 +328,10 @@ func (u *UsersService) GetUserByID(uuid string) (*User, *Response, error) {
 
 	resp, err := u.client.do(req, &responseStruct)
 	if err != nil {
-		return nil, resp, err
+		return nil, resp, fmt.Errorf("GetUserByID('%s'): %w", uuid, err)
 	}
 	if responseStruct.Total == 0 {
-		return nil, resp, fmt.Errorf("GetUserByID: %w", ErrEmptyResults)
+		return nil, resp, fmt.Errorf("GetUserByID('%s'): %w", uuid, ErrEmptyResults)
 	}
 	return &responseStruct.Entry[0], resp, nil
 }
