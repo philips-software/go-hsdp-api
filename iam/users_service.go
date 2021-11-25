@@ -88,20 +88,23 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 	if err != nil {
 		return nil, resp, err
 	}
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
-	if !ok {
-		return nil, resp, ErrCouldNoReadResourceAfterCreate
+	if resp.StatusCode == http.StatusCreated {
+		// Brand-new user
+		var id string
+		count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/User/%s", &id)
+		if err != nil {
+			return nil, resp, ErrCouldNoReadResourceAfterCreate
+		}
+		if count == 0 {
+			return nil, resp, ErrCouldNoReadResourceAfterCreate
+		}
+		return u.GetUserByID(id)
 	}
-	// Retrieve user details
-	var id string
-	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/User/%s", &id)
-	if err != nil {
-		return nil, resp, ErrCouldNoReadResourceAfterCreate
+	if resp.StatusCode != http.StatusOK {
+		return nil, resp, fmt.Errorf("unexpected StatusCode '%d' during user create", resp.StatusCode)
 	}
-	if count == 0 {
-		return nil, resp, ErrCouldNoReadResourceAfterCreate
-	}
-	return u.GetUserByID(id)
+	// HTTP 200
+	return u.GetUserByID(person.LoginID)
 }
 
 // DeleteUser deletes the  IAM user.

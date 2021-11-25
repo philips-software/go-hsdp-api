@@ -149,6 +149,151 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 	assert.Equal(t, loginID, user.LoginID)
 }
 
+func TestCreateAlreadyExists(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	newUserUUID := "867128a6-0e02-431c-ba1e-9e764436dae4"
+	loginID := "loafoe"
+	email := "foo@bar.com"
+	firstName := "La"
+	lastName := "Foe"
+
+	muxIDM.HandleFunc("/authorize/identity/User", func(w http.ResponseWriter, r *http.Request) {
+		if auth := r.Header.Get("Authorization"); auth != "" {
+			t.Errorf("No Authorization header expected, Got: %s", auth)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		switch r.Method {
+		case "POST":
+			var person Person
+			body, _ := ioutil.ReadAll(r.Body)
+			err := json.Unmarshal(body, &person)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "severity": "information",
+      "code": "informational",
+      "details": {
+        "text": "Verification Email has been sent."
+      }
+    }
+  ]
+}`)
+		case "GET":
+			userID := r.URL.Query().Get("userId")
+			if userID == "" {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			if userID != loginID {
+				_, _ = io.WriteString(w, `{
+  "total": 0,
+  "entry": []
+}`)
+				return
+			}
+			_, _ = io.WriteString(w, `{
+  "total": 1,
+  "entry": [
+    {
+      "preferredLanguage": "en-US",
+      "loginId": "`+loginID+`",
+      "emailAddress": "`+email+`",
+      "id": "`+newUserUUID+`",
+      "managingOrganization": "c29cdb88-7cda-4fc1-af8b-ee5947659958",
+      "name": {
+        "given": "`+firstName+`",
+        "family": "`+lastName+`"
+      },
+      "memberships": [
+        {
+          "organizationId": "c29cdb88-7cda-4fc1-af8b-ee5947659958",
+          "organizationName": "Pawnee",
+          "roles": [
+            "ANALYZE",
+            "S3CREDSADMINROLE",
+            "ADMIN"
+          ],
+          "groups": [
+            "S3CredsAdminGroup",
+            "AdminGroup"
+          ]
+        },
+        {
+          "organizationId": "d4be75cc-e81b-4d7d-b034-baf6f3f10792",
+          "organizationName": "Eagleton",
+          "roles": [
+            "LOGUSER"
+          ],
+          "groups": [
+            "LogUserGroup"
+          ]
+        }
+      ],
+      "passwordStatus": {
+        "passwordExpiresOn": "2022-02-04T10:07:55Z",
+        "passwordChangedOn": "2020-02-15T10:07:55Z"
+      },
+      "accountStatus": {
+        "mfaStatus": "NOTREQUIRED",
+        "lastLoginTime": "2020-05-09T12:27:41Z",
+        "emailVerified": true,
+        "numberOfInvalidAttempt": 0,
+        "disabled": false
+      },
+      "consentedApps": [
+        "default default default"
+      ]
+    }
+  ]
+}`)
+		}
+
+	})
+	person := Person{
+		ResourceType: "Person",
+		LoginID:      loginID,
+		Name: Name{
+			Family: lastName,
+			Given:  firstName,
+		},
+		Telecom: []TelecomEntry{
+			{
+				System: "mobile",
+				Value:  "3112345678",
+			},
+			{
+				System: "email",
+				Value:  "john@doe.com",
+			},
+		},
+		IsAgeValidated: "true",
+	}
+	user, resp, err := client.Users.CreateUser(person)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	if !assert.NotNil(t, user) {
+		return
+	}
+	assert.Equal(t, newUserUUID, user.ID)
+	assert.Equal(t, loginID, user.LoginID)
+}
+
 func TestDeleteUser(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
