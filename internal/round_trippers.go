@@ -86,10 +86,11 @@ func NewLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *LoggingRo
 }
 
 func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+	// We should use a mutex here
 	localID := rt.id
 	rt.id++
 
-	id := fmt.Sprintf("%s-%d", rt.prefix, localID)
+	id := fmt.Sprintf("%s-%05d", rt.prefix, localID)
 	if rt.logFile != nil {
 		out := ""
 		dumped, err := httputil.DumpRequest(req, true)
