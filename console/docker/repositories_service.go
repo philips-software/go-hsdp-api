@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/hasura/go-graphql-client"
@@ -109,6 +110,21 @@ func (r *RepositoriesService) GetRepository(ctx context.Context, namespaceId, na
 		return nil, err
 	}
 	return &query.Repository, nil
+}
+
+// GetLatestTag returns the tag that was most recently updated
+func (r *RepositoriesService) GetLatestTag(ctx context.Context, repositoryId string) (*Tag, error) {
+	tags, err := r.GetTags(ctx, repositoryId)
+	if err != nil {
+		return nil, err
+	}
+	if len(*tags) == 0 {
+		return nil, fmt.Errorf("no tags found")
+	}
+	sort.SliceStable(*tags, func(i, j int) bool {
+		return (*tags)[i].UpdatedAt.After((*tags)[j].UpdatedAt)
+	})
+	return &((*tags)[0]), nil
 }
 
 func (r *RepositoriesService) GetTags(ctx context.Context, repositoryId string) (*[]Tag, error) {
