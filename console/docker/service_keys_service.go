@@ -52,7 +52,10 @@ func (a *ServiceKeysService) GetServiceKeyByID(ctx context.Context, id int) (*Se
 		"keyId": graphql.Int(id),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("service key read: %w", err)
+		// Unfortunately, some regions did not receive the fix:
+		// https://github.com/philips-internal/hsdp-docker-api/pull/3
+		// So we fall back to the old behaviour until every region is synced up
+		return a.fallbackGetServiceByKeyID(ctx, id)
 	}
 	return &query.ServiceKeyNode, nil
 }
@@ -89,4 +92,17 @@ func (a *ServiceKeysService) DeleteServiceKey(ctx context.Context, key ServiceKe
 		return fmt.Errorf("failed to delete serviceKey")
 	}
 	return nil
+}
+
+func (a *ServiceKeysService) fallbackGetServiceByKeyID(ctx context.Context, id int) (*ServiceKeyNode, error) {
+	keys, err := a.GetServiceKeys(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, k := range *keys {
+		if k.ID == id {
+			return &k, nil
+		}
+	}
+	return nil, fmt.Errorf("fallback serviceKey(id: $id) did not find a match for '%d'", id)
 }
