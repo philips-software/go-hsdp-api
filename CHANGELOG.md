@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.51.2
+
+- Docker Service Keys: add fallback until fixed Docker API is deployed to all regions
+- MDM: Fix application and proposition update calls
+
 ## v0.51.1
 
 - Docker: Add GetLatestTag
