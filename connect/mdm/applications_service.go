@@ -108,7 +108,7 @@ func (a *ApplicationsService) UpdateApplication(app Application) (*Application, 
 	if err := a.validate.Struct(app); err != nil {
 		return nil, nil, err
 	}
-	req, err := a.NewRequest(http.MethodPost, "/Application", &app, nil)
+	req, err := a.NewRequest(http.MethodPut, "/Application/"+app.ID, app, nil)
 	if err != nil {
 		return nil, nil, err
 	}

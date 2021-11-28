@@ -131,7 +131,7 @@ func (p *PropositionsService) UpdateProposition(prop Proposition) (*Proposition,
 	if err := p.validate.Struct(prop); err != nil {
 		return nil, nil, err
 	}
-	req, err := p.NewRequest(http.MethodPut, "/Proposition", &prop, nil)
+	req, err := p.NewRequest(http.MethodPut, "/Proposition/"+prop.ID, prop, nil)
 	if err != nil {
 		return nil, nil, err
 	}
