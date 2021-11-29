@@ -46,6 +46,9 @@ type Client struct {
 	// User agent used when communicating with the HSDP Notification API
 	UserAgent string
 
+	systemIDM string
+	systemIAM string
+
 	debugFile *os.File
 	validate  *validator.Validate
 
@@ -88,6 +91,12 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 
+	if baseIDM := c.BaseIDMURL(); baseIDM != nil {
+		c.systemIDM = baseIDM.String() + "/authorize/identity"
+	}
+	if baseIAM := c.BaseIAMURL(); baseIAM != nil {
+		c.systemIAM = baseIAM.String()
+	}
 	c.Propositions = &PropositionsService{Client: c, validate: validator.New()}
 	c.Applications = &ApplicationsService{Client: c, validate: validator.New()}
 	c.Regions = &RegionsService{Client: c}
