@@ -104,9 +104,9 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 			}
 		}
 		if err != nil {
-			out = fmt.Sprintf("[%s %s] --- Request dump error: %v\n", now, id, err)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request dump error: %v\n", now, id, err)
 		} else {
-			out = fmt.Sprintf("[%s %s] --- Request start ---\n%s\n[go-hsdp-api %s] Request end ---\n", now, id, filtered, id)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request start ---\n%s\n[go-hsdp-api %s] request end ---\n", now, id, filtered, id)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
@@ -127,9 +127,9 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 			}
 		}
 		if err != nil {
-			out = fmt.Sprintf("[%s %s] --- Response dump error: %v\n", now, id, err)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- response dump error: %v\n", now, id, err)
 		} else {
-			out = fmt.Sprintf("[%s %s] --- Response start ---\n%s\n[go-hsdp-api %s] --- Response end ---\n", now, id, filtered, id)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- response start ---\n%s\n[go-hsdp-api %s] --- response end ---\n", now, id, filtered, id)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
