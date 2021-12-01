@@ -106,7 +106,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 		if err != nil {
 			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request dump error: %v\n", id, now, err)
 		} else {
-			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request start ---\n%s\n[go-hsdp-api %s %s] request end ---\n", id, now, filtered, id, now)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request start ---\n%s\n[go-hsdp-api %s %s] --- request end ---\n", id, now, filtered, id, now)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
