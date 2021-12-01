@@ -94,7 +94,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 
 	id := fmt.Sprintf("%s-%05d", rt.prefix, localID)
 	if rt.logFile != nil {
-		now := time.Now().Format(time.RFC3339Nano)
+		now := time.Now().UTC().Format(time.RFC3339Nano)
 		out := ""
 		dumped, err := httputil.DumpRequest(req, true)
 		filtered := string(dumped)
@@ -104,9 +104,9 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 			}
 		}
 		if err != nil {
-			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request dump error: %v\n", now, id, err)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request dump error: %v\n", id, now, err)
 		} else {
-			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request start ---\n%s\n[go-hsdp-api %s] request end ---\n", now, id, filtered, id)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request start ---\n%s\n[go-hsdp-api %s] request end ---\n", id, now, filtered, id)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
@@ -117,7 +117,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 	}
 
 	if rt.logFile != nil {
-		now := time.Now().Format(time.RFC3339Nano)
+		now := time.Now().UTC().Format(time.RFC3339Nano)
 		out := ""
 		dumped, err := httputil.DumpResponse(resp, true)
 		filtered := string(dumped)
@@ -127,9 +127,9 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 			}
 		}
 		if err != nil {
-			out = fmt.Sprintf("[go-hsdp-api %s %s] --- response dump error: %v\n", now, id, err)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- response dump error: %v\n", id, now, err)
 		} else {
-			out = fmt.Sprintf("[go-hsdp-api %s %s] --- response start ---\n%s\n[go-hsdp-api %s] --- response end ---\n", now, id, filtered, id)
+			out = fmt.Sprintf("[go-hsdp-api %s %s] --- response start ---\n%s\n[go-hsdp-api %s] --- response end ---\n", id, now, filtered, id)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
