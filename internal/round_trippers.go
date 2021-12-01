@@ -6,6 +6,7 @@ import (
 	"net/http/httputil"
 	"os"
 	"regexp"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -93,6 +94,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 
 	id := fmt.Sprintf("%s-%05d", rt.prefix, localID)
 	if rt.logFile != nil {
+		now := time.Now().Format(time.RFC3339Nano)
 		out := ""
 		dumped, err := httputil.DumpRequest(req, true)
 		filtered := string(dumped)
@@ -102,9 +104,9 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 			}
 		}
 		if err != nil {
-			out = fmt.Sprintf("[go-hsdp-api %s] --- Request dump error: %v\n", id, err)
+			out = fmt.Sprintf("[%s %s] --- Request dump error: %v\n", now, id, err)
 		} else {
-			out = fmt.Sprintf("[go-hsdp-api %s] --- Request start ---\n%s\n[go-hsdp-api %s] Request end ---\n", id, filtered, id)
+			out = fmt.Sprintf("[%s %s] --- Request start ---\n%s\n[go-hsdp-api %s] Request end ---\n", now, id, filtered, id)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
@@ -115,6 +117,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 	}
 
 	if rt.logFile != nil {
+		now := time.Now().Format(time.RFC3339Nano)
 		out := ""
 		dumped, err := httputil.DumpResponse(resp, true)
 		filtered := string(dumped)
@@ -124,9 +127,9 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 			}
 		}
 		if err != nil {
-			out = fmt.Sprintf("[go-hsdp-api %s] --- Response dump error: %v\n", id, err)
+			out = fmt.Sprintf("[%s %s] --- Response dump error: %v\n", now, id, err)
 		} else {
-			out = fmt.Sprintf("[go-hsdp-api %s] --- Response start ---\n%s\n[go-hsdp-api %s] --- Response end ---\n", id, filtered, id)
+			out = fmt.Sprintf("[%s %s] --- Response start ---\n%s\n[go-hsdp-api %s] --- Response end ---\n", now, id, filtered, id)
 		}
 		_, _ = rt.logFile.WriteString(out)
 	}
