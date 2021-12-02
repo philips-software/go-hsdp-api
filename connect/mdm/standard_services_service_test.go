@@ -134,7 +134,7 @@ func TestStandardServiceCRUD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	assert.Equal(t, name, created.Name)
 
 	created, resp, err = mdmClient.StandardServices.GetStandardServiceByID(created.ID)

@@ -55,14 +55,13 @@ func (c *AuthenticationMethodsService) Create(ac AuthenticationMethod) (*Authent
 
 	resp, err := c.Do(req, &created)
 
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
-	if !ok {
+	if err != nil {
 		return nil, resp, err
 	}
-	if resp == nil {
-		return nil, resp, fmt.Errorf("create (resp=nil): %w", ErrCouldNoReadResourceAfterCreate)
+	if created.ID == "" {
+		return nil, resp, fmt.Errorf("the 'ID' field is missing")
 	}
-	return c.GetByID(created.ID)
+	return &created, resp, nil
 }
 
 // Delete deletes the given ServiceAction

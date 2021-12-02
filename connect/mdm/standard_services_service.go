@@ -56,19 +56,17 @@ func (c *StandardServicesService) CreateStandardService(ac StandardService) (*St
 	req, _ := c.NewRequest(http.MethodPost, "/StandardService", ac, nil)
 	req.Header.Set("api-version", standardServiceAPIVersion)
 
-	var createdService StandardService
+	var created StandardService
 
-	resp, err := c.Do(req, &createdService)
+	resp, err := c.Do(req, &created)
 
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
-	if !ok {
+	if err != nil {
 		return nil, resp, err
 	}
-	if resp == nil {
-		return nil, resp, fmt.Errorf("CreateStandardService (resp=nil): %w", ErrCouldNoReadResourceAfterCreate)
+	if created.ID == "" {
+		return nil, resp, fmt.Errorf("the 'ID' field is missing")
 	}
-
-	return c.GetStandardServiceByID(createdService.ID)
+	return &created, resp, nil
 }
 
 // DeleteStandardService deletes the given Client
