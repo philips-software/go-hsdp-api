@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.51.8
+
+- MDM: Improve create calls
+- Log: mask JSON password fields
+- Log: add UTC timestamp to debug log headers
+
 ## v0.51.3
 
 - Core: print timestamps in debug log
