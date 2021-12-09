@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-
-	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 type Notification struct {
@@ -37,8 +35,8 @@ func (c *ConfigService) CreateNotification(repo Notification, opt *QueryOptions,
 	return &createdRepo, resp, nil
 }
 
-// GetNotifications search for notifications
-func (c *ConfigService) GetNotifications(opt *QueryOptions, options ...OptionFunc) (*[]Notification, *Response, error) {
+// GetNotification gets the notification settings of a given organization
+func (c *ConfigService) GetNotification(opt *QueryOptions, options ...OptionFunc) (*Notification, *Response, error) {
 	bodyBytes := []byte("")
 	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/notification", bodyBytes, nil, options...)
 	if err != nil {
@@ -48,17 +46,10 @@ func (c *ConfigService) GetNotifications(opt *QueryOptions, options ...OptionFun
 		req.Header.Set("OrganizationID", *opt.OrganizationID)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	var bundleResponse internal.Bundle
-	resp, err := c.client.do(req, &bundleResponse)
+	var resource Notification
+	resp, err := c.client.do(req, &resource)
 	if err != nil {
 		return nil, resp, err
 	}
-	var notifications []Notification
-	for _, c := range bundleResponse.Entry {
-		var resource Notification
-		if err := json.Unmarshal(c.Resource, &resource); err == nil {
-			notifications = append(notifications, resource)
-		}
-	}
-	return &notifications, resp, nil
+	return &resource, resp, nil
 }
