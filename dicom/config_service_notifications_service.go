@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+
+	"github.com/philips-software/go-hsdp-api/internal"
 )
 
 type Notification struct {
@@ -46,13 +48,17 @@ func (c *ConfigService) GetNotifications(opt *QueryOptions, options ...OptionFun
 		req.Header.Set("OrganizationID", *opt.OrganizationID)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	var repos []Notification
-	resp, err := c.client.do(req, &repos)
-	if (err != nil && err != io.EOF) || resp == nil {
-		if resp == nil && err != nil {
-			err = fmt.Errorf("GetRepositories: %w", ErrEmptyResult)
-		}
+	var bundleResponse internal.Bundle
+	resp, err := c.client.do(req, &bundleResponse)
+	if err != nil {
 		return nil, resp, err
 	}
-	return &repos, resp, nil
+	var notifications []Notification
+	for _, c := range bundleResponse.Entry {
+		var resource Notification
+		if err := json.Unmarshal(c.Resource, &resource); err == nil {
+			notifications = append(notifications, resource)
+		}
+	}
+	return &notifications, resp, nil
 }
