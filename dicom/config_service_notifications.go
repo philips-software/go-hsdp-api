@@ -10,7 +10,7 @@ type Notification struct {
 	ID                    string `json:"id,omitempty"`
 	Enabled               bool   `json:"enabled" validate:"required"`
 	Endpoint              string `json:"endPoint" validate:"required"`
-	DefaultOrganizationID string `json:"defaultOrganizationID,omitempty"`
+	DefaultOrganizationID string `json:"defaultOrganizationId,omitempty"`
 }
 
 // CreateNotification creates a notification
