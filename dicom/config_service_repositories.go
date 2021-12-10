@@ -9,9 +9,15 @@ import (
 )
 
 type Repository struct {
-	ID                  string `json:"id,omitempty"`
-	OrganizationID      string `json:"organizationId"`
-	ActiveObjectStoreID string `json:"activeObjectStoreId"`
+	ID                  string                  `json:"id,omitempty"`
+	OrganizationID      string                  `json:"organizationId"`
+	ActiveObjectStoreID string                  `json:"activeObjectStoreId"`
+	Notification        *RepositoryNotification `json:"notification,omitempty"`
+}
+
+type RepositoryNotification struct {
+	Enabled        bool   `json:"enabled"`
+	OrganizationID string `json:"organizationId"`
 }
 
 // CreateRepository
@@ -58,7 +64,7 @@ func (c *ConfigService) GetRepositories(opt *QueryOptions, options ...OptionFunc
 	return &repos, resp, nil
 }
 
-// GetObjectStore
+// GetRepository
 func (c *ConfigService) GetRepository(id string, opt *QueryOptions, options ...OptionFunc) (*Repository, *Response, error) {
 	bodyBytes := []byte("")
 	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories/"+id, bodyBytes, opt, options...)
@@ -77,7 +83,7 @@ func (c *ConfigService) GetRepository(id string, opt *QueryOptions, options ...O
 	return &repo, resp, nil
 }
 
-// DeleteObjectStore
+// DeleteRepository
 func (c *ConfigService) DeleteRepository(repo Repository, opt *QueryOptions, options ...OptionFunc) (bool, *Response, error) {
 	bodyBytes := []byte("")
 	req, err := c.client.newDICOMRequest("DELETE", "config/dicom/"+c.profile+"/dicomRepositories/"+repo.ID, bodyBytes, opt, options...)
