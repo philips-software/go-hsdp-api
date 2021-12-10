@@ -46,10 +46,13 @@ func (c *ConfigService) GetNotification(opt *QueryOptions, options ...OptionFunc
 		req.Header.Set("OrganizationID", *opt.OrganizationID)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	var resource Notification
-	resp, err := c.client.do(req, &resource)
+	var resources []Notification
+	resp, err := c.client.do(req, &resources)
 	if err != nil {
 		return nil, resp, err
 	}
-	return &resource, resp, nil
+	if len(resources) == 0 {
+		return nil, resp, fmt.Errorf("notification not found")
+	}
+	return &resources[0], resp, nil
 }
