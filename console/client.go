@@ -329,7 +329,7 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		u = *c.baseConsoleURL
 		u.Opaque = c.baseConsoleURL.Path + path
 	default:
-		return nil, fmt.Errorf("Unknown endpoint: `%s`", endpoint)
+		return nil, fmt.Errorf("unknown endpoint: `%s`", endpoint)
 	}
 
 	if opt != nil {

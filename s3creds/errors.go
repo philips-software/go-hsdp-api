@@ -18,7 +18,7 @@ var (
 	ErrNotImplementedByHSDP           = errors.New("method not implemented by HSDP")
 	ErrEmptyResults                   = errors.New("empty results")
 	ErrOperationFailed                = errors.New("operation failed")
-	ErrBaseURLCannotBeEmpty           = errors.New("Credentials base URL cannot be empty")
+	ErrBaseURLCannotBeEmpty           = errors.New("credentials base URL cannot be empty")
 	ErrCouldNoReadResourceAfterCreate = errors.New("could not read resource after create")
 	ErrEmptyResult                    = errors.New("empty result")
 )

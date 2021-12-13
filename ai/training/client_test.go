@@ -3,11 +3,9 @@ package training_test
 import (
 	"io"
 	"io/ioutil"
-	_ "io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	_ "os"
 	"path"
 	"testing"
 

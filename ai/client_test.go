@@ -3,11 +3,9 @@ package ai_test
 import (
 	"io"
 	"io/ioutil"
-	_ "io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	_ "os"
 	"testing"
 
 	"github.com/philips-software/go-hsdp-api/ai"
