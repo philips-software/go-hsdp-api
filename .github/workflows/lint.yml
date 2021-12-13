@@ -19,3 +19,5 @@ jobs:
         with:
           version: latest
           args: --timeout 5m0s
+      - name: staticcheck
+        uses: dominikh/staticcheck-action@v1.1.0
