@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+
+	"github.com/google/uuid"
 )
 
 type Notification struct {
@@ -31,6 +33,9 @@ func (c *ConfigService) CreateNotification(repo Notification, opt *QueryOptions,
 			err = fmt.Errorf("CreateNotification: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
+	}
+	if createdRepo.ID == "" { // This API is inconsistent: ¯\_(ツ)_/¯
+		createdRepo.ID = uuid.NewString()
 	}
 	return &createdRepo, resp, nil
 }
