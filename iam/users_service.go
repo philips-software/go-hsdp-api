@@ -149,6 +149,7 @@ func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) 
 }
 
 // ChangeLoginID changes the loginID
+// Link: https://www.hsdp.io/documentation/identity-and-access-management-iam/api-documents/resource-reference-api/user-api-v2#/User%20Management/post_User__id___change_loginid
 func (u *UsersService) ChangeLoginID(user Person, newLoginID string) (bool, *Response, error) {
 	body := &ChangeLoginIDRequest{
 		LoginID: newLoginID,
