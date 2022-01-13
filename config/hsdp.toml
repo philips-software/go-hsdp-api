@@ -8,7 +8,7 @@
 # the expected values.
 #
 # Also it goes without saying, but we will say it anyway:
-# It is your responsibilty to ensure correct configuration of
+# It is your responsibility to ensure correct configuration of
 # your deployments.
 #
 # If you spot errors or incomplete information please raise a
@@ -32,7 +32,7 @@
 #         iam
 #	  idm
 #         cartel
-#     Environemnt production
+#     Environment production
 #       Service
 #         iam
 #         idm
@@ -45,7 +45,7 @@
 #         iam
 #         idm
 #         has
-#     Environemnt production
+#     Environment production
 #       Service
 #         iam
 #         idm
@@ -56,7 +56,7 @@
 # Services can be tied to a region or an environment
 # We also anticipate global services at some point
 # Example of a region bound service: Cloud foundry
-# Example of a enivronment bound service: IAM
+# Example of a environment bound service: IAM
 
 # Service Cloud foundry
 [region.us-east.service.cf]
@@ -74,7 +74,8 @@ domain = "ap3.hsdp.io"
 [region.ca1.service.cf]
 url = "https://api.sys.ca1.hsdp.io"
 domain = "ca1.hsdp.io"
-
+[region.apac2.service.cf]
+url = "https://api.ap-ne.philips-healthsuite.com"
 
 # Service DOCKER-REGISTRY
 [region.us-east.service.docker-registry]
@@ -92,6 +93,9 @@ host = "docker.ap3.hsdp.io"
 [region.ca1.service.docker-registry]
 url = "https://console.ca1.hsdp.io/api/docker/graphql"
 host = "docker.ca1.hsdp.io"
+[region.apac2.service.docker-registry]
+url = "https://console.ap2.hsdp.io/api/docker/graphql"
+host = "docker.ap2.hsdp.io"
 
 # Service CONSOLE
 [region.us-east.service.console]
@@ -104,6 +108,8 @@ url = "https://console.sa1.hsdp.io"
 url = "https://console.ap3.hsdp.io"
 [region.ca1.service.console]
 url = "https://console.ca1.hsdp.io"
+[region.apac2.service.console]
+url = "https://console.ap2.hsdp.io"
 
 # Service STL
 [region.dev.service.stl]
@@ -129,6 +135,8 @@ url = "https://uaa.sys.ap3.hsdp.io"
 url = "https://uaa.cloud.phsdp.com"
 [region.ca1.service.uaa]
 url = "https://uaa.sys.ca1.hsdp.io"
+[region.apac2.service.uaa]
+url = "https://uaa.ap-ne.philips-healthsuite.com"
 
 # Notification
 [region.us-east.env.client-test.service.notification]
@@ -201,6 +209,10 @@ host = "cartel-eu1.cloud.phsdp.com"
 host = "cartel-sa1.cloud.phsdp.com"
 [region.ca1.service.cartel]
 host = "cartel-ca1.cloud.phsdp.com"
+[region.apac2.service.cartel]
+host = "cartel-apac2.cloud.phsdp.com"
+[region.apac3.service.cartel]
+host = "cartel-apac3.cloud.phsdp.com"
 
 # Service GATEWAY
 [region.dev.service.gateway]
@@ -221,6 +233,9 @@ domain = "apac3.phsdp.com"
 [region.ca1.service.gateway]
 host = "gw-ca1.phsdp.com"
 domain = "ca1.phsdp.com"
+[region.apac2.service.gateway]
+host = "gw-apac2.phsdp.com"
+domain = "apac2.phsdp.com"
 
 # Service S3CREDS
 [region.us-east.env.dev.service.s3creds]
