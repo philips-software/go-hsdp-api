@@ -1,5 +1,29 @@
 {
   "region": {
+    "apac2": {
+      "service": {
+        "cartel": {
+          "host": "cartel-apac2.cloud.phsdp.com"
+        },
+        "cf": {
+          "url": "https://api.ap-ne.philips-healthsuite.com"
+        },
+        "console": {
+          "url": "https://console.ap2.hsdp.io"
+        },
+        "docker-registry": {
+          "host": "docker.ap2.hsdp.io",
+          "url": "https://console.ap2.hsdp.io/api/docker/graphql"
+        },
+        "gateway": {
+          "domain": "apac2.phsdp.com",
+          "host": "gw-apac2.phsdp.com"
+        },
+        "uaa": {
+          "url": "https://uaa.ap-ne.philips-healthsuite.com"
+        }
+      }
+    },
     "apac3": {
       "env": {
         "prod": {
@@ -33,6 +57,9 @@
         }
       },
       "service": {
+        "cartel": {
+          "host": "cartel-apac3.cloud.phsdp.com"
+        },
         "cf": {
           "domain": "ap3.hsdp.io",
           "url": "https://api.sys.ap3.hsdp.io"
