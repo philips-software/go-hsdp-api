@@ -20,9 +20,14 @@ var (
 
 // GetBucketOptions struct describes search criteria for looking up Bucket
 type GetBucketOptions struct {
-	ID            *string `url:"_id,omitempty"`
-	Name          *string `url:"name,omitempty"`
-	ApplicationID *string `url:"applicationId,omitempty"`
+	ID                  *string `url:"_id,omitempty"`
+	Name                *string `url:"name,omitempty"`
+	PropositionID       *string `url:"propositionId,omitempty"`
+	ReplicationRegionID *string `url:"replicationRegionId,omitempty"`
+	DefaultRegionID     *string `url:"defaultRegionId,omitempty"`
+	LastUpdated         *string `url:"_lastUpdated,omitempty"`
+	ReverseInclude      *string `url:"_revinclude,omitempty"`
+	Include             *string `url:"_include,omitempty"`
 }
 
 type Bucket struct {
