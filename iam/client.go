@@ -230,6 +230,13 @@ func (c *Client) Token() string {
 	return c.token
 }
 
+// ExpireToken expires the token immediately
+func (c *Client) ExpireToken() {
+	c.Lock()
+	defer c.Unlock()
+	c.expiresAt = time.Now()
+}
+
 // TokenRefresh forces a token refresh
 func (c *Client) TokenRefresh() error {
 	c.Lock()
