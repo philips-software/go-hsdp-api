@@ -154,9 +154,12 @@ func (c *Client) newTDRRequest(method, path string, opt interface{}, options []O
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}
-
+	token, err := c.iamClient.Token()
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)

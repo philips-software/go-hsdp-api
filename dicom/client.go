@@ -202,9 +202,12 @@ func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, opt inte
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 	}
-
+	token, err := c.iamClient.Token()
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
+	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("API-Version", APIVersion)
 	if c.config.OrganizationID != "" {
 		req.Header.Set("OrganizationID", c.config.OrganizationID)

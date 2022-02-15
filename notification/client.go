@@ -165,8 +165,12 @@ func (c *Client) newNotificationRequest(method, path string, opt interface{}, op
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}
+	token, err := c.iamClient.Token()
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
+	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("API-Version", APIVersion)
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)

@@ -217,17 +217,18 @@ func (c *Client) accessTokenEndpoint() string {
 }
 
 // Token returns the current token
-func (c *Client) Token() string {
+func (c *Client) Token() (string, error) {
 	now := time.Now().Unix()
 	expires := c.expiresAt.Unix()
 
 	if expires-now < 60 {
-		if c.TokenRefresh() != nil {
-			return ""
+		if err := c.TokenRefresh(); err != nil {
+			return "", err
 		}
 	}
-
-	return c.token
+	c.Lock()
+	defer c.Unlock()
+	return c.token, nil
 }
 
 // ExpireToken expires the token immediately
@@ -472,8 +473,10 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 
 	switch c.tokenType {
 	case OAuthToken:
-		if token := c.Token(); token != "" {
-			req.Header.Set("Authorization", "Bearer "+c.token)
+		if token, err := c.Token(); err == nil {
+			req.Header.Set("Authorizxation", "Bearer "+token)
+		} else {
+			req.Header.Set("X-Token-Error", fmt.Sprintf("%v", err))
 		}
 	}
 	return req, nil

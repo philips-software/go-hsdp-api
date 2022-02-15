@@ -259,7 +259,11 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 			return nil, err
 		}
 	} else {
-		req.Header.Set("Authorization", "Bearer "+c.Token())
+		token, err := c.Token()
+		if err != nil {
+			req.Header.Set("X-Token-Error", fmt.Sprintf("%v", err))
+		}
+		req.Header.Set("Authorization", "Bearer "+token)
 	}
 	return c.performAndParseResponse(req, msgs)
 }

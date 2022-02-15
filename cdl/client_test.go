@@ -21,12 +21,10 @@ var (
 	muxCDL    *http.ServeMux
 	serverCDL *httptest.Server
 
-	iamClient    *iam.Client
-	cdlClient    *cdl.Client
-	cdlTenantID  = "48a0183d-a588-41c2-9979-737d15e9e860"
-	userUUID     = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
-	token        string
-	refreshToken string
+	iamClient   *iam.Client
+	cdlClient   *cdl.Client
+	cdlTenantID = "48a0183d-a588-41c2-9979-737d15e9e860"
+	userUUID    = "e7fecbb2-af8c-47c9-a662-5b046e048bc5"
 )
 
 func setup(t *testing.T) func() {
@@ -38,8 +36,6 @@ func setup(t *testing.T) func() {
 	serverCDL = httptest.NewServer(muxCDL)
 
 	var err error
-	token = "44d20214-7879-4e35-923d-f9d4e01c9746"
-	refreshToken = "31f1a449-ef8e-4bfc-a227-4f2353fde547"
 
 	iamClient, err = iam.NewClient(nil, &iam.Config{
 		OAuth2ClientID: "TestClient",
@@ -154,7 +150,11 @@ func TestLogin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, token, iamClient.Token())
+	accessToken, err := iamClient.Token()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, token, accessToken)
 }
 
 func TestDebug(t *testing.T) {

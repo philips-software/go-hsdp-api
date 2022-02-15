@@ -189,8 +189,11 @@ func (c *Client) newCDRRequest(method, path string, bodyBytes []byte, options []
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 	}
-
-	req.Header.Set("Authorization", "Bearer "+c.iamClient.Token())
+	token, err := c.iamClient.Token()
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("API-Version", APIVersion)
 
 	if c.UserAgent != "" {

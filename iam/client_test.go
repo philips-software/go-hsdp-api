@@ -115,7 +115,11 @@ func TestLogin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, token, client.Token())
+	accessToken, err := client.Token()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, token, accessToken)
 	assert.Equal(t, serverIAM.URL+"/", client.BaseIAMURL().String())
 	assert.Equal(t, serverIDM.URL+"/", client.BaseIDMURL().String())
 	assert.Equal(t, refreshToken, client.RefreshToken())
@@ -182,7 +186,11 @@ func TestCodeLogin(t *testing.T) {
 	})
 	err = client.CodeLogin(authorizationCode, redirectURI)
 	assert.Nilf(t, err, fmt.Sprintf("Unexpected error: %v", err))
-	assert.Equal(t, token, client.Token())
+	accessToken, err := client.Token()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, token, accessToken)
 }
 
 func TestLoginWithScopes(t *testing.T) {
@@ -381,10 +389,12 @@ func TestWithToken(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	if client.WithToken("fooz").Token() != "fooz" {
-		t.Errorf("Unexpected token")
-	}
+	token, err := client.WithToken("fooz").Token()
 
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, "fooz", token)
 }
 
 func TestWithLogin(t *testing.T) {
@@ -394,7 +404,11 @@ func TestWithLogin(t *testing.T) {
 	newClient, err := client.WithLogin("username2", "password")
 	assert.NotNil(t, newClient)
 	assert.Nil(t, err)
-	assert.Equal(t, "55d20214-7879-4e35-923d-f9d4e01c9746", newClient.Token())
+	token, err := newClient.Token()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, "55d20214-7879-4e35-923d-f9d4e01c9746", token)
 	assert.NotEqual(t, client, newClient)
 }
 
@@ -521,7 +535,11 @@ func TestTokenRefresh(t *testing.T) {
 
 	err = client.TokenRefresh()
 	assert.Nilf(t, err, fmt.Sprintf("Unexpected error: %v", err))
-	assert.Equal(t, newToken, client.Token())
+	token, err = client.Token()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, newToken, token)
 	assert.Equal(t, newRefreshToken, client.RefreshToken())
 	httpClient := client.HttpClient()
 	assert.NotNil(t, httpClient)

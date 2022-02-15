@@ -155,7 +155,11 @@ func TestLogin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, token, iamClient.Token())
+	accessToken, err := iamClient.Token()
+	if !assert.Nil(t, err) {
+		return
+	}
+	assert.Equal(t, token, accessToken)
 }
 
 func TestEndpoint(t *testing.T) {
