@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+# v0.61.1
+- IAM: Fix bad typo
+
 ## v0.61.0
 
 - IAM: don't ignore token errors. API breaking chnage!

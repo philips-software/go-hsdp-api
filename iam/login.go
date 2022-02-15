@@ -12,9 +12,17 @@ import (
 // CodeLogin uses the authorization_code grant type to fetch tokens
 func (c *Client) CodeLogin(code string, redirectURI string) error {
 	// Authorize
-	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
+	u := *c.baseIAMURL
+	u.Opaque = c.baseIAMURL.Path + "authorize/oauth2/token"
+
+	req := &http.Request{
+		Method:     "POST",
+		URL:        &u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Host:       u.Host,
 	}
 	form := url.Values{}
 	form.Add("grant_type", "authorization_code")
@@ -73,9 +81,18 @@ func (c *Client) ServiceLogin(service Service) error {
 
 // Login logs in a user with `username` and `password`
 func (c *Client) Login(username, password string) error {
-	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
+	// Authorize
+	u := *c.baseIAMURL
+	u.Opaque = c.baseIAMURL.Path + "authorize/oauth2/token"
+
+	req := &http.Request{
+		Method:     "POST",
+		URL:        &u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Host:       u.Host,
 	}
 	form := url.Values{}
 	form.Add("username", username)
@@ -96,9 +113,18 @@ func (c *Client) Login(username, password string) error {
 // ClientCredentialsLogin logs in using client credentials
 // The client credentials and scopes are expected to passed during configuration of the client
 func (c *Client) ClientCredentialsLogin() error {
-	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/token", nil, nil)
-	if err != nil {
-		return err
+	// Authorize
+	u := *c.baseIAMURL
+	u.Opaque = c.baseIAMURL.Path + "authorize/oauth2/token"
+
+	req := &http.Request{
+		Method:     "POST",
+		URL:        &u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Host:       u.Host,
 	}
 	form := url.Values{}
 	form.Add("grant_type", "client_credentials")

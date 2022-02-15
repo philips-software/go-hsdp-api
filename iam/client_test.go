@@ -214,7 +214,10 @@ func TestLoginWithScopes(t *testing.T) {
 		IDMURL:         serverIDM.URL,
 		Scopes:         []string{"introspect", "cn"},
 	}
-	client, _ = NewClient(nil, cfg)
+	client, err := NewClient(nil, cfg)
+	if !assert.Nil(t, err) {
+		return
+	}
 
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
 
@@ -225,8 +228,8 @@ func TestLoginWithScopes(t *testing.T) {
 		if err := r.ParseForm(); err != nil {
 			t.Fatalf("Unable to parse form")
 		}
-		if strings.Join(r.Form["scope"], " ") != "introspect cn" {
-			t.Fatalf("Expected scope to be `introspect cn` in test")
+		if !assert.Equal(t, "introspect cn", strings.Join(r.Form["scope"], " ")) {
+			return
 		}
 		if strings.Join(r.Form["grant_type"], " ") != "password" {
 			t.Fatalf("Exepcted grant_type to be `password` in test")
@@ -242,7 +245,7 @@ func TestLoginWithScopes(t *testing.T) {
 		}`)
 	})
 
-	err := client.Login("username", "password")
+	err = client.Login("username", "password")
 	assert.Nil(t, err)
 	assert.True(t, client.HasScopes("introspect", "cn"))
 }
@@ -327,6 +330,11 @@ func TestIAMRequest(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	err := client.Login("username", "password")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	req, err := client.newRequest(IAM, "GET", "/foo", nil, nil)
 	if err != nil {
 		t.Errorf("Expected no no errors, got: %v", err)
@@ -334,14 +342,20 @@ func TestIAMRequest(t *testing.T) {
 	if req == nil {
 		t.Errorf("Expected valid request")
 	}
-	req, _ = client.newRequest(IAM, "POST", "/foo", nil, []OptionFunc{
+	req, err = client.newRequest(IAM, "POST", "/foo", nil, []OptionFunc{
 		func(r *http.Request) error {
 			r.Header.Set("Foo", "Bar")
 			return nil
 		},
 	})
+	if !assert.Nil(t, err) {
+		return
+	}
 	if req.Header.Get("Foo") != "Bar" {
 		t.Errorf("Expected OptionFuncs to be processed")
+	}
+	if req.Header.Get("Authorization") == "" {
+		t.Errorf("Expected authorization header")
 	}
 	testErr := errors.New("test error")
 	req, err = client.newRequest(IAM, "POST", "/foo", nil, []OptionFunc{
