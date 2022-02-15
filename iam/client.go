@@ -474,7 +474,7 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 	switch c.tokenType {
 	case OAuthToken:
 		if token, err := c.Token(); err == nil {
-			req.Header.Set("Authorizxation", "Bearer "+token)
+			req.Header.Set("Authorization", "Bearer "+token)
 		} else {
 			req.Header.Set("X-Token-Error", fmt.Sprintf("%v", err))
 		}
