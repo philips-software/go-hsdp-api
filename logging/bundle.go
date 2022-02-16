@@ -2,6 +2,7 @@ package logging
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // Bundle is a FHIR bundle resource
@@ -40,6 +41,7 @@ type Resource struct {
 	LogData             LogData                `json:"logData"`             // Log data
 	Custom              json.RawMessage        `json:"custom,omitempty"`    // Custom log fields
 	Meta                map[string]interface{} `json:"-"`
+	Error               error                  `json:"-"`
 }
 
 // LogData is the payload of a log message
@@ -51,11 +53,27 @@ type LogData struct {
 func (r *Resource) Valid() bool {
 	var u map[string]interface{}
 
-	if r.EventID == "" || r.TransactionID == "" || r.LogTime == "" || r.LogData.Message == "" {
+	if r.EventID == "" {
+		r.Error = fmt.Errorf("EventID field is blank")
 		return false
 	}
-	if len(r.Custom) > 0 && json.Unmarshal(r.Custom, &u) != nil {
+	if r.TransactionID == "" {
+		r.Error = fmt.Errorf("TransactionID field is blank")
 		return false
+	}
+	if r.LogTime == "" {
+		r.Error = fmt.Errorf("LogTime field is blank")
+		return false
+	}
+	if r.LogData.Message == "" {
+		r.Error = fmt.Errorf("LogData.Message field is blank")
+		return false
+	}
+	if len(r.Custom) > 0 {
+		if err := json.Unmarshal(r.Custom, &u); err != nil {
+			r.Error = fmt.Errorf("custom field unmarshal error: %w", err)
+			return false
+		}
 	}
 	return true
 }
