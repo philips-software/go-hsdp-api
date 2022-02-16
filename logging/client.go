@@ -294,7 +294,7 @@ func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*S
 					return storeResp, err
 				}
 				invalidResource := msgs[i]
-				invalidResource.Error = fmt.Errorf("%d: %s", i, entry)
+				invalidResource.Error = fmt.Errorf("issue location %s", entry)
 				invalid[i] = invalidResource
 			}
 		}
