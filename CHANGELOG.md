@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.61.5
+
+- Connect MDM: workaround for query issue
+
 ## v0.61.4
 
 - Logging: improve error message further
