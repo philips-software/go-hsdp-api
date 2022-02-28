@@ -14,6 +14,9 @@ func (c *Client) RemoveUserGroups(instances []string, groups []string) (*UserGro
 			return nil, nil, err
 		}
 		resp, err = c.do(req, &responseBody)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 	return &responseBody, resp, err
 }
