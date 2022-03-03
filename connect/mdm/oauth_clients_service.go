@@ -75,7 +75,7 @@ func (c *OAuthClientsService) CreateOAuthClient(ac OAuthClient) (*OAuthClient, *
 		return nil, resp, fmt.Errorf("CreateOAuthClient (resp=nil): %w", ErrCouldNoReadResourceAfterCreate)
 	}
 
-	return c.GetOAuthClientByID(createdClient.ID)
+	return &createdClient, resp, nil
 }
 
 // DeleteOAuthClient deletes the given Client

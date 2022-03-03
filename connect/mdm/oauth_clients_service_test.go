@@ -163,7 +163,7 @@ func TestClientCRUD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	assert.Equal(t, clientName, created.Name)
 
 	created, resp, err = mdmClient.OAuthClients.GetOAuthClientByID(created.ID)
