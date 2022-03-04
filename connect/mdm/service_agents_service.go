@@ -13,15 +13,15 @@ type ServiceAgentsService struct {
 }
 
 type ServiceAgent struct {
-	ResourceType            string    `json:"resourceType"`
-	ID                      string    `json:"id"`
-	Name                    string    `json:"name"`
-	Description             string    `json:"description"`
-	Configuration           string    `json:"configuration"`
-	DataSubscriberId        Reference `json:"dataSubscriberId"`
-	AuthenticationMethodIds []string  `json:"authenticationMethodIds"`
-	APIVersionSupported     string    `json:"apiVersionSupported"`
-	Meta                    *Meta     `json:"meta"`
+	ResourceType            string      `json:"resourceType"`
+	ID                      string      `json:"id"`
+	Name                    string      `json:"name"`
+	Description             string      `json:"description"`
+	Configuration           string      `json:"configuration"`
+	DataSubscriberId        Reference   `json:"dataSubscriberId"`
+	AuthenticationMethodIds []Reference `json:"authenticationMethodIds"`
+	APIVersionSupported     string      `json:"apiVersionSupported"`
+	Meta                    *Meta       `json:"meta"`
 }
 
 type GetServiceAgentOptions struct {
