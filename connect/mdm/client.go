@@ -76,6 +76,7 @@ type Client struct {
 	DataAdapters                 *DataAdaptersService
 	DataSubscribers              *DataSubscribersService
 	FirmwareDistributionRequests *FirmwareDistributionRequestsService
+	ServiceAgents                *ServiceAgentsService
 }
 
 // NewClient returns a new Discovery client
@@ -121,6 +122,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c.DataAdapters = &DataAdaptersService{Client: c}
 	c.DataSubscribers = &DataSubscribersService{Client: c}
 	c.FirmwareDistributionRequests = &FirmwareDistributionRequestsService{Client: c, validate: validator.New()}
+	c.ServiceAgents = &ServiceAgentsService{Client: c}
 
 	return c, nil
 }
