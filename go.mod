@@ -6,7 +6,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.1.1
 	github.com/evanphx/json-patch/v5 v5.6.0
 	github.com/gin-gonic/gin v1.7.0 // indirect
-	github.com/go-playground/validator/v10 v10.10.0
+	github.com/go-playground/validator/v10 v10.10.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/fhir/go v0.0.0-20201203001644-a2580b6ea022
 	github.com/google/go-querystring v1.1.0
