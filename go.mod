@@ -12,7 +12,7 @@ require (
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/hasura/go-graphql-client v0.6.4
+	github.com/hasura/go-graphql-client v0.6.5
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/philips-software/go-hsdp-signer v1.4.0
 	github.com/stretchr/testify v1.7.0
