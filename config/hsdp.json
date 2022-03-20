@@ -154,6 +154,16 @@
           }
         }
       },
+      "prod": {
+        "service": {
+          "blr": {
+            "url": "https://blobrepository.cn1.iot.philips-healthsuite.com.cn/connect/blobrepository"
+          },
+          "iot": {
+            "url": "wss://aqrsmt9m297sm.ats.iot.cn-north-1.amazonaws.com.cn/mqtt?topic-prefix=prod"
+          }
+        }
+      },
       "service": {
         "vault-proxy": {
           "url": "https://vproxy.cn1.philips-healthsuite.com.cn"
@@ -228,6 +238,9 @@
         },
         "prod": {
           "service": {
+            "blr": {
+              "url": "https://blobrepository-client-test.eu01.connect.hsdp.io/connect/blobrepository"
+            },
             "connect-mdm": {
               "url": "https://connect-mdm.eu-west.philips-healthsuite.com/connect/mdm"
             },
@@ -239,6 +252,9 @@
             },
             "inference": {
               "url": "https://aiinference-service.eu-west.philips-healthsuite.com"
+            },
+            "iot": {
+              "url": "wss://a370yzaa002yx5-ats.iot.eu-west-1.amazonaws.com/mqtt?topic-prefix=prod"
             },
             "kibana": {
               "url": "https://kibana.eu-west.philips-healthsuite.com"
@@ -358,6 +374,9 @@
       "env": {
         "client-test": {
           "service": {
+            "blr": {
+              "url": "https://blobrepository-client-test.us01.connect.hsdp.io/connect/blobrepository"
+            },
             "connect-mdm": {
               "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
             },
@@ -372,6 +391,9 @@
             },
             "inference": {
               "url": "https://client-test-aiinference-service.us-east.philips-healthsuite.com"
+            },
+            "iot": {
+              "url": "wss://a2vgioynsisd7n-ats.iot.us-east-1.amazonaws.com/mqtt?topic-prefix=client-test"
             },
             "kibana": {
               "url": "https://kibana-client-test.us-east.philips-healthsuite.com"
