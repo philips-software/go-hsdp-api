@@ -53,11 +53,14 @@ type Tag struct {
 }
 
 type Attachment struct {
-	ContentType string `json:"contentType"`
-	Language    string `json:"language"`
+	ContentType string `json:"contentType" validate:"required"`
+	Language    string `json:"language" validate:"required"`
 	Hash        string `json:"hash"`
 	Title       string `json:"title"`
-	Data        string `json:"data"`
+	Data        string `json:"data" validate:"required"`
+	URL         string `json:"url"`
+	Size        int64  `json:"size"`
+	Created     string `json:"created,omitempty"`
 }
 
 type GetBlobOptions struct {
