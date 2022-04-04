@@ -53,10 +53,10 @@ type Tag struct {
 }
 
 type Attachment struct {
-	ContentType string `json:"contentType" validate:"required"`
-	Language    string `json:"language" validate:"required"`
-	Hash        string `json:"hash"`
-	Title       string `json:"title"`
+	ContentType string `json:"contentType,omitempty"`
+	Language    string `json:"language,omitempty"`
+	Hash        string `json:"hash,omitempty"`
+	Title       string `json:"title,omitempty"`
 	Data        string `json:"data" validate:"required"`
 	URL         string `json:"url"`
 	Size        int64  `json:"size"`
