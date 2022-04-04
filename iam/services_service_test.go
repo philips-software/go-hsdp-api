@@ -2,8 +2,11 @@ package iam
 
 import (
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -24,7 +27,8 @@ func TestServicesCRUD(t *testing.T) {
 	muxIDM.HandleFunc("/authorize/identity/Service", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
-		case "POST":
+
+		case http.MethodPost:
 			w.WriteHeader(http.StatusCreated)
 			_, _ = io.WriteString(w, `{
 				"id": "`+id+`",
@@ -41,7 +45,7 @@ func TestServicesCRUD(t *testing.T) {
 					"openid"
 				]
 			}`)
-		case "GET":
+		case http.MethodGet:
 			w.WriteHeader(http.StatusOK)
 			_, _ = io.WriteString(w, `{
 				"total": 1,
@@ -67,7 +71,35 @@ func TestServicesCRUD(t *testing.T) {
 	muxIDM.HandleFunc("/authorize/identity/Service/"+id, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
-		case "DELETE":
+		case http.MethodPut:
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			var request ServiceUpdateRequest
+			if err := json.Unmarshal(body, &request); err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+				"id": "`+id+`",
+				"serviceId": "`+serviceID+`",
+				"description": "`+request.Description+`",
+				"organizationId": "`+orgID+`",
+				"privateKey": "-----BEGIN RSA PRIVATE KEY-----MIIEowIBAAKCAQEAh2kjyJRO/rJuwMOECMcR5ZoSCwIsq3205gABA8BNGAZk1CGxxbduIX3peZMdMC5nyQ2gVVHj97Bsx9sYHXs3ihUVzeCth9SEipmrIuktrIzMMbN1Hd0DBMYEVfgxER/F5yYvt3D2RwnydBOg9QSc7GoFa6zzJMfplyVQyCiDgCYN9qf+BHTPk7+x/7ev835ylBsYOFHebN0WsXUlEBWc8nCSJm0Z0hFcmUeLcVSsB2X7iMqGq4VpgSsRfP9sloCX8lNzDo4ujwvTIwsCpHwokQhxCV2avhmjH2hMQXHGlgUfyPm3RjQZ0waSGRRCEuWDhm7xLq9hRzad4cD2auVwhQIDAQABAoIBAD3YwrRBMNdZzgYTBsIvkjgJJ8aJZrepAa+vPsdk1JFtki3ledmxTwbTCIkzrTgtac/Ffn6ZmYKuvPCHXDtS5OoXeU8AGKIaabMYPrcCQ480+6qTqaFLKa7Ldn2Bj3+fwHcz1MV3PbTykR99O53NTpMYVYN5idA50rHrJDtXbcBgdc8KDA79keN6Fv6pggm//Vms7/E9/bgYYY1W8FmjngNHHDgH2EEnERMkyDp2Ng2/2jJIAa8uKPPFxjJAtApQjlLEv82MOcq+Yeq2/VXGRbvgxWlhdEUQcfCf2/ncFEhslau2llcgKTyvcqbaB+jI9Fj8AeXkVyAGVA4X3fuodp0CgYEA0p3oTonVovr+hXELd8hshElAQ+xP4KtPRFH00VPBkB5m3rAALVK+brDAzzZ7W/5X/QTpELcIfIbx5tbFOcQXjuakxVrbof0wZEDGT9KGPSqAAScp7GqYKMSNWUdZ3G5bLisnHT0q7jdWw9se5HGYPEBxYGW8NgbSX+ejsd84ydsCgYEApJax/f+h5RkTUx9TBSRoTz7jMmOls8bbC3IiAUSlVd3wyJX98etsiIsGFh0mrG16Z8Kg0C597woFoUEWTSv7vzN+SLH2CJAt7JzDdlbgmj7EtB0WJwOCPTRUCbQBeMvy3G34NwAlQxGcQqwbo9JMx/8haxqSgCpfrKaD0/CUrR8CgYBgbwqpwzR9Lj0RbkQY8Ty2iS+SqgWc0fM2TewxWA8dZL4nIiDCn8svtWBiwAhVg6xX3kK0c4nAMq1Zy2Z8X4uF05cIAeTkU6AvlvT2IWdzZB096eepJtlKeUxa32+GnUTEa9+55ILelZn1jUOkx1oz5DHFOG+nsRHr9Yye6Zz/1wKBgCAQF0aS6Rf3RZN407R5vjRJ3Pqw/NPD1mIpbsRuegL7RG/fAGSDZ1ZGNv5R2XnXrfPOr4M+u1u4yRX71vtbqSQ7RMuml3ZdmASzGUTRcdm6hplL3UfmYBXKPuDRB0Rf/sTAS41zYs7o/FbkrlHAoyKG6hyyRX3gQ1kf6yh7gosjAoGBAJv0O9x0oY7HZ5QF1PNlDLZUSF/8UtdmyKnm+6VLBmZBaOBJ7MWOJUzzJOHgMRZyzSbH1Z7aBfDXEdXuPihzel/m6TTt/sBv6P8UbVz8cA/uK5BC6nYVwhhu+/wQT/pWNxfqERDKcS7LJ+F3XWkngYA1fBVFmwwDeDWhzgcLQmU6-----END RSA PRIVATE KEY-----",
+				"expiresOn": "2019-08-15T17:38:06.322Z",
+				"name": "`+serviceName+`",
+				"applicationId": "`+applicationID+`",
+				"defaultScopes": [
+					"openid"
+				],
+				"scopes": [
+					"openid"
+				],
+				"tokenValidity": `+fmt.Sprintf("%d", request.AccessTokenLifetime)+`
+			}`)
+		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
 	})
@@ -114,8 +146,23 @@ func TestServicesCRUD(t *testing.T) {
 		return
 	}
 	assert.Equal(t, 1, len(*services))
-	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	tokenValidity := 3601
+	serviceToUpdate := (*services)[0]
+	serviceToUpdate.AccessTokenLifetime = tokenValidity
+	updated, resp, err := client.Services.UpdateService(serviceToUpdate)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, updated) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, updated.TokenValidity, tokenValidity)
 
 	ok, resp, err := client.Services.DeleteService(*foundService)
 	if !assert.NotNil(t, resp) {

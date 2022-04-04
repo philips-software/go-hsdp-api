@@ -20,17 +20,18 @@ const servicesAPIVersion = "1"
 
 // Service represents a IAM service resource
 type Service struct {
-	ID             string   `json:"id,omitempty"`
-	Name           string   `json:"name"`
-	Description    string   `json:"description"` // RITM0021326
-	ApplicationID  string   `json:"applicationId"`
-	Validity       int      `json:"validity,omitempty"`
-	ServiceID      string   `json:"serviceId,omitempty"`
-	OrganizationID string   `json:"organizationId,omitempty"`
-	ExpiresOn      string   `json:"expiresOn,omitempty"`
-	PrivateKey     string   `json:"privateKey,omitempty"`
-	Scopes         []string `json:"scopes,omitempty"`
-	DefaultScopes  []string `json:"defaultScopes,omitempty"`
+	ID                  string   `json:"id,omitempty"`
+	Name                string   `json:"name"`
+	Description         string   `json:"description"`
+	ApplicationID       string   `json:"applicationId"`
+	Validity            int      `json:"validity,omitempty"`
+	ServiceID           string   `json:"serviceId,omitempty"`
+	OrganizationID      string   `json:"organizationId,omitempty"`
+	ExpiresOn           string   `json:"expiresOn,omitempty"`
+	PrivateKey          string   `json:"privateKey,omitempty"`
+	Scopes              []string `json:"scopes,omitempty"`
+	DefaultScopes       []string `json:"defaultScopes,omitempty"`
+	AccessTokenLifetime int      `json:"-"` // This is only settable in PUT :(
 }
 
 // ServicesService provides operations on IAM Sessions resources
@@ -186,6 +187,39 @@ func (p *ServicesService) GetServices(opt *GetServiceOptions, options ...OptionF
 		return nil, resp, err
 	}
 	return &bundleResponse.Entry, resp, err
+}
+
+type ServiceUpdateResponse struct {
+	Service
+	TokenValidity int `json:"tokenValidity"`
+}
+
+type ServiceUpdateRequest struct {
+	AccessTokenLifetime int    `json:"accessTokenLifetime"`
+	Description         string `json:"description"`
+}
+
+// UpdateService updates some fields of the given Service
+// A user with any of the following permissions can update the service token validity:
+// SERVICE.WRITE
+// HSDP_IAM_ORGANIZATION.MGMT
+// Only the description and accessTokenLifetime values can be updated
+func (p *ServicesService) UpdateService(service Service) (*ServiceUpdateResponse, *Response, error) {
+	updateRequest := ServiceUpdateRequest{
+		AccessTokenLifetime: service.AccessTokenLifetime,
+		Description:         service.Description,
+	}
+	req, _ := p.client.newRequest(IDM, http.MethodPut, "authorize/identity/Service/"+service.ID, &updateRequest, nil)
+	req.Header.Set("api-version", servicesAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var updated ServiceUpdateResponse
+
+	resp, err := p.client.do(req, &updated)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &updated, resp, err
 }
 
 // DeleteService deletes the given Service
