@@ -1,6 +1,12 @@
 package console
 
-import "time"
+import (
+	"context"
+	"encoding/json"
+	"time"
+
+	"github.com/hasura/go-graphql-client"
+)
 
 type MetricsService struct {
 	client *Client
@@ -12,6 +18,11 @@ type Instance struct {
 	Name         string    `json:"name"`
 	Organization string    `json:"organization"`
 	Space        string    `json:"space"`
+	Details      Details   `json:"details"`
+}
+
+type Details struct {
+	Hostname string `json:"hostname"`
 }
 
 type MetricsResponse struct {
@@ -38,6 +49,21 @@ type RuleResponse struct {
 	} `json:"data"`
 	Status string `json:"status"`
 	Error  Error  `json:"error,omitempty"`
+}
+
+type Result struct {
+	Metric json.RawMessage `json:"metric"`
+	Values [][]any         `json:"values"`
+}
+
+type Data struct {
+	Result     []Result `json:"result"`
+	ResultType string   `json:"resultType"`
+}
+
+type DataResponse struct {
+	Data   Data   `json:"data"`
+	Status string `json:"status"`
 }
 
 type Threshold struct {
@@ -137,6 +163,36 @@ func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *
 		return nil, resp, err
 	}
 	return &response.Data, resp, err
+}
+
+func (c *MetricsService) GQLGetInstances(ctx context.Context) (*[]Instance, error) {
+	var query struct {
+		Instances []Instance `graphql:"instances"`
+	}
+	err := c.client.gql.Query(ctx, &query, map[string]interface{}{})
+	if err != nil {
+		return nil, err
+	}
+	return &query.Instances, nil
+}
+
+func (c *MetricsService) GQLGetInstanceByID(ctx context.Context, guid string) (*Instance, error) {
+	var query struct {
+		Instance Instance `graphql:"instance(guid: $guid)"`
+	}
+	err := c.client.gql.Query(ctx, &query, map[string]interface{}{
+		"guid": graphql.String(guid),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &query.Instance, nil
+}
+
+func (c *MetricsService) PrometheusGetData(ctx context.Context, host, query string, options ...OptionFunc) (*DataResponse, error) {
+	var dataResponse DataResponse
+
+	return &dataResponse, nil
 }
 
 // GetInstances looks up available instances

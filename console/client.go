@@ -3,6 +3,7 @@ package console
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hasura/go-graphql-client"
 	"github.com/philips-software/go-hsdp-api/internal"
 	"golang.org/x/oauth2"
 
@@ -106,6 +108,8 @@ type Client struct {
 
 	validate *validator.Validate
 
+	gql *graphql.Client
+
 	baseConsoleURL *url.URL
 	baseUAAURL     *url.URL
 
@@ -171,6 +175,28 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	header.Set("User-Agent", userAgent)
 	httpClient.Transport = internal.NewHeaderRoundTripper(httpClient.Transport, header)
 
+	header.Set("User-Agent", userAgent)
+
+	authClient := oauth2.NewClient(context.Background(), c)
+	if config.DebugLog != "" {
+		var err error
+		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if err == nil {
+			authClient.Transport = internal.NewLoggingRoundTripper(authClient.Transport, c.debugFile)
+		}
+	}
+	// Injecting these headers so we satisfy the proxies
+	authClient.Transport = internal.NewHeaderRoundTripper(authClient.Transport, header, func(req *http.Request) error {
+		token, err := c.Token()
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "bearer "+token.AccessToken)
+		req.Header.Set("X-User-Access-Token", token.AccessToken)
+		return nil
+	})
+	c.gql = graphql.NewClient(config.MetricsAPIURL, authClient)
+
 	c.Metrics = &MetricsService{client: c}
 	c.validate = validator.New()
 	return c, nil
@@ -188,6 +214,7 @@ func doAutoconf(config *Config) {
 			}
 			if config.BaseConsoleURL == "" {
 				config.BaseConsoleURL = consoleService.URL
+				config.MetricsAPIURL = consoleService.URL + "/api/metrics/graphql"
 			}
 		}
 	}
