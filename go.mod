@@ -3,7 +3,7 @@ module github.com/philips-software/go-hsdp-api
 go 1.16
 
 require (
-	github.com/cenkalti/backoff/v4 v4.1.1
+	github.com/cenkalti/backoff/v4 v4.1.3
 	github.com/evanphx/json-patch/v5 v5.6.0
 	github.com/gin-gonic/gin v1.7.0 // indirect
 	github.com/go-playground/validator/v10 v10.10.1
