@@ -395,3 +395,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/philips-software/go-hsdp-api/compare/1.0.0...HEAD
 
+- MDM: Support for bootstrap OAuth client scopes
