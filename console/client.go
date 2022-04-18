@@ -110,8 +110,9 @@ type Client struct {
 
 	gql *graphql.Client
 
-	baseConsoleURL *url.URL
-	baseUAAURL     *url.URL
+	baseConsoleURL    *url.URL
+	baseUAAURL        *url.URL
+	basePrometheusURL *url.URL
 
 	// token type used to make authenticated API calls.
 	tokenType tokenType
@@ -157,6 +158,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if config.UAAURL == "" {
 		return nil, ErrUAAURLCannotBeEmpty
 	}
+
 	c := &Client{Client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseUAAURL(c.config.UAAURL); err != nil {
 		return nil, err
@@ -214,7 +216,6 @@ func doAutoconf(config *Config) {
 			}
 			if config.BaseConsoleURL == "" {
 				config.BaseConsoleURL = consoleService.URL
-				config.MetricsAPIURL = consoleService.URL + "/api/metrics/graphql"
 			}
 		}
 	}
@@ -311,6 +312,8 @@ func (c *Client) SetBaseConsoleURL(urlStr string) error {
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
+	c.config.MetricsAPIURL = urlStr + "api/metrics/graphql"
+	c.basePrometheusURL, _ = url.Parse(urlStr + "api/prometheus")
 
 	var err error
 	c.baseConsoleURL, err = url.Parse(urlStr)
@@ -338,8 +341,9 @@ type Endpoint string
 
 // Constants
 const (
-	UAA     = "UAA"
-	CONSOLE = "CONSOLE"
+	UAA        = "UAA"
+	CONSOLE    = "CONSOLE"
+	PROMETHEUS = "PROMETHEUS"
 )
 
 func (c *Client) newRequest(endpoint, method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
@@ -354,6 +358,12 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		}
 		u = *c.baseConsoleURL
 		u.Opaque = c.baseConsoleURL.Path + path
+	case PROMETHEUS:
+		if c.consoleErr != nil {
+			return nil, c.consoleErr
+		}
+		u = *c.basePrometheusURL
+		u.Opaque = c.basePrometheusURL.Path + path
 	default:
 		return nil, fmt.Errorf("unknown endpoint: `%s`", endpoint)
 	}

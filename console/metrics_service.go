@@ -189,10 +189,21 @@ func (c *MetricsService) GQLGetInstanceByID(ctx context.Context, guid string) (*
 	return &query.Instance, nil
 }
 
-func (c *MetricsService) PrometheusGetData(ctx context.Context, host, query string, options ...OptionFunc) (*DataResponse, error) {
+func (c *MetricsService) PrometheusGetData(_ context.Context, host, query string, options ...OptionFunc) (*DataResponse, *Response, error) {
 	var dataResponse DataResponse
 
-	return &dataResponse, nil
+	options = append(options, WithHost(host), WithQuery(query))
+	req, err := c.client.newRequest(PROMETHEUS, "GET", "/data", nil, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.client.do(req, &dataResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &dataResponse, resp, err
 }
 
 // GetInstances looks up available instances
@@ -285,7 +296,7 @@ func (c *MetricsService) GetApplicationAutoscaler(id, app string, options ...Opt
 	return &response.Data.Application, resp, err
 }
 
-// GetApplicationAutoscaler looks up a specific application autoscaler settings
+// UpdateApplicationAutoscaler updates autoscaler settings
 func (c *MetricsService) UpdateApplicationAutoscaler(id string, settings Application, options ...OptionFunc) (*Application, *Response, error) {
 	req, err := c.client.newRequest(CONSOLE, "PUT", "v3/metrics/"+id+"/autoscalers", &settings, options)
 	if err != nil {
