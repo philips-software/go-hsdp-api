@@ -446,16 +446,6 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 	}
 	req.Header.Set("User-Agent", userAgent)
 
-	for _, fn := range options {
-		if fn == nil {
-			continue
-		}
-
-		if err := fn(req); err != nil {
-			return nil, err
-		}
-	}
-
 	if method == "POST" || method == "PUT" {
 		bodyBytes, err := json.Marshal(opt)
 		if err != nil {
@@ -463,6 +453,7 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		}
 		bodyReader := bytes.NewReader(bodyBytes)
 
+		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
@@ -478,6 +469,15 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 			req.Header.Set("X-Token-Error", fmt.Sprintf("%v", err))
 		}
 	}
+	for _, fn := range options {
+		if fn == nil {
+			continue
+		}
+		if err := fn(req); err != nil {
+			return nil, err
+		}
+	}
+
 	return req, nil
 }
 
