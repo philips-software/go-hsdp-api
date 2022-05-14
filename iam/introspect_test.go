@@ -167,7 +167,7 @@ func TestIntrospectWithOrgContext(t *testing.T) {
 
 		orgContext := r.URL.Query().Get("org_ctx")
 
-		if orgContext != "" {
+		if orgContext != "" && orgContext != "bogus" {
 			orgID = orgContext
 		}
 
@@ -217,6 +217,6 @@ func TestIntrospectWithOrgContext(t *testing.T) {
 	}
 
 	assert.True(t, client.HasPermissions(orgID, "SERVICE.SCOPE", "ORGANIZATION.MFA"))
-	assert.False(t, client.HasPermissions("bogus", "SERVICE.SCOPE"))
 	assert.Equal(t, 1, len(introspectResponse.Organizations.OrganizationList))
+	assert.False(t, client.HasPermissions("bogus", "SERVICE.SCOPE"))
 }

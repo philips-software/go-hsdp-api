@@ -295,7 +295,7 @@ func (c *Client) HasScopes(scopes ...string) bool {
 
 // HasPermissions returns true if all permissions are there for the client
 func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
-	introspect, _, err := c.Introspect()
+	introspect, _, err := c.Introspect(WithOrgContext(orgID))
 	if err != nil {
 		return false
 	}
@@ -315,7 +315,7 @@ func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 				}
 			}
 			if !found {
-				// Permission is missing to return false
+				// Permission is missing so return false
 				return false
 			}
 		}
