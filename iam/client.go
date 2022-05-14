@@ -305,10 +305,10 @@ func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 			continue
 		}
 		foundOrg = true
-		// Search in the organization permission list
+		// Search in the organization effective permissions list
 		for _, p := range permissions {
 			found := false
-			for _, q := range org.Permissions {
+			for _, q := range org.EffectivePermissions {
 				if p == q {
 					found = true
 					continue

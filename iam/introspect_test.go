@@ -83,6 +83,32 @@ func TestIntrospect(t *testing.T) {
 							"APPLICATION.WRITE",
 							"SERVICE.READ",
 							"ORGANIZATION.WRITE"
+						],
+						"effectivePermissions": [
+							"APPLICATION.READ",
+							"SERVICE.SCOPE",
+							"GROUP.WRITE",
+							"DEVICE.READ",
+							"PROPOSITION.READ",
+							"SERVICE.DELETE",
+							"GROUP.READ",
+							"USER.READ",
+							"CLIENT.WRITE",
+							"CLIENT.DELETE",
+							"ROLE.READ",
+							"ROLE.WRITE",
+							"PROPOSITION.WRITE",
+							"DEVICE.WRITE",
+							"PERMISSION.READ",
+							"LOG.READ",
+							"SERVICE.WRITE",
+							"ORGANIZATION.MFA",
+							"ORGANIZATION.READ",
+							"CLIENT.READ",
+							"USER.WRITE",
+							"APPLICATION.WRITE",
+							"SERVICE.READ",
+							"ORGANIZATION.WRITE"
 						]
 					},
 					{
@@ -142,9 +168,15 @@ func TestIntrospect(t *testing.T) {
 	})
 
 	introspectResponse, resp, err := client.Introspect()
-	assert.Nil(t, err)
-	assert.NotNil(t, resp)
-	assert.NotNil(t, introspectResponse)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, introspectResponse) {
+		return
+	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	assert.True(t, client.HasPermissions(orgID, "SERVICE.SCOPE", "ORGANIZATION.MFA"))
@@ -164,8 +196,17 @@ func TestIntrospectWithOrgContext(t *testing.T) {
 		if r.Method != "POST" {
 			t.Errorf("Expected POST request, got ‘%s’", r.Method)
 		}
-
-		orgContext := r.URL.Query().Get("org_ctx")
+		err := r.ParseForm()
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		token := r.Form.Get("token")
+		if token != "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		orgContext := r.Form.Get("org_ctx")
 
 		if orgContext != "" && orgContext != "bogus" {
 			orgID = orgContext
@@ -186,6 +227,14 @@ func TestIntrospectWithOrgContext(t *testing.T) {
 					{
 						"organizationId": "`+orgID+`",
 						"permissions": [
+							"ROLE.WRITE",
+							"PERMISSION.READ",
+							"LOG.READ",
+							"ROLE.READ",
+							"SERVICE.SCOPE",
+							"ORGANIZATION.MFA"
+						],
+						"effectivePermissions": [
 							"ROLE.WRITE",
 							"PERMISSION.READ",
 							"LOG.READ",

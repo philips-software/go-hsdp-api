@@ -5,12 +5,10 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/google/go-querystring/query"
 )
 
 const (
-	introspectAPIVersion = "3"
+	introspectAPIVersion = "4"
 )
 
 // IntrospectResponse contains details of the introspect on a profile
@@ -24,11 +22,12 @@ type IntrospectResponse struct {
 	Organizations struct {
 		ManagingOrganization string `json:"managingOrganization"`
 		OrganizationList     []struct {
-			OrganizationID   string   `json:"organizationId"`
-			Permissions      []string `json:"permissions"`
-			OrganizationName string   `json:"organizationName"`
-			Groups           []string `json:"groups"`
-			Roles            []string `json:"roles"`
+			OrganizationID       string   `json:"organizationId"`
+			Permissions          []string `json:"permissions"`
+			EffectivePermissions []string `json:"effectivePermissions"`
+			OrganizationName     string   `json:"organizationName"`
+			Groups               []string `json:"groups"`
+			Roles                []string `json:"roles"`
 		} `json:"organizationList"`
 	} `json:"organizations"`
 	ClientID     string `json:"client_id"`
@@ -38,25 +37,25 @@ type IntrospectResponse struct {
 
 func WithOrgContext(organizationId string) OptionFunc {
 	return func(req *http.Request) error {
-		params := struct {
-			OrgContext *string `url:"org_ctx"`
-		}{
-			OrgContext: &organizationId,
-		}
-		val, err := query.Values(params)
+		err := req.ParseForm()
 		if err != nil {
 			return err
 		}
-		req.URL.RawQuery = val.Encode()
+		token := req.Form.Get("token")
+		form := url.Values{}
+		form.Add("token", token)
+		form.Add("org_ctx", organizationId)
+		req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+		req.ContentLength = int64(len(form.Encode()))
 		return nil
 	}
 }
 
-// Introspect introspects the current logged in user
+// Introspect introspects the current logged-in user
 func (c *Client) Introspect(opts ...OptionFunc) (*IntrospectResponse, *Response, error) {
 	var val IntrospectResponse
 
-	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/introspect", nil, opts)
+	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/introspect", nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -67,6 +66,16 @@ func (c *Client) Introspect(opts ...OptionFunc) (*IntrospectResponse, *Response,
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Api-Version", introspectAPIVersion)
+
+	// For Introspect we apply the opts afterwards
+	for _, fn := range opts {
+		if fn == nil {
+			continue
+		}
+		if err := fn(req); err != nil {
+			return nil, nil, err
+		}
+	}
 
 	resp, err := c.do(req, &val)
 
