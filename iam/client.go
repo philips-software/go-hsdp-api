@@ -463,7 +463,6 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		}
 		bodyReader := bytes.NewReader(bodyBytes)
 
-		u.RawQuery = ""
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
@@ -510,8 +509,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	response := newResponse(resp)
 
 	err = internal.CheckResponse(resp)

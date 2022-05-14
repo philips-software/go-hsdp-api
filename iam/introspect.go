@@ -2,8 +2,11 @@ package iam
 
 import (
 	"io/ioutil"
+	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -33,11 +36,27 @@ type IntrospectResponse struct {
 	IdentityType string `json:"identity_type"`
 }
 
+func WithOrgContext(organizationId string) OptionFunc {
+	return func(req *http.Request) error {
+		params := struct {
+			OrgContext *string `url:"org_ctx"`
+		}{
+			OrgContext: &organizationId,
+		}
+		val, err := query.Values(params)
+		if err != nil {
+			return err
+		}
+		req.URL.RawQuery = val.Encode()
+		return nil
+	}
+}
+
 // Introspect introspects the current logged in user
-func (c *Client) Introspect() (*IntrospectResponse, *Response, error) {
+func (c *Client) Introspect(opts ...OptionFunc) (*IntrospectResponse, *Response, error) {
 	var val IntrospectResponse
 
-	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/introspect", nil, nil)
+	req, err := c.newRequest(IAM, "POST", "authorize/oauth2/introspect", nil, opts)
 	if err != nil {
 		return nil, nil, err
 	}
