@@ -45,6 +45,39 @@ var (
 	}
 )
 
+type replacer struct {
+	Regexp  *regexp.Regexp
+	Replace map[string]string
+}
+
+func (r replacer) replace(input string) string {
+	for k, v := range r.Replace {
+		input = strings.ReplaceAll(input, k, v)
+	}
+	return input
+}
+
+var (
+	replacerMap = map[string]replacer{
+		"applicationVersion": {
+			Regexp: regexp.MustCompile(`^[^&+;=?@|<>()]*$`),
+			Replace: map[string]string{
+				"@": "💀",
+				"&": "💀",
+				"+": "💀",
+				";": "💀",
+				"=": "💀",
+				"?": "💀",
+				"<": "💀",
+				">": "💀",
+				"|": "💀",
+				"(": "💀",
+				")": "💀",
+			},
+		},
+	}
+)
+
 // Config the client
 type Config struct {
 	Region       string
@@ -169,7 +202,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
@@ -307,6 +342,12 @@ func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*S
 }
 
 func replaceScaryCharacters(msg *Resource) {
+	// Application version fixer
+	appVersion := replacerMap["applicationVersion"]
+	if !appVersion.Regexp.MatchString(msg.ApplicationVersion) {
+		msg.ApplicationVersion = appVersion.replace(msg.ApplicationVersion)
+	}
+
 	if len(msg.Custom) == 0 {
 		return
 	}

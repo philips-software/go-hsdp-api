@@ -144,9 +144,21 @@ func (c *OAuthClientsService) GetOAuthClients(opt *GetOAuthClientsOptions, optio
 
 // UpdateScopes updates a clients scope
 func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, scopes []string, defaultScopes []string) (bool, *Response, error) {
-	if ac.ClientGuid == nil {
-		return false, nil, fmt.Errorf("missing required IAM clientGuid")
+	return c.UpdateScopesByFlag(ac, scopes, defaultScopes, false)
+}
+
+// UpdateScopes updates a clients scope, with possibility to choose between regular client and bootstrap client
+func (c *OAuthClientsService) UpdateScopesByFlag(ac OAuthClient, scopes []string, defaultScopes []string, isBootstrapClient bool) (bool, *Response, error) {
+	if isBootstrapClient {
+		if ac.BootstrapClientGuid == nil {
+			return false, nil, fmt.Errorf("missing required IAM bootstrapClientGuid")
+		}
+	} else {
+		if ac.ClientGuid == nil {
+			return false, nil, fmt.Errorf("missing required IAM clientGuid")
+		}
 	}
+
 	var requestBody = struct {
 		Scopes        []string `json:"scopes"`
 		DefaultScopes []string `json:"defaultScopes"`
@@ -154,7 +166,11 @@ func (c *OAuthClientsService) UpdateScopes(ac OAuthClient, scopes []string, defa
 		scopes,
 		defaultScopes,
 	}
-	clientGUID := ac.ClientGuid.Value
+
+	var clientGUID = ac.ClientGuid.Value
+	if isBootstrapClient {
+		clientGUID = ac.BootstrapClientGuid.Value
+	}
 
 	req, err := c.NewRequest(http.MethodPut, "/OAuthClient/"+ac.ID+"/Client/"+clientGUID+"/$scopes", requestBody)
 	if err != nil {

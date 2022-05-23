@@ -295,7 +295,7 @@ func (c *Client) HasScopes(scopes ...string) bool {
 
 // HasPermissions returns true if all permissions are there for the client
 func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
-	introspect, _, err := c.Introspect()
+	introspect, _, err := c.Introspect(WithOrgContext(orgID))
 	if err != nil {
 		return false
 	}
@@ -305,17 +305,17 @@ func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 			continue
 		}
 		foundOrg = true
-		// Search in the organization permission list
+		// Search in the organization effective permissions list
 		for _, p := range permissions {
 			found := false
-			for _, q := range org.Permissions {
+			for _, q := range org.EffectivePermissions {
 				if p == q {
 					found = true
 					continue
 				}
 			}
 			if !found {
-				// Permission is missing to return false
+				// Permission is missing so return false
 				return false
 			}
 		}
@@ -446,16 +446,6 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 	}
 	req.Header.Set("User-Agent", userAgent)
 
-	for _, fn := range options {
-		if fn == nil {
-			continue
-		}
-
-		if err := fn(req); err != nil {
-			return nil, err
-		}
-	}
-
 	if method == "POST" || method == "PUT" {
 		bodyBytes, err := json.Marshal(opt)
 		if err != nil {
@@ -479,6 +469,15 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 			req.Header.Set("X-Token-Error", fmt.Sprintf("%v", err))
 		}
 	}
+	for _, fn := range options {
+		if fn == nil {
+			continue
+		}
+		if err := fn(req); err != nil {
+			return nil, err
+		}
+	}
+
 	return req, nil
 }
 
@@ -510,8 +509,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	response := newResponse(resp)
 
 	err = internal.CheckResponse(resp)

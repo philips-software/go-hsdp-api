@@ -83,6 +83,32 @@ func TestIntrospect(t *testing.T) {
 							"APPLICATION.WRITE",
 							"SERVICE.READ",
 							"ORGANIZATION.WRITE"
+						],
+						"effectivePermissions": [
+							"APPLICATION.READ",
+							"SERVICE.SCOPE",
+							"GROUP.WRITE",
+							"DEVICE.READ",
+							"PROPOSITION.READ",
+							"SERVICE.DELETE",
+							"GROUP.READ",
+							"USER.READ",
+							"CLIENT.WRITE",
+							"CLIENT.DELETE",
+							"ROLE.READ",
+							"ROLE.WRITE",
+							"PROPOSITION.WRITE",
+							"DEVICE.WRITE",
+							"PERMISSION.READ",
+							"LOG.READ",
+							"SERVICE.WRITE",
+							"ORGANIZATION.MFA",
+							"ORGANIZATION.READ",
+							"CLIENT.READ",
+							"USER.WRITE",
+							"APPLICATION.WRITE",
+							"SERVICE.READ",
+							"ORGANIZATION.WRITE"
 						]
 					},
 					{
@@ -142,13 +168,104 @@ func TestIntrospect(t *testing.T) {
 	})
 
 	introspectResponse, resp, err := client.Introspect()
-	assert.Nil(t, err)
-	assert.NotNil(t, resp)
-	assert.NotNil(t, introspectResponse)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, introspectResponse) {
+		return
+	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	assert.True(t, client.HasPermissions(orgID, "SERVICE.SCOPE", "ORGANIZATION.MFA"))
 	assert.False(t, client.HasPermissions("bogus", "SERVICE.SCOPE"))
 	assert.Equal(t, 6, len(introspectResponse.Organizations.OrganizationList))
 	assert.Equal(t, "SecondOrg", introspectResponse.Organizations.OrganizationList[5].OrganizationName)
+}
+
+func TestIntrospectWithOrgContext(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	userID := "b400f634-03ed-4596-bfc1-0b74e5bb1af8"
+	orgID := "46323bb4-ebba-4387-a339-252b5aa0755f"
+
+	muxIAM.HandleFunc("/authorize/oauth2/introspect", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Errorf("Expected POST request, got ‘%s’", r.Method)
+		}
+		err := r.ParseForm()
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		token := r.Form.Get("token")
+		if token != "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		orgContext := r.Form.Get("org_ctx")
+
+		if orgContext != "" && orgContext != "bogus" {
+			orgID = orgContext
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = io.WriteString(w, `{
+			"active": true,
+			"scope": "mail tdr.contract tdr.dataitem",
+			"username": "foo.bar@philips.com",
+			"exp": 1532350103,
+			"sub": "`+userID+`",
+			"iss": "hsdp-iam",
+			"organizations": {
+				"managingOrganization": "`+orgID+`",
+				"organizationList": [
+					{
+						"organizationId": "`+orgID+`",
+						"permissions": [
+							"ROLE.WRITE",
+							"PERMISSION.READ",
+							"LOG.READ",
+							"ROLE.READ",
+							"SERVICE.SCOPE",
+							"ORGANIZATION.MFA"
+						],
+						"effectivePermissions": [
+							"ROLE.WRITE",
+							"PERMISSION.READ",
+							"LOG.READ",
+							"ROLE.READ",
+							"SERVICE.SCOPE",
+							"ORGANIZATION.MFA"
+						]
+					}
+				]
+			},
+			"client_id": "SomeClient",
+			"token_type": "Bearer",
+			"identity_type": "user"
+		}`)
+	})
+
+	introspectResponse, resp, err := client.Introspect(WithOrgContext(orgID))
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, introspectResponse) {
+		return
+	}
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+		return
+	}
+
+	assert.True(t, client.HasPermissions(orgID, "SERVICE.SCOPE", "ORGANIZATION.MFA"))
+	assert.Equal(t, 1, len(introspectResponse.Organizations.OrganizationList))
+	assert.False(t, client.HasPermissions("bogus", "SERVICE.SCOPE"))
 }

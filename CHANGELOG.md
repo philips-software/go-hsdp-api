@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.63.0
+
+- Update to Go 1.18
+
 ## v0.62.0
 
 - IAM Service: support service updates (IAM March 2022 release)
@@ -395,3 +399,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unreleased]: https://github.com/philips-software/go-hsdp-api/compare/1.0.0...HEAD
 
+- MDM: Support for bootstrap OAuth client scopes

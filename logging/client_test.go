@@ -454,3 +454,25 @@ func TestStoreResourceWithBearerToken(t *testing.T) {
 		t.Errorf("Expected HTTP 201, Got: %d", resp.StatusCode)
 	}
 }
+
+func TestApplicationVersionRegexp(t *testing.T) {
+	testsSet := []struct {
+		Field string
+		Input string
+		Fixed string
+	}{
+		{
+			Field: "applicationVersion",
+			Input: "public.ecr.aws/karpenter/controller@sha256:7779bf337cafe5080192f51819c5dc8a52ba6e7c4436ef9b2d164504d4ef8bea",
+			Fixed: "public.ecr.aws/karpenter/controller💀sha256:7779bf337cafe5080192f51819c5dc8a52ba6e7c4436ef9b2d164504d4ef8bea",
+		},
+	}
+
+	for _, test := range testsSet {
+		r := replacerMap[test.Field]
+		val := r.Regexp.MatchString(test.Input)
+		assert.False(t, val)
+		fixed := r.replace(test.Input)
+		assert.Equal(t, fixed, test.Fixed)
+	}
+}

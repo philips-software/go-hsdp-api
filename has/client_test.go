@@ -98,6 +98,17 @@ func setup(t *testing.T) func() {
           "HAS_RESOURCE.ALL",
           "HAS_SESSION.ALL"
         ],
+		"effectivePermissions": [
+          "ANALYZE_WORKFLOW.ALL",
+          "ANALYZE_DATAPROC.ALL",
+          "USER.READ",
+          "GROUP.WRITE",
+          "DEVICE.READ",
+          "CLIENT.SCOPES",
+          "AMS_ACCESS.ALL",
+          "HAS_RESOURCE.ALL",
+          "HAS_SESSION.ALL"
+        ],
         "organizationName": "PawneeOrg",
         "groups": [
           "AdminGroup"
