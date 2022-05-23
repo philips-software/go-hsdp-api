@@ -24,6 +24,7 @@ type Config struct {
 	Region       string
 	DockerAPIURL string
 	DebugLog     string
+	host         string
 }
 
 // A Client manages communication with HSDP DICOM API
@@ -87,8 +88,14 @@ func doAutoconf(config *Config) {
 			if config.DockerAPIURL == "" {
 				config.DockerAPIURL = dockerService.URL
 			}
+			config.host = dockerService.Host
 		}
 	}
+}
+
+// Host returns the regional host base
+func (c *Client) Host() string {
+	return c.config.host
 }
 
 // Query is a generic GraphQL query
