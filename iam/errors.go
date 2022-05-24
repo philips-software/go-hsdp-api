@@ -24,6 +24,7 @@ var (
 	ErrMissingRefreshToken            = errors.New("missing refresh token")
 	ErrNotAuthorized                  = errors.New("not authorized")
 	ErrNoValidSignerAvailable         = errors.New("no valid HSDP signer available")
+	ErrMissingOAuth2Credentials       = errors.New("missing OAuth2 credentials")
 )
 
 type UserError struct {

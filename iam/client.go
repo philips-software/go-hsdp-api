@@ -269,11 +269,19 @@ func (c *Client) TokenRefresh() error {
 		scopes := strings.Join(c.config.Scopes, " ")
 		form.Add("scope", scopes)
 	}
+	if !c.HasOAuth2Credentials() {
+		return ErrMissingOAuth2Credentials
+	}
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
 	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
 
 	return c.doTokenRequest(req)
+}
+
+// HasOAuth2Credentials returns true if the client is configured with OAuth2 credentials
+func (c *Client) HasOAuth2Credentials() bool {
+	return c.config.OAuth2ClientID != "" && c.config.OAuth2Secret != ""
 }
 
 // HasScopes returns true of all scopes are there for the client

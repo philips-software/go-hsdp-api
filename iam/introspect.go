@@ -63,6 +63,9 @@ func (c *Client) Introspect(opts ...OptionFunc) (*IntrospectResponse, *Response,
 	form.Add("token", c.token)
 	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
+	if !c.HasOAuth2Credentials() {
+		return nil, nil, ErrMissingOAuth2Credentials
+	}
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Api-Version", introspectAPIVersion)
