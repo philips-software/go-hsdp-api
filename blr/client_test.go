@@ -8,7 +8,7 @@ import (
 	_ "os"
 	"testing"
 
-	"github.com/philips-software/go-hsdp-api/connect/mdm"
+	"github.com/philips-software/go-hsdp-api/blr"
 	"github.com/philips-software/go-hsdp-api/iam"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,18 +16,18 @@ import (
 var (
 	muxIAM    *http.ServeMux
 	serverIAM *httptest.Server
-	muxMDM    *http.ServeMux
-	serverMDM *httptest.Server
+	muxBLR    *http.ServeMux
+	serverBLR *httptest.Server
 
 	iamClient *iam.Client
-	mdmClient *mdm.Client
+	blrClient *blr.Client
 )
 
 func setup(t *testing.T) func() {
 	muxIAM = http.NewServeMux()
 	serverIAM = httptest.NewServer(muxIAM)
-	muxMDM = http.NewServeMux()
-	serverMDM = httptest.NewServer(muxMDM)
+	muxBLR = http.NewServeMux()
+	serverBLR = httptest.NewServer(muxBLR)
 
 	var err error
 
@@ -37,13 +37,13 @@ func setup(t *testing.T) func() {
 		SharedKey:      "SharedKey",
 		SecretKey:      "SecretKey",
 		IAMURL:         serverIAM.URL,
-		IDMURL:         serverMDM.URL,
+		IDMURL:         serverBLR.URL,
 	})
 	if err != nil {
-		t.Fatalf("Failed to create iamCleitn: %v", err)
+		t.Fatalf("Failed to create iamClient: %v", err)
 	}
-	mdmClient, err = mdm.NewClient(iamClient, &mdm.Config{
-		BaseURL: serverMDM.URL + "/connect/mdm",
+	blrClient, err = blr.NewClient(iamClient, &blr.Config{
+		BaseURL: serverBLR.URL + "/connect/blobrepository",
 	})
 	if err != nil {
 		t.Fatalf("Failed to create mdmClient: %v", err)
@@ -132,7 +132,7 @@ func setup(t *testing.T) func() {
 
 	return func() {
 		serverIAM.Close()
-		serverMDM.Close()
+		serverBLR.Close()
 	}
 }
 

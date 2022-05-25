@@ -24,21 +24,22 @@ type Blob struct {
 	ID                       string      `json:"id,omitempty"`
 	DataType                 string      `json:"dataType" validate:"required"`
 	Guid                     string      `json:"guid,omitempty"`
-	Tags                     *[]Tag      `json:"tags,omitempty" validate:"max=10"`
+	Tags                     *[]Tag      `json:"tags,omitempty" validate:"omitempty,max=10"`
 	AutoGenerateBlobPathName bool        `json:"autoGenerateBlobPathName"`
-	BlobPath                 string      `json:"blobPath" validate:"required"`
-	BlobName                 string      `json:"blobName" validate:"required"`
-	VirtualPath              string      `json:"virtualPath" validate:"required"`
-	VirtualName              string      `json:"virtualName" validate:"required"`
+	BlobPath                 string      `json:"blobPath,omitempty" validate:"omitempty"`
+	BlobName                 string      `json:"blobName,omitempty" validate:"omitempty"`
+	VirtualPath              string      `json:"virtualPath,omitempty" validate:"omitempty"`
+	VirtualName              string      `json:"virtualName,omitempty" validate:"omitempty"`
 	Bucket                   string      `json:"bucket,omitempty"`
-	Creation                 string      `json:"creation,omitempty"`
+	Creation                 *string     `json:"creation,omitempty"`
 	CreatedBy                string      `json:"createdBy,omitempty"`
 	Attachment               *Attachment `json:"attachment,omitempty"`
 	UploadOnBehalf           bool        `json:"uploadOnBehalf"`
 	ManagingOrganization     string      `json:"managingOrganization,omitempty"`
 	PropositionGuid          string      `json:"propositionGuid,omitempty"`
 	MultipartEnabled         bool        `json:"multipartEnabled"`
-	NoOfParts                int         `json:"noOfParts"`
+	NoOfParts                *int        `json:"noOfParts,omitempty"`
+	State                    *string     `json:"state,omitempty"`
 	Meta                     *Meta       `json:"meta,omitempty"`
 }
 
@@ -79,7 +80,8 @@ type GetBlobOptions struct {
 }
 
 func (b *BlobsService) Create(blob Blob) (*Blob, *Response, error) {
-	blob.ResourceType = "Bucket"
+	blob.ResourceType = "Blob"
+	blob.AutoGenerateBlobPathName = true
 	if err := b.validate.Struct(blob); err != nil {
 		return nil, nil, err
 	}

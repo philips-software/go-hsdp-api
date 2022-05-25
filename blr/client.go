@@ -4,6 +4,7 @@ package blr
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -43,11 +44,8 @@ type Client struct {
 	config  *Config
 	baseURL *url.URL
 
-	// User agent used when communicating with the HSDP Notification API
+	// User agent used when communicating with the HSDP Blob Repository API
 	UserAgent string
-
-	systemIDM string
-	systemIAM string
 
 	debugFile *os.File
 	validate  *validator.Validate
@@ -55,24 +53,20 @@ type Client struct {
 	Blobs *BlobsService
 }
 
-// NewClient returns a new Discovery client
+// NewClient returns a new BLR client
 func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	validate := validator.New()
 	if err := validate.Struct(config); err != nil {
 		return nil, err
+	}
+	if iamClient == nil {
+		return nil, fmt.Errorf("iamClient cannot be nil")
 	}
 	doAutoconf(config)
 	c := &Client{Client: iamClient, config: config, UserAgent: userAgent, validate: validator.New()}
 
 	if err := c.SetBaseURL(config.BaseURL); err != nil {
 		return nil, err
-	}
-
-	if baseIDM := c.BaseIDMURL(); baseIDM != nil {
-		c.systemIDM = baseIDM.String() + "/authorize/identity"
-	}
-	if baseIAM := c.BaseIAMURL(); baseIAM != nil {
-		c.systemIAM = baseIAM.String()
 	}
 
 	c.Blobs = &BlobsService{Client: c, validate: validator.New()}
@@ -184,8 +178,8 @@ func (c *Client) NewRequest(method, requestPath string, opt interface{}, options
 	return req, nil
 }
 
-// Response is a HSDP IAM API response. This wraps the standard http.Response
-// returned from HSDP IAM and provides convenient access to things like errors
+// Response is a HSDP BLR API response. This wraps the standard http.Response
+// returned from HSDP BLR and provides convenient access to things like errors
 type Response struct {
 	*http.Response
 }
@@ -215,7 +209,9 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	if v != nil {
-		defer resp.Body.Close() // Only close if we plan to read it
+		defer func() {
+			_ = resp.Body.Close()
+		}() // Only close if we plan to read it
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {
