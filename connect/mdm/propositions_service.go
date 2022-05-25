@@ -122,7 +122,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	if !ok {
 		return nil, resp, fmt.Errorf("CreateProposition failed: resp=%v", resp)
 	}
-	return p.GetPropositionByID(created.ID)
+	return &created, resp, nil
 }
 
 // UpdateProposition creates a Proposition

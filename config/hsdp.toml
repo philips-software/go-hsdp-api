@@ -378,3 +378,19 @@ url = "https://connect-mdm.eu-west.philips-healthsuite.com/connect/mdm"
 url = "https://discovery-client-test.us01.connect.hsdp.io/client-test/core/discovery"
 [region.eu-west.env.client-test.service.discovery]
 url = "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/discovery"
+
+# Service BLR
+[region.us-east.env.client-test.service.blr]
+url = "https://blobrepository-client-test.us01.connect.hsdp.io/connect/blobrepository"
+[region.eu-west.env.prod.service.blr]
+url = "https://blobrepository-client-test.eu01.connect.hsdp.io/connect/blobrepository"
+[region.cn1.prod.service.blr]
+url = "https://blobrepository.cn1.iot.philips-healthsuite.com.cn/connect/blobrepository"
+
+# Service IOT
+[region.us-east.env.client-test.service.iot]
+url = "wss://a2vgioynsisd7n-ats.iot.us-east-1.amazonaws.com/mqtt?topic-prefix=client-test"
+[region.eu-west.env.prod.service.iot]
+url = "wss://a370yzaa002yx5-ats.iot.eu-west-1.amazonaws.com/mqtt?topic-prefix=prod"
+[region.cn1.prod.service.iot]
+url = "wss://aqrsmt9m297sm.ats.iot.cn-north-1.amazonaws.com.cn/mqtt?topic-prefix=prod"
