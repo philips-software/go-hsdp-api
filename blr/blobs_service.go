@@ -79,6 +79,49 @@ type GetBlobOptions struct {
 	SingleDownload  *string `url:"singleDownload,omitempty"`
 }
 
+type BlobPolicy struct {
+	ResourceType string            `json:"resourceType" validate:"required"`
+	Statement    []PolicyStatement `json:"statement" validate:"required"`
+}
+
+type PolicyStatement struct {
+	ResourceType string                `json:"resourceType" validate:"required"`
+	SID          *string               `json:"sid,omitempty"`
+	Principal    PrincipalResourceList `json:"principal" validate:"required"`
+	Effect       string                `json:"effect" validate:"required"`
+	Action       []string              `json:"action" validate:"required"`
+}
+
+type PrincipalResourceList struct {
+	HSDP []string `json:"hsdp" validate:"required,min=1,max=64"`
+}
+
+type AccessURL struct {
+	ResourceType string     `json:"resourceType"`
+	Actions      []string   `json:"actions"`
+	URL          string     `json:"url"`
+	URLExpiry    string     `json:"urlExpiry"`
+	BlobPartURLs []BlobPart `json:"blobPartUrls,omitempty"`
+}
+
+type BlobPart struct {
+	PartNumber          int    `json:"partNumber"`
+	DataAccessURL       string `json:"dataAccessUrl"`
+	DataAccessUrlExpiry string `json:"dataAccessUrlExpiry"`
+}
+
+type BlobPartUpload struct {
+	ResourceType string       `json:"resourceType"`
+	BlobParts    []PartUpload `json:"blobParts"`
+}
+
+type PartUpload struct {
+	PartNumber   int    `json:"partNumber"`
+	Size         int    `json:"size"`
+	LastModified string `json:"lastModified"`
+	ETag         string `json:"eTag"`
+}
+
 func (b *BlobsService) Create(blob Blob) (*Blob, *Response, error) {
 	blob.ResourceType = "Blob"
 	blob.AutoGenerateBlobPathName = true
@@ -164,4 +207,131 @@ func (b *BlobsService) Delete(blob Blob) (bool, *Response, error) {
 		return false, resp, err
 	}
 	return true, resp, nil
+}
+
+func (b *BlobsService) SetPolicy(blob Blob, policy BlobPolicy) (bool, *Response, error) {
+	req, err := b.NewRequest(http.MethodPost, "/Blob/"+blob.ID+"/$setPolicy", policy, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", blobAPIVersion)
+
+	var setPolicyResponse interface{}
+
+	resp, err := b.Do(req, &setPolicyResponse)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return false, resp, err
+	}
+	return true, resp, nil
+}
+
+func (b *BlobsService) GetPolicy(blob Blob) (*BlobPolicy, *Response, error) {
+	req, err := b.NewRequest(http.MethodGet, "/Blob/"+blob.ID+"/$getPolicy", nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", blobAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var resource BlobPolicy
+
+	resp, err := b.Do(req, &resource)
+	if err != nil {
+		return nil, resp, err
+	}
+	err = internal.CheckResponse(resp.Response)
+	if err != nil {
+		return nil, resp, fmt.Errorf("GetPolicy: %w", err)
+	}
+	return &resource, resp, nil
+}
+
+func (b *BlobsService) DeletePolicy(blob Blob) (bool, *Response, error) {
+	req, err := b.NewRequest(http.MethodDelete, "/Blob/"+blob.ID+"/$deletePolicy", nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", blobAPIVersion)
+
+	var deleteResponse interface{}
+
+	resp, err := b.Do(req, &deleteResponse)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return false, resp, err
+	}
+	return true, resp, nil
+}
+
+func (b *BlobsService) GetAccessURL(blob Blob) (*AccessURL, *Response, error) {
+	req, err := b.NewRequest(http.MethodGet, "/Blob/"+blob.ID+"/$getAccessUrl", nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", blobAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var resource AccessURL
+
+	resp, err := b.Do(req, &resource)
+	if err != nil {
+		return nil, resp, err
+	}
+	err = internal.CheckResponse(resp.Response)
+	if err != nil {
+		return nil, resp, fmt.Errorf("GetAccessURL: %w", err)
+	}
+	return &resource, resp, nil
+}
+
+func (b *BlobsService) CompleteUpload(blob Blob, parts BlobPartUpload) (bool, *Response, error) {
+	req, err := b.NewRequest(http.MethodPost, "/Blob/"+blob.ID+"/$completeUpload", parts, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", blobAPIVersion)
+
+	var completeUploadResponse interface{}
+
+	resp, err := b.Do(req, &completeUploadResponse)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return false, resp, err
+	}
+	return true, resp, nil
+}
+
+func (b *BlobsService) AbortUpload(blob Blob) (bool, *Response, error) {
+	req, err := b.NewRequest(http.MethodPost, "/Blob/"+blob.ID+"/$abortUpload", nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", blobAPIVersion)
+
+	var abortUploadResponse interface{}
+
+	resp, err := b.Do(req, &abortUploadResponse)
+	if resp == nil || resp.StatusCode != http.StatusNoContent {
+		return false, resp, err
+	}
+	return true, resp, nil
+}
+
+func (b *BlobsService) ListParts(blob Blob) (*BlobPartUpload, *Response, error) {
+	req, err := b.NewRequest(http.MethodGet, "/Blob/"+blob.ID+"/$listPart", nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", blobAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var resource BlobPartUpload
+
+	resp, err := b.Do(req, &resource)
+	if err != nil {
+		return nil, resp, err
+	}
+	err = internal.CheckResponse(resp.Response)
+	if err != nil {
+		return nil, resp, fmt.Errorf("GetByID: %w", err)
+	}
+	return &resource, resp, nil
 }
