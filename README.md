@@ -11,9 +11,9 @@ The current implement covers only a subset of HSDP APIs. Basically, we implement
 
 - [x] Blob Repository
   - [x] Blob Metadata
-  - [ ] Access Policy
-  - [ ] Access URL
-  - [ ] Multipart Upload
+  - [x] Access Policy
+  - [x] Access URL
+  - [x] Multipart Upload
   - [ ] Topic management
   - [ ] Store Access
   - [ ] Bucket management
