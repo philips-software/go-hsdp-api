@@ -31,11 +31,12 @@ type Config struct {
 	Region      string
 	Environment string
 	RootOrgID   string
-	CDRURL      string
-	FHIRStore   string
-	Type        string
-	TimeZone    string
-	DebugLog    string
+	// CDRURL is the URL of the CDR instance, including the /store/fhir or /store/personal suffix path
+	CDRURL    string
+	FHIRStore string
+	Type      string
+	TimeZone  string
+	DebugLog  string
 }
 
 // A Client manages communication with HSDP CDR API
@@ -67,7 +68,7 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	c := &Client{iamClient: iamClient, config: config, UserAgent: userAgent}
 	fhirStore := config.FHIRStore
 	if fhirStore == "" {
-		fhirStore = config.CDRURL + "/store/fhir/"
+		fhirStore = config.CDRURL
 	}
 	if err := c.SetFHIRStoreURL(fhirStore); err != nil {
 		return nil, err

@@ -134,7 +134,7 @@ func setup(t *testing.T, version jsonformat.Version) func() {
 	assert.Nil(t, err)
 
 	cdrClient, err = cdr.NewClient(iamClient, &cdr.Config{
-		CDRURL:    serverCDR.URL,
+		CDRURL:    serverCDR.URL + "/store/fhir",
 		RootOrgID: cdrOrgID,
 		TimeZone:  timeZone,
 	})
@@ -213,7 +213,7 @@ func TestEndpoints(t *testing.T) {
 	rootOrgID := "foo"
 
 	cdrClient, err := cdr.NewClient(iamClient, &cdr.Config{
-		CDRURL:    serverCDR.URL,
+		CDRURL:    serverCDR.URL + "/store/fhir",
 		RootOrgID: rootOrgID,
 	})
 	if !assert.Nil(t, err) {
