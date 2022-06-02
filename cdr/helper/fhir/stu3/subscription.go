@@ -13,17 +13,17 @@ const (
 	ExtDeleteURL = "http://hsdp.com/cdr/Subscription/deletionUri"
 )
 
-type WithFunc func(sub *stu3pb.Subscription) error
+type WithSubscriptionFunc func(sub *stu3pb.Subscription) error
 type StringValue func(sub *stu3pb.Subscription) string
 
-func WithCriteria(critera string) WithFunc {
+func WithCriteria(critera string) WithSubscriptionFunc {
 	return func(sub *stu3pb.Subscription) error {
 		sub.Criteria = &stu3dt.String{Value: critera}
 		return nil
 	}
 }
 
-func WithReason(reason string) WithFunc {
+func WithReason(reason string) WithSubscriptionFunc {
 	return func(sub *stu3pb.Subscription) error {
 		sub.Reason = &stu3dt.String{Value: reason}
 		return nil
@@ -59,7 +59,7 @@ func DeleteEndpointValue() StringValue {
 
 // WithDeleteEndpoint adds an endpoint which is called a Resource is deleted
 // This is an extension supported by CDR
-func WithDeleteEndpoint(endpoint string) WithFunc {
+func WithDeleteEndpoint(endpoint string) WithSubscriptionFunc {
 	return func(sub *stu3pb.Subscription) error {
 		if endpoint == "" {
 			return nil
@@ -86,7 +86,7 @@ func WithDeleteEndpoint(endpoint string) WithFunc {
 	}
 }
 
-func WithEndpoint(endpoint string) WithFunc {
+func WithEndpoint(endpoint string) WithSubscriptionFunc {
 	return func(sub *stu3pb.Subscription) error {
 		if sub.Channel == nil {
 			sub.Channel = &stu3pb.Subscription_Channel{}
@@ -102,7 +102,7 @@ func WithEndpoint(endpoint string) WithFunc {
 	}
 }
 
-func WithHeaders(headers []string) WithFunc {
+func WithHeaders(headers []string) WithSubscriptionFunc {
 	return func(sub *stu3pb.Subscription) error {
 		if len(headers) == 0 {
 			return nil
@@ -118,7 +118,7 @@ func WithHeaders(headers []string) WithFunc {
 	}
 }
 
-func WithContact(system, value, use string) WithFunc {
+func WithContact(system, value, use string) WithSubscriptionFunc {
 	return func(sub *stu3pb.Subscription) error {
 		if sub.Contact == nil {
 			sub.Contact = make([]*stu3dt.ContactPoint, 0)
@@ -166,7 +166,7 @@ func WithContact(system, value, use string) WithFunc {
 }
 
 // WithEndtime sets the end time of the subscription
-func WithEndtime(at time.Time) WithFunc {
+func WithEndtime(at time.Time) WithSubscriptionFunc {
 	return func(sub *stu3pb.Subscription) error {
 		sub.End = &stu3dt.Instant{
 			Precision: stu3dt.Instant_MICROSECOND,
@@ -177,8 +177,8 @@ func WithEndtime(at time.Time) WithFunc {
 }
 
 // NewSubscription creates a FHIR Subscription proto resource
-// The WithFunc option methods should be used to build the structure
-func NewSubscription(options ...WithFunc) (*stu3pb.Subscription, error) {
+// The WithSubscriptionFunc option methods should be used to build the structure
+func NewSubscription(options ...WithSubscriptionFunc) (*stu3pb.Subscription, error) {
 	sub := &stu3pb.Subscription{}
 	sub.Status = &codes_go_proto.SubscriptionStatusCode{
 		Value: codes_go_proto.SubscriptionStatusCode_REQUESTED,
