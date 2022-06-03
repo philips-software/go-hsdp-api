@@ -1,21 +1,46 @@
 package practitioner
 
 import (
+	"fmt"
+
 	stu3dt "github.com/google/fhir/go/proto/google/fhir/proto/stu3/datatypes_go_proto"
 	stu3pb "github.com/google/fhir/go/proto/google/fhir/proto/stu3/resources_go_proto"
 )
 
 type WithFunc func(resource *stu3pb.Practitioner) error
 
-func WithIdentifier(system, value string) WithFunc {
+func WithIdentifier(system, value, use string) WithFunc {
 	return func(resource *stu3pb.Practitioner) error {
 		if resource.Identifier == nil {
 			resource.Identifier = make([]*stu3dt.Identifier, 0)
 		}
-		resource.Identifier = append(resource.Identifier, &stu3dt.Identifier{
+		val := &stu3dt.Identifier{
 			System: &stu3dt.Uri{Value: system},
 			Value:  &stu3dt.String{Value: value},
-		})
+		}
+		switch use {
+		case "":
+			break
+		case "temp":
+			val.Use = &stu3dt.IdentifierUseCode{
+				Value: stu3dt.IdentifierUseCode_TEMP,
+			}
+		case "usual":
+			val.Use = &stu3dt.IdentifierUseCode{
+				Value: stu3dt.IdentifierUseCode_USUAL,
+			}
+		case "official":
+			val.Use = &stu3dt.IdentifierUseCode{
+				Value: stu3dt.IdentifierUseCode_OFFICIAL,
+			}
+		case "secondary":
+			val.Use = &stu3dt.IdentifierUseCode{
+				Value: stu3dt.IdentifierUseCode_SECONDARY,
+			}
+		default:
+			return fmt.Errorf("unknown use '%s'", use)
+		}
+		resource.Identifier = append(resource.Identifier)
 		return nil
 	}
 }
