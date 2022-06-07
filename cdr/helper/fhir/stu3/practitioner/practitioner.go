@@ -40,7 +40,7 @@ func WithIdentifier(system, value, use string) WithFunc {
 		default:
 			return fmt.Errorf("unknown use '%s'", use)
 		}
-		resource.Identifier = append(resource.Identifier)
+		resource.Identifier = append(resource.Identifier, val)
 		return nil
 	}
 }
