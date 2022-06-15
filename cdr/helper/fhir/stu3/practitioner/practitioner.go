@@ -1,10 +1,9 @@
 package practitioner
 
 import (
-	"fmt"
-
 	stu3dt "github.com/google/fhir/go/proto/google/fhir/proto/stu3/datatypes_go_proto"
 	stu3pb "github.com/google/fhir/go/proto/google/fhir/proto/stu3/resources_go_proto"
+	identifierhelper "github.com/philips-software/go-hsdp-api/cdr/helper/fhir/stu3/identifier"
 )
 
 type WithFunc func(resource *stu3pb.Practitioner) error
@@ -17,28 +16,7 @@ func WithIdentifier(system, value, use string) WithFunc {
 		val := &stu3dt.Identifier{
 			System: &stu3dt.Uri{Value: system},
 			Value:  &stu3dt.String{Value: value},
-		}
-		switch use {
-		case "":
-			break
-		case "temp":
-			val.Use = &stu3dt.IdentifierUseCode{
-				Value: stu3dt.IdentifierUseCode_TEMP,
-			}
-		case "usual":
-			val.Use = &stu3dt.IdentifierUseCode{
-				Value: stu3dt.IdentifierUseCode_USUAL,
-			}
-		case "official":
-			val.Use = &stu3dt.IdentifierUseCode{
-				Value: stu3dt.IdentifierUseCode_OFFICIAL,
-			}
-		case "secondary":
-			val.Use = &stu3dt.IdentifierUseCode{
-				Value: stu3dt.IdentifierUseCode_SECONDARY,
-			}
-		default:
-			return fmt.Errorf("unknown use '%s'", use)
+			Use:    identifierhelper.StringToUse(use),
 		}
 		resource.Identifier = append(resource.Identifier, val)
 		return nil

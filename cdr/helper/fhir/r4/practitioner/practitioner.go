@@ -1,11 +1,9 @@
 package practitioner
 
 import (
-	"fmt"
-
-	r4gp "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/codes_go_proto"
 	r4dt "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/datatypes_go_proto"
 	r4pprac "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/practitioner_go_proto"
+	identifierhelper "github.com/philips-software/go-hsdp-api/cdr/helper/fhir/r4/identifier"
 )
 
 type WithFunc func(resource *r4pprac.Practitioner) error
@@ -18,32 +16,7 @@ func WithIdentifier(system, value, use string) WithFunc {
 		val := &r4dt.Identifier{
 			System: &r4dt.Uri{Value: system},
 			Value:  &r4dt.String{Value: value},
-		}
-		switch use {
-		case "":
-			break
-		case "temp":
-			val.Use = &r4dt.Identifier_UseCode{
-				Value: r4gp.IdentifierUseCode_TEMP,
-			}
-		case "usual":
-			val.Use = &r4dt.Identifier_UseCode{
-				Value: r4gp.IdentifierUseCode_USUAL,
-			}
-		case "official":
-			val.Use = &r4dt.Identifier_UseCode{
-				Value: r4gp.IdentifierUseCode_OFFICIAL,
-			}
-		case "old":
-			val.Use = &r4dt.Identifier_UseCode{
-				Value: r4gp.IdentifierUseCode_OLD,
-			}
-		case "secondary":
-			val.Use = &r4dt.Identifier_UseCode{
-				Value: r4gp.IdentifierUseCode_SECONDARY,
-			}
-		default:
-			return fmt.Errorf("unknown use '%s'", use)
+			Use:    identifierhelper.StringToUse(use),
 		}
 		resource.Identifier = append(resource.Identifier, val)
 		return nil
