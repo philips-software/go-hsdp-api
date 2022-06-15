@@ -12,7 +12,7 @@ func WithHost(host string) OptionFunc {
 			req.URL = &url.URL{}
 		}
 		q := req.URL.Query()
-		q.Set("host", fmt.Sprintf("%s", host))
+		q.Set("host", host)
 		req.URL.RawQuery = q.Encode()
 		return nil
 	}
@@ -24,7 +24,7 @@ func WithQuery(query string) OptionFunc {
 			req.URL = &url.URL{}
 		}
 		q := req.URL.Query()
-		q.Set("query", fmt.Sprintf("%s", query))
+		q.Set("query", query)
 		req.URL.RawQuery = q.Encode()
 		return nil
 	}
