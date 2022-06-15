@@ -115,7 +115,7 @@ func (c *MetricsService) GetGroupedRules(options ...OptionFunc) (*[]Group, *Resp
 	return &response.Data.Groups, resp, err
 }
 
-// GetRuleByID retrievs a rule by ID
+// GetRuleByID retrieves a rule by ID
 func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *Response, error) {
 	req, err := c.client.newRequest(CONSOLE, "GET", "v3/metrics/rules/"+id, nil, options)
 	if err != nil {
