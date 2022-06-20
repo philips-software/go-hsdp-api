@@ -216,25 +216,25 @@ host = "cartel-apac3.cloud.phsdp.com"
 
 # Service GATEWAY
 [region.dev.service.gateway]
-host = "gw-na1.phsdp.com"
+host = "gw.na1.hsdp.io"
 domain = "na1.phsdp.com"
 [region.us-east.service.gateway]
-host = "gw-na1.phsdp.com"
+host = "gw.na1.hsdp.io"
 domain = "na1.phsdp.com"
 [region.eu-west.service.gateway]
-host = "gw-eu1.phsdp.com"
+host = "gw.eu1.hsdp.io"
 domain = "emea1.phsdp.com"
 [region.sa1.service.gateway]
-host = "gw-sa1.phsdp.com"
+host = "gw.sa1.hsdp.io"
 domain = "sa1.phsdp.com"
 [region.apac3.service.gateway]
-host = "gw-apac3.phsdp.com"
+host = "gw.ap3.hsdp.io"
 domain = "apac3.phsdp.com"
 [region.ca1.service.gateway]
-host = "gw-ca1.phsdp.com"
+host = "gw.ca1.hsdp.io"
 domain = "ca1.phsdp.com"
 [region.apac2.service.gateway]
-host = "gw-apac2.phsdp.com"
+host = "gw.ap2.hsdp.io"
 domain = "apac2.phsdp.com"
 
 # Service S3CREDS

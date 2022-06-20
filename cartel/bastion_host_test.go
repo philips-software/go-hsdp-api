@@ -1,8 +1,9 @@
 package cartel
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBastionHost(t *testing.T) {
@@ -18,5 +19,5 @@ func TestBastionHost(t *testing.T) {
 	defer teardown()
 
 	bastion := client.BastionHost()
-	assert.Equal(t, "gw-eu1.phsdp.com", bastion)
+	assert.Equal(t, "gw.eu1.hsdp.io", bastion)
 }

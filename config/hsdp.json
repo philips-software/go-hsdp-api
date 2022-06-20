@@ -1,387 +1,41 @@
 {
   "region": {
-    "apac2": {
+    "us-east": {
       "service": {
-        "cartel": {
-          "host": "cartel-apac2.cloud.phsdp.com"
-        },
         "cf": {
-          "url": "https://api.ap-ne.philips-healthsuite.com"
-        },
-        "console": {
-          "url": "https://console.ap2.hsdp.io"
+          "url": "https://api.cloud.pcftest.com",
+          "domain": "us-east.philips-healthsuite.com"
         },
         "docker-registry": {
-          "host": "docker.ap2.hsdp.io",
-          "url": "https://console.ap2.hsdp.io/api/docker/graphql"
-        },
-        "gateway": {
-          "domain": "apac2.phsdp.com",
-          "host": "gw-apac2.phsdp.com"
-        },
-        "uaa": {
-          "url": "https://uaa.ap-ne.philips-healthsuite.com"
-        }
-      }
-    },
-    "apac3": {
-      "env": {
-        "prod": {
-          "service": {
-            "iam": {
-              "url": "https://iam-service.ap3.hsdp.io"
-            },
-            "idm": {
-              "url": "https://idm-service.ap3.hsdp.io"
-            },
-            "kibana": {
-              "url": "https://kibana.ap3.hsdp.io"
-            },
-            "logging": {
-              "url": "https://logingestor2.ap3.hsdp.io"
-            },
-            "logquery": {
-              "url": "https://logquery.ap3.hsdp.io"
-            },
-            "notification": {
-              "url": "https://notification-service.ap3.hsdp.io"
-            }
-          }
-        }
-      },
-      "prod": {
-        "service": {
-          "s3creds": {
-            "url": "https://s3creds-service.ap3.hsdp.io"
-          }
-        }
-      },
-      "service": {
-        "cartel": {
-          "host": "cartel-apac3.cloud.phsdp.com"
-        },
-        "cf": {
-          "domain": "ap3.hsdp.io",
-          "url": "https://api.sys.ap3.hsdp.io"
+          "url": "https://console.na1.hsdp.io/api/docker/graphql",
+          "host": "docker.na1.hsdp.io"
         },
         "console": {
-          "url": "https://console.ap3.hsdp.io"
+          "url": "https://console.na1.hsdp.io"
         },
-        "docker-registry": {
-          "host": "docker.ap3.hsdp.io",
-          "url": "https://console.ap3.hsdp.io/api/docker/graphql"
-        },
-        "gateway": {
-          "domain": "apac3.phsdp.com",
-          "host": "gw-apac3.phsdp.com"
+        "stl": {
+          "url": "https://console.na1.hsdp.io/api/stl/user/v1/graphql",
+          "domain": "na1.vpn.hsdp.io"
         },
         "uaa": {
-          "url": "https://uaa.sys.ap3.hsdp.io"
+          "url": "https://uaa.cloud.pcftest.com"
         },
-        "vault-proxy": {
-          "url": "https://vproxy.ap3.hsdp.io"
-        }
-      }
-    },
-    "ca1": {
-      "env": {
-        "prod": {
-          "service": {
-            "iam": {
-              "url": "https://iam-service.ca1.hsdp.io"
-            },
-            "idm": {
-              "url": "https://idm-service.ca1.hsdp.io"
-            },
-            "kibana": {
-              "url": "https://kibana.ca1.hsdp.io"
-            },
-            "logging": {
-              "url": "https://logingestor2.ca1.hsdp.io"
-            },
-            "logquery": {
-              "url": "https://logquery.ca1.hsdp.io"
-            },
-            "notification": {
-              "url": "https://notification-service.ca1.hsdp.io"
-            }
-          }
-        }
-      },
-      "service": {
-        "cartel": {
-          "host": "cartel-ca1.cloud.phsdp.com"
-        },
-        "cf": {
-          "domain": "ca1.hsdp.io",
-          "url": "https://api.sys.ca1.hsdp.io"
-        },
-        "console": {
-          "url": "https://console.ca1.hsdp.io"
-        },
-        "docker-registry": {
-          "host": "docker.ca1.hsdp.io",
-          "url": "https://console.ca1.hsdp.io/api/docker/graphql"
-        },
-        "gateway": {
-          "domain": "ca1.phsdp.com",
-          "host": "gw-ca1.phsdp.com"
-        },
-        "uaa": {
-          "url": "https://uaa.sys.ca1.hsdp.io"
-        },
-        "vault-proxy": {
-          "url": "https://vproxy.ca1.hsdp.io"
-        }
-      }
-    },
-    "cn1": {
-      "env": {
-        "prod": {
-          "service": {
-            "iam": {
-              "url": "https://iam-service.cn1.philips-healthsuite.com.cn"
-            },
-            "idm": {
-              "url": "https://idm-service.cn1.philips-healthsuite.com.cn"
-            },
-            "notification": {
-              "url": "https://notification-service.cn1.philips-healthsuite.com.cn"
-            },
-            "s3creds": {
-              "url": "https://s3creds-service.cn1.philips-healthsuite.com.cn"
-            }
-          }
-        }
-      },
-      "prod": {
-        "service": {
-          "blr": {
-            "url": "https://blobrepository.cn1.iot.philips-healthsuite.com.cn/connect/blobrepository"
-          },
-          "iot": {
-            "url": "wss://aqrsmt9m297sm.ats.iot.cn-north-1.amazonaws.com.cn/mqtt?topic-prefix=prod"
-          }
-        }
-      },
-      "service": {
-        "vault-proxy": {
-          "url": "https://vproxy.cn1.philips-healthsuite.com.cn"
-        }
-      }
-    },
-    "dev": {
-      "service": {
         "cartel": {
           "host": "cartel-na1.cloud.phsdp.com"
         },
         "gateway": {
-          "domain": "na1.phsdp.com",
-          "host": "gw-na1.phsdp.com"
-        },
-        "stl": {
-          "domain": "na1.vpn.hsdp.io",
-          "url": "https://console.na3.hsdp.io/api/stl/user/v1/graphql"
-        },
-        "uaa": {
-          "url": "https://uaa.cloud.phsdp.com"
-        }
-      }
-    },
-    "eu-west": {
-      "env": {
-        "client-test": {
-          "service": {
-            "connect-mdm": {
-              "url": "https://connect-mdm-client-test.eu-west.philips-healthsuite.com/connect/mdm"
-            },
-            "discovery": {
-              "url": "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/discovery"
-            },
-            "has": {
-              "url": "https://has-client-test.eu-west.philips-healthsuite.com"
-            },
-            "iam": {
-              "url": "https://iam-client-test.eu-west.philips-healthsuite.com"
-            },
-            "idm": {
-              "url": "https://idm-client-test.eu-west.philips-healthsuite.com"
-            },
-            "inference": {
-              "url": "https://client-test-aiinference-service.eu-west.philips-healthsuite.com"
-            },
-            "kibana": {
-              "url": "https://kibana-client-test.eu-west.philips-healthsuite.com"
-            },
-            "logging": {
-              "url": "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
-            },
-            "logquery": {
-              "url": "https://logquery-client-test.eu-west.philips-healthsuite.com"
-            },
-            "notification": {
-              "url": "https://notification-client-test.eu-west.philips-healthsuite.com"
-            },
-            "pki": {
-              "url": "https://pki-proxy-client-test.eu-west.philips-healthsuite.com"
-            },
-            "s3creds": {
-              "url": "https://s3creds-client-test.eu-west.philips-healthsuite.com"
-            },
-            "training": {
-              "url": "https://client-test-training-service.eu-west.philips-healthsuite.com"
-            },
-            "workspace": {
-              "url": "https://client-test-aiworkspace-service.eu-west.philips-healthsuite.com"
-            }
-          }
-        },
-        "prod": {
-          "service": {
-            "blr": {
-              "url": "https://blobrepository-client-test.eu01.connect.hsdp.io/connect/blobrepository"
-            },
-            "connect-mdm": {
-              "url": "https://connect-mdm.eu-west.philips-healthsuite.com/connect/mdm"
-            },
-            "iam": {
-              "url": "https://iam-service.eu-west.philips-healthsuite.com"
-            },
-            "idm": {
-              "url": "https://idm-service.eu-west.philips-healthsuite.com"
-            },
-            "inference": {
-              "url": "https://aiinference-service.eu-west.philips-healthsuite.com"
-            },
-            "iot": {
-              "url": "wss://a370yzaa002yx5-ats.iot.eu-west-1.amazonaws.com/mqtt?topic-prefix=prod"
-            },
-            "kibana": {
-              "url": "https://kibana.eu-west.philips-healthsuite.com"
-            },
-            "logging": {
-              "url": "https://logingestor2.eu-west.philips-healthsuite.com"
-            },
-            "logquery": {
-              "url": "https://logquery.eu-west.philips-healthsuite.com"
-            },
-            "notification": {
-              "url": "https://notification-service.eu-west.philips-healthsuite.com"
-            },
-            "s3creds": {
-              "url": "https://s3creds-service.eu-west.philips-healthsuite.com"
-            },
-            "training": {
-              "url": "https://training-service.eu-west.philips-healthsuite.com"
-            },
-            "workspace": {
-              "url": "https://aiworkspace-service.eu-west.philips-healthsuite.com"
-            }
-          }
-        }
-      },
-      "service": {
-        "cartel": {
-          "host": "cartel-eu1.cloud.phsdp.com"
-        },
-        "cf": {
-          "domain": "eu-west.philips-healthsuite.com",
-          "url": "https://api.eu1.phsdp.com"
-        },
-        "console": {
-          "url": "https://console.eu1.hsdp.io"
-        },
-        "docker-registry": {
-          "host": "docker.eu1.hsdp.io",
-          "url": "https://console.eu1.hsdp.io/api/docker/graphql"
-        },
-        "gateway": {
-          "domain": "emea1.phsdp.com",
-          "host": "gw-eu1.phsdp.com"
-        },
-        "stl": {
-          "domain": "emea1.vpn.hsdp.io",
-          "url": "https://console.eu1.hsdp.io/api/stl/user/v1/graphql"
-        },
-        "uaa": {
-          "url": "https://uaa.eu1.phsdp.com"
+          "host": "gw.na1.hsdp.io",
+          "domain": "na1.phsdp.com"
         },
         "vault-proxy": {
-          "url": "https://vproxy.eu-west.philips-healthsuite.com"
-        }
-      }
-    },
-    "sa1": {
-      "env": {
-        "client-test": {
-          "service": {
-            "kibana": {
-              "url": "https://kibana-client-test.sa1.hsdp.io"
-            }
-          }
-        },
-        "prod": {
-          "service": {
-            "iam": {
-              "url": "https://iam-service.sa1.hsdp.io"
-            },
-            "idm": {
-              "url": "https://idm-service.sa1.hsdp.io"
-            },
-            "kibana": {
-              "url": "https://kibana.sa1.hsdp.io"
-            },
-            "logging": {
-              "url": "https://logingestor2.sa1.hsdp.io"
-            },
-            "logquery": {
-              "url": "https://logquery.sa1.hsdp.io"
-            },
-            "notification": {
-              "url": "https://notification-service.sa1.hsdp.io"
-            }
-          }
+          "url": "https://vproxy.us-east.philips-healthsuite.com"
         }
       },
-      "service": {
-        "cartel": {
-          "host": "cartel-sa1.cloud.phsdp.com"
-        },
-        "cf": {
-          "domain": "sa1.hsdp.io",
-          "url": "https://api.sys.sa1.hsdp.io"
-        },
-        "console": {
-          "url": "https://console.sa1.hsdp.io"
-        },
-        "docker-registry": {
-          "host": "docker.sa1.hsdp.io",
-          "url": "https://console.sa1.hsdp.io/api/docker/graphql"
-        },
-        "gateway": {
-          "domain": "sa1.phsdp.com",
-          "host": "gw-sa1.phsdp.com"
-        },
-        "uaa": {
-          "url": "https://uaa.sys.sa1.hsdp.io"
-        },
-        "vault-proxy": {
-          "url": "https://vproxy.sa1.hsdp.io"
-        }
-      }
-    },
-    "us-east": {
       "env": {
         "client-test": {
           "service": {
-            "blr": {
-              "url": "https://blobrepository-client-test.us01.connect.hsdp.io/connect/blobrepository"
-            },
-            "connect-mdm": {
-              "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
-            },
-            "discovery": {
-              "url": "https://discovery-client-test.us01.connect.hsdp.io/client-test/core/discovery"
+            "notification": {
+              "url": "https://notification-client-test.us-east.philips-healthsuite.com"
             },
             "iam": {
               "url": "https://iam-client-test.us-east.philips-healthsuite.com"
@@ -389,14 +43,8 @@
             "idm": {
               "url": "https://idm-client-test.us-east.philips-healthsuite.com"
             },
-            "inference": {
-              "url": "https://client-test-aiinference-service.us-east.philips-healthsuite.com"
-            },
-            "iot": {
-              "url": "wss://a2vgioynsisd7n-ats.iot.us-east-1.amazonaws.com/mqtt?topic-prefix=client-test"
-            },
-            "kibana": {
-              "url": "https://kibana-client-test.us-east.philips-healthsuite.com"
+            "s3creds": {
+              "url": "https://s3creds-client-test.us-east.philips-healthsuite.com"
             },
             "logging": {
               "url": "https://logingestor2-client-test.us-east.philips-healthsuite.com"
@@ -404,43 +52,39 @@
             "logquery": {
               "url": "https://logquery-client-test.us-east.philips-healthsuite.com"
             },
-            "notification": {
-              "url": "https://notification-client-test.us-east.philips-healthsuite.com"
+            "kibana": {
+              "url": "https://kibana-client-test.us-east.philips-healthsuite.com"
             },
             "pki": {
               "url": "https://pki-client-test.us-east.philips-healthsuite.com"
             },
-            "s3creds": {
-              "url": "https://s3creds-client-test.us-east.philips-healthsuite.com"
+            "inference": {
+              "url": "https://client-test-aiinference-service.us-east.philips-healthsuite.com"
+            },
+            "workspace": {
+              "url": "https://client-test-aiworkspace-service.us-east.philips-healthsuite.com"
             },
             "training": {
               "url": "https://client-test-training-service.us-east.philips-healthsuite.com"
             },
-            "workspace": {
-              "url": "https://client-test-aiworkspace-service.us-east.philips-healthsuite.com"
-            }
-          }
-        },
-        "dev": {
-          "service": {
-            "iam": {
-              "url": "https://iam-development.us-east.philips-healthsuite.com"
+            "connect-mdm": {
+              "url": "https://connect-mdm-client-test.us-east.philips-healthsuite.com/connect/mdm"
             },
-            "idm": {
-              "url": "https://idm-development.us-east.philips-healthsuite.com"
+            "discovery": {
+              "url": "https://discovery-client-test.us01.connect.hsdp.io/client-test/core/discovery"
             },
-            "notification": {
-              "url": "https://notification-dev.us-east.philips-healthsuite.com"
+            "blr": {
+              "url": "https://blobrepository-client-test.us01.connect.hsdp.io/connect/blobrepository"
             },
-            "s3creds": {
-              "url": "https://s3creds-development.us-east.philips-healthsuite.com"
+            "iot": {
+              "url": "wss://a2vgioynsisd7n-ats.iot.us-east-1.amazonaws.com/mqtt?topic-prefix=client-test"
             }
           }
         },
         "prod": {
           "service": {
-            "connect-mdm": {
-              "url": "https://connect-mdm.us-east.philips-healthsuite.com/connect/mdm"
+            "notification": {
+              "url": "https://notification-service.us-east.philips-healthsuite.com"
             },
             "iam": {
               "url": "https://iam-service.us-east.philips-healthsuite.com"
@@ -448,11 +92,8 @@
             "idm": {
               "url": "https://idm-service.us-east.philips-healthsuite.com"
             },
-            "inference": {
-              "url": "https://aiinference-service.us-east.philips-healthsuite.com"
-            },
-            "kibana": {
-              "url": "https://kibana.us-east.philips-healthsuite.com"
+            "s3creds": {
+              "url": "https://s3creds-service.us-east.philips-healthsuite.com"
             },
             "logging": {
               "url": "https://logingestor2.us-east.philips-healthsuite.com"
@@ -460,17 +101,36 @@
             "logquery": {
               "url": "https://logquery.us-east.philips-healthsuite.com"
             },
-            "notification": {
-              "url": "https://notification-service.us-east.philips-healthsuite.com"
+            "kibana": {
+              "url": "https://kibana.us-east.philips-healthsuite.com"
             },
-            "s3creds": {
-              "url": "https://s3creds-service.us-east.philips-healthsuite.com"
+            "inference": {
+              "url": "https://aiinference-service.us-east.philips-healthsuite.com"
+            },
+            "workspace": {
+              "url": "https://aiworkspace-service.us-east.philips-healthsuite.com"
             },
             "training": {
               "url": "https://training-service.us-east.philips-healthsuite.com"
             },
-            "workspace": {
-              "url": "https://aiworkspace-service.us-east.philips-healthsuite.com"
+            "connect-mdm": {
+              "url": "https://connect-mdm.us-east.philips-healthsuite.com/connect/mdm"
+            }
+          }
+        },
+        "dev": {
+          "service": {
+            "notification": {
+              "url": "https://notification-dev.us-east.philips-healthsuite.com"
+            },
+            "iam": {
+              "url": "https://iam-development.us-east.philips-healthsuite.com"
+            },
+            "idm": {
+              "url": "https://idm-development.us-east.philips-healthsuite.com"
+            },
+            "s3creds": {
+              "url": "https://s3creds-development.us-east.philips-healthsuite.com"
             }
           }
         },
@@ -481,35 +141,375 @@
             }
           }
         }
-      },
+      }
+    },
+    "eu-west": {
       "service": {
+        "cf": {
+          "url": "https://api.eu1.phsdp.com",
+          "domain": "eu-west.philips-healthsuite.com"
+        },
+        "docker-registry": {
+          "url": "https://console.eu1.hsdp.io/api/docker/graphql",
+          "host": "docker.eu1.hsdp.io"
+        },
+        "console": {
+          "url": "https://console.eu1.hsdp.io"
+        },
+        "stl": {
+          "url": "https://console.eu1.hsdp.io/api/stl/user/v1/graphql",
+          "domain": "emea1.vpn.hsdp.io"
+        },
+        "uaa": {
+          "url": "https://uaa.eu1.phsdp.com"
+        },
+        "cartel": {
+          "host": "cartel-eu1.cloud.phsdp.com"
+        },
+        "gateway": {
+          "host": "gw.eu1.hsdp.io",
+          "domain": "emea1.phsdp.com"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.eu-west.philips-healthsuite.com"
+        }
+      },
+      "env": {
+        "client-test": {
+          "service": {
+            "notification": {
+              "url": "https://notification-client-test.eu-west.philips-healthsuite.com"
+            },
+            "iam": {
+              "url": "https://iam-client-test.eu-west.philips-healthsuite.com"
+            },
+            "idm": {
+              "url": "https://idm-client-test.eu-west.philips-healthsuite.com"
+            },
+            "s3creds": {
+              "url": "https://s3creds-client-test.eu-west.philips-healthsuite.com"
+            },
+            "has": {
+              "url": "https://has-client-test.eu-west.philips-healthsuite.com"
+            },
+            "logging": {
+              "url": "https://logingestor2-client-test.eu-west.philips-healthsuite.com"
+            },
+            "logquery": {
+              "url": "https://logquery-client-test.eu-west.philips-healthsuite.com"
+            },
+            "kibana": {
+              "url": "https://kibana-client-test.eu-west.philips-healthsuite.com"
+            },
+            "pki": {
+              "url": "https://pki-proxy-client-test.eu-west.philips-healthsuite.com"
+            },
+            "inference": {
+              "url": "https://client-test-aiinference-service.eu-west.philips-healthsuite.com"
+            },
+            "workspace": {
+              "url": "https://client-test-aiworkspace-service.eu-west.philips-healthsuite.com"
+            },
+            "training": {
+              "url": "https://client-test-training-service.eu-west.philips-healthsuite.com"
+            },
+            "connect-mdm": {
+              "url": "https://connect-mdm-client-test.eu-west.philips-healthsuite.com/connect/mdm"
+            },
+            "discovery": {
+              "url": "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/discovery"
+            }
+          }
+        },
+        "prod": {
+          "service": {
+            "notification": {
+              "url": "https://notification-service.eu-west.philips-healthsuite.com"
+            },
+            "iam": {
+              "url": "https://iam-service.eu-west.philips-healthsuite.com"
+            },
+            "idm": {
+              "url": "https://idm-service.eu-west.philips-healthsuite.com"
+            },
+            "s3creds": {
+              "url": "https://s3creds-service.eu-west.philips-healthsuite.com"
+            },
+            "logging": {
+              "url": "https://logingestor2.eu-west.philips-healthsuite.com"
+            },
+            "logquery": {
+              "url": "https://logquery.eu-west.philips-healthsuite.com"
+            },
+            "kibana": {
+              "url": "https://kibana.eu-west.philips-healthsuite.com"
+            },
+            "inference": {
+              "url": "https://aiinference-service.eu-west.philips-healthsuite.com"
+            },
+            "workspace": {
+              "url": "https://aiworkspace-service.eu-west.philips-healthsuite.com"
+            },
+            "training": {
+              "url": "https://training-service.eu-west.philips-healthsuite.com"
+            },
+            "connect-mdm": {
+              "url": "https://connect-mdm.eu-west.philips-healthsuite.com/connect/mdm"
+            },
+            "blr": {
+              "url": "https://blobrepository-client-test.eu01.connect.hsdp.io/connect/blobrepository"
+            },
+            "iot": {
+              "url": "wss://a370yzaa002yx5-ats.iot.eu-west-1.amazonaws.com/mqtt?topic-prefix=prod"
+            }
+          }
+        }
+      }
+    },
+    "sa1": {
+      "service": {
+        "cf": {
+          "url": "https://api.sys.sa1.hsdp.io",
+          "domain": "sa1.hsdp.io"
+        },
+        "docker-registry": {
+          "url": "https://console.sa1.hsdp.io/api/docker/graphql",
+          "host": "docker.sa1.hsdp.io"
+        },
+        "console": {
+          "url": "https://console.sa1.hsdp.io"
+        },
+        "uaa": {
+          "url": "https://uaa.sys.sa1.hsdp.io"
+        },
+        "cartel": {
+          "host": "cartel-sa1.cloud.phsdp.com"
+        },
+        "gateway": {
+          "host": "gw.sa1.hsdp.io",
+          "domain": "sa1.phsdp.com"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.sa1.hsdp.io"
+        }
+      },
+      "env": {
+        "prod": {
+          "service": {
+            "notification": {
+              "url": "https://notification-service.sa1.hsdp.io"
+            },
+            "iam": {
+              "url": "https://iam-service.sa1.hsdp.io"
+            },
+            "idm": {
+              "url": "https://idm-service.sa1.hsdp.io"
+            },
+            "logging": {
+              "url": "https://logingestor2.sa1.hsdp.io"
+            },
+            "logquery": {
+              "url": "https://logquery.sa1.hsdp.io"
+            },
+            "kibana": {
+              "url": "https://kibana.sa1.hsdp.io"
+            }
+          }
+        },
+        "client-test": {
+          "service": {
+            "kibana": {
+              "url": "https://kibana-client-test.sa1.hsdp.io"
+            }
+          }
+        }
+      }
+    },
+    "apac3": {
+      "service": {
+        "cf": {
+          "url": "https://api.sys.ap3.hsdp.io",
+          "domain": "ap3.hsdp.io"
+        },
+        "docker-registry": {
+          "url": "https://console.ap3.hsdp.io/api/docker/graphql",
+          "host": "docker.ap3.hsdp.io"
+        },
+        "console": {
+          "url": "https://console.ap3.hsdp.io"
+        },
+        "uaa": {
+          "url": "https://uaa.sys.ap3.hsdp.io"
+        },
+        "cartel": {
+          "host": "cartel-apac3.cloud.phsdp.com"
+        },
+        "gateway": {
+          "host": "gw.ap3.hsdp.io",
+          "domain": "apac3.phsdp.com"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.ap3.hsdp.io"
+        }
+      },
+      "env": {
+        "prod": {
+          "service": {
+            "notification": {
+              "url": "https://notification-service.ap3.hsdp.io"
+            },
+            "iam": {
+              "url": "https://iam-service.ap3.hsdp.io"
+            },
+            "idm": {
+              "url": "https://idm-service.ap3.hsdp.io"
+            },
+            "logging": {
+              "url": "https://logingestor2.ap3.hsdp.io"
+            },
+            "logquery": {
+              "url": "https://logquery.ap3.hsdp.io"
+            },
+            "kibana": {
+              "url": "https://kibana.ap3.hsdp.io"
+            }
+          }
+        }
+      },
+      "prod": {
+        "service": {
+          "s3creds": {
+            "url": "https://s3creds-service.ap3.hsdp.io"
+          }
+        }
+      }
+    },
+    "ca1": {
+      "service": {
+        "cf": {
+          "url": "https://api.sys.ca1.hsdp.io",
+          "domain": "ca1.hsdp.io"
+        },
+        "docker-registry": {
+          "url": "https://console.ca1.hsdp.io/api/docker/graphql",
+          "host": "docker.ca1.hsdp.io"
+        },
+        "console": {
+          "url": "https://console.ca1.hsdp.io"
+        },
+        "uaa": {
+          "url": "https://uaa.sys.ca1.hsdp.io"
+        },
+        "cartel": {
+          "host": "cartel-ca1.cloud.phsdp.com"
+        },
+        "gateway": {
+          "host": "gw.ca1.hsdp.io",
+          "domain": "ca1.phsdp.com"
+        },
+        "vault-proxy": {
+          "url": "https://vproxy.ca1.hsdp.io"
+        }
+      },
+      "env": {
+        "prod": {
+          "service": {
+            "notification": {
+              "url": "https://notification-service.ca1.hsdp.io"
+            },
+            "iam": {
+              "url": "https://iam-service.ca1.hsdp.io"
+            },
+            "idm": {
+              "url": "https://idm-service.ca1.hsdp.io"
+            },
+            "logging": {
+              "url": "https://logingestor2.ca1.hsdp.io"
+            },
+            "logquery": {
+              "url": "https://logquery.ca1.hsdp.io"
+            },
+            "kibana": {
+              "url": "https://kibana.ca1.hsdp.io"
+            }
+          }
+        }
+      }
+    },
+    "apac2": {
+      "service": {
+        "cf": {
+          "url": "https://api.ap-ne.philips-healthsuite.com"
+        },
+        "docker-registry": {
+          "url": "https://console.ap2.hsdp.io/api/docker/graphql",
+          "host": "docker.ap2.hsdp.io"
+        },
+        "console": {
+          "url": "https://console.ap2.hsdp.io"
+        },
+        "uaa": {
+          "url": "https://uaa.ap-ne.philips-healthsuite.com"
+        },
+        "cartel": {
+          "host": "cartel-apac2.cloud.phsdp.com"
+        },
+        "gateway": {
+          "host": "gw.ap2.hsdp.io",
+          "domain": "apac2.phsdp.com"
+        }
+      }
+    },
+    "dev": {
+      "service": {
+        "stl": {
+          "url": "https://console.na3.hsdp.io/api/stl/user/v1/graphql",
+          "domain": "na1.vpn.hsdp.io"
+        },
+        "uaa": {
+          "url": "https://uaa.cloud.phsdp.com"
+        },
         "cartel": {
           "host": "cartel-na1.cloud.phsdp.com"
         },
-        "cf": {
-          "domain": "us-east.philips-healthsuite.com",
-          "url": "https://api.cloud.pcftest.com"
-        },
-        "console": {
-          "url": "https://console.na1.hsdp.io"
-        },
-        "docker-registry": {
-          "host": "docker.na1.hsdp.io",
-          "url": "https://console.na1.hsdp.io/api/docker/graphql"
-        },
         "gateway": {
-          "domain": "na1.phsdp.com",
-          "host": "gw-na1.phsdp.com"
-        },
-        "stl": {
-          "domain": "na1.vpn.hsdp.io",
-          "url": "https://console.na1.hsdp.io/api/stl/user/v1/graphql"
-        },
-        "uaa": {
-          "url": "https://uaa.cloud.pcftest.com"
-        },
+          "host": "gw.na1.hsdp.io",
+          "domain": "na1.phsdp.com"
+        }
+      }
+    },
+    "cn1": {
+      "env": {
+        "prod": {
+          "service": {
+            "notification": {
+              "url": "https://notification-service.cn1.philips-healthsuite.com.cn"
+            },
+            "iam": {
+              "url": "https://iam-service.cn1.philips-healthsuite.com.cn"
+            },
+            "idm": {
+              "url": "https://idm-service.cn1.philips-healthsuite.com.cn"
+            },
+            "s3creds": {
+              "url": "https://s3creds-service.cn1.philips-healthsuite.com.cn"
+            }
+          }
+        }
+      },
+      "service": {
         "vault-proxy": {
-          "url": "https://vproxy.us-east.philips-healthsuite.com"
+          "url": "https://vproxy.cn1.philips-healthsuite.com.cn"
+        }
+      },
+      "prod": {
+        "service": {
+          "blr": {
+            "url": "https://blobrepository.cn1.iot.philips-healthsuite.com.cn/connect/blobrepository"
+          },
+          "iot": {
+            "url": "wss://aqrsmt9m297sm.ats.iot.cn-north-1.amazonaws.com.cn/mqtt?topic-prefix=prod"
+          }
         }
       }
     },
