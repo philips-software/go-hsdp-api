@@ -155,7 +155,7 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 	return nil
 }
 
-// newCDRRequest creates an new CDR Service API request. A relative URL path can be provided in
+// newCDRRequest creates a new CDR Service API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
@@ -175,17 +175,7 @@ func (c *Client) newCDRRequest(method, path string, bodyBytes []byte, options []
 		Host:       u.Host,
 	}
 
-	for _, fn := range options {
-		if fn == nil {
-			continue
-		}
-
-		if err := fn(req); err != nil {
-			return nil, err
-		}
-	}
-
-	if method == "POST" || method == "PUT" || method == "PATCH" {
+	if (method == "POST" || method == "PUT" || method == "PATCH") && bodyBytes != nil {
 		bodyReader := bytes.NewReader(bodyBytes)
 		req.Body = ioutil.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
@@ -199,6 +189,15 @@ func (c *Client) newCDRRequest(method, path string, bodyBytes []byte, options []
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
+	}
+	for _, fn := range options {
+		if fn == nil {
+			continue
+		}
+
+		if err := fn(req); err != nil {
+			return nil, err
+		}
 	}
 	return req, nil
 }
@@ -246,7 +245,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	if v != nil {
-		defer resp.Body.Close() // Only close if we plan to read it
+		defer func() {
+			_ = resp.Body.Close()
+		}() // Only close if we plan to read it
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {
