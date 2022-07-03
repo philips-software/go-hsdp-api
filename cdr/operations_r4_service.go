@@ -19,12 +19,17 @@ type OperationsR4Service struct {
 
 // Patch makes changes to a FHIR resources accepting the JSONPatch format set
 func (o *OperationsR4Service) Patch(resourceID string, jsonPatch []byte, options ...OptionFunc) (*r4pb.ContainedResource, *Response, error) {
-	req, err := o.client.newCDRRequest(http.MethodPatch, resourceID, jsonPatch, options)
+	req, err := o.client.newCDRRequest(http.MethodPatch, resourceID, jsonPatch, append([]OptionFunc{
+		func(req *http.Request) error {
+			req.Header.Set("Content-Type", "application/json-patch+json")
+			return nil
+		},
+	},
+		options...))
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Accept", "application/fhir+json;fhirVersion=4.0")
-	req.Header.Set("Content-Type", "application/json-patch+json")
 	var patchResponse bytes.Buffer
 	resp, err := o.client.do(req, &patchResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
@@ -53,12 +58,17 @@ func (o *OperationsR4Service) Put(resourceID string, jsonBody []byte, options ..
 
 // Get returns a FHIR resource
 func (o *OperationsR4Service) Get(resourceID string, options ...OptionFunc) (*r4pb.ContainedResource, *Response, error) {
-	req, err := o.client.newCDRRequest(http.MethodGet, resourceID, nil, options)
+	req, err := o.client.newCDRRequest(http.MethodGet, resourceID, nil, append([]OptionFunc{
+		func(req *http.Request) error {
+			req.Header.Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
+			return nil
+		},
+	},
+		options...))
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Accept", "application/fhir+json;fhirVersion=4.0")
-	req.Header.Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 	var operationResponse bytes.Buffer
 	resp, err := o.client.do(req, &operationResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
@@ -77,12 +87,16 @@ func (o *OperationsR4Service) Get(resourceID string, options ...OptionFunc) (*r4
 
 // Delete removes a FHIR resource
 func (o *OperationsR4Service) Delete(resourceID string, options ...OptionFunc) (bool, *Response, error) {
-	req, err := o.client.newCDRRequest(http.MethodDelete, resourceID, nil, options)
+	req, err := o.client.newCDRRequest(http.MethodDelete, resourceID, nil, append([]OptionFunc{
+		func(req *http.Request) error {
+			req.Header.Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
+			return nil
+		},
+	}, options...))
 	if err != nil {
 		return false, nil, err
 	}
 	req.Header.Set("Accept", "application/fhir+json;fhirVersion=4.0")
-	req.Header.Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 	var operationResponse bytes.Buffer
 	resp, err := o.client.do(req, &operationResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
@@ -95,12 +109,16 @@ func (o *OperationsR4Service) Delete(resourceID string, options ...OptionFunc) (
 }
 
 func (o *OperationsR4Service) postOrPut(method, resourceID string, jsonBody []byte, options ...OptionFunc) (*r4pb.ContainedResource, *Response, error) {
-	req, err := o.client.newCDRRequest(method, resourceID, jsonBody, options)
+	req, err := o.client.newCDRRequest(method, resourceID, jsonBody, append([]OptionFunc{
+		func(req *http.Request) error {
+			req.Header.Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
+			return nil
+		},
+	}, options...))
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Accept", "application/fhir+json;fhirVersion=4.0")
-	req.Header.Set("Content-Type", "application/fhir+json;fhirVersion=4.0")
 	var operationResponse bytes.Buffer
 	resp, err := o.client.do(req, &operationResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
