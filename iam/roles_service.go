@@ -42,6 +42,8 @@ type RoleSharingPolicy struct {
 	TargetOrganizationID string `json:"targetOrganizationId"`
 	InternalID           string `json:"internalId,omitempty"`
 	SourceOrganizationID string `json:"sourceOrganizationId,omitempty"`
+	RoleName             string `json:"roleName,omitempty"`
+	RoleID               string `json:"roleId,omitempty"`
 	Meta                 *Meta  `json:"meta,omitempty"`
 }
 
