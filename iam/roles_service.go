@@ -226,8 +226,8 @@ func (p *RolesService) RemoveSharingPolicy(role Role, policy RoleSharingPolicy) 
 
 func (p *RolesService) ListSharingPolicies(role Role, opt *ListSharingPoliciesOptions) (*[]RoleSharingPolicy, *Response, error) {
 	var listResponse struct {
-		Count  int                 `json:"count"`
-		Result []RoleSharingPolicy `json:"result"`
+		Total int                 `json:"total"`
+		Entry []RoleSharingPolicy `json:"entry"`
 	}
 
 	req, err := p.client.newRequest(IDM, http.MethodGet, "authorize/identity/Role/"+role.ID+"/"+"$list-sharing-policies", opt, nil)
@@ -240,5 +240,5 @@ func (p *RolesService) ListSharingPolicies(role Role, opt *ListSharingPoliciesOp
 	if err != nil {
 		return nil, resp, err
 	}
-	return &listResponse.Result, resp, nil
+	return &listResponse.Entry, resp, nil
 }
