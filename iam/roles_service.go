@@ -1,5 +1,7 @@
 package iam
 
+import "net/http"
+
 var (
 	roleAPIVersion = "1"
 )
@@ -25,9 +27,27 @@ type GetRolesOptions struct {
 	RoleID         *string `url:"roleId,omitempty"`
 }
 
+// ListSharingPoliciesOptions describes search criteria for listing RoleSharingPolicy resources
+type ListSharingPoliciesOptions struct {
+	TargetOrganizationID *string `url:"targetOrganizationId,omitempty"`
+	SharingPolicy        *string `url:"sharingPolicy,omitempty"`
+	RecordsPerPage       *int    `url:"recordsPerPage,omitempty"`
+	StartPage            *int    `url:"startPage,omitempty"`
+}
+
+// RoleSharingPolicy describes a role sharing policy
+type RoleSharingPolicy struct {
+	SharingPolicy        string `json:"sharingPolicy"`
+	Purpose              string `json:"purpose"`
+	TargetOrganizationId string `json:"targetOrganizationId"`
+	InternalID           string `json:"internalId,omitempty"`
+	SourceOrganizationId string `json:"sourceOrganizationId,omitempty"`
+	Meta                 *Meta  `json:"meta,omitempty"`
+}
+
 // GetRoles retries based on GetRolesOptions
 func (p *RolesService) GetRoles(opt *GetRolesOptions) (*[]Role, *Response, error) {
-	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Role", opt, nil)
+	req, err := p.client.newRequest(IDM, http.MethodGet, "authorize/identity/Role", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -56,7 +76,7 @@ func (p *RolesService) GetRolesByGroupID(groupID string) (*[]Role, *Response, er
 
 // GetRoleByID retrieves a role by ID
 func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
-	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Role/"+roleID, nil, nil)
+	req, err := p.client.newRequest(IDM, http.MethodGet, "authorize/identity/Role/"+roleID, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -82,7 +102,7 @@ func (p *RolesService) CreateRole(name, description, managingOrganization string
 		Description:          description,
 		ManagingOrganization: managingOrganization,
 	}
-	req, _ := p.client.newRequest(IDM, "POST", "authorize/identity/Role", role, nil)
+	req, _ := p.client.newRequest(IDM, http.MethodPost, "authorize/identity/Role", role, nil)
 	req.Header.Set("api-version", roleAPIVersion)
 
 	var createdRole Role
@@ -98,7 +118,7 @@ type RoleResponse map[string]interface{}
 
 // DeleteRole deletes the given Role
 func (p *RolesService) DeleteRole(role Role) (RoleResponse, *Response, error) {
-	req, err := p.client.newRequest(IDM, "DELETE", "authorize/identity/Role/"+role.ID, nil, nil)
+	req, err := p.client.newRequest(IDM, http.MethodDelete, "authorize/identity/Role/"+role.ID, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -115,7 +135,7 @@ func (p *RolesService) DeleteRole(role Role) (RoleResponse, *Response, error) {
 func (p *RolesService) GetRolePermissions(role Role) (*[]string, *Response, error) {
 	opt := &GetRolesOptions{RoleID: &role.ID}
 
-	req, err := p.client.newRequest(IDM, "GET", "authorize/identity/Permission", opt, nil)
+	req, err := p.client.newRequest(IDM, http.MethodGet, "authorize/identity/Permission", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -145,7 +165,7 @@ func (p *RolesService) rolePermissionAction(role Role, permissions []string, act
 	}
 	permissionRequest.Permissions = permissions
 
-	req, err := p.client.newRequest(IDM, "POST", "authorize/identity/Role/"+role.ID+"/"+action, &permissionRequest, nil)
+	req, err := p.client.newRequest(IDM, http.MethodPost, "authorize/identity/Role/"+role.ID+"/"+action, &permissionRequest, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -168,4 +188,55 @@ func (p *RolesService) AddRolePermission(role Role, permission string) (RoleResp
 // RemoveRolePermission removes the permission from the Role
 func (p *RolesService) RemoveRolePermission(role Role, permission string) (RoleResponse, *Response, error) {
 	return p.rolePermissionAction(role, []string{permission}, "$remove-permission")
+}
+
+func (p *RolesService) ApplySharingPolicy(role Role, policy RoleSharingPolicy) (*RoleSharingPolicy, *Response, error) {
+	req, err := p.client.newRequest(IDM, http.MethodPut, "authorize/identity/Role/"+role.ID+"/"+"$apply-sharing-policy", &policy, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", roleAPIVersion)
+
+	var roleResponse RoleSharingPolicy
+
+	resp, err := p.client.do(req, &roleResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &roleResponse, resp, nil
+}
+
+func (p *RolesService) RemoveSharingPolicy(role Role, policy RoleSharingPolicy) (*RoleSharingPolicy, *Response, error) {
+	req, err := p.client.newRequest(IDM, http.MethodPost, "authorize/identity/Role/"+role.ID+"/"+"$remove-sharing-policy", &policy, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", roleAPIVersion)
+
+	var roleResponse RoleSharingPolicy
+
+	resp, err := p.client.do(req, &roleResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &roleResponse, resp, nil
+}
+
+func (p *RolesService) ListSharingPolicies(role Role, opt *ListSharingPoliciesOptions) (*[]RoleSharingPolicy, *Response, error) {
+	var listResponse struct {
+		Count  int                 `json:"count"`
+		Result []RoleSharingPolicy `json:"result"`
+	}
+
+	req, err := p.client.newRequest(IDM, http.MethodPost, "authorize/identity/Role/"+role.ID+"/"+"$list-sharing-policies", opt, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", roleAPIVersion)
+
+	resp, err := p.client.do(req, &listResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &listResponse.Result, resp, nil
 }
