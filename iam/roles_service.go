@@ -39,9 +39,9 @@ type ListSharingPoliciesOptions struct {
 type RoleSharingPolicy struct {
 	SharingPolicy        string `json:"sharingPolicy"`
 	Purpose              string `json:"purpose"`
-	TargetOrganizationId string `json:"targetOrganizationId"`
+	TargetOrganizationID string `json:"targetOrganizationId"`
 	InternalID           string `json:"internalId,omitempty"`
-	SourceOrganizationId string `json:"sourceOrganizationId,omitempty"`
+	SourceOrganizationID string `json:"sourceOrganizationId,omitempty"`
 	Meta                 *Meta  `json:"meta,omitempty"`
 }
 
@@ -228,7 +228,7 @@ func (p *RolesService) ListSharingPolicies(role Role, opt *ListSharingPoliciesOp
 		Result []RoleSharingPolicy `json:"result"`
 	}
 
-	req, err := p.client.newRequest(IDM, http.MethodPost, "authorize/identity/Role/"+role.ID+"/"+"$list-sharing-policies", opt, nil)
+	req, err := p.client.newRequest(IDM, http.MethodGet, "authorize/identity/Role/"+role.ID+"/"+"$list-sharing-policies", opt, nil)
 	if err != nil {
 		return nil, nil, err
 	}
