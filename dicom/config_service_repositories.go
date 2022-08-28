@@ -12,6 +12,7 @@ type Repository struct {
 	ID                  string                  `json:"id,omitempty"`
 	OrganizationID      string                  `json:"organizationId"`
 	ActiveObjectStoreID string                  `json:"activeObjectStoreId"`
+	StoreAsComposite    bool                    `json:"storeAsComposite,omitempty"`
 	Notification        *RepositoryNotification `json:"notification,omitempty"`
 }
 
