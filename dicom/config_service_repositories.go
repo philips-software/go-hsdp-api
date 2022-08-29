@@ -76,6 +76,9 @@ func (c *ConfigService) GetRepository(id string, opt *QueryOptions, options ...O
 	var repo Repository
 	resp, err := c.client.do(req, &repo)
 	if (err != nil && err != io.EOF) || resp == nil {
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
+			return nil, resp, ErrNotFound
+		}
 		if resp == nil && err != nil {
 			err = fmt.Errorf("GetRepository: %w", ErrEmptyResult)
 		}

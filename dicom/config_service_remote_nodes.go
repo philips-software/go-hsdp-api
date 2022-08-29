@@ -75,6 +75,9 @@ func (c *ConfigService) GetRemoteNode(id string, opt *QueryOptions, options ...O
 	var node RemoteNode
 	resp, err := c.client.do(req, &node)
 	if (err != nil && err != io.EOF) || resp == nil {
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
+			return nil, resp, ErrNotFound
+		}
 		if resp == nil && err != nil {
 			err = fmt.Errorf("GetRemoteNode: %w", ErrEmptyResult)
 		}
