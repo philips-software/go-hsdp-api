@@ -99,7 +99,7 @@ func (c *ConfigService) GetObjectStore(id string, opt *QueryOptions, options ...
 	resp, err := c.client.do(req, &objectStore)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return nil, resp, ErrEmptyResult
+			return nil, resp, ErrNotFound
 		}
 		if resp == nil && err != nil {
 			err = fmt.Errorf("GetObjectStore: %w", ErrEmptyResult)
