@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/cenkalti/backoff/v4"
 	validator "github.com/go-playground/validator/v10"
 )
 
@@ -162,6 +163,26 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 		scopes,
 		defaultScopes,
 	}
+
+	// We suspect IAM sometimes has consistency issues when the UpdateScopes call is performed immediately after
+	// a create call of the client. Therefore, we always try to retrieve the client first
+	var err error
+	var resp *Response
+	operation := func() error {
+		_, resp, err = c.GetClientByID(ac.ID)
+		if err != nil {
+			return err
+		}
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
+			return ErrNotFound
+		}
+		return nil
+	}
+	err = backoff.Retry(operation, backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 5))
+	if err != nil {
+		return false, resp, err
+	}
+
 	req, err := c.client.newRequest(IDM, "PUT", "authorize/identity/Client/"+ac.ID+"/$scopes", requestBody, nil)
 	if err != nil {
 		return false, nil, err
@@ -170,7 +191,7 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 
 	var putResponse bytes.Buffer
 
-	resp, err := c.client.do(req, &putResponse)
+	resp, err = c.client.do(req, &putResponse)
 	if err != nil {
 		return false, resp, err
 	}
