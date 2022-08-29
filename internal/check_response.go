@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 )
@@ -14,7 +15,7 @@ func CheckResponse(r *http.Response) error {
 		return nil
 	}
 
-	data, err := ioutil.ReadAll(r.Body)
+	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		data = []byte(err.Error())
 	}

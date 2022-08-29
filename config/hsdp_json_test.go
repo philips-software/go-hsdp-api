@@ -2,7 +2,7 @@ package config_test
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -19,7 +19,7 @@ func TestHSDPJSONContent(t *testing.T) {
 	}
 	basePath := filepath.Dir(filename)
 	hsdpTomlFile := filepath.Join(basePath, "hsdp.json")
-	data, err := ioutil.ReadFile(hsdpTomlFile)
+	data, err := os.ReadFile(hsdpTomlFile)
 	if !assert.Nil(t, err) {
 		return
 	}

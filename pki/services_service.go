@@ -5,6 +5,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -40,7 +41,6 @@ type IssueData struct {
 	SerialNumber   string   `json:"serial_number,omitempty"`
 }
 
-// IssueResponse
 type IssueResponse struct {
 	RequestID     string    `json:"request_id"`
 	LeaseID       string    `json:"lease_id"`
@@ -114,8 +114,10 @@ func (c *ServicesService) getCA(path string, options ...OptionFunc) (*x509.Certi
 	if resp == nil {
 		return nil, nil, nil, fmt.Errorf("getCA: %w", ErrEmptyResult)
 	}
-	defer resp.Body.Close()
-	pemData, err := ioutil.ReadAll(resp.Body)
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+	pemData, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, nil, resp, err
 	}

@@ -1,7 +1,7 @@
 package iam
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -45,7 +45,7 @@ func WithOrgContext(organizationId string) OptionFunc {
 		form := url.Values{}
 		form.Add("token", token)
 		form.Add("org_ctx", organizationId)
-		req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+		req.Body = io.NopCloser(strings.NewReader(form.Encode()))
 		req.ContentLength = int64(len(form.Encode()))
 		return nil
 	}
@@ -61,7 +61,7 @@ func (c *Client) Introspect(opts ...OptionFunc) (*IntrospectResponse, *Response,
 	}
 	form := url.Values{}
 	form.Add("token", c.token)
-	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.Body = io.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
 	if !c.HasOAuth2Credentials() {
 		return nil, nil, ErrMissingOAuth2Credentials

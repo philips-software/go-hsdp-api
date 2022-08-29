@@ -2,7 +2,7 @@ package config_test
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -55,7 +55,7 @@ func TestOpts(t *testing.T) {
 	}
 	basePath := filepath.Dir(filename)
 	hsdpJsonFile := filepath.Join(basePath, "hsdp.json")
-	data, err := ioutil.ReadFile(hsdpJsonFile)
+	data, err := os.ReadFile(hsdpJsonFile)
 	if !assert.Nil(t, err) {
 		return
 	}
