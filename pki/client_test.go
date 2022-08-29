@@ -2,7 +2,6 @@ package pki_test
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -214,7 +213,7 @@ func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	tmpFile, err := ioutil.TempFile("", "example")
+	tmpFile, err := os.CreateTemp("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

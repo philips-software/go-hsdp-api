@@ -3,7 +3,6 @@ package pki_test
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -21,7 +20,7 @@ func TestOnboarding(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if !assert.Nil(t, err) {
 				return
 			}
@@ -146,7 +145,7 @@ func TestRetrieveAndUpdate(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "PUT":
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if !assert.Nil(t, err) {
 				return
 			}

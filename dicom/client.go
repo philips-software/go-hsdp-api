@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -91,20 +90,20 @@ func (c *Client) Close() {
 	}
 }
 
-func (o *Client) GetSTOWURL() string {
-	return o.replaceConfigWith("stow")
+func (c *Client) GetSTOWURL() string {
+	return c.replaceConfigWith("stow")
 }
 
-func (o *Client) GetWADOURL() string {
-	return o.replaceConfigWith("wado")
+func (c *Client) GetWADOURL() string {
+	return c.replaceConfigWith("wado")
 }
 
-func (o *Client) GetQIDOURL() string {
-	return o.replaceConfigWith("qido")
+func (c *Client) GetQIDOURL() string {
+	return c.replaceConfigWith("qido")
 }
 
-func (o *Client) replaceConfigWith(svc string) string {
-	return strings.Replace(o.config.DICOMConfigURL, "config", svc, 1)
+func (c *Client) replaceConfigWith(svc string) string {
+	return strings.Replace(c.config.DICOMConfigURL, "config", svc, 1)
 }
 
 // GetDICOMStoreURL returns the base FHIR Store base URL as configured
@@ -160,7 +159,7 @@ func (c *Client) SetEndpointURL(urlStr string) error {
 	return nil
 }
 
-// newDICOMRequest creates an new DICOM Service API request. A relative URL path can be provided in
+// newDICOMRequest creates a new DICOM Service API request. A relative URL path can be provided in
 // urlStr, in which case it is resolved relative to the base URL of the Client.
 // Relative URL paths should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
@@ -199,7 +198,7 @@ func (c *Client) newDICOMRequest(method, path string, bodyBytes []byte, opt inte
 
 	if method == "POST" || method == "PUT" || method == "PATCH" {
 		bodyReader := bytes.NewReader(bodyBytes)
-		req.Body = ioutil.NopCloser(bodyReader)
+		req.Body = io.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 	}
 	token, err := c.iamClient.Token()
@@ -258,7 +257,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	if v != nil && response.StatusCode != http.StatusNoContent {
-		defer resp.Body.Close() // Only close if we plan to read it
+		defer func() {
+			_ = resp.Body.Close()
+		}() // Only close if we plan to read it
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {

@@ -3,7 +3,6 @@ package iam
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -29,7 +28,7 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 		switch r.Method {
 		case "POST":
 			var person Person
-			body, _ := ioutil.ReadAll(r.Body)
+			body, _ := io.ReadAll(r.Body)
 			err := json.Unmarshal(body, &person)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
@@ -168,7 +167,7 @@ func TestCreateAlreadyExists(t *testing.T) {
 		switch r.Method {
 		case "POST":
 			var person Person
-			body, _ := ioutil.ReadAll(r.Body)
+			body, _ := io.ReadAll(r.Body)
 			err := json.Unmarshal(body, &person)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)

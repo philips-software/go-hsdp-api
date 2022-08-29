@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -254,7 +253,7 @@ func (c *Client) TokenRefresh() error {
 		form.Add("scope", scopes)
 	}
 	req.SetBasicAuth("cf", "")
-	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.Body = io.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
 
 	return c.doTokenRequest(req)
@@ -368,7 +367,7 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		bodyReader := bytes.NewReader(bodyBytes)
 
 		u.RawQuery = ""
-		req.Body = ioutil.NopCloser(bodyReader)
+		req.Body = io.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}

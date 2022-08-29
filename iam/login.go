@@ -2,7 +2,7 @@ package iam
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -32,7 +32,7 @@ func (c *Client) CodeLogin(code string, redirectURI string) error {
 	}
 	body := form.Encode()
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
-	req.Body = ioutil.NopCloser(strings.NewReader(body))
+	req.Body = io.NopCloser(strings.NewReader(body))
 	req.ContentLength = int64(len(body))
 
 	return c.doTokenRequest(req)
@@ -72,7 +72,7 @@ func (c *Client) ServiceLogin(service Service) error {
 	// Remove Authorization header
 	req.Header.Del("Authorization")
 
-	req.Body = ioutil.NopCloser(strings.NewReader(body))
+	req.Body = io.NopCloser(strings.NewReader(body))
 	req.ContentLength = int64(len(body))
 	c.service = service // Save service so we can refresh later!
 
@@ -103,7 +103,7 @@ func (c *Client) Login(username, password string) error {
 		form.Add("scope", scopes)
 	}
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
-	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.Body = io.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
 	c.service = Service{} // reset
 
@@ -133,7 +133,7 @@ func (c *Client) ClientCredentialsLogin() error {
 		form.Add("scope", scopes)
 	}
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
-	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.Body = io.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
 
 	return c.doTokenRequest(req)
@@ -167,7 +167,7 @@ func (c *Client) EndSession() error {
 		form.Add("scope", scopes)
 	}
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
-	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.Body = io.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
 
 	return c.doTokenRequest(req)
@@ -185,7 +185,7 @@ func (c *Client) revokeToken(token string) error {
 		form.Add("scope", scopes)
 	}
 	req.SetBasicAuth(c.config.OAuth2ClientID, c.config.OAuth2Secret)
-	req.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+	req.Body = io.NopCloser(strings.NewReader(form.Encode()))
 	req.ContentLength = int64(len(form.Encode()))
 
 	return c.doTokenRequest(req)

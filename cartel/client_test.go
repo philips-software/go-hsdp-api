@@ -1,7 +1,7 @@
 package cartel
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -28,7 +28,7 @@ func endpointMocker(secret []byte, responseBody string, statusCode ...int) func(
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
-		body, _ := ioutil.ReadAll(r.Body)
+		body, _ := io.ReadAll(r.Body)
 		signature := generateSignature(secret, body)
 		auth := r.Header.Get("Authorization")
 		if signature != auth {
@@ -67,7 +67,7 @@ func setup(t *testing.T, config *Config) (func(), error) {
 }
 
 func TestDebug(t *testing.T) {
-	tmpfile, err := ioutil.TempFile("", "cartel")
+	tmpfile, err := os.CreateTemp("", "cartel")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

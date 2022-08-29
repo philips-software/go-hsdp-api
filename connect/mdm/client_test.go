@@ -2,7 +2,6 @@ package mdm_test
 
 import (
 	"io"
-	_ "io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	_ "os"
@@ -158,7 +157,7 @@ func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	tempFile, err := ioutil.TempFile("", "example")
+	tempFile, err := os.CreateTemp("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

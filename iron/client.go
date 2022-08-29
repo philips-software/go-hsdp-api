@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -175,7 +174,7 @@ func (c *Client) newRequest(method, path string, opt interface{}, options []Opti
 		bodyReader := bytes.NewReader(bodyBytes)
 
 		u.RawQuery = ""
-		req.Body = ioutil.NopCloser(bodyReader)
+		req.Body = io.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -204,7 +203,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	response := newResponse(resp)
 

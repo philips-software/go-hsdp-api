@@ -3,7 +3,6 @@ package tpns
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -36,7 +35,7 @@ func setup(t *testing.T) func() {
 			return
 		}
 		var tpnsRequest Message
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			t.Errorf("Error reading body")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -84,7 +83,7 @@ func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	tmpfile, err := ioutil.TempFile("", "example")
+	tmpfile, err := os.CreateTemp("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

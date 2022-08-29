@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -139,7 +138,7 @@ func TestAssignRole(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if err != nil {
 				t.Errorf("Unexpected EOF from reading request")
 				w.WriteHeader(http.StatusBadRequest)
@@ -195,7 +194,7 @@ func TestAddMembers(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if err != nil {
 				t.Errorf("Unexpected EOF from reading request")
 				w.WriteHeader(http.StatusBadRequest)
@@ -266,7 +265,7 @@ func TestRemoveMembers(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if err != nil {
 				t.Errorf("Unexpected EOF from reading request")
 				w.WriteHeader(http.StatusBadRequest)
@@ -348,7 +347,7 @@ func TestRemoveRole(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if err != nil {
 				t.Errorf("Unexpected EOF from reading request")
 				w.WriteHeader(http.StatusBadRequest)
@@ -472,7 +471,7 @@ func TestAddServicesAndDevices(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if err != nil {
 				t.Errorf("Unexpected EOF from reading request")
 				w.WriteHeader(http.StatusBadRequest)
@@ -590,7 +589,7 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "POST":
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if err != nil {
 				t.Errorf("Unexpected EOF from reading request")
 				w.WriteHeader(http.StatusBadRequest)

@@ -3,7 +3,6 @@ package docker_test
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -40,7 +39,7 @@ func setup(t *testing.T) (func(), error) {
 
 	assert.Nil(t, err)
 
-	tmpFile, err = ioutil.TempFile("", "example")
+	tmpFile, err = os.CreateTemp("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

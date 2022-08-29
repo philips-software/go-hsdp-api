@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -177,7 +176,7 @@ func (c *Client) newCDRRequest(method, path string, bodyBytes []byte, options []
 
 	if (method == "POST" || method == "PUT" || method == "PATCH") && bodyBytes != nil {
 		bodyReader := bytes.NewReader(bodyBytes)
-		req.Body = ioutil.NopCloser(bodyReader)
+		req.Body = io.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 	}
 	token, err := c.iamClient.Token()

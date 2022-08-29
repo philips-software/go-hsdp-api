@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -216,7 +215,7 @@ func (c *Client) newRequest(method, path string, opt *RequestBody, options []Opt
 		bodyReader := bytes.NewReader(bodyBytes)
 
 		u.RawQuery = ""
-		req.Body = ioutil.NopCloser(bodyReader)
+		req.Body = io.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", string(generateSignature([]byte(c.config.Secret), bodyBytes)))

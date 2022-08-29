@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -153,7 +152,7 @@ func (c *Client) NewRequest(method, requestPath string, opt interface{}, options
 		bodyReader := bytes.NewReader(bodyBytes)
 
 		u.RawQuery = ""
-		req.Body = ioutil.NopCloser(bodyReader)
+		req.Body = io.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -190,7 +189,7 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
-// Do executes a http request. If v implements the io.Writer
+// Do performs a http request. If v implements the io.Writer
 // interface, the raw response body will be written to v, without attempting to
 // first decode it.
 func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {

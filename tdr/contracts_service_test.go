@@ -3,7 +3,6 @@ package tdr
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -128,7 +127,7 @@ func TestCreateContract(t *testing.T) {
 	defer teardown()
 
 	muxTDR.HandleFunc("/store/tdr/Contract", func(w http.ResponseWriter, r *http.Request) {
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			t.Errorf("Unexpected EOF from reading request")
 			w.WriteHeader(http.StatusBadRequest)
