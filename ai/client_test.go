@@ -2,7 +2,6 @@ package ai_test
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -165,7 +164,7 @@ func TestDebug(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	tempFile, err := ioutil.TempFile("", "example")
+	tempFile, err := os.CreateTemp("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

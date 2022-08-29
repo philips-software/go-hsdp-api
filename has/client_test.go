@@ -2,7 +2,6 @@ package has_test
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -166,7 +165,7 @@ func TestDebug(t *testing.T) {
 
 	orgID := "48a0183d-a588-41c2-9979-737d15e9e860"
 
-	tmpfile, err := ioutil.TempFile("", "example")
+	tmpfile, err := os.CreateTemp("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

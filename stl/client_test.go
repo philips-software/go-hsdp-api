@@ -2,16 +2,16 @@ package stl_test
 
 import (
 	"context"
-	"github.com/hasura/go-graphql-client"
-	"github.com/philips-software/go-hsdp-api/console"
-	"github.com/philips-software/go-hsdp-api/stl"
-	"github.com/stretchr/testify/assert"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/hasura/go-graphql-client"
+	"github.com/philips-software/go-hsdp-api/console"
+	"github.com/philips-software/go-hsdp-api/stl"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -98,7 +98,7 @@ func TestDebug(t *testing.T) {
 	}
 	defer teardown()
 
-	tmpfile, err := ioutil.TempFile("", "example")
+	tmpfile, err := os.CreateTemp("", "example")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}

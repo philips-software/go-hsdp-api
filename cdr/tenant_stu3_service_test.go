@@ -2,7 +2,6 @@ package cdr_test
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -26,7 +25,7 @@ func TestTenantService(t *testing.T) {
 				w.WriteHeader(http.StatusUnsupportedMediaType)
 				return
 			}
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

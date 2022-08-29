@@ -6,7 +6,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -159,8 +158,10 @@ func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.Cert
 	if resp == nil {
 		return nil, nil, resp, fmt.Errorf("getCRL: %w", ErrEmptyResult)
 	}
-	defer resp.Body.Close()
-	pemData, err := ioutil.ReadAll(resp.Body)
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+	pemData, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, nil, resp, err
 	}

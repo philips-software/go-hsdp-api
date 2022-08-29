@@ -3,7 +3,6 @@ package iam
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -58,7 +57,7 @@ func TestCreateSMSGateway(t *testing.T) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			t.Errorf("Expected body to be read: %v", err)
 			w.WriteHeader(http.StatusBadRequest)

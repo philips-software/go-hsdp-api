@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -152,7 +151,7 @@ func (c *Client) newAuditRequest(method, path string, bodyBytes []byte, options 
 		bodyReader := bytes.NewReader(bodyBytes)
 
 		u.RawQuery = ""
-		req.Body = ioutil.NopCloser(bodyReader)
+		req.Body = io.NopCloser(bodyReader)
 		req.ContentLength = int64(bodyReader.Len())
 	}
 
@@ -188,7 +187,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	doErr := internal.CheckResponse(resp)
 
 	if v != nil {
-		defer resp.Body.Close() // Only close if we plan to read it
+		defer func() {
+			_ = resp.Body.Close()
+		}() // Only close if we plan to read it
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {

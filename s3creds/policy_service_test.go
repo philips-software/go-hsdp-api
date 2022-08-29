@@ -3,7 +3,6 @@ package s3creds
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -44,7 +43,7 @@ func TestCreatePolicy(t *testing.T) {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			t.Errorf("Unexpected EOF from reading request")
 			w.WriteHeader(http.StatusBadRequest)

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -22,6 +21,6 @@ func CheckResponse(r *http.Response) error {
 	if data == nil {
 		data = []byte("empty")
 	}
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(data)) // Preserve body
+	r.Body = io.NopCloser(bytes.NewBuffer(data)) // Preserve body
 	return fmt.Errorf("%s %s: StatusCode %d, Body: %s", r.Request.Method, r.Request.RequestURI, r.StatusCode, string(data))
 }

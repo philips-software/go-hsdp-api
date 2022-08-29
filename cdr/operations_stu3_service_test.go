@@ -2,7 +2,6 @@ package cdr_test
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -33,7 +32,7 @@ func TestPatchOperation(t *testing.T) {
 				w.WriteHeader(http.StatusPreconditionFailed)
 				return
 			}
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -98,7 +97,7 @@ func TestPostOperation(t *testing.T) {
 				w.WriteHeader(http.StatusPreconditionFailed)
 				return
 			}
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return

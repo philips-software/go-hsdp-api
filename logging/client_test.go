@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -97,7 +96,7 @@ func setup(t *testing.T, config *Config, method string, statusCode int, response
 			}
 		}
 
-		body, _ := ioutil.ReadAll(r.Body)
+		body, _ := io.ReadAll(r.Body)
 		var bundle Bundle
 		err := json.Unmarshal(body, &bundle)
 		if err != nil {
