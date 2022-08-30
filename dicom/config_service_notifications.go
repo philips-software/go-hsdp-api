@@ -43,12 +43,9 @@ func (c *ConfigService) CreateNotification(repo Notification, opt *QueryOptions,
 // GetNotification gets the notification settings of a given organization
 func (c *ConfigService) GetNotification(opt *QueryOptions, options ...OptionFunc) (*Notification, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/notification", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/notification", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
-	}
-	if opt != nil && opt.OrganizationID != nil {
-		req.Header.Set("OrganizationID", *opt.OrganizationID)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	var resources []Notification
