@@ -80,7 +80,7 @@ func (c *ConfigService) GetRepository(id string, opt *QueryOptions, options ...O
 			return nil, resp, ErrNotFound
 		}
 		if resp == nil && err != nil {
-			err = fmt.Errorf("GetRepository: %w", ErrEmptyResult)
+			err = fmt.Errorf("GetRepository: %w", err)
 		}
 		return nil, resp, err
 	}
