@@ -120,7 +120,7 @@ func TestClientCRUD(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, createdClient)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, clientName, createdClient.Name)
 
 	createdClient, resp, err = client.Clients.GetClientByID(createdClient.ID)
@@ -129,7 +129,7 @@ func TestClientCRUD(t *testing.T) {
 	if !assert.NotNil(t, createdClient) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, clientID, createdClient.ID)
 
 	createdClient.Password = password
@@ -140,7 +140,7 @@ func TestClientCRUD(t *testing.T) {
 	if !assert.NotNil(t, cl) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, "Public", cl.Type)
 
 	ok, resp, err := client.Clients.DeleteClient(*createdClient)
@@ -148,7 +148,7 @@ func TestClientCRUD(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, createdClient)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }
 
 func TestPasswordValidation(t *testing.T) {

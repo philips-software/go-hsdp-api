@@ -100,7 +100,7 @@ func TestAuthenticationMethodCRUD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, name, created.Name)
 
 	created, resp, err = mdmClient.AuthenticationMethods.GetByID(created.ID)
@@ -109,7 +109,7 @@ func TestAuthenticationMethodCRUD(t *testing.T) {
 	if !assert.NotNil(t, createdResource) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, id, created.ID)
 
 	ok, resp, err := mdmClient.AuthenticationMethods.Delete(*created)
@@ -117,5 +117,5 @@ func TestAuthenticationMethodCRUD(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, createdResource)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }

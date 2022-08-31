@@ -2,11 +2,12 @@ package dicom_test
 
 import (
 	"encoding/json"
-	"github.com/philips-software/go-hsdp-api/dicom"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/philips-software/go-hsdp-api/dicom"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestObjectStoreCRUD(t *testing.T) {
@@ -92,7 +93,7 @@ func TestObjectStoreCRUD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, created.ID, storeID)
 	store, resp, err := dicomClient.Config.GetObjectStore(storeID, nil)
 	if !assert.Nil(t, err) {

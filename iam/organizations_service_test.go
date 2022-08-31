@@ -105,7 +105,7 @@ func TestCreateOrganization(t *testing.T) {
 	if !assert.NotNil(t, createdOrg) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, orgName, createdOrg.Name)
 	assert.Equal(t, orgID, createdOrg.ID)
 	assert.Equal(t, parentOrgID, createdOrg.Parent.Value)
@@ -136,7 +136,7 @@ func TestGetOrganizationByID(t *testing.T) {
 	if !assert.NotNil(t, foundOrg) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, orgName, foundOrg.Name)
 	assert.Equal(t, orgUUID, foundOrg.ID)
 }
@@ -211,7 +211,7 @@ func TestUpdateAndDeleteOrganization(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.NotNil(t, updatedOrg) {
 		return
 	}
@@ -277,7 +277,7 @@ func TestGetOrganization(t *testing.T) {
 	if !assert.NotNil(t, foundOrg) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, orgName, foundOrg.Name)
 	assert.Equal(t, orgUUID, foundOrg.ID)
 }
@@ -320,7 +320,7 @@ func TestDeleteStatus(t *testing.T) {
 	if !assert.NotNil(t, status) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, "IN_PROGRESS", status.Status)
 	assert.Equal(t, orgUUID, status.ID)
 }

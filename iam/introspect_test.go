@@ -177,7 +177,7 @@ func TestIntrospect(t *testing.T) {
 	if !assert.NotNil(t, introspectResponse) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	assert.True(t, client.HasPermissions(orgID, "SERVICE.SCOPE", "ORGANIZATION.MFA"))
 	assert.False(t, client.HasPermissions("bogus", "SERVICE.SCOPE"))
@@ -261,7 +261,7 @@ func TestIntrospectWithOrgContext(t *testing.T) {
 	if !assert.NotNil(t, introspectResponse) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 

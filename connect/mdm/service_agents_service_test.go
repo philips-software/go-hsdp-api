@@ -103,6 +103,6 @@ func TestServiceAgentsGet(t *testing.T) {
 	if !assert.NotNil(t, agents) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, 2, len(*agents))
 }

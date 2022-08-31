@@ -98,7 +98,7 @@ func (c *ConfigService) GetObjectStore(id string, opt *QueryOptions, options ...
 	var objectStore ObjectStore
 	resp, err := c.client.do(req, &objectStore)
 	if (err != nil && err != io.EOF) || resp == nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrNotFound
 		}
 		if resp == nil && err != nil {
@@ -125,5 +125,5 @@ func (c *ConfigService) DeleteObjectStore(store ObjectStore, opt *QueryOptions, 
 		}
 		return false, resp, err
 	}
-	return resp.StatusCode == http.StatusNoContent, resp, nil
+	return resp.StatusCode() == http.StatusNoContent, resp, nil
 }

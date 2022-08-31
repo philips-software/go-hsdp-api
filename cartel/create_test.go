@@ -49,7 +49,7 @@ func TestCreate(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, true, sr.Success())
 	assert.Equal(t, "i-xxfbdf005781fa900", sr.InstanceID())
 	assert.Equal(t, "192.168.2.106", sr.IPAddress())
@@ -85,6 +85,6 @@ func TestAlreadyExist(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode())
 	assert.Equal(t, ErrHostnameAlreadyExists, err)
 }

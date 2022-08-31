@@ -1,10 +1,11 @@
 package iam
 
 import (
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateApplication(t *testing.T) {
@@ -74,7 +75,7 @@ func TestCreateApplication(t *testing.T) {
 		t.Error("Expected GlobalReferenceID to be set")
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode() != http.StatusOK {
 		t.Errorf("Expected HTTP created")
 	}
 	if createdApp.ID != appID {

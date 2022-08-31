@@ -41,7 +41,7 @@ func (dtd *DatatypeDefinitionService) GetDataTypeDefinitions(opt *GetOptions, op
 	var getAllDtdResponse []DataTypeDefinition
 	resp, err := dtd.client.do(req, &getAllDtdResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrEmptyResult
 		}
 		return nil, resp, err
@@ -81,7 +81,7 @@ func (dtd *DatatypeDefinitionService) GetDataTypeDefinitionByID(id string) (*Dat
 	var dtdByIdResponse DataTypeDefinition
 	resp, err := dtd.client.do(req, &dtdByIdResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrEmptyResult
 		}
 		return nil, resp, err

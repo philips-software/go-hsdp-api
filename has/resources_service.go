@@ -101,7 +101,7 @@ func (c *ResourcesService) CreateResource(resource Resource) (*[]Resource, *Resp
 	if err != nil {
 		return nil, resp, err
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode() != http.StatusOK {
 		return nil, resp, err
 	}
 	return &cr.Resources, resp, nil

@@ -127,5 +127,5 @@ func TestModelCRD(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 }

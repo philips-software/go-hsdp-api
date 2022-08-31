@@ -45,7 +45,7 @@ func TestRoles(t *testing.T) {
 	if !assert.NotNil(t, roles) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.Equal(t, 3, len(*roles)) {
 		return
 	}

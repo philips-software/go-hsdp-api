@@ -103,7 +103,7 @@ func (o *OperationsSTU3Service) Delete(resourceID string, options ...OptionFunc)
 		}
 		return false, resp, err
 	}
-	return resp.StatusCode == http.StatusNoContent, resp, nil
+	return resp.StatusCode() == http.StatusNoContent, resp, nil
 }
 
 func (o *OperationsSTU3Service) postOrPut(method, resourceID string, jsonBody []byte, options ...OptionFunc) (*stu3pb.ContainedResource, *Response, error) {

@@ -50,7 +50,7 @@ func TestGetPermissions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, 3, len(*permissions))
 
 	permissions, resp, err = client.Permissions.GetPermissionsByRoleID(roleID)
@@ -90,7 +90,7 @@ func TestGetPermissionByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode() != http.StatusOK {
 		t.Errorf("Expected HTTP success")
 	}
 	if permission.ID != uuid {

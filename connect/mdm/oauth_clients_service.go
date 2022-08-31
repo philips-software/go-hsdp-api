@@ -67,7 +67,7 @@ func (c *OAuthClientsService) CreateOAuthClient(ac OAuthClient) (*OAuthClient, *
 
 	resp, err := c.Do(req, &createdClient)
 
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
+	ok := resp != nil && (resp.StatusCode() == http.StatusOK || resp.StatusCode() == http.StatusCreated)
 	if !ok {
 		return nil, resp, err
 	}
@@ -89,7 +89,7 @@ func (c *OAuthClientsService) DeleteOAuthClient(ac OAuthClient) (bool, *Response
 	var deleteResponse interface{}
 
 	resp, err := c.Do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -184,7 +184,7 @@ func (c *OAuthClientsService) UpdateScopesByFlag(ac OAuthClient, scopes []string
 	if err != nil {
 		return false, resp, err
 	}
-	if resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode() != http.StatusNoContent {
 		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil

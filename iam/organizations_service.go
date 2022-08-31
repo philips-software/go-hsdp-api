@@ -82,8 +82,8 @@ func (o *OrganizationsService) CreateOrganization(organization Organization) (*O
 	if err != nil {
 		return nil, resp, err
 	}
-	if resp.StatusCode != http.StatusCreated {
-		return nil, resp, fmt.Errorf("error creating org: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusCreated {
+		return nil, resp, fmt.Errorf("error creating org: %d", resp.StatusCode())
 	}
 	return &newOrg, resp, err
 }
@@ -104,7 +104,7 @@ func (o *OrganizationsService) DeleteOrganization(org Organization) (bool, *Resp
 	if err != nil {
 		return false, resp, err
 	}
-	return resp.StatusCode == http.StatusAccepted, resp, nil
+	return resp.StatusCode() == http.StatusAccepted, resp, nil
 }
 
 // UpdateOrganization updates the description of the organization.

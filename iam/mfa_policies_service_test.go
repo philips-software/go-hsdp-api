@@ -81,7 +81,7 @@ func TestCreateMFAPolicy(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, newPolicy)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, newPolicy.ID, policyID)
 	assert.Equal(t, "User", newPolicy.Resource.Type)
 	assert.True(t, *newPolicy.Active)
@@ -95,7 +95,7 @@ func TestCreateMFAPolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 	if ok := assert.NotNil(t, resp); ok {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	if ok := assert.NotNil(t, newPolicy); ok {
 		assert.Equal(t, newPolicy.ID, policyID)
@@ -153,7 +153,7 @@ func TestGetMFAPolicyByID(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	if ok := assert.NotNil(t, resp); ok {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	if ok := assert.NotNil(t, policy); ok {
 		assert.Equal(t, policy.ID, policyID)
@@ -220,7 +220,7 @@ func TestUpdateMFAPolicy(t *testing.T) {
 	updatedPolicy, resp, err := client.MFAPolicies.UpdateMFAPolicy(&policy)
 	assert.Nil(t, err)
 	if ok := assert.NotNil(t, resp); ok {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	assert.NotNil(t, updatedPolicy)
 }
@@ -243,6 +243,6 @@ func TestDeleteMFAPolicy(t *testing.T) {
 	ok, resp, err := client.MFAPolicies.DeleteMFAPolicy(policy)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 	assert.Equal(t, true, ok, "expected MFA policy deletion to succeed")
 }

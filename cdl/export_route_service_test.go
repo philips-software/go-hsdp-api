@@ -1,11 +1,12 @@
 package cdl_test
 
 import (
-	"github.com/philips-software/go-hsdp-api/cdl"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/philips-software/go-hsdp-api/cdl"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestExportRouteCRD(t *testing.T) {
@@ -133,7 +134,7 @@ func TestExportRouteCRD(t *testing.T) {
 	if !assert.NotNil(t, createdExportRoute) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, createdExportRoute.ID, exportRouteID)
 
 	item, resp, err := cdlClient.ExportRoute.GetExportRouteByID(exportRouteID)
@@ -146,7 +147,7 @@ func TestExportRouteCRD(t *testing.T) {
 	if !assert.NotNil(t, item) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, exportRouteID, item.ID)
 
 	items, bundleResponse, resp, err := cdlClient.ExportRoute.GetExportRoutes(1, nil)
@@ -163,7 +164,7 @@ func TestExportRouteCRD(t *testing.T) {
 		return
 	}
 	assert.Equal(t, exportRouteID, items[0].ID)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	resp, err = cdlClient.ExportRoute.DeleteExportRouteByID(exportRouteID)
 	if !assert.Nil(t, err) {
@@ -172,5 +173,5 @@ func TestExportRouteCRD(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }

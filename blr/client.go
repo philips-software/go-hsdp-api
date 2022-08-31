@@ -183,6 +183,13 @@ type Response struct {
 	*http.Response
 }
 
+func (r *Response) StatusCode() int {
+	if r.Response != nil {
+		return r.Response.StatusCode
+	}
+	return 0
+}
+
 // newResponse creates a new Response for the provided http.Response.
 func newResponse(r *http.Response) *Response {
 	response := &Response{Response: r}

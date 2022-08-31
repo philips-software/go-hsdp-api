@@ -69,7 +69,7 @@ func (c *DataTypesService) Delete(ac DataType) (bool, *Response, error) {
 	var deleteResponse interface{}
 
 	resp, err := c.Do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil

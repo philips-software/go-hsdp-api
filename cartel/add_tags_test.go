@@ -38,6 +38,6 @@ func TestAddTags(t *testing.T) {
 	if !assert.NotNil(t, atr) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, true, atr.Success())
 }

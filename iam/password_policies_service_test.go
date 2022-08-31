@@ -117,7 +117,7 @@ func TestPasswordPolicyCrud(t *testing.T) {
 	if ok := assert.NotNil(t, policy); !ok {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, id, policy.ID)
 
 	foundPolicy, resp, err := client.PasswordPolicies.GetPasswordPolicyByID(policy.ID)
@@ -125,7 +125,7 @@ func TestPasswordPolicyCrud(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.NotNil(t, foundPolicy) {
 		return
 	}
@@ -138,7 +138,7 @@ func TestPasswordPolicyCrud(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.NotNil(t, policies) {
 		return
 	}
@@ -160,6 +160,6 @@ func TestPasswordPolicyCrud(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 	assert.True(t, ok)
 }

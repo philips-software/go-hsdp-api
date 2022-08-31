@@ -118,7 +118,7 @@ func TestGetContract(t *testing.T) {
 		DataType: String("TestGo|TestGoContract"),
 	}, nil)
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, 2, len(contracts))
 }
 
@@ -184,6 +184,6 @@ func TestCreateContract(t *testing.T) {
 	ok, resp, err := tdrClient.Contracts.CreateContract(newContract)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, true, ok, "expected contract creation to succeed")
 }

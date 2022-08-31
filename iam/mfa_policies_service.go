@@ -95,7 +95,7 @@ func (p *MFAPoliciesService) DeleteMFAPolicy(policy MFAPolicy) (bool, *Response,
 	var deleteResponse bytes.Buffer
 
 	resp, err := p.client.do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, nil
 	}
 	return true, resp, err

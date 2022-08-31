@@ -116,7 +116,7 @@ func (s *Service) GetWorkspaces(opt *ai.GetOptions, options ...ai.OptionFunc) ([
 	}
 	resp, err := s.client.Do(req, &bundleResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ai.ErrEmptyResult
 		}
 		return nil, resp, err
@@ -161,7 +161,7 @@ func (s *Service) GetWorkspaceAccessURL(ws Workspace) (*AccessURL, *ai.Response,
 	var accessURL AccessURL
 	resp, err := s.client.Do(req, &accessURL)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ai.ErrEmptyResult
 		}
 		return nil, resp, err
@@ -179,7 +179,7 @@ func (s *Service) GetWorkspaceLogs(ws Workspace) (*LogArtefact, *ai.Response, er
 	var artefact LogArtefact
 	resp, err := s.client.Do(req, &artefact)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ai.ErrEmptyResult
 		}
 		return nil, resp, err

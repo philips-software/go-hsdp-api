@@ -92,7 +92,7 @@ func TestServiceActionsCRUD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, name, created.Name)
 
 	created, resp, err = mdmClient.ServiceActions.GetByID(created.ID)
@@ -101,7 +101,7 @@ func TestServiceActionsCRUD(t *testing.T) {
 	if !assert.NotNil(t, createdService) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, id, created.ID)
 
 	ok, resp, err := mdmClient.ServiceActions.Delete(*created)
@@ -109,5 +109,5 @@ func TestServiceActionsCRUD(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, createdService)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }

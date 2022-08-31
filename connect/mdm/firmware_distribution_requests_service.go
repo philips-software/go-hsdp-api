@@ -51,7 +51,7 @@ func (c *FirmwareDistributionRequestsService) Create(ac FirmwareDistributionRequ
 
 	resp, err := c.Do(req, &created)
 
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
+	ok := resp != nil && (resp.StatusCode() == http.StatusOK || resp.StatusCode() == http.StatusCreated)
 	if !ok {
 		return nil, resp, err
 	}
@@ -73,7 +73,7 @@ func (c *FirmwareDistributionRequestsService) Delete(ac FirmwareDistributionRequ
 	var deleteResponse interface{}
 
 	resp, err := c.Do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil

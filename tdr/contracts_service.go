@@ -67,7 +67,7 @@ func (c *ContractsService) CreateContract(contract Contract) (bool, *Response, e
 	if err != nil {
 		return false, resp, err
 	}
-	if resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode() != http.StatusCreated {
 		return false, resp, err
 	}
 	if location := resp.Header.Get("Location"); location == "" {

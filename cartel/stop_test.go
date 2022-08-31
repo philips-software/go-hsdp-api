@@ -39,6 +39,6 @@ func TestStop(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, true, sr.Success())
 }

@@ -202,8 +202,8 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("login failed: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusOK {
+		return fmt.Errorf("login failed: %d", resp.StatusCode())
 	}
 	if tokenResponse.AccessToken == "" {
 		return ErrNotAuthorized

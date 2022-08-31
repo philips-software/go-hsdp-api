@@ -85,8 +85,8 @@ func (o *SMSGatewaysService) CreateSMSGateway(gw SMSGateway) (*SMSGateway, *Resp
 	if err != nil {
 		return nil, resp, err
 	}
-	if resp.StatusCode != http.StatusCreated {
-		return nil, resp, fmt.Errorf("error creating sms gateway: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusCreated {
+		return nil, resp, fmt.Errorf("error creating sms gateway: %d", resp.StatusCode())
 	}
 	return &newGW, resp, err
 }
@@ -107,7 +107,7 @@ func (o *SMSGatewaysService) DeleteSMSGateway(gw SMSGateway) (bool, *Response, e
 	if err != nil {
 		return false, resp, err
 	}
-	return resp.StatusCode == http.StatusAccepted, resp, nil
+	return resp.StatusCode() == http.StatusAccepted, resp, nil
 }
 
 // UpdateSMSGateway updates the SMS gateway

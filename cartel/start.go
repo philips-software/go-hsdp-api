@@ -26,7 +26,7 @@ func (c *Client) Start(nameTag string) (*StartResponse, *Response, error) {
 	var responseBody StartResponse
 	resp, err := c.do(req, &responseBody)
 	if resp != nil {
-		responseBody.Code = resp.StatusCode
+		responseBody.Code = resp.StatusCode()
 	}
 	return &responseBody, resp, err
 }

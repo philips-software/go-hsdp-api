@@ -203,7 +203,7 @@ func (b *BlobsService) Delete(blob Blob) (bool, *Response, error) {
 	var deleteResponse interface{}
 
 	resp, err := b.Do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -219,7 +219,7 @@ func (b *BlobsService) SetPolicy(blob Blob, policy BlobPolicy) (bool, *Response,
 	var setPolicyResponse interface{}
 
 	resp, err := b.Do(req, &setPolicyResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -256,7 +256,7 @@ func (b *BlobsService) DeletePolicy(blob Blob) (bool, *Response, error) {
 	var deleteResponse interface{}
 
 	resp, err := b.Do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -293,7 +293,7 @@ func (b *BlobsService) CompleteUpload(blob Blob, parts BlobPartUpload) (bool, *R
 	var completeUploadResponse interface{}
 
 	resp, err := b.Do(req, &completeUploadResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -309,7 +309,7 @@ func (b *BlobsService) AbortUpload(blob Blob) (bool, *Response, error) {
 	var abortUploadResponse interface{}
 
 	resp, err := b.Do(req, &abortUploadResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil

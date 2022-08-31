@@ -54,8 +54,8 @@ func TestRoleCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("Expected HTTP created. Got: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusCreated {
+		t.Errorf("Expected HTTP created. Got: %d", resp.StatusCode())
 	}
 	if role.Name != roleName {
 		t.Errorf("Expected role name: %s, Got: %s", roleName, role.Name)
@@ -65,8 +65,8 @@ func TestRoleCRUD(t *testing.T) {
 	}
 
 	role, resp, err = client.Roles.GetRoleByID(roleID)
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusOK {
+		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode())
 	}
 	if role == nil {
 		t.Errorf("Expected role to be found, Got: %v", err)
@@ -79,8 +79,8 @@ func TestRoleCRUD(t *testing.T) {
 	if !assert.Nil(t, err) {
 		return
 	}
-	if resp.StatusCode != http.StatusNoContent {
-		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusNoContent {
+		t.Errorf("Expected HTTP no content Got: %d", resp.StatusCode())
 	}
 
 }
@@ -126,7 +126,7 @@ func TestRolePermissionActions(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	_, resp, err = client.Roles.RemoveRolePermission(role, "GROUP.READ")
 	if !assert.Nil(t, err) {
@@ -135,7 +135,7 @@ func TestRolePermissionActions(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 }
 
 func TestGetRolesByGroupID(t *testing.T) {
@@ -168,8 +168,8 @@ func TestGetRolesByGroupID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusOK {
+		t.Errorf("Expected HTTP success Got: %d", resp.StatusCode())
 	}
 	if len(*roles) != 1 {
 		t.Errorf("Expected 1 role")
@@ -207,7 +207,7 @@ func TestGetRolePermissions(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Nil(t, err)
 	if !assert.NotNil(t, permissions) {
 		return

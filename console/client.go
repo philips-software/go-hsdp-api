@@ -390,6 +390,13 @@ type Response struct {
 	Error
 }
 
+func (r *Response) StatusCode() int {
+	if r.Response != nil {
+		return r.Response.StatusCode
+	}
+	return 0
+}
+
 // newResponse creates a new Response for the provided http.Response.
 func newResponse(r *http.Response) *Response {
 	response := &Response{Response: r}
@@ -406,8 +413,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	response := newResponse(resp)
 
 	if v != nil {

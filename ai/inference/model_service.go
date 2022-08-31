@@ -111,7 +111,7 @@ func (s *ModelService) GetModels(opt *ai.GetOptions, options ...ai.OptionFunc) (
 	}
 	resp, err := s.client.Do(req, &bundleResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ai.ErrEmptyResult
 		}
 		return nil, resp, err

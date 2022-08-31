@@ -124,7 +124,7 @@ func TestCreateApplication(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusCreated, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusCreated, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, appID, createdApp.ID)

@@ -80,7 +80,7 @@ func TestMoveServiceGetSet(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, created.ID, serviceID)
 
 	services, resp, err := dicomClient.Config.GetQueryRetrieveService(nil)

@@ -117,7 +117,7 @@ func (c *SessionsService) DeleteSession(userID string) (bool, *Response, error) 
 
 	var sr Sessions
 	resp, _ := c.client.do(req, &sr)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, nil, fmt.Errorf("DeleteSession: %w", ErrEmptyResults)
 	}
 	return true, resp, nil

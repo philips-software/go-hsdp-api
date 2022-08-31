@@ -112,7 +112,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, created.ID, dtdID)
 
 	item, resp, err := cdlClient.DataTypeDefinition.GetDataTypeDefinitionByID(dtdID)
@@ -125,7 +125,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
 	if !assert.NotNil(t, item) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, dtdID, item.ID)
 
 	item, resp, err = cdlClient.DataTypeDefinition.UpdateDataTypeDefinition(*item)
@@ -139,7 +139,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
 		return
 	}
 	assert.Equal(t, dtdID, item.ID)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, item.Description, updatedDtdDescription)
 
 	listOfDtd, listOfDtdResp, err := cdlClient.DataTypeDefinition.GetDataTypeDefinitions(&cdl.GetOptions{})
@@ -152,7 +152,7 @@ func TestDataTypeDefinitionCRD(t *testing.T) {
 	if !assert.NotNil(t, listOfDtd) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, listOfDtdResp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, len(listOfDtd), 1)
 	assert.Equal(t, listOfDtd[0].ID, dtdID)
 }

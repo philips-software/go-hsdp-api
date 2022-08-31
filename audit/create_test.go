@@ -175,7 +175,7 @@ func TestBadRequest(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusBadRequest, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusBadRequest, resp.StatusCode()) {
 		return
 	}
 	assert.Nil(t, contained)

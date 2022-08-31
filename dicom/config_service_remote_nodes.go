@@ -75,7 +75,7 @@ func (c *ConfigService) GetRemoteNode(id string, opt *QueryOptions, options ...O
 	var node RemoteNode
 	resp, err := c.client.do(req, &node)
 	if (err != nil && err != io.EOF) || resp == nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrNotFound
 		}
 		if resp == nil && err != nil {
@@ -102,5 +102,5 @@ func (c *ConfigService) DeleteRemoteNode(node RemoteNode, opt *QueryOptions, opt
 		}
 		return false, resp, err
 	}
-	return resp.StatusCode == http.StatusNoContent, resp, nil
+	return resp.StatusCode() == http.StatusNoContent, resp, nil
 }

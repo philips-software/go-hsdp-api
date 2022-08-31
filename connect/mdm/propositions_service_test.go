@@ -125,7 +125,7 @@ func TestCreateProposition(t *testing.T) {
 		assert.Equal(t, propID, createdProp.ID)
 	}
 	if ok := assert.NotNil(t, resp); ok {
-		assert.Equal(t, http.StatusCreated, resp.StatusCode)
+		assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	}
 }
 
@@ -207,6 +207,6 @@ func TestGetPropositions(t *testing.T) {
 		assert.Equal(t, 1, len(*props))
 	}
 	if ok := assert.NotNil(t, resp); ok {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 }

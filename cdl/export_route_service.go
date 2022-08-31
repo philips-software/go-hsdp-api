@@ -2,10 +2,11 @@ package cdl
 
 import (
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"io"
 	"net/http"
 	"path"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type ExportRoute struct {
@@ -128,7 +129,7 @@ func (exp *ExportRouteService) GetExportRoutes(page int, options ...OptionFunc) 
 	var getAllExportRouteResponse ExportRouteBundleResponse
 	resp, err := exp.client.do(req, &getAllExportRouteResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, nil, resp, ErrEmptyResult
 		}
 		return nil, nil, resp, err

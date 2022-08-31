@@ -68,6 +68,13 @@ type Response struct {
 	Message string
 }
 
+func (r *Response) StatusCode() int {
+	if r.Response != nil {
+		return r.Response.StatusCode
+	}
+	return 0
+}
+
 // OptionFunc is the function signature function for options
 type OptionFunc func(*http.Request) error
 
@@ -150,7 +157,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if resp == nil || (err != nil && err != io.EOF) {
 		return nil, fmt.Errorf("client.do: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	response := newResponse(resp)
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {

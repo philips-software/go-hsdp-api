@@ -44,7 +44,7 @@ func TestSecurityGroupDetails(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.Equal(t, 1, len(*details)) {
 		return
 	}

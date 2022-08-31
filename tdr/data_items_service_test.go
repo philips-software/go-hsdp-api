@@ -66,13 +66,13 @@ func TestGetDataItem(t *testing.T) {
 		Organization: String("TDROrg"),
 	}, nil)
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, 1, len(dataItems))
 
 	dataItems, resp, err = tdrClient.DataItems.GetDataItem(&GetDataItemOptions{
 		Organization: String("TDROrg"),
 	}, DataSearch(KeyValue{"data.foo": "bar"}))
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(dataItems))
 }

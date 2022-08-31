@@ -116,7 +116,7 @@ func TestDevicesCRUD(t *testing.T) {
 	if !assert.NotNil(t, device) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, managingOrgID, device.OrganizationID)
@@ -131,7 +131,7 @@ func TestDevicesCRUD(t *testing.T) {
 	if !assert.NotNil(t, device) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, managingOrgID, device.OrganizationID)
@@ -146,7 +146,7 @@ func TestDevicesCRUD(t *testing.T) {
 	if !assert.NotNil(t, device) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, deviceID, device.ID)
@@ -157,7 +157,7 @@ func TestDevicesCRUD(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusNoContent, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusNoContent, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, true, ok)
@@ -169,7 +169,7 @@ func TestDevicesCRUD(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusNoContent, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusNoContent, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, true, ok)

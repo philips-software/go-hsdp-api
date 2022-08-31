@@ -104,7 +104,7 @@ func (s *ComputeTargetService) GetComputeTargets(opt *GetOptions, options ...Opt
 	}
 	resp, err := s.client.Do(req, &bundleResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrEmptyResult
 		}
 		return nil, resp, err

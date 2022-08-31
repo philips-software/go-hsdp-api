@@ -82,7 +82,7 @@ func (e *EmailTemplatesService) DeleteTemplate(template EmailTemplate) (bool, *R
 	var deleteResponse interface{}
 
 	resp, err := e.client.do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil

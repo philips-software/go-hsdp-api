@@ -29,7 +29,7 @@ func (c *Client) CreateAuditEvent(event *dstu2pb.AuditEvent) (*stu3pb.ContainedR
 		return nil, resp, doErr
 	}
 	contained := &stu3pb.ContainedResource{}
-	if resp.StatusCode == http.StatusCreated {
+	if resp.StatusCode() == http.StatusCreated {
 		return contained, resp, nil
 	}
 	// OperationOutcome

@@ -163,7 +163,7 @@ func TestClientCRUD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, clientName, created.Name)
 
 	created, resp, err = mdmClient.OAuthClients.GetOAuthClientByID(created.ID)
@@ -172,7 +172,7 @@ func TestClientCRUD(t *testing.T) {
 	if !assert.NotNil(t, createdClient) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, id, created.ID)
 
 	ok, resp, err := mdmClient.OAuthClients.DeleteOAuthClient(*created)
@@ -180,5 +180,5 @@ func TestClientCRUD(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, createdClient)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }

@@ -65,7 +65,7 @@ func TestMetricsInstanceCalls(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, 1, len(*instances))
@@ -78,7 +78,7 @@ func TestMetricsInstanceCalls(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	assert.NotNil(t, instance)
@@ -181,7 +181,7 @@ func TestMetricsRuleCalls(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, 1, len(*groups))
@@ -194,7 +194,7 @@ func TestMetricsRuleCalls(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	assert.NotNil(t, rule)
@@ -333,7 +333,7 @@ func TestAutoscalerCalls(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	assert.Equal(t, 2, len(*apps))
@@ -344,7 +344,7 @@ func TestAutoscalerCalls(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	if !assert.NotNil(t, app) {
@@ -361,7 +361,7 @@ func TestAutoscalerCalls(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	if !assert.Equal(t, http.StatusOK, resp.StatusCode) {
+	if !assert.Equal(t, http.StatusOK, resp.StatusCode()) {
 		return
 	}
 	if !assert.NotNil(t, app) {
@@ -409,7 +409,7 @@ func TestRetryableError(t *testing.T) {
 	if !assert.Nil(t, app) {
 		return
 	}
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode())
 	assert.Equal(t, "BAD_REQUEST", resp.Error.Code)
 	assert.Contains(t, resp.Error.Message, "invalid character")
 }

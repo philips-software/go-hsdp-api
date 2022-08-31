@@ -52,7 +52,7 @@ func (c *ConfigService) GetFHIRStore(opt *QueryOptions, options ...OptionFunc) (
 	var fhirStore FHIRStore
 	resp, err := c.client.do(req, &fhirStore)
 	if (err != nil && err != io.EOF) || resp == nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrNotFound
 		}
 		if resp == nil && err != nil {

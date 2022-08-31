@@ -128,7 +128,7 @@ func (g *GroupsService) DeleteGroup(group Group) (bool, *Response, error) {
 	var deleteResponse interface{}
 
 	resp, err := g.client.do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -176,7 +176,7 @@ func (g *GroupsService) roleAction(group Group, role Role, action string) (bool,
 	if err != nil {
 		return false, resp, err
 	}
-	if resp == nil || resp.StatusCode != http.StatusOK {
+	if resp == nil || resp.StatusCode() != http.StatusOK {
 		return false, resp, nil
 	}
 	return true, resp, err

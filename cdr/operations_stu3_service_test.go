@@ -76,7 +76,7 @@ func TestPatchOperation(t *testing.T) {
 	if !assert.NotNil(t, patched) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 }
 
 func TestPostOperation(t *testing.T) {
@@ -146,7 +146,7 @@ func TestPostOperation(t *testing.T) {
 	if !assert.NotNil(t, patched) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 }
 
 func TestGetOperation(t *testing.T) {
@@ -200,7 +200,7 @@ func TestGetOperation(t *testing.T) {
 	if !assert.NotNil(t, retrieved) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	org := retrieved.GetOrganization()
 	assert.Equal(t, "Hospital2", org.Name.Value)
 }

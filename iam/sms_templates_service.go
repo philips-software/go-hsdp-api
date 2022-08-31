@@ -71,8 +71,8 @@ func (o *SMSTemplatesService) CreateSMSTemplate(template SMSTemplate) (*SMSTempl
 	if err != nil {
 		return nil, resp, err
 	}
-	if resp.StatusCode != http.StatusCreated {
-		return nil, resp, fmt.Errorf("error creating sms template: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusCreated {
+		return nil, resp, fmt.Errorf("error creating sms template: %d", resp.StatusCode())
 	}
 	return &newTemplate, resp, err
 }
@@ -93,7 +93,7 @@ func (o *SMSTemplatesService) DeleteSMSTemplate(template SMSTemplate) (bool, *Re
 	if err != nil {
 		return false, resp, err
 	}
-	return resp.StatusCode == http.StatusAccepted, resp, nil
+	return resp.StatusCode() == http.StatusAccepted, resp, nil
 }
 
 // UpdateSMSTemplate updates the SMS template

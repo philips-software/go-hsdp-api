@@ -192,7 +192,7 @@ func TestMethodNotAllowed(t *testing.T) {
 	})
 	assert.NotNil(t, err)
 	assert.NotNil(t, resp)
-	assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+	assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode())
 }
 
 func TestDebug(t *testing.T) {

@@ -118,7 +118,7 @@ func TestServicesCRUD(t *testing.T) {
 	if ok := assert.NotNil(t, service); !ok {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, serviceName, service.Name)
 	assert.Equal(t, applicationID, service.ApplicationID)
 	assert.True(t, len(service.PrivateKey) > 0)
@@ -128,7 +128,7 @@ func TestServicesCRUD(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.NotNil(t, foundService) {
 		return
 	}
@@ -145,7 +145,7 @@ func TestServicesCRUD(t *testing.T) {
 		return
 	}
 	assert.Equal(t, 1, len(*services))
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	tokenValidity := 3601
 	serviceToUpdate := (*services)[0]
@@ -160,7 +160,7 @@ func TestServicesCRUD(t *testing.T) {
 	if !assert.NotNil(t, updated) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, updated.TokenValidity, tokenValidity)
 
 	ok, resp, err := client.Services.DeleteService(*foundService)
@@ -168,7 +168,7 @@ func TestServicesCRUD(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 	assert.True(t, ok)
 }
 
@@ -207,7 +207,7 @@ func TestScopes(t *testing.T) {
 	if !assert.NotNil(t, ok) {
 		return
 	}
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 	ok, resp, err = client.Services.RemoveScopes(r, []string{"foo"}, []string{"foo"})
 	if !assert.Nil(t, err) {
 		return
@@ -218,7 +218,7 @@ func TestScopes(t *testing.T) {
 	if !assert.NotNil(t, ok) {
 		return
 	}
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }
 
 func TestServicesService_UpdateServiceCertificate(t *testing.T) {

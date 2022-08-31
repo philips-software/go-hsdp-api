@@ -65,7 +65,7 @@ func TestDetails(t *testing.T) {
 	if !assert.NotNil(t, details) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, "container-host", details.Role)
 	assert.Equal(t, "2019-11-29T18:17:44.000Z", details.LaunchTime)
 }

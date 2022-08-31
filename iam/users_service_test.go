@@ -140,7 +140,7 @@ func TestCreateUserSelfRegistration(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.NotNil(t, user) {
 		return
 	}
@@ -285,7 +285,7 @@ func TestCreateAlreadyExists(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.NotNil(t, user) {
 		return
 	}
@@ -403,7 +403,7 @@ func TestGetUsers(t *testing.T) {
 	if !assert.NotNil(t, list) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, 5, len(list.UserUUIDs))
 	assert.False(t, list.HasNextPage)
 
@@ -517,7 +517,7 @@ func TestGetUserIDByLoginID(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, userUUID, uuid)
 }
 
@@ -539,7 +539,7 @@ func TestGetUserByID(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, email, foundUser.EmailAddress)
 	assert.Equal(t, "Swanson", foundUser.Name.Family)
 }
@@ -573,7 +573,7 @@ func TestUserActions(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.True(t, ok)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	ok, resp, err = client.Users.RecoverPassword("foo@bar.co")
 	if !assert.NotNil(t, resp) {
@@ -581,7 +581,7 @@ func TestUserActions(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.True(t, ok)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	ok, resp, err = client.Users.ChangePassword("foo@bar.co", "0ld", "N3w")
 	if !assert.NotNil(t, resp) {
@@ -589,7 +589,7 @@ func TestUserActions(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.True(t, ok)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	ok, resp, err = client.Users.SetPassword("foo@bar.com", "1234", "newp@ss", "userCreate")
 	if !assert.NotNil(t, resp) {
@@ -597,7 +597,7 @@ func TestUserActions(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.True(t, ok)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	uuid, resp, err := client.Users.GetUserIDByLoginID(loginID)
 	if !assert.NotNil(t, resp) {
@@ -605,7 +605,7 @@ func TestUserActions(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.Equal(t, userUUID, uuid)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	ok, resp, err = client.Users.SetMFAByLoginID(loginID, true)
 	if !assert.NotNil(t, resp) {
@@ -613,7 +613,7 @@ func TestUserActions(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.True(t, ok)
-	assert.Equal(t, http.StatusAccepted, resp.StatusCode)
+	assert.Equal(t, http.StatusAccepted, resp.StatusCode())
 
 	ok, resp, err = client.Users.Unlock(userUUID)
 	if !assert.NotNil(t, resp) {
@@ -621,7 +621,7 @@ func TestUserActions(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.True(t, ok)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 
 	ok, resp, err = client.Users.ChangeLoginID(Person{
 		ID:      userUUID,
@@ -632,7 +632,7 @@ func TestUserActions(t *testing.T) {
 	}
 	assert.Nil(t, err)
 	assert.True(t, ok)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }
 
 func actionRequestHandler(t *testing.T, paramName, informationalMessage string, statusCode int) func(http.ResponseWriter, *http.Request) {

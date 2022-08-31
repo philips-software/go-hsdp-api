@@ -75,7 +75,7 @@ func (c *ClientsService) CreateClient(ac ApplicationClient) (*ApplicationClient,
 
 	resp, err := c.client.do(req, &createdClient)
 
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
+	ok := resp != nil && (resp.StatusCode() == http.StatusOK || resp.StatusCode() == http.StatusCreated)
 	if !ok {
 		return nil, resp, err
 	}
@@ -109,7 +109,7 @@ func (c *ClientsService) DeleteClient(ac ApplicationClient) (bool, *Response, er
 	var deleteResponse interface{}
 
 	resp, err := c.client.do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -173,7 +173,7 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 		if err != nil {
 			return err
 		}
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return ErrNotFound
 		}
 		return nil
@@ -195,7 +195,7 @@ func (c *ClientsService) UpdateScopes(ac ApplicationClient, scopes []string, def
 	if err != nil {
 		return false, resp, err
 	}
-	if resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode() != http.StatusNoContent {
 		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil

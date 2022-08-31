@@ -88,7 +88,7 @@ func TestCreateSMSTemplate(t *testing.T) {
 	if !assert.NotNil(t, createdTemplate) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, TypePhoneVerification, createdTemplate.Type)
 	assert.Equal(t, orgID, createdTemplate.Organization.Value)
 }

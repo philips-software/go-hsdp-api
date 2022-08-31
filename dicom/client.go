@@ -224,6 +224,13 @@ type Response struct {
 	*http.Response
 }
 
+func (r *Response) StatusCode() int {
+	if r.Response != nil {
+		return r.Response.StatusCode
+	}
+	return 0
+}
+
 // newResponse creates a new Response for the provided http.Response.
 func newResponse(r *http.Response) *Response {
 	response := &Response{Response: r}
@@ -256,7 +263,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		return response, err
 	}
 
-	if v != nil && response.StatusCode != http.StatusNoContent {
+	if v != nil && response.StatusCode() != http.StatusNoContent {
 		defer func() {
 			_ = resp.Body.Close()
 		}() // Only close if we plan to read it

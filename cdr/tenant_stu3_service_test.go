@@ -73,7 +73,7 @@ func TestTenantService(t *testing.T) {
 	if !assert.NotNil(t, newOrg) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 
 	foundOrg, resp, err := cdrClient.TenantSTU3.GetOrganizationByID(orgID)
 	if !assert.Nil(t, err) {

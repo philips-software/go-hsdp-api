@@ -120,7 +120,7 @@ func (p *DevicesService) CreateDevice(device Device) (*Device, *Response, error)
 	if resp == nil {
 		return nil, nil, ErrOperationFailed
 	}
-	ok := resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated
+	ok := resp.StatusCode() == http.StatusOK || resp.StatusCode() == http.StatusCreated
 	if !ok {
 		return nil, resp, err
 	}
@@ -167,7 +167,7 @@ func (p *DevicesService) DeleteDevice(device Device) (bool, *Response, error) {
 	var deleteResponse bytes.Buffer
 
 	resp, err := p.client.do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, nil
 	}
 	return true, resp, err
@@ -199,7 +199,7 @@ func (p *DevicesService) deviceActionV(deviceID string, body interface{}, action
 	var bundleResponse interface{}
 
 	resp, err := p.client.doSigned(req, &bundleResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil

@@ -75,7 +75,7 @@ func (c *AuthenticationMethodsService) Delete(ac AuthenticationMethod) (bool, *R
 	var deleteResponse interface{}
 
 	resp, err := c.Do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil

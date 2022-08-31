@@ -86,7 +86,7 @@ func (l *LabelDefinitionService) GetLabelDefinitions(studyId string, opt *GetOpt
 	var getAllLabelDefResponse LabelDefBundleResponse
 	resp, err := l.client.do(req, &getAllLabelDefResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrEmptyResult
 		}
 		return nil, resp, err

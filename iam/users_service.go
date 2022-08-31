@@ -88,7 +88,7 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 	if err != nil {
 		return nil, resp, err
 	}
-	if resp.StatusCode == http.StatusCreated {
+	if resp.StatusCode() == http.StatusCreated {
 		// Brand-new user
 		var id string
 		count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/User/%s", &id)
@@ -100,8 +100,8 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 		}
 		return u.GetUserByID(id)
 	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, resp, fmt.Errorf("unexpected StatusCode '%d' during user create", resp.StatusCode)
+	if resp.StatusCode() != http.StatusOK {
+		return nil, resp, fmt.Errorf("unexpected StatusCode '%d' during user create", resp.StatusCode())
 	}
 	// HTTP 200
 	return u.GetUserByID(person.LoginID)
@@ -126,7 +126,7 @@ func (u *UsersService) DeleteUser(person Person) (bool, *Response, error) {
 	if err != nil {
 		return false, resp, err
 	}
-	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
+	ok := resp != nil && (resp.StatusCode() == http.StatusNoContent)
 	return ok, resp, err
 }
 
@@ -166,7 +166,7 @@ func (u *UsersService) ChangeLoginID(user Person, newLoginID string) (bool, *Res
 		doFunc = u.client.do
 	}
 	resp, err := doFunc(req, &bundleResponse)
-	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
+	ok := resp != nil && (resp.StatusCode() == http.StatusNoContent)
 	return ok, resp, err
 }
 
@@ -199,7 +199,7 @@ func (u *UsersService) userActionV(body *Parameters, action, apiVersion string) 
 	if err != nil {
 		return false, resp, err
 	}
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusAccepted)
+	ok := resp != nil && (resp.StatusCode() == http.StatusOK || resp.StatusCode() == http.StatusAccepted)
 	return ok, resp, err
 }
 
@@ -446,7 +446,7 @@ func (u *UsersService) SetMFA(userID string, activate bool) (bool, *Response, er
 	var bundleResponse interface{}
 
 	resp, _ := u.client.do(req, &bundleResponse)
-	ok := resp != nil && (resp.StatusCode == http.StatusAccepted)
+	ok := resp != nil && (resp.StatusCode() == http.StatusAccepted)
 	return ok, resp, nil
 }
 
@@ -461,7 +461,7 @@ func (u *UsersService) Unlock(userID string) (bool, *Response, error) {
 	var bundleResponse interface{}
 
 	resp, _ := u.client.do(req, &bundleResponse)
-	ok := resp != nil && (resp.StatusCode == http.StatusNoContent)
+	ok := resp != nil && (resp.StatusCode() == http.StatusNoContent)
 	return ok, resp, nil
 }
 

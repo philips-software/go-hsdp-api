@@ -171,7 +171,7 @@ func TestLabelDefinitionCRD(t *testing.T) {
 	if !assert.NotNil(t, createdLabelDef) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, createdLabelDef.ID, labelDefID)
 
 	item, resp, err := cdlClient.LabelDefinition.GetLabelDefinitionByID(studyID, labelDefID)
@@ -184,7 +184,7 @@ func TestLabelDefinitionCRD(t *testing.T) {
 	if !assert.NotNil(t, item) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, labelDefID, item.ID)
 
 	items, resp, err := cdlClient.LabelDefinition.GetLabelDefinitions(studyID, &cdl.GetOptions{})
@@ -198,7 +198,7 @@ func TestLabelDefinitionCRD(t *testing.T) {
 		return
 	}
 	assert.Equal(t, labelDefID, items[0].ID)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	resp, err = cdlClient.LabelDefinition.DeleteLabelDefinitionById(studyID, labelDefID)
 	if !assert.Nil(t, err) {
@@ -207,6 +207,6 @@ func TestLabelDefinitionCRD(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 
 }

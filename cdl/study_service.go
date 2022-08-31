@@ -116,7 +116,7 @@ func (s *StudyService) GetStudies(opt *GetOptions, options ...OptionFunc) ([]Stu
 	}
 	resp, err = s.client.do(req, &bundleResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrEmptyResult
 		}
 		return nil, resp, err
@@ -199,7 +199,7 @@ func (s *StudyService) GetPermissions(study Study, opt *GetOptions, options ...O
 
 	resp, err := s.client.do(req, &bundleResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrEmptyResult
 		}
 		return nil, resp, err
@@ -217,7 +217,7 @@ func (s *StudyService) GrantPermission(study Study, request RoleRequest, options
 	var bundleResponse bytes.Buffer
 
 	resp, err := s.client.do(req, &bundleResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -233,7 +233,7 @@ func (s *StudyService) RevokePermission(study Study, request RoleRequest, option
 	var bundleResponse bytes.Buffer
 
 	resp, err := s.client.do(req, &bundleResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil

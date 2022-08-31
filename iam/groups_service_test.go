@@ -88,7 +88,7 @@ func TestGroupCRUD(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.NotNil(t, resp)
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, groupName, group.Name)
 	assert.Equal(t, managingOrgID, group.ManagingOrganization)
 
@@ -96,7 +96,7 @@ func TestGroupCRUD(t *testing.T) {
 	group, resp, err = client.Groups.UpdateGroup(*group)
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	groups, resp, err := client.Groups.GetGroups(&GetGroupOptions{
 		OrganizationID: &managingOrgID,
@@ -106,7 +106,7 @@ func TestGroupCRUD(t *testing.T) {
 	if !assert.NotNil(t, groups) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, 1, len(*groups))
 
 	group, resp, err = client.Groups.GetGroupByID(group.ID)
@@ -115,14 +115,14 @@ func TestGroupCRUD(t *testing.T) {
 	if !assert.NotNil(t, group) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, groupID, group.ID)
 
 	ok, resp, err := client.Groups.DeleteGroup(*group)
 	assert.True(t, ok)
 	assert.Nil(t, err)
 	if ok := assert.NotNil(t, resp); ok {
-		assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+		assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 	}
 }
 
@@ -178,7 +178,7 @@ func TestAssignRole(t *testing.T) {
 	assert.True(t, ok)
 	assert.Nil(t, err)
 	if ok := assert.NotNil(t, resp); ok {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	assert.Len(t, assignedTotal, 1)
 }
@@ -248,7 +248,7 @@ func TestAddMembers(t *testing.T) {
 	ok, resp, err := client.Groups.AddMembers(group, users...)
 	assert.NotNil(t, resp)
 	if resp != nil {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	assert.Len(t, assignedTotal, 28)
 	assert.Nil(t, ok)
@@ -329,7 +329,7 @@ func TestRemoveMembers(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.Nil(t, ok)
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	ok, resp, err = client.Groups.RemoveMembers(group, "foo")
 	assert.NotNil(t, resp)
@@ -395,7 +395,7 @@ func TestRemoveRole(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.True(t, ok)
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 }
 
 func TestGetRoles(t *testing.T) {
@@ -434,7 +434,7 @@ func TestGetRoles(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.NotNil(t, roles)
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, 1, len(*roles))
 	assert.Equal(t, roleID, (*roles)[0].ID)
 	assert.Equal(t, "TDRALL", (*roles)[0].Name)
@@ -536,7 +536,7 @@ func TestAddServicesAndDevices(t *testing.T) {
 	ok, resp, err := client.Groups.AddServices(group, identityID)
 	assert.NotNil(t, resp)
 	if resp != nil {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	assert.NotNil(t, ok)
 	assert.Nil(t, err)
@@ -549,7 +549,7 @@ func TestAddServicesAndDevices(t *testing.T) {
 	ok, resp, err = client.Groups.AddDevices(group, identityID)
 	assert.NotNil(t, resp)
 	if resp != nil {
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	assert.NotNil(t, ok)
 	assert.Nil(t, err)
@@ -648,7 +648,7 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 	_, resp, err := client.Groups.RemoveServices(group, identityID)
 	assert.NotNil(t, resp)
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	_, resp, err = client.Groups.RemoveServices(group, "foo")
 	assert.NotNil(t, resp)
@@ -657,7 +657,7 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 	_, resp, err = client.Groups.RemoveDevices(group, identityID)
 	assert.NotNil(t, resp)
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	ok, resp, err := client.Groups.RemoveDevices(group, "foo")
 	assert.NotNil(t, resp)

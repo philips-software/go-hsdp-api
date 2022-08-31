@@ -35,7 +35,7 @@ func TestStart(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, true, sr.Success())
 }
 
@@ -68,6 +68,6 @@ func TestAlreadyRunning(t *testing.T) {
 	if !assert.NotNil(t, err) {
 		return
 	}
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode())
 	assert.Equal(t, false, sr.Success())
 }

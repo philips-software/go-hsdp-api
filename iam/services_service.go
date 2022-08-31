@@ -234,7 +234,7 @@ func (p *ServicesService) DeleteService(service Service) (bool, *Response, error
 	var deleteResponse interface{}
 
 	resp, err := p.client.do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil
@@ -260,7 +260,7 @@ func (p *ServicesService) UpdateServiceCertificateDER(service Service, derBytes 
 	if err != nil {
 		return nil, resp, err
 	}
-	if resp == nil || resp.StatusCode != http.StatusOK {
+	if resp == nil || resp.StatusCode() != http.StatusOK {
 		return nil, resp, err
 	}
 	return p.GetServiceByID(service.ID)
@@ -334,7 +334,7 @@ func (p *ServicesService) updateScopes(service Service, action string, scopes []
 	if err != nil {
 		return false, resp, err
 	}
-	if resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode() != http.StatusNoContent {
 		return false, resp, ErrOperationFailed
 	}
 	return true, resp, nil

@@ -68,7 +68,7 @@ func (c *FirmwareComponentVersionsService) Create(ac FirmwareComponentVersion) (
 
 	resp, err := c.Do(req, &created)
 
-	ok := resp != nil && (resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated)
+	ok := resp != nil && (resp.StatusCode() == http.StatusOK || resp.StatusCode() == http.StatusCreated)
 	if !ok {
 		return nil, resp, err
 	}
@@ -90,7 +90,7 @@ func (c *FirmwareComponentVersionsService) Delete(ac FirmwareComponentVersion) (
 	var deleteResponse interface{}
 
 	resp, err := c.Do(req, &deleteResponse)
-	if resp == nil || resp.StatusCode != http.StatusNoContent {
+	if resp == nil || resp.StatusCode() != http.StatusNoContent {
 		return false, resp, err
 	}
 	return true, resp, nil

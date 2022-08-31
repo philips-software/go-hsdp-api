@@ -88,5 +88,5 @@ func TestBlobCRUD(t *testing.T) {
 		return
 	}
 	assert.True(t, res)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }

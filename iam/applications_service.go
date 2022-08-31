@@ -91,9 +91,9 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 	if resp == nil {
 		return nil, nil, fmt.Errorf("CreateApplication: request failed")
 	}
-	ok := resp.StatusCode == http.StatusCreated
+	ok := resp.StatusCode() == http.StatusCreated
 	if !ok {
-		return nil, resp, fmt.Errorf("CreateApplication: failed with StatusCode=%d", resp.StatusCode)
+		return nil, resp, fmt.Errorf("CreateApplication: failed with StatusCode=%d", resp.StatusCode())
 	}
 	var id string
 	count, err := fmt.Sscanf(resp.Header.Get("Location"), "/authorize/identity/Application/%s", &id)

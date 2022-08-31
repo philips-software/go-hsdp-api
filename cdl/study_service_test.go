@@ -118,7 +118,7 @@ func TestResearchStudiesCRD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, created.ID, studyID)
 
 	item, resp, err := cdlClient.Study.GetStudyByID(studyID)

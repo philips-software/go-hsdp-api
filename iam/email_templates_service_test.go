@@ -113,7 +113,7 @@ func TestEmailTemplateCreateDelete(t *testing.T) {
 	if !assert.NotNil(t, template) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, id, template.ID)
 
 	foundTemplate, resp, err := client.EmailTemplates.GetTemplateByID(template.ID)
@@ -121,7 +121,7 @@ func TestEmailTemplateCreateDelete(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.NotNil(t, foundTemplate) {
 		return
 	}
@@ -136,7 +136,7 @@ func TestEmailTemplateCreateDelete(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	if !assert.Len(t, *templates, 1) {
 		return
 	}
@@ -146,6 +146,6 @@ func TestEmailTemplateCreateDelete(t *testing.T) {
 		return
 	}
 	assert.Nil(t, err)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 	assert.True(t, ok)
 }

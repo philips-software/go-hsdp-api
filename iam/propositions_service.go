@@ -108,7 +108,7 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 	if err != nil {
 		return nil, resp, err
 	}
-	ok := resp != nil && resp.StatusCode == http.StatusCreated
+	ok := resp != nil && resp.StatusCode() == http.StatusCreated
 	if !ok {
 		return nil, resp, fmt.Errorf("CreateProposition failed: resp=%v", resp)
 	}

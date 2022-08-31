@@ -103,7 +103,7 @@ func TestCreateSMSGateway(t *testing.T) {
 	if !assert.NotNil(t, createdGW) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, "twilio", createdGW.Provider)
 	assert.Equal(t, orgID, createdGW.Organization.Value)
 }

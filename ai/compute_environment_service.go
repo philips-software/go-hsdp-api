@@ -127,7 +127,7 @@ func (s *ComputeEnvironmentService) GetComputeEnvironments(opt *GetOptions, opti
 	}
 	resp, err := s.Client.Do(req, &bundleResponse)
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
 			return nil, resp, ErrEmptyResult
 		}
 		return nil, resp, err

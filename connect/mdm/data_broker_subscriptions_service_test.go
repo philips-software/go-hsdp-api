@@ -93,7 +93,7 @@ func TestDataBrokerSubscriptionCRUD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, name, created.Name)
 
 	created, resp, err = mdmClient.ServiceActions.GetByID(created.ID)
@@ -102,7 +102,7 @@ func TestDataBrokerSubscriptionCRUD(t *testing.T) {
 	if !assert.NotNil(t, createdResource) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, id, created.ID)
 
 	ok, resp, err := mdmClient.ServiceActions.Delete(*created)
@@ -110,5 +110,5 @@ func TestDataBrokerSubscriptionCRUD(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, createdResource)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }

@@ -86,7 +86,7 @@ func TestDeviceTypesCRUD(t *testing.T) {
 	if !assert.NotNil(t, created) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 	assert.Equal(t, name, created.Name)
 
 	created, resp, err = mdmClient.DeviceTypes.GetByID(created.ID)
@@ -95,7 +95,7 @@ func TestDeviceTypesCRUD(t *testing.T) {
 	if !assert.NotNil(t, createdResource) {
 		return
 	}
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, id, created.ID)
 
 	ok, resp, err := mdmClient.DeviceTypes.Delete(*created)
@@ -103,5 +103,5 @@ func TestDeviceTypesCRUD(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, createdResource)
-	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
 }

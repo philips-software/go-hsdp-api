@@ -105,7 +105,7 @@ func (o *OperationsR4Service) Delete(resourceID string, options ...OptionFunc) (
 		}
 		return false, resp, err
 	}
-	return resp.StatusCode == http.StatusNoContent, resp, nil
+	return resp.StatusCode() == http.StatusNoContent, resp, nil
 }
 
 func (o *OperationsR4Service) postOrPut(method, resourceID string, jsonBody []byte, options ...OptionFunc) (*r4pb.ContainedResource, *Response, error) {
