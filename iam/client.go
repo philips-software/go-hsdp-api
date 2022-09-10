@@ -300,6 +300,14 @@ func (c *Client) HasScopes(scopes ...string) bool {
 	return true
 }
 
+// HasSigningKeys returns true if this client is configured with IAM signing keys
+func (c *Client) HasSigningKeys() bool {
+	if c.config == nil {
+		return false
+	}
+	return c.config.SharedKey != "" && c.config.SecretKey != ""
+}
+
 // HasPermissions returns true if all permissions are there for the client
 func (c *Client) HasPermissions(orgID string, permissions ...string) bool {
 	introspect, _, err := c.Introspect(WithOrgContext(orgID))
