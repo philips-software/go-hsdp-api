@@ -29,7 +29,7 @@ type DeviceIdentifier struct {
 // Device represents an IAM resource
 type Device struct {
 	ID                string           `json:"id,omitempty"`
-	LoginID           string           `json:"loginId,omitempty" validate:"required,min=5,max=50" `
+	LoginID           string           `json:"loginId,omitempty" validate:"required,reserved-strings,min=5,max=50" `
 	DeviceExtID       DeviceIdentifier `json:"deviceExtId" validate:"required"`
 	Password          string           `json:"password,omitempty" validate:"required_without=ID,max=255"`
 	Type              string           `json:"type" validate:"required,min=1,max=50"`
@@ -194,7 +194,7 @@ func (p *DevicesService) deviceActionV(deviceID string, body interface{}, action
 	if err != nil {
 		return false, nil, err
 	}
-	req.Header.Set("api-version", deviceAPIVersion)
+	req.Header.Set("api-version", apiVersion)
 
 	var bundleResponse interface{}
 

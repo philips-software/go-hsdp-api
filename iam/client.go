@@ -149,7 +149,11 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	c.Services = &ServicesService{client: c}
 	c.MFAPolicies = &MFAPoliciesService{client: c, validate: validator.New()}
 	c.PasswordPolicies = &PasswordPoliciesService{client: c, validate: validator.New()}
-	c.Devices = &DevicesService{client: c, validate: validator.New()}
+
+	devicesValidator := validator.New()
+	_ = devicesValidator.RegisterValidation("reserved-strings", internal.ValidateNoReservedStrings)
+	c.Devices = &DevicesService{client: c, validate: devicesValidator}
+
 	c.EmailTemplates = &EmailTemplatesService{client: c, validate: validator.New()}
 	c.SMSGateways = &SMSGatewaysService{client: c, validate: validator.New()}
 	c.SMSTemplates = &SMSTemplatesService{client: c, validate: validator.New()}

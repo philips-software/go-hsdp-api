@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -179,7 +180,15 @@ func TestValidationDevices(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	_, _, err := client.Devices.CreateDevice(Device{})
+	_, _, err := client.Devices.CreateDevice(Device{
+		LoginID: "withdelegations",
+	})
+	if !assert.NotNil(t, err) {
+		return
+	}
+	assert.IsType(t, validator.ValidationErrors{}, err)
+
+	_, _, err = client.Devices.CreateDevice(Device{})
 	if !assert.NotNil(t, err) {
 		return
 	}
