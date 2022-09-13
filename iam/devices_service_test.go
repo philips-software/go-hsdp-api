@@ -32,9 +32,10 @@ func TestDevicesCRUD(t *testing.T) {
       "applicationId": "711171ab-d28c-4616-a314-f95584e280c3",
       "deviceExtId": {
         "type": {
-          "code": "ID"
+          "code": "ID",
+          "text": "Device Identifier"
         },
-        "system": "http://www.philips.co.id/c-m-ho/fake/fakedevice",
+        "system": "https://www.philips.co.id/c-m-ho/fake/fakedevice",
         "value": "0001"
       },
       "type": "Device",
@@ -42,8 +43,8 @@ func TestDevicesCRUD(t *testing.T) {
       "globalReferenceId": "c157bd2e-e992-4b5e-88ab-911766b7b8f4",
       "id": "`+deviceID+`",
       "meta": {
-        "versionId": "0",
-        "lastModified": "2020-08-23T20:47:374.040Z"
+        "versionId": "1",
+        "lastModified": "2022-09-13T20:35:52Z"
       }
     }
   ]
@@ -63,7 +64,7 @@ func TestDevicesCRUD(t *testing.T) {
         "type": {
           "code": "ID"
         },
-        "system": "http://www.philips.co.id/c-m-ho/fake/fakedevice",
+        "system": "https://www.philips.co.id/c-m-ho/fake/fakedevice",
         "value": "0001"
       },
       "type": "Device",
@@ -72,7 +73,7 @@ func TestDevicesCRUD(t *testing.T) {
       "id": "`+deviceID+`",
       "meta": {
         "versionId": "1",
-        "lastModified": "2020-08-23T20:47:374.040Z"
+        "lastModified": "2022-09-13T20:35:52Z"
       }
     }`)
 		case "DELETE":
@@ -102,7 +103,7 @@ func TestDevicesCRUD(t *testing.T) {
 				Code: "ID",
 				Text: "Device identification",
 			},
-			System: "http://www.philips.co.id/c-m-ho/fake/fakedevice",
+			System: "https://www.philips.co.id/c-m-ho/fake/fakedevice",
 			Value:  "0001",
 		},
 	}

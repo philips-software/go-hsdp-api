@@ -16,11 +16,13 @@ type OrgAddress struct {
 type Meta struct {
 	ResourceType string     `json:"resourceType,omitempty"`
 	LastModified *time.Time `json:"lastModified,omitempty"`
+	LastUpdated  *time.Time `json:"lastUpdated,omitempty"`
 	Created      *time.Time `json:"created,omitempty"`
 	UpdatedBy    string     `json:"updatedBy,omitempty"`
 	CreatedBy    string     `json:"createdBy,omitempty"`
 	Location     string     `json:"location,omitempty"`
-	Version      string     `json:"version,omitempty"`
+	Version      string     `json:"version,omitempty"`   // No
+	VersionID    string     `json:"versionId,omitempty"` // Consistency
 }
 
 type Attribute struct {

@@ -41,10 +41,7 @@ type Device struct {
 	GlobalReferenceID string           `json:"globalReferenceId" validate:"required,min=3,max=50"`
 	Text              string           `json:"text,omitempty"`
 	ApplicationID     string           `json:"applicationId" validate:"required"`
-	Meta              struct {
-		VersionID   string     `json:"versionId,omitempty"`
-		LastUpdated *time.Time `json:"lastUpdated,omitempty"`
-	} `json:"meta,omitempty"`
+	Meta              *Meta            `json:"meta,omitempty"`
 }
 
 // GetDevicesOptions describes search criteria for looking up devices
@@ -100,7 +97,7 @@ func (p *DevicesService) GetDeviceByID(deviceID string) (*Device, *Response, err
 		ID: &deviceID,
 	})
 	if devices == nil || len(*devices) == 0 {
-		return nil, resp, ErrNotFound
+		return nil, resp, fmt.Errorf("GetDeviceByID: %v %w", err, ErrNotFound)
 	}
 	return &(*devices)[0], resp, err
 }
