@@ -244,6 +244,9 @@
             "kibana": {
               "url": "https://kibana.eu-west.philips-healthsuite.com"
             },
+            "pki": {
+              "url": "https://pki-proxy-production.eu-west.philips-healthsuite.com"
+            },
             "inference": {
               "url": "https://aiinference-service.eu-west.philips-healthsuite.com"
             },
