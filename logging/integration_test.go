@@ -8,20 +8,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIntegration(t *testing.T) {
+func shouldRun(t *testing.T) bool {
 	key := os.Getenv("INT_LOGGING_SHARED_KEY")
 	secret := os.Getenv("INT_LOGGING_SECRET_KEY")
 	productKey := os.Getenv("INT_LOGGING_PRODUCT_KEY")
 	ingestorURL := os.Getenv("INT_LOGGING_INGESTOR_URL")
 
 	if key == "" || secret == "" || productKey == "" || ingestorURL == "" {
+		t.Skip("skipping integration test")
+		return false
+	}
+	return true
+}
+
+func TestIntegration(t *testing.T) {
+	if !shouldRun(t) {
 		return
 	}
+
+	key := os.Getenv("INT_LOGGING_SHARED_KEY")
+	secret := os.Getenv("INT_LOGGING_SECRET_KEY")
+	productKey := os.Getenv("INT_LOGGING_PRODUCT_KEY")
+	ingestorURL := os.Getenv("INT_LOGGING_INGESTOR_URL")
+
 	intClient, err := NewClient(nil, &Config{
 		SharedKey:    key,
 		SharedSecret: secret,
 		ProductKey:   productKey,
 		BaseURL:      ingestorURL,
+		DebugLog:     "/tmp/integration.log",
 	})
 	if !assert.Nil(t, err) {
 		return
@@ -29,6 +44,8 @@ func TestIntegration(t *testing.T) {
 	if !assert.NotNil(t, intClient) {
 		return
 	}
+
+	// Happy flow
 	resp, err := intClient.StoreResources([]Resource{validResource}, 1)
 	if !assert.Nil(t, err) {
 		return
@@ -37,6 +54,8 @@ func TestIntegration(t *testing.T) {
 		return
 	}
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+
+	// Local validation test
 	resp, err = intClient.StoreResources([]Resource{
 		validResource,
 		invalidResource,

@@ -22,22 +22,22 @@ var (
 	client       *Client
 
 	validResource = Resource{
-		ID:                  "deb545e2-ccea-4868-99fe-b9dfbf5ce56e",
+		ID:                  "7f4c85a8-e472-479f-b772-2916353d02a4",
 		ResourceType:        "LogEvent",
 		ServerName:          "foo.bar.com",
-		ApplicationName:     "some-space",
+		ApplicationName:     "OPS",
 		EventID:             "1",
-		Category:            "Tracelog",
-		Component:           "PHS",
-		TransactionID:       "5bc4ce05-37b5-4f08-89e4-ed73790f8058",
-		ServiceName:         "mcvs",
-		ApplicationInstance: "85e597cb-2648-4187-78ec-2c58",
-		ApplicationVersion:  "0.0.0",
-		OriginatingUser:     "ActiveUser",
+		Category:            "TRACELOG",
+		Component:           "TEST",
+		TransactionID:       "2abd7355-cbdd-43e1-b32a-43ec19cd98f0",
+		ServiceName:         "OPS",
+		ApplicationInstance: "INST‐00002",
+		ApplicationVersion:  "1.0.0",
+		OriginatingUser:     "SomeUsr",
 		LogTime:             "2017-10-15T01:53:20Z",
 		Severity:            "INFO",
 		LogData: LogData{
-			Message: "aGVsbG8gd29ybGQ=",
+			Message: "VGVzdCBtZXNzYWdl",
 		},
 	}
 	invalidResource = Resource{
@@ -108,7 +108,7 @@ func setup(t *testing.T, config *Config, method string, statusCode int, response
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
-			if !assert.Equal(t, "hello world", string(data)) {
+			if !assert.Equal(t, "Test message", string(data)) {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
 		}
