@@ -1,7 +1,9 @@
 package cartel
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 )
 
 type LdapGroups []string
@@ -55,9 +57,22 @@ func (c *Client) GetDetailsMulti(tags ...string) (*DetailsResponse, *Response, e
 		return nil, nil, err
 	}
 
+	var res bytes.Buffer
+
 	var detailResponse []map[string]InstanceDetails
 
-	resp, err := c.do(req, &detailResponse)
+	resp, err := c.do(req, &res)
+	if err != nil {
+		var jsonResponse map[string]interface{}
+		_ = json.NewDecoder(&res).Decode(&jsonResponse)
+
+		return nil, resp, fmt.Errorf("body: %+v", jsonResponse)
+	}
+	err = json.NewDecoder(&res).Decode(&detailResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+
 	response := make(DetailsResponse, len(detailResponse))
 	for _, r := range detailResponse {
 		for k, v := range r {
