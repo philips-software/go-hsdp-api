@@ -1,6 +1,11 @@
 package console
 
-import "time"
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 type MetricsService struct {
 	client *Client
@@ -103,16 +108,21 @@ func (c *MetricsService) GetGroupedRules(options ...OptionFunc) (*[]Group, *Resp
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	var response RuleResponse
+	var jsonResponse RuleResponse
+	var response bytes.Buffer
 
 	resp, err := c.client.do(req, &response)
+	jsonErr := json.NewDecoder(&response).Decode(&jsonResponse)
 	if err != nil {
-		if resp != nil {
-			resp.Error = response.Error
+		if jsonErr == nil {
+			return nil, resp, fmt.Errorf("status: %s, code: %s, message: %s, error: %w", jsonResponse.Status, jsonResponse.Error.Code, jsonResponse.Error.Message, err)
 		}
 		return nil, resp, err
 	}
-	return &response.Data.Groups, resp, err
+	if jsonErr != nil {
+		return nil, resp, fmt.Errorf("decoding jsonResponse: %w", err)
+	}
+	return &jsonResponse.Data.Groups, resp, err
 }
 
 // GetRuleByID retrieves a rule by ID
@@ -123,20 +133,25 @@ func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	var response struct {
+	var jsonResponse struct {
 		Data   Rule   `json:"data"`
 		Status string `json:"status"`
 		Error  Error  `json:"error,omitempty"`
 	}
+	var response bytes.Buffer
 
 	resp, err := c.client.do(req, &response)
+	jsonErr := json.NewDecoder(&response).Decode(&jsonResponse)
 	if err != nil {
-		if resp != nil {
-			resp.Error = response.Error
+		if jsonErr == nil {
+			return nil, resp, fmt.Errorf("status: %s, code: %s, message: %s, error: %w", jsonResponse.Status, jsonResponse.Error.Code, jsonResponse.Error.Message, err)
 		}
 		return nil, resp, err
 	}
-	return &response.Data, resp, err
+	if jsonErr != nil {
+		return nil, resp, fmt.Errorf("decoding jsonResponse: %w", err)
+	}
+	return &jsonResponse.Data, resp, err
 }
 
 // GetInstances looks up available instances
@@ -147,16 +162,21 @@ func (c *MetricsService) GetInstances(options ...OptionFunc) (*[]Instance, *Resp
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	var response MetricsResponse
+	var jsonResponse MetricsResponse
+	var response bytes.Buffer
 
 	resp, err := c.client.do(req, &response)
+	jsonErr := json.NewDecoder(&response).Decode(&jsonResponse)
 	if err != nil {
-		if resp != nil {
-			resp.Error = response.Error
+		if jsonErr == nil {
+			return nil, resp, fmt.Errorf("status: %s, code: %s, message: %s, error: %w", jsonResponse.Status, jsonResponse.Error.Code, jsonResponse.Error.Message, err)
 		}
 		return nil, resp, err
 	}
-	return &response.Data.Instances, resp, err
+	if jsonErr != nil {
+		return nil, resp, fmt.Errorf("decoding jsonResponse: %w", err)
+	}
+	return &jsonResponse.Data.Instances, resp, err
 }
 
 // GetInstanceByID looks up an instance by ID
@@ -167,20 +187,25 @@ func (c *MetricsService) GetInstanceByID(id string, options ...OptionFunc) (*Ins
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	var response struct {
+	var jsonResponse struct {
 		Data   Instance `json:"data"`
 		Status string   `json:"status"`
 		Error  Error    `json:"error,omitempty"`
 	}
+	var response bytes.Buffer
 
 	resp, err := c.client.do(req, &response)
+	jsonErr := json.NewDecoder(&response).Decode(&jsonResponse)
 	if err != nil {
-		if resp != nil {
-			resp.Error = response.Error
+		if jsonErr == nil {
+			return nil, resp, fmt.Errorf("status: %s, code: %s, message: %s, error: %w", jsonResponse.Status, jsonResponse.Error.Code, jsonResponse.Error.Message, err)
 		}
 		return nil, resp, err
 	}
-	return &response.Data, resp, err
+	if jsonErr != nil {
+		return nil, resp, fmt.Errorf("decoding jsonResponse: %w", err)
+	}
+	return &jsonResponse.Data, resp, err
 }
 
 // GetApplicationAutoscalers looks up all available autoscalers
@@ -191,16 +216,21 @@ func (c *MetricsService) GetApplicationAutoscalers(id string, options ...OptionF
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	var response AutoscalersResponse
+	var jsonResponse AutoscalersResponse
+	var response bytes.Buffer
 
 	resp, err := c.client.do(req, &response)
+	jsonErr := json.NewDecoder(&response).Decode(&jsonResponse)
 	if err != nil {
-		if resp != nil {
-			resp.Error = response.Error
+		if jsonErr == nil {
+			return nil, resp, fmt.Errorf("status: %s, code: %s, message: %s, error: %w", jsonResponse.Status, jsonResponse.Error.Code, jsonResponse.Error.Message, err)
 		}
 		return nil, resp, err
 	}
-	return &response.Data.Applications, resp, err
+	if jsonErr != nil {
+		return nil, resp, fmt.Errorf("decoding jsonResponse: %w", err)
+	}
+	return &jsonResponse.Data.Applications, resp, err
 }
 
 // GetApplicationAutoscaler looks up a specific application autoscaler settings
@@ -211,25 +241,30 @@ func (c *MetricsService) GetApplicationAutoscaler(id, app string, options ...Opt
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	var response struct {
+	var getResponse struct {
 		Data struct {
 			Application Application `json:"application"`
 		} `json:"data"`
 		Status string `json:"status"`
 		Error  Error  `json:"error,omitempty"`
 	}
+	var response bytes.Buffer
 
 	resp, err := c.client.do(req, &response)
+	jsonErr := json.NewDecoder(&response).Decode(&getResponse)
 	if err != nil {
-		if resp != nil {
-			resp.Error = response.Error
+		if jsonErr == nil {
+			return nil, resp, fmt.Errorf("status: %s, code: %s, message: %s, error: %w", getResponse.Status, getResponse.Error.Code, getResponse.Error.Message, err)
 		}
 		return nil, resp, err
 	}
-	return &response.Data.Application, resp, err
+	if jsonErr != nil {
+		return nil, resp, fmt.Errorf("decoding jsonResponse: %w", err)
+	}
+	return &getResponse.Data.Application, resp, err
 }
 
-// GetApplicationAutoscaler looks up a specific application autoscaler settings
+// UpdateApplicationAutoscaler updates a specific application autoscaler settings
 func (c *MetricsService) UpdateApplicationAutoscaler(id string, settings Application, options ...OptionFunc) (*Application, *Response, error) {
 	req, err := c.client.newRequest(CONSOLE, "PUT", "v3/metrics/"+id+"/autoscalers", &settings, options)
 	if err != nil {
@@ -237,20 +272,26 @@ func (c *MetricsService) UpdateApplicationAutoscaler(id string, settings Applica
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	var response struct {
+	var updateResponse struct {
 		Data struct {
 			Application Application `json:"application"`
 		} `json:"data,omitempty"`
 		Status string `json:"status,omitempty"`
 		Error  Error  `json:"error,omitempty"`
 	}
+	var response bytes.Buffer
 
 	resp, err := c.client.do(req, &response)
+	jsonErr := json.NewDecoder(&response).Decode(&updateResponse)
+
 	if err != nil {
-		if resp != nil {
-			resp.Error = response.Error
+		if jsonErr == nil {
+			return nil, resp, fmt.Errorf("status: %s, code: %s, message: %s, error: %w", updateResponse.Status, updateResponse.Error.Code, updateResponse.Error.Message, err)
 		}
 		return nil, resp, err
 	}
-	return &response.Data.Application, resp, err
+	if jsonErr != nil {
+		return nil, resp, fmt.Errorf("decoding jsonResponse: %w", err)
+	}
+	return &updateResponse.Data.Application, resp, err
 }

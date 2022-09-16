@@ -410,6 +410,43 @@ func TestRetryableError(t *testing.T) {
 		return
 	}
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode())
-	assert.Equal(t, "BAD_REQUEST", resp.Error.Code)
-	assert.Contains(t, resp.Error.Message, "invalid character")
+	assert.Regexp(t, "BAD_REQUEST", err.Error())
+	assert.Regexp(t, "invalid character", err.Error())
+}
+
+func TestAutoscalerBadGatewayResponse(t *testing.T) {
+	teardown, err := setup(t)
+	if !assert.Nil(t, err) {
+		return
+	}
+	defer teardown()
+
+	instanceID := "c20c76b7-6622-4fc0-892b-92c0caff91a5"
+
+	muxCONSOLE.HandleFunc("/v3/metrics/"+instanceID+"/autoscalers", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "PUT", "GET":
+			w.WriteHeader(http.StatusBadGateway)
+			_, _ = io.WriteString(w, `502 Bad Gateway: Registered endpoint failed to handle the request.`)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	var resp *console.Response
+	var apps *[]console.Application
+
+	apps, resp, err = client.Metrics.GetApplicationAutoscalers(instanceID)
+	assert.NotNil(t, err)
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.Nil(t, apps)
+	assert.Equal(t, http.StatusBadGateway, resp.StatusCode())
+
+	_, resp, err = client.Metrics.UpdateApplicationAutoscaler(instanceID, console.Application{
+		Enabled: false,
+	})
+	assert.NotNil(t, err)
+	assert.NotNil(t, resp)
 }
