@@ -1,11 +1,13 @@
 package console
 
 import (
-	"context"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/hasura/go-graphql-client"
 )
 
 type MetricsService struct {
