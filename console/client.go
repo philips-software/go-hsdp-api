@@ -3,6 +3,7 @@ package console
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hasura/go-graphql-client"
 	"github.com/philips-software/go-hsdp-api/internal"
 	"golang.org/x/oauth2"
 
@@ -106,8 +108,11 @@ type Client struct {
 
 	validate *validator.Validate
 
-	baseConsoleURL *url.URL
-	baseUAAURL     *url.URL
+	gql *graphql.Client
+
+	baseConsoleURL    *url.URL
+	baseUAAURL        *url.URL
+	basePrometheusURL *url.URL
 
 	// token type used to make authenticated API calls.
 	tokenType tokenType
@@ -153,6 +158,7 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if config.UAAURL == "" {
 		return nil, ErrUAAURLCannotBeEmpty
 	}
+
 	c := &Client{Client: httpClient, config: config, UserAgent: userAgent}
 	if err := c.SetBaseUAAURL(c.config.UAAURL); err != nil {
 		return nil, err
@@ -170,6 +176,28 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	header := make(http.Header)
 	header.Set("User-Agent", userAgent)
 	httpClient.Transport = internal.NewHeaderRoundTripper(httpClient.Transport, header)
+
+	header.Set("User-Agent", userAgent)
+
+	authClient := oauth2.NewClient(context.Background(), c)
+	if config.DebugLog != "" {
+		var err error
+		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if err == nil {
+			authClient.Transport = internal.NewLoggingRoundTripper(authClient.Transport, c.debugFile)
+		}
+	}
+	// Injecting these headers so we satisfy the proxies
+	authClient.Transport = internal.NewHeaderRoundTripper(authClient.Transport, header, func(req *http.Request) error {
+		token, err := c.Token()
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "bearer "+token.AccessToken)
+		req.Header.Set("X-User-Access-Token", token.AccessToken)
+		return nil
+	})
+	c.gql = graphql.NewClient(config.MetricsAPIURL, authClient)
 
 	c.Metrics = &MetricsService{client: c}
 	c.validate = validator.New()
@@ -284,6 +312,8 @@ func (c *Client) SetBaseConsoleURL(urlStr string) error {
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
+	c.config.MetricsAPIURL = urlStr + "api/metrics/graphql"
+	c.basePrometheusURL, _ = url.Parse(urlStr + "api/prometheus")
 
 	var err error
 	c.baseConsoleURL, err = url.Parse(urlStr)
@@ -311,8 +341,9 @@ type Endpoint string
 
 // Constants
 const (
-	UAA     = "UAA"
-	CONSOLE = "CONSOLE"
+	UAA        = "UAA"
+	CONSOLE    = "CONSOLE"
+	PROMETHEUS = "PROMETHEUS"
 )
 
 func (c *Client) newRequest(endpoint, method, path string, opt interface{}, options []OptionFunc) (*http.Request, error) {
@@ -327,6 +358,12 @@ func (c *Client) newRequest(endpoint, method, path string, opt interface{}, opti
 		}
 		u = *c.baseConsoleURL
 		u.Opaque = c.baseConsoleURL.Path + path
+	case PROMETHEUS:
+		if c.consoleErr != nil {
+			return nil, c.consoleErr
+		}
+		u = *c.basePrometheusURL
+		u.Opaque = c.basePrometheusURL.Path + path
 	default:
 		return nil, fmt.Errorf("unknown endpoint: `%s`", endpoint)
 	}

@@ -2,9 +2,12 @@ package console
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/hasura/go-graphql-client"
 )
 
 type MetricsService struct {
@@ -17,6 +20,11 @@ type Instance struct {
 	Name         string    `json:"name"`
 	Organization string    `json:"organization"`
 	Space        string    `json:"space"`
+	Details      Details   `json:"details"`
+}
+
+type Details struct {
+	Hostname string `json:"hostname"`
 }
 
 type MetricsResponse struct {
@@ -43,6 +51,21 @@ type RuleResponse struct {
 	} `json:"data"`
 	Status string `json:"status"`
 	Error  Error  `json:"error,omitempty"`
+}
+
+type Result struct {
+	Metric json.RawMessage `json:"metric"`
+	Values [][]any         `json:"values"`
+}
+
+type Data struct {
+	Result     []Result `json:"result"`
+	ResultType string   `json:"resultType"`
+}
+
+type DataResponse struct {
+	Data   Data   `json:"data"`
+	Status string `json:"status"`
 }
 
 type Threshold struct {
@@ -152,6 +175,47 @@ func (c *MetricsService) GetRuleByID(id string, options ...OptionFunc) (*Rule, *
 		return nil, resp, fmt.Errorf("decoding jsonResponse: %w", err)
 	}
 	return &jsonResponse.Data, resp, err
+}
+
+func (c *MetricsService) GQLGetInstances(ctx context.Context) (*[]Instance, error) {
+	var query struct {
+		Instances []Instance `graphql:"instances"`
+	}
+	err := c.client.gql.Query(ctx, &query, map[string]interface{}{})
+	if err != nil {
+		return nil, err
+	}
+	return &query.Instances, nil
+}
+
+func (c *MetricsService) GQLGetInstanceByID(ctx context.Context, guid string) (*Instance, error) {
+	var query struct {
+		Instance Instance `graphql:"instance(guid: $guid)"`
+	}
+	err := c.client.gql.Query(ctx, &query, map[string]interface{}{
+		"guid": graphql.String(guid),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &query.Instance, nil
+}
+
+func (c *MetricsService) PrometheusGetData(_ context.Context, host, query string, options ...OptionFunc) (*DataResponse, *Response, error) {
+	var dataResponse DataResponse
+
+	options = append(options, WithHost(host), WithQuery(query))
+	req, err := c.client.newRequest(PROMETHEUS, "GET", "/data", nil, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.client.do(req, &dataResponse)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &dataResponse, resp, err
 }
 
 // GetInstances looks up available instances
