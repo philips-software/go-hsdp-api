@@ -12,7 +12,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/hasura/go-graphql-client v0.6.5
 	github.com/philips-software/go-hsdp-signer v1.4.0
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.8.0
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 )
 
@@ -39,6 +39,6 @@ require (
 	google.golang.org/appengine v1.6.1 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
 )
