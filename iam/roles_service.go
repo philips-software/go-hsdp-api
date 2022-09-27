@@ -82,7 +82,7 @@ func (p *RolesService) GetRoleByID(roleID string) (*Role, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", roleAPIVersion)
+	req.Header.Set("api-version", "2")
 	req.Header.Set("Content-Type", "application/json")
 
 	var role Role
