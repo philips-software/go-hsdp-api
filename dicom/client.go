@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/google/fhir/go/fhirversion"
 	"github.com/google/go-querystring/query"
 	"github.com/philips-software/go-hsdp-api/internal"
 
@@ -68,11 +69,11 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	if err := c.SetDICOMStoreURL(dicomStore); err != nil {
 		return nil, err
 	}
-	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
+	ma, err := jsonformat.NewMarshaller(false, "", "", fhirversion.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("dicom.NewClient create FHIR STU3 marshaller: %w", err)
 	}
-	um, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
+	um, err := jsonformat.NewUnmarshaller(config.TimeZone, fhirversion.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("dicom.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}

@@ -33,9 +33,9 @@ func (c *Client) CreateAuditEvent(event *dstu2pb.AuditEvent) (*stu3pb.ContainedR
 		return contained, resp, nil
 	}
 	// OperationOutcome
-	unmarshalled, _ := c.um.Unmarshal(operationResponse.Bytes())
+	unmarshalled, _ := c.um.UnmarshalR3(operationResponse.Bytes())
 	if unmarshalled != nil {
-		contained = unmarshalled.(*stu3pb.ContainedResource)
+		contained = unmarshalled
 	}
 	return contained, resp, doErr
 }

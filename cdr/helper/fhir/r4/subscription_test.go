@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/fhir/go/fhirversion"
 	"github.com/google/fhir/go/jsonformat"
 
 	"github.com/stretchr/testify/assert"
@@ -31,7 +32,7 @@ func TestNewR4Subscription(t *testing.T) {
 		return
 	}
 	assert.Equal(t, endTime.UnixNano()/1000, sub.End.ValueUs)
-	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.R4)
+	ma, err := jsonformat.NewMarshaller(false, "", "", fhirversion.R4)
 	if !assert.Nil(t, err) {
 		return
 	}

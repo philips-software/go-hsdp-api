@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/google/fhir/go/fhirversion"
 	"github.com/google/fhir/go/jsonformat"
-	r4pb "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/bundle_and_contained_resource_go_proto"
 	r4pborg "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/organization_go_proto"
 )
 
@@ -29,15 +29,14 @@ func NewOrganization(timeZone, orgID, name string) (*r4pborg.Organization, error
 		return nil, err
 	}
 
-	um, err := jsonformat.NewUnmarshaller(timeZone, jsonformat.R4)
+	um, err := jsonformat.NewUnmarshaller(timeZone, fhirversion.R4)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create unmarshaller %v", err)
 	}
-	unmarshalled, err := um.Unmarshal(jsonPayload)
+	contained, err := um.UnmarshalR4(jsonPayload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal organization: %v", err)
 	}
-	contained := unmarshalled.(*r4pb.ContainedResource)
 	organization := contained.GetOrganization()
 	return organization, nil
 }

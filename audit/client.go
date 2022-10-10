@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/google/fhir/go/fhirversion"
 	"github.com/philips-software/go-hsdp-api/internal"
 
 	signer "github.com/philips-software/go-hsdp-signer"
@@ -86,12 +87,12 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("signer.New: %w", err)
 	}
-	ma, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
+	ma, err := jsonformat.NewMarshaller(false, "", "", fhirversion.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
 	}
 	c.ma = ma
-	um, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
+	um, err := jsonformat.NewUnmarshaller(config.TimeZone, fhirversion.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}

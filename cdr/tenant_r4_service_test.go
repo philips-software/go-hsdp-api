@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/google/fhir/go/jsonformat"
+	"github.com/google/fhir/go/fhirversion"
 	"github.com/philips-software/go-hsdp-api/cdr/helper/fhir/r4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestR4TenantService(t *testing.T) {
-	teardown := setup(t, jsonformat.R4)
+	teardown := setup(t, fhirversion.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"

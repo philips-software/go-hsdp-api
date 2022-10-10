@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/google/fhir/go/jsonformat"
-	r4 "github.com/philips-software/go-hsdp-api/cdr/helper/fhir/stu3"
+	"github.com/google/fhir/go/fhirversion"
+	"github.com/philips-software/go-hsdp-api/cdr/helper/fhir/stu3"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTenantService(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+	teardown := setup(t, fhirversion.STU3)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
@@ -56,7 +56,7 @@ func TestTenantService(t *testing.T) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
-	org, err := r4.NewOrganization(timeZone, orgID, "Hospital")
+	org, err := stu3.NewOrganization(timeZone, orgID, "Hospital")
 	if !assert.Nil(t, err) {
 		return
 	}

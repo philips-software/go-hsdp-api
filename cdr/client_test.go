@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/google/fhir/go/fhirversion"
 	"github.com/google/fhir/go/jsonformat"
 
 	"github.com/philips-software/go-hsdp-api/cdr"
@@ -32,7 +33,7 @@ var (
 	um        *jsonformat.Unmarshaller
 )
 
-func setup(t *testing.T, version jsonformat.Version) func() {
+func setup(t *testing.T, version fhirversion.Version) func() {
 	muxIAM = http.NewServeMux()
 	serverIAM = httptest.NewServer(muxIAM)
 	muxIDM = http.NewServeMux()
@@ -157,7 +158,7 @@ func setup(t *testing.T, version jsonformat.Version) func() {
 }
 
 func TestLogin(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+	teardown := setup(t, fhirversion.STU3)
 	defer teardown()
 
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
@@ -174,7 +175,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestDebug(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+	teardown := setup(t, fhirversion.STU3)
 	defer teardown()
 
 	tmpfile, err := os.CreateTemp("", "example")
@@ -206,7 +207,7 @@ func TestDebug(t *testing.T) {
 }
 
 func TestEndpoints(t *testing.T) {
-	teardown := setup(t, jsonformat.STU3)
+	teardown := setup(t, fhirversion.STU3)
 	defer teardown()
 
 	rootOrgID := "foo"
