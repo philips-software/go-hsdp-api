@@ -38,11 +38,10 @@ func (o *OperationsR4Service) Patch(resourceID string, jsonPatch []byte, options
 		}
 		return nil, resp, err
 	}
-	unmarshalled, err := o.um.Unmarshal(patchResponse.Bytes())
+	contained, err := o.um.UnmarshalR4(patchResponse.Bytes())
 	if err != nil {
 		return nil, resp, fmt.Errorf("FHIR unmarshal: %w", err)
 	}
-	contained := unmarshalled.(*r4pb.ContainedResource)
 	return contained, resp, nil
 }
 
@@ -77,11 +76,10 @@ func (o *OperationsR4Service) Get(resourceID string, options ...OptionFunc) (*r4
 		}
 		return nil, resp, err
 	}
-	unmarshalled, err := o.um.Unmarshal(operationResponse.Bytes())
+	contained, err := o.um.UnmarshalR4(operationResponse.Bytes())
 	if err != nil {
 		return nil, resp, fmt.Errorf("FHIR unmarshal: %w", err)
 	}
-	contained := unmarshalled.(*r4pb.ContainedResource)
 	return contained, resp, nil
 }
 
@@ -130,10 +128,9 @@ func (o *OperationsR4Service) postOrPut(method, resourceID string, jsonBody []by
 	if operationResponse.Len() == 0 { // Empty body
 		return &r4pb.ContainedResource{}, resp, nil
 	}
-	unmarshalled, err := o.um.Unmarshal(operationResponse.Bytes())
+	contained, err := o.um.UnmarshalR4(operationResponse.Bytes())
 	if err != nil {
 		return nil, resp, fmt.Errorf("FHIR unmarshal: %w", err)
 	}
-	contained := unmarshalled.(*r4pb.ContainedResource)
 	return contained, resp, nil
 }

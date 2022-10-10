@@ -5,9 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/google/fhir/go/jsonformat"
-	r4pb "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/bundle_and_contained_resource_go_proto"
-
+	"github.com/google/fhir/go/fhirversion"
 	"github.com/philips-software/go-hsdp-api/cdr"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
@@ -15,7 +13,7 @@ import (
 )
 
 func TestR4PatchOperation(t *testing.T) {
-	teardown := setup(t, jsonformat.R4)
+	teardown := setup(t, fhirversion.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
@@ -80,7 +78,7 @@ func TestR4PatchOperation(t *testing.T) {
 }
 
 func TestR4PostOperation(t *testing.T) {
-	teardown := setup(t, jsonformat.R4)
+	teardown := setup(t, fhirversion.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
@@ -102,12 +100,11 @@ func TestR4PostOperation(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			unmarshalled, err := um.Unmarshal(body)
+			contained, err := um.UnmarshalR4(body)
 			if !assert.Nil(t, err) {
 				w.WriteHeader(http.StatusUnprocessableEntity)
 				return
 			}
-			contained := unmarshalled.(*r4pb.ContainedResource)
 			onboardedOrg := contained.GetOrganization()
 			jsonOrg, err := ma.MarshalResource(onboardedOrg)
 			if !assert.Nil(t, err) {
@@ -150,7 +147,7 @@ func TestR4PostOperation(t *testing.T) {
 }
 
 func TestR4GetOperation(t *testing.T) {
-	teardown := setup(t, jsonformat.R4)
+	teardown := setup(t, fhirversion.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"
@@ -206,7 +203,7 @@ func TestR4GetOperation(t *testing.T) {
 }
 
 func TestR4DeleteOperation(t *testing.T) {
-	teardown := setup(t, jsonformat.R4)
+	teardown := setup(t, fhirversion.R4)
 	defer teardown()
 
 	orgID := "f5fe538f-c3b5-4454-8774-cd3789f59b9f"

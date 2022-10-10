@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/google/fhir/go/fhirversion"
 	"github.com/philips-software/go-hsdp-api/internal"
 
 	"github.com/google/fhir/go/jsonformat"
@@ -72,19 +73,19 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	if err := c.SetFHIRStoreURL(fhirStore); err != nil {
 		return nil, err
 	}
-	maSTU3, err := jsonformat.NewMarshaller(false, "", "", jsonformat.STU3)
+	maSTU3, err := jsonformat.NewMarshaller(false, "", "", fhirversion.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
 	}
-	umSTU3, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.STU3)
+	umSTU3, err := jsonformat.NewUnmarshaller(config.TimeZone, fhirversion.STU3)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
-	maR4, err := jsonformat.NewMarshaller(false, "", "", jsonformat.R4)
+	maR4, err := jsonformat.NewMarshaller(false, "", "", fhirversion.R4)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 marshaller: %w", err)
 	}
-	umR4, err := jsonformat.NewUnmarshaller(config.TimeZone, jsonformat.R4)
+	umR4, err := jsonformat.NewUnmarshaller(config.TimeZone, fhirversion.R4)
 	if err != nil {
 		return nil, fmt.Errorf("cdr.NewClient create FHIR STU3 unmarshaller (timezone=[%s]): %w", config.TimeZone, err)
 	}
@@ -228,9 +229,6 @@ func (c *Client) TokenRefresh() error {
 	return c.iamClient.TokenRefresh()
 }
 
-// do executes a http request. If v implements the io.Writer
-// interface, the raw response body will be written to v, without attempting to
-// first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if req.Header.Get("Accept") == "" {
 		return nil, ErrMissingAcceptHeader

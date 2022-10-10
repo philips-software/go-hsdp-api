@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/fhir/go/jsonformat"
 
-	r4bundle "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/bundle_and_contained_resource_go_proto"
 	r4pb "github.com/google/fhir/go/proto/google/fhir/proto/r4/core/resources/organization_go_proto"
 )
 
@@ -38,15 +37,14 @@ func (t *TenantR4Service) Onboard(organization *r4pb.Organization, options ...Op
 	resp, err := t.client.do(req, &onboardResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = fmt.Errorf("Onboard: %w", ErrEmptyResult)
+			err = fmt.Errorf("onboard: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
-	unmarshalled, err := t.um.Unmarshal(onboardResponse.Bytes())
+	contained, err := t.um.UnmarshalR4(onboardResponse.Bytes())
 	if err != nil {
 		return nil, resp, err
 	}
-	contained := unmarshalled.(*r4bundle.ContainedResource)
 	organization = contained.GetOrganization()
 	return organization, resp, nil
 }
@@ -67,11 +65,10 @@ func (t *TenantR4Service) GetOrganizationByID(orgID string) (*r4pb.Organization,
 	if resp == nil {
 		return nil, nil, fmt.Errorf("GetOrganizationByID: %w", ErrEmptyResult)
 	}
-	unmarshalled, err := t.um.Unmarshal(getResponse.Bytes())
+	contained, err := t.um.UnmarshalR4(getResponse.Bytes())
 	if err != nil {
 		return nil, resp, err
 	}
-	contained := unmarshalled.(*r4bundle.ContainedResource)
 	organization := contained.GetOrganization()
 	return organization, resp, nil
 }

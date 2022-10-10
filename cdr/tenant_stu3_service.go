@@ -37,15 +37,14 @@ func (t *TenantSTU3Service) Onboard(organization *stu3pb.Organization, options .
 	resp, err := t.client.do(req, &onboardResponse)
 	if (err != nil && err != io.EOF) || resp == nil {
 		if resp == nil && err != nil {
-			err = fmt.Errorf("Onboard: %w", ErrEmptyResult)
+			err = fmt.Errorf("onboard: %w", ErrEmptyResult)
 		}
 		return nil, resp, err
 	}
-	unmarshalled, err := t.um.Unmarshal(onboardResponse.Bytes())
+	contained, err := t.um.UnmarshalR3(onboardResponse.Bytes())
 	if err != nil {
 		return nil, resp, err
 	}
-	contained := unmarshalled.(*stu3pb.ContainedResource)
 	onboardedOrg := contained.GetOrganization()
 	return onboardedOrg, resp, nil
 }
@@ -66,11 +65,10 @@ func (t *TenantSTU3Service) GetOrganizationByID(orgID string) (*stu3pb.Organizat
 	if resp == nil {
 		return nil, nil, fmt.Errorf("GetOrganizationByID: %w", ErrEmptyResult)
 	}
-	unmarshalled, err := t.um.Unmarshal(getResponse.Bytes())
+	contained, err := t.um.UnmarshalR3(getResponse.Bytes())
 	if err != nil {
 		return nil, resp, err
 	}
-	contained := unmarshalled.(*stu3pb.ContainedResource)
 	cdrOrg := contained.GetOrganization()
 	return cdrOrg, resp, nil
 }
