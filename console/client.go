@@ -18,7 +18,7 @@ import (
 	"github.com/philips-software/go-hsdp-api/internal"
 	"golang.org/x/oauth2"
 
-	validator "github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
 	autoconf "github.com/philips-software/go-hsdp-api/config"
 )
@@ -177,8 +177,6 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	header.Set("User-Agent", userAgent)
 	httpClient.Transport = internal.NewHeaderRoundTripper(httpClient.Transport, header)
 
-	header.Set("User-Agent", userAgent)
-
 	authClient := oauth2.NewClient(context.Background(), c)
 	if config.DebugLog != "" {
 		var err error
@@ -229,7 +227,7 @@ func (c *Client) Close() {
 	}
 }
 
-// Returns the http Client used for connections
+// HttpClient returns the http Client used for connections
 func (c *Client) HttpClient() *http.Client {
 	return c.Client
 }
@@ -320,7 +318,7 @@ func (c *Client) SetBaseConsoleURL(urlStr string) error {
 	return err
 }
 
-// SetBaseIDMURL sets the base URL for API requests to a custom endpoint. urlStr
+// SetBaseUAAURL sets the base URL for API requests to a custom endpoint. urlStr
 // should always be specified with a trailing slash.
 func (c *Client) SetBaseUAAURL(urlStr string) error {
 	if urlStr == "" {
@@ -440,11 +438,6 @@ func newResponse(r *http.Response) *Response {
 	return response
 }
 
-// do sends an API request and returns the API response. The API response is
-// JSON decoded and stored in the value pointed to by v, or returned as an
-// error if an API error has occurred. If v implements the io.Writer
-// interface, the raw response body will be written to v, without attempting to
-// first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	resp, err := c.Do(req)
 	if err != nil {
