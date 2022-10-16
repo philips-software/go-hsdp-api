@@ -337,7 +337,6 @@ func TestStoreResourcesWithBadResources(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	assert.Equal(t, ErrBatchErrors, err)
 
 	resp, err = client.StoreResources([]Resource{validResource}, 1)

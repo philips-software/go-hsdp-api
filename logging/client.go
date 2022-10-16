@@ -198,12 +198,14 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.httpClient.Do(req)
+	if resp != nil {
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+	}
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
@@ -259,9 +261,6 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 	if len(invalid) > 0 { // Don't even POST anything due to errors in the batch
 		resp := StoreResponse{
 			Failed: invalid,
-			Response: &http.Response{
-				StatusCode: http.StatusBadRequest,
-			},
 		}
 		return &resp, ErrBatchErrors
 	}
