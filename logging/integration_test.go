@@ -73,8 +73,4 @@ func TestIntegration(t *testing.T) {
 	}
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	assert.Equal(t, 3, len(resp.Failed))
-	for _, i := range []int{1, 4, 6} {
-		_, exists := resp.Failed[i]
-		assert.True(t, exists)
-	}
 }

@@ -121,7 +121,7 @@ type Client struct {
 type StoreResponse struct {
 	*http.Response
 	Message string
-	Failed  map[int]Resource
+	Failed  []Resource
 }
 
 // CustomIndexBody describes the custom index request payload
@@ -236,25 +236,24 @@ func (e *ErrorResponse) Error() string {
 func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, error) {
 	b := Bundle{
 		ResourceType: "Bundle",
-		Entry:        make([]Element, count),
 		Type:         "transaction",
 		ProductKey:   c.config.ProductKey,
 	}
-	invalid := make(map[int]Resource)
+	var invalid []Resource
 
 	j := 0
 	for i := 0; i < count; i++ {
 		msg := msgs[i]
 		replaceScaryCharacters(&msg)
 		if !msg.Valid() {
-			invalid[i] = msg
+			invalid = append(invalid, msg)
 			continue
 		}
 		// Element
 		var e Element
 		e.Resource = msg
 		e.Resource.ResourceType = "LogEvent"
-		b.Entry[j] = e
+		b.Entry = append(b.Entry, e)
 		j++
 	}
 	if len(invalid) > 0 { // Don't even POST anything due to errors in the batch
@@ -303,7 +302,7 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 }
 
 func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*StoreResponse, error) {
-	invalid := make(map[int]Resource)
+	var invalid []Resource
 
 	var serverResponse bytes.Buffer
 
@@ -311,6 +310,9 @@ func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*S
 	if resp == nil {
 		return nil, err
 	}
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	storeResp := &StoreResponse{Response: resp}
 	if resp.StatusCode != http.StatusCreated { // Only good outcome
 		var errResponse bundleErrorResponse
@@ -329,7 +331,7 @@ func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*S
 				}
 				invalidResource := msgs[i]
 				invalidResource.Error = fmt.Errorf("issue location %s", entry)
-				invalid[i] = invalidResource
+				invalid = append(invalid, invalidResource)
 			}
 		}
 	}
