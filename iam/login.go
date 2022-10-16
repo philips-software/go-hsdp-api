@@ -198,10 +198,15 @@ func (c *Client) doTokenRequest(req *http.Request) error {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Api-Version", loginAPIVersion)
 	resp, err := c.do(req, &tokenResponse)
-
+	if resp != nil {
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+	}
 	if err != nil {
 		return err
 	}
+
 	if resp.StatusCode() != http.StatusOK {
 		return fmt.Errorf("login failed: %d", resp.StatusCode())
 	}

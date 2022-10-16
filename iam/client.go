@@ -535,9 +535,11 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
+	if resp != nil {
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+	}
 	response := newResponse(resp)
 
 	err = internal.CheckResponse(resp)

@@ -235,12 +235,17 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	resp, err := c.iamClient.HttpClient().Do(req)
+	if resp != nil {
+		defer func() {
+			_ = resp.Body.Close()
+		}() // Only close if we plan to read it
+	}
 	if err != nil {
 		return nil, err
 	}
 
 	response := newResponse(resp)
-
+	
 	err = internal.CheckResponse(resp)
 	if err != nil {
 		// even though there was an error, we still return the response
@@ -249,9 +254,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	if v != nil {
-		defer func() {
-			_ = resp.Body.Close()
-		}() // Only close if we plan to read it
+
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {

@@ -193,13 +193,14 @@ func newResponse(r *http.Response) *Response {
 // first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	resp, err := c.iamClient.HttpClient().Do(req)
+	if resp != nil {
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+	}
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
-
 	response := newResponse(resp)
 
 	err = checkResponse(resp)
