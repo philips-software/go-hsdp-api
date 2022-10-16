@@ -191,11 +191,6 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	return &logger, nil
 }
 
-// do sends an API request and returns the API response. The API response is
-// JSON decoded and stored in the value pointed to by v, or returned as an
-// error if an API error has occurred. If v implements the io.Writer
-// interface, the raw response body will be written to v, without attempting to
-// first decode it.
 func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.httpClient.Do(req)
 	if resp != nil {
@@ -212,8 +207,9 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 		} else {
 			err = json.NewDecoder(resp.Body).Decode(v)
 		}
+	} else {
+		_, _ = io.ReadAll(resp.Body)
 	}
-
 	return resp, err
 }
 
@@ -266,22 +262,16 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 	}
 	b.Total = j
 
-	req := &http.Request{
-		Method:     http.MethodPost,
-		URL:        c.url,
-		Proto:      "HTTP/1.1",
-		ProtoMajor: 1,
-		ProtoMinor: 1,
-		Header:     make(http.Header),
-		Host:       c.url.Host,
-	}
-
 	bodyBytes, err := json.Marshal(b)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader := bytes.NewReader(bodyBytes)
-	req.Body = io.NopCloser(bodyReader)
+
+	req, err := http.NewRequest(http.MethodPost, c.url.String(), bodyReader)
+	if err != nil {
+		return nil, err
+	}
 	req.ContentLength = int64(bodyReader.Len())
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Api-Version", "1")
@@ -297,11 +287,6 @@ func (c *Client) StoreResources(msgs []Resource, count int) (*StoreResponse, err
 		}
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
-	return c.performAndParseResponse(req, msgs)
-}
-
-func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*StoreResponse, error) {
-	var invalid []Resource
 
 	var serverResponse bytes.Buffer
 
@@ -311,6 +296,9 @@ func (c *Client) performAndParseResponse(req *http.Request, msgs []Resource) (*S
 	}
 	defer func() {
 		_ = resp.Body.Close()
+	}()
+	defer func() {
+		_ = req.Body.Close()
 	}()
 	storeResp := &StoreResponse{Response: resp}
 	if resp.StatusCode != http.StatusCreated { // Only good outcome
