@@ -316,6 +316,9 @@
             },
             "kibana": {
               "url": "https://kibana.sa1.hsdp.io"
+            },
+            "pki": {
+              "url": "https://pki-proxy-prod-sa1.sa1.hsdp.io"
             }
           }
         },

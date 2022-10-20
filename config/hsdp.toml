@@ -318,6 +318,8 @@ url = "https://pki-proxy-client-test.eu-west.philips-healthsuite.com"
 url = "https://pki-client-test.us-east.philips-healthsuite.com"
 [region.eu-west.env.prod.service.pki]
 url = "https://pki-proxy-production.eu-west.philips-healthsuite.com"
+[region.sa1.env.prod.service.pki]
+url = "https://pki-proxy-prod-sa1.sa1.hsdp.io"
 
 # Service VAULT-PROXY
 [region.us-east.service.vault-proxy]
