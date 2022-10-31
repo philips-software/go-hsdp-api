@@ -252,6 +252,10 @@ func (c *Client) newTenantRequest(method, path string, opt interface{}, options 
 	}
 
 	req.Header.Set("Accept", "*/*")
+	if c.consoleClient == nil {
+		return nil, fmt.Errorf("consoleClient not initialized")
+	}
+
 	tk, err := c.consoleClient.Token()
 	if err != nil {
 		return nil, err
