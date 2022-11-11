@@ -46,7 +46,7 @@ func (c *ConfigService) CreateRepository(repo Repository, opt *QueryOptions, opt
 // GetRepositories
 func (c *ConfigService) GetRepositories(opt *QueryOptions, options ...OptionFunc) (*[]Repository, *Response, error) {
 	bodyBytes := []byte("")
-	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories", bodyBytes, nil, options...)
+	req, err := c.client.newDICOMRequest("GET", "config/dicom/"+c.profile+"/dicomRepositories", bodyBytes, opt, options...)
 	if err != nil {
 		return nil, nil, err
 	}
