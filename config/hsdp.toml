@@ -276,6 +276,8 @@ url = "https://logingestor2.sa1.hsdp.io"
 url = "https://logingestor2.ap3.hsdp.io"
 [region.ca1.env.prod.service.logging]
 url = "https://logingestor2.ca1.hsdp.io"
+[region.pl.env.client-test.logging]
+url = "https://logingestor2-client-test.cf.pl.hsdp.io"
 
 # Service LOGQUERY
 [region.eu-west.env.client-test.service.logquery]
