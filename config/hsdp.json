@@ -519,6 +519,15 @@
         }
       }
     },
+    "pl": {
+      "env": {
+        "client-test": {
+          "logging": {
+            "url": "https://logingestor2-client-test.cf.pl.hsdp.io"
+          }
+        }
+      }
+    },
     "us-west": {
       "service": {
         "vault-proxy": {
