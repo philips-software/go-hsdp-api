@@ -44,8 +44,8 @@ type Organization struct {
 	Active            bool        `json:"active,omitempty"`
 	InheritProperties bool        `json:"inheritProperties,omitempty"`
 	Address           OrgAddress  `json:"address,omitempty"`
-	Owners            []Attribute `json:"owners"`
-	CreatedBy         Attribute   `json:"createdBy,omitempty"`
-	ModifiedBy        Attribute   `json:"modifiedBy,omitempty"`
+	Owners            []Attribute `json:"owners,omitempty"`
+	CreatedBy         *Attribute  `json:"createdBy,omitempty"`
+	ModifiedBy        *Attribute  `json:"modifiedBy,omitempty"`
 	Meta              *Meta       `json:"meta,omitempty"`
 }
