@@ -132,7 +132,7 @@ func (a *ApplicationsService) DeleteStatus(id string) (*ApplicationStatus, *Resp
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", organizationAPIVersion)
+	req.Header.Set("api-version", "1")
 	req.Header.Set("Content-Type", "application/json")
 
 	var deleteResponse ApplicationStatus
