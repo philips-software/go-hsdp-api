@@ -22,20 +22,6 @@ type GetOrganizationOptions struct {
 	ExcludedAttributes *string `url:"excludedAttributes,omitempty"`
 }
 
-type OrganizationStatus struct {
-	Schemas        []string `json:"schemas"`
-	ID             string   `json:"id"`
-	Status         string   `json:"status"`
-	TotalResources int      `json:"totalResources"`
-	Meta           struct {
-		ResourceType string `json:"resourceType"`
-		Created      string `json:"created"`
-		LastModified string `json:"lastModified"`
-		Location     string `json:"location"`
-		Version      string `json:"version"`
-	} `json:"meta"`
-}
-
 func FilterOrgEq(orgID string) *GetOrganizationOptions {
 	query := "id eq \"" + orgID + "\""
 	attributes := "id"
@@ -69,7 +55,7 @@ func (o *OrganizationsService) CreateOrganization(organization Organization) (*O
 		"urn:ietf:params:scim:schemas:core:philips:hsdp:2.0:Organization",
 	}
 
-	req, err := o.client.newRequest(IDM, "POST", "authorize/scim/v2/Organizations", &organization, nil)
+	req, err := o.client.newRequest(IDM, http.MethodPost, "authorize/scim/v2/Organizations", &organization, nil)
 	if err != nil {
 		return nil, nil, err
 	}
