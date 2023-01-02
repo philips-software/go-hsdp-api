@@ -75,7 +75,7 @@ func (u *UsersService) CreateUser(person Person) (*User, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", "3")
+	req.Header.Set("api-version", "4")
 
 	var bundleResponse interface{}
 
@@ -128,24 +128,6 @@ func (u *UsersService) DeleteUser(person Person) (bool, *Response, error) {
 	}
 	ok := resp != nil && (resp.StatusCode() == http.StatusNoContent)
 	return ok, resp, err
-}
-
-// RecoverPassword triggers the recovery flow for the given user
-//
-// Deprecated: Support end date is 1 Augustus 2020
-func (u *UsersService) RecoverPassword(loginID string) (bool, *Response, error) {
-	body := &Parameters{
-		ResourceType: "Parameters",
-		Parameter: []Param{
-			{
-				Name: "recoverPassword",
-				Resource: Resource{
-					LoginID: loginID,
-				},
-			},
-		},
-	}
-	return u.userActionV(body, "$recover-password", "1")
 }
 
 // ChangeLoginID changes the loginID
@@ -219,7 +201,7 @@ func (u *UsersService) SetPassword(loginID, confirmationCode, newPassword, conte
 			},
 		},
 	}
-	return u.userActionV(body, "$set-password", "2")
+	return u.userActionV(body, "$set-password", "3")
 }
 
 // ChangePassword changes the password. The current pasword must be provided as well.
@@ -237,7 +219,7 @@ func (u *UsersService) ChangePassword(loginID, oldPassword, newPassword string) 
 			},
 		},
 	}
-	return u.userActionV(body, "$change-password", "1")
+	return u.userActionV(body, "$change-password", "2")
 }
 
 func stringInc(number string) string {

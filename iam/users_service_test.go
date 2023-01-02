@@ -575,14 +575,6 @@ func TestUserActions(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
-	ok, resp, err = client.Users.RecoverPassword("foo@bar.co")
-	if !assert.NotNil(t, resp) {
-		return
-	}
-	assert.Nil(t, err)
-	assert.True(t, ok)
-	assert.Equal(t, http.StatusOK, resp.StatusCode())
-
 	ok, resp, err = client.Users.ChangePassword("foo@bar.co", "0ld", "N3w")
 	if !assert.NotNil(t, resp) {
 		return
@@ -638,7 +630,7 @@ func TestUserActions(t *testing.T) {
 func actionRequestHandler(t *testing.T, paramName, informationalMessage string, statusCode int) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
-			t.Errorf("Expected ‘POST’ request, got ‘%s’", r.Method)
+			t.Errorf("Expected ‘POST’ request with param '%s', got ‘%s’", paramName, r.Method)
 		}
 		if auth := r.Header.Get("Authorization"); auth != "" {
 			t.Errorf("No Authorization header expected, Got: %s", auth)

@@ -8,3 +8,10 @@ type Application struct {
 	PropositionID     string `json:"propositionId" validate:"required"`
 	GlobalReferenceID string `json:"globalReferenceId" validate:"required"`
 }
+
+type ApplicationStatus struct {
+	Schemas []string `json:"schemas"`
+	ID      string   `json:"id"`
+	Status  string   `json:"status"`
+	Meta    *Meta    `json:"meta"`
+}

@@ -49,3 +49,11 @@ type Organization struct {
 	ModifiedBy        *Attribute  `json:"modifiedBy,omitempty"`
 	Meta              *Meta       `json:"meta,omitempty"`
 }
+
+type OrganizationStatus struct {
+	Schemas        []string `json:"schemas"`
+	ID             string   `json:"id"`
+	Status         string   `json:"status"`
+	TotalResources int      `json:"totalResources"`
+	Meta           *Meta    `json:"meta"`
+}

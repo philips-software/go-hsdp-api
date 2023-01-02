@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -67,7 +68,7 @@ func (a *ApplicationsService) GetApplications(opt *GetApplicationsOptions, optio
 	return bundleResponse.Entry, resp, nil
 }
 
-// CreateApplication creates a Application
+// CreateApplication creates an Application
 func (a *ApplicationsService) CreateApplication(app Application) (*Application, *Response, error) {
 	if err := a.client.validate.Struct(app); err != nil {
 		return nil, nil, err
@@ -104,4 +105,38 @@ func (a *ApplicationsService) CreateApplication(app Application) (*Application, 
 		return nil, resp, fmt.Errorf("CreateApplication: %w", ErrCouldNoReadResourceAfterCreate)
 	}
 	return a.GetApplicationByID(id)
+}
+
+// DeleteApplication deletes an Application
+func (a *ApplicationsService) DeleteApplication(app Application) (bool, *Response, error) {
+	req, err := a.client.newRequest(IDM, "DELETE", "authorize/scim/v2/Applications/"+app.ID, nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", "1")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("If-Method", "DELETE")
+
+	var deleteResponse bytes.Buffer
+
+	resp, err := a.client.do(req, &deleteResponse)
+	if err != nil {
+		return false, resp, err
+	}
+	return resp.StatusCode() == http.StatusAccepted, resp, nil
+}
+
+// DeleteStatus returns the status of a delete operation on an organization
+func (a *ApplicationsService) DeleteStatus(id string) (*ApplicationStatus, *Response, error) {
+	req, err := a.client.newRequest(IDM, http.MethodGet, "authorize/scim/v2/Organizations/"+id+"/deleteStatus", nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", organizationAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var deleteResponse ApplicationStatus
+
+	resp, err := a.client.do(req, &deleteResponse)
+	return &deleteResponse, resp, err
 }
