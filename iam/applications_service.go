@@ -128,7 +128,7 @@ func (a *ApplicationsService) DeleteApplication(app Application) (bool, *Respons
 
 // DeleteStatus returns the status of a delete operation on an organization
 func (a *ApplicationsService) DeleteStatus(id string) (*ApplicationStatus, *Response, error) {
-	req, err := a.client.newRequest(IDM, http.MethodGet, "authorize/scim/v2/Organizations/"+id+"/deleteStatus", nil, nil)
+	req, err := a.client.newRequest(IDM, http.MethodGet, "authorize/scim/v2/Applications/"+id+"/deleteStatus", nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}
