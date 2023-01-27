@@ -399,7 +399,7 @@ func (g *GroupsService) SCIMGetGroupByIDAll(id string, opt *SCIMGetGroupOptions,
 			scimGroup.ExtensionGroup.GroupMembers.Resources = append(scimGroup.ExtensionGroup.GroupMembers.Resources, data.ExtensionGroup.GroupMembers.Resources...)
 		}
 		current = current + count
-		if count < data.ExtensionGroup.GroupMembers.TotalResults {
+		if data.ExtensionGroup.GroupMembers.TotalResults == 0 || current > data.ExtensionGroup.GroupMembers.TotalResults {
 			break // Done
 		}
 	}

@@ -90,3 +90,9 @@ type SCIMCoreUser struct {
 	Emails            []Attribute `json:"emails,omitempty"`
 	PhoneNumbers      []Attribute `json:"phoneNumbers,omitempty"`
 }
+
+const (
+	GroupMemberTypeUser    = "USER"
+	GroupMemberTypeDevice  = "DEVICE"
+	GroupMemberTypeService = "SERVICE"
+)
