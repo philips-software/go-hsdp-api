@@ -664,3 +664,104 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Nil(t, ok)
 }
+
+func TestGetSCIMGroup(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	groupID := "dbf1d779-ab9f-4c27-b4aa-ea75f9efbbc0"
+	muxIDM.HandleFunc("/authorize/scim/v2/Groups/"+groupID, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case http.MethodGet:
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, `{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:Group",
+    "urn:ietf:params:scim:schemas:extension:philips:hsdp:2.0:Group"
+  ],
+  "id": "72b8908f-02e5-4939-9e20-ac099ba17e5c",
+  "displayName": "GroupName",
+  "urn:ietf:params:scim:schemas:extension:philips:hsdp:2.0:Group": {
+    "description": "Group Description",
+    "organization": {
+      "value": "86d2d0ac-4b12-4546-8d20-4c09a7c87d9c",
+      "$ref": "https://<idm_base_path>/authorize/scim/v2/Organizations/86d2d0ac-4b12-4546-8d20-4c09a7c87d9c"
+    },
+    "groupMembers": {
+      "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:SCIMListResponse"
+      ],
+      "totalResults": 1,
+      "startIndex": 1,
+      "itemsPerPage": 1,
+      "Resources": [
+        {
+          "schemas": [
+            "urn:ietf:params:scim:schemas:core:2.0:User",
+            "urn:ietf:params:scim:schemas:extension:philips:hsdp:2.0:User"
+          ],
+          "id": "72b8908f-02e5-4939-9e20-ac099ba17e5c",
+          "userName": "wdale",
+          "name": {
+            "fullName": "Mr. John Jane Doe, III",
+            "familyName": "Doe",
+            "givenName": "John",
+            "middleName": "Jane"
+          },
+          "displayName": "John Doe",
+          "preferredLanguage": "en-US",
+          "locale": "en-US",
+          "active": true,
+          "emails": [
+            {
+              "value": "john.doe@example.com",
+              "primary": true
+            }
+          ],
+          "phoneNumbers": [
+            {
+              "value": "555-555-4444",
+              "type": "work",
+              "primary": true
+            }
+          ],
+          "urn:ietf:params:scim:schemas:extension:philips:hsdp:2.0:User": {
+            "emailVerified": true,
+            "phoneVerified": false,
+            "organization": {
+              "value": "86d2d0ac-4b12-4546-8d20-4c09a7c87d9c",
+              "$ref": "https://<idm_base_path>/authorize/scim/v2/Organizations/86d2d0ac-4b12-4546-8d20-4c09a7c87d9c"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "meta": {
+    "resourceType": "Group",
+    "created": "2022-03-23T07:09:17.543Z",
+    "lastModified": "2022-03-23T07:09:30.500Z",
+    "location": "<idm_base_path>/authorize/scim/v2/Groups/72b8908f-02e5-4939-9e20-ac099ba17e5c",
+    "version": "W/\"f250dd84f0671c3\""
+  }
+}`)
+		}
+	})
+	var group Group
+	group.ID = groupID
+	members := "USER"
+	scimGroup, resp, err := client.Groups.SCIMGetGroupByID(groupID, &SCIMGetGroupOptions{
+		IncludeGroupMembersType: &members,
+	})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, scimGroup) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
+}
