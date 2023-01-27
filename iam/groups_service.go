@@ -21,6 +21,15 @@ type GetGroupOptions struct {
 	MemberID       *string `url:"memberId,omitempty"`
 }
 
+// SCIMGetGroupOptions describes the query fields to use for querying SCIM Groups
+type SCIMGetGroupOptions struct {
+	IncludeGroupMembersType *string `url:"includeGroupMembersType,omitempty"`
+	GroupMembersStartIndex  *int    `url:"groupMembersStartIndex,omitempty"`
+	GroupMembersCount       *int    `url:"groupMembersCount,omitempty"`
+	ExcludedAttributes      *string `url:"excludedAttributes,omitempty"`
+	Attributes              *string `url:"attributes,omitempty"`
+}
+
 // GroupsService implements actions on Group entities
 type GroupsService struct {
 	client *Client
@@ -346,4 +355,53 @@ func (g *GroupsService) RemoveServices(group Group, services ...string) (MemberR
 	return perSlice(services, 10, func(chunk []string) (MemberResponse, *Response, error) {
 		return g.RemoveIdentities(group, "SERVICE", chunk...)
 	})
+}
+
+// SCIMGetGroupByID gets a group resource via the SCIM API
+func (g *GroupsService) SCIMGetGroupByID(id string, opt *SCIMGetGroupOptions, options ...OptionFunc) (*SCIMGroup, *Response, error) {
+	req, err := g.client.newRequest(IDM, http.MethodGet, "authorize/scim/v2/Groups/"+id, opt, options)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", "1")
+
+	var res SCIMGroup
+
+	resp, err := g.client.do(req, &res)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &res, resp, err
+}
+
+// SCIMGetGroupByIDAll gets all resources from a group via the SCIM API
+func (g *GroupsService) SCIMGetGroupByIDAll(id string, opt *SCIMGetGroupOptions, options ...OptionFunc) (*SCIMGroup, *Response, error) {
+	var scimGroup *SCIMGroup
+	var resp *Response
+	var err error
+
+	if opt == nil {
+		opt = &SCIMGetGroupOptions{}
+	}
+	count := 100
+	current := 1
+	for {
+		var data *SCIMGroup
+		opt.GroupMembersCount = &count
+		opt.GroupMembersStartIndex = &current
+		data, resp, err = g.SCIMGetGroupByID(id, opt, options...)
+		if err != nil {
+			return scimGroup, resp, err
+		}
+		if scimGroup == nil { // First
+			scimGroup = data
+		} else {
+			scimGroup.ExtensionGroup.GroupMembers.Resources = append(scimGroup.ExtensionGroup.GroupMembers.Resources, data.ExtensionGroup.GroupMembers.Resources...)
+		}
+		current = current + count
+		if count < data.ExtensionGroup.GroupMembers.TotalResults {
+			break // Done
+		}
+	}
+	return scimGroup, resp, err
 }
