@@ -388,6 +388,7 @@ func (g *GroupsService) SCIMGetGroupByIDAll(id string, opt *SCIMGetGroupOptions,
 	for {
 		var data *SCIMGroup
 		opt.GroupMembersCount = &count
+		// GroupMembersStartIndex = page number, really..
 		opt.GroupMembersStartIndex = &current
 		data, resp, err = g.SCIMGetGroupByID(id, opt, options...)
 		if err != nil {
@@ -398,8 +399,8 @@ func (g *GroupsService) SCIMGetGroupByIDAll(id string, opt *SCIMGetGroupOptions,
 		} else {
 			scimGroup.ExtensionGroup.GroupMembers.Resources = append(scimGroup.ExtensionGroup.GroupMembers.Resources, data.ExtensionGroup.GroupMembers.Resources...)
 		}
-		current = current + count
-		if data.ExtensionGroup.GroupMembers.TotalResults == 0 || current > data.ExtensionGroup.GroupMembers.TotalResults {
+		current = current + 1
+		if len(scimGroup.ExtensionGroup.GroupMembers.Resources) >= data.ExtensionGroup.GroupMembers.TotalResults || (current*count) > data.ExtensionGroup.GroupMembers.TotalResults {
 			break // Done
 		}
 	}
