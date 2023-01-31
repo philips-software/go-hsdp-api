@@ -401,10 +401,10 @@ func (g *GroupsService) SCIMGetGroupByIDAll(id string, opt *SCIMGetGroupOptions,
 		} else {
 			scimGroup.ExtensionGroup.GroupMembers.Resources = append(scimGroup.ExtensionGroup.GroupMembers.Resources, data.ExtensionGroup.GroupMembers.Resources...)
 		}
-		current = current + 1
 		if len(scimGroup.ExtensionGroup.GroupMembers.Resources) >= data.ExtensionGroup.GroupMembers.TotalResults || (*opt.GroupMembersCount*current) > data.ExtensionGroup.GroupMembers.TotalResults {
 			break // Done
 		}
+		current = current + 1
 	}
 	return scimGroup, resp, err
 }
