@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -245,7 +246,7 @@ func TestAddMembers(t *testing.T) {
 	for i := 0; i < 28; i++ {
 		users = append(users, fmt.Sprintf("%s%02d", "f5fe538f-c3b5-4454-8774-cd3789f59b", i))
 	}
-	ok, resp, err := client.Groups.AddMembers(group, users...)
+	ok, resp, err := client.Groups.AddMembers(context.Background(), group, users...)
 	assert.NotNil(t, resp)
 	if resp != nil {
 		assert.Equal(t, http.StatusOK, resp.StatusCode())
@@ -325,13 +326,13 @@ func TestRemoveMembers(t *testing.T) {
 	})
 	var group Group
 	group.ID = groupID
-	ok, resp, err := client.Groups.RemoveMembers(group, userID)
+	ok, resp, err := client.Groups.RemoveMembers(context.Background(), group, userID)
 	assert.NotNil(t, resp)
 	assert.Nil(t, ok)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
-	ok, resp, err = client.Groups.RemoveMembers(group, "foo")
+	ok, resp, err = client.Groups.RemoveMembers(context.Background(), group, "foo")
 	assert.NotNil(t, resp)
 	assert.Nil(t, ok)
 	assert.NotNil(t, err)
@@ -533,27 +534,27 @@ func TestAddServicesAndDevices(t *testing.T) {
 	})
 	var group Group
 	group.ID = groupID
-	ok, resp, err := client.Groups.AddServices(group, identityID)
+	ok, resp, err := client.Groups.AddServices(context.Background(), group, identityID)
 	assert.NotNil(t, resp)
 	if resp != nil {
 		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	assert.NotNil(t, ok)
 	assert.Nil(t, err)
-	ok, resp, err = client.Groups.AddServices(group, "foo")
+	ok, resp, err = client.Groups.AddServices(context.Background(), group, "foo")
 	assert.NotNil(t, resp)
 	assert.Nil(t, ok)
 	assert.NotNil(t, err)
 	group.ID = groupID
 
-	ok, resp, err = client.Groups.AddDevices(group, identityID)
+	ok, resp, err = client.Groups.AddDevices(context.Background(), group, identityID)
 	assert.NotNil(t, resp)
 	if resp != nil {
 		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
 	assert.NotNil(t, ok)
 	assert.Nil(t, err)
-	ok, resp, err = client.Groups.AddDevices(group, "foo")
+	ok, resp, err = client.Groups.AddDevices(context.Background(), group, "foo")
 	assert.NotNil(t, resp)
 	assert.Nil(t, ok)
 	assert.NotNil(t, err)
@@ -645,21 +646,21 @@ func TestRemoveServicesAndDevices(t *testing.T) {
 	})
 	var group Group
 	group.ID = groupID
-	_, resp, err := client.Groups.RemoveServices(group, identityID)
+	_, resp, err := client.Groups.RemoveServices(context.Background(), group, identityID)
 	assert.NotNil(t, resp)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
-	_, resp, err = client.Groups.RemoveServices(group, "foo")
+	_, resp, err = client.Groups.RemoveServices(context.Background(), group, "foo")
 	assert.NotNil(t, resp)
 	assert.NotNil(t, err)
 
-	_, resp, err = client.Groups.RemoveDevices(group, identityID)
+	_, resp, err = client.Groups.RemoveDevices(context.Background(), group, identityID)
 	assert.NotNil(t, resp)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
-	ok, resp, err := client.Groups.RemoveDevices(group, "foo")
+	ok, resp, err := client.Groups.RemoveDevices(context.Background(), group, "foo")
 	assert.NotNil(t, resp)
 	assert.NotNil(t, err)
 	assert.Nil(t, ok)

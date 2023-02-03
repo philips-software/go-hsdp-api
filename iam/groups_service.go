@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -223,7 +224,7 @@ type groupRequest struct {
 	Roles        []string    `json:"roles,omitempty"`
 }
 
-func (g *GroupsService) memberAction(group Group, action string, opt interface{}, options []OptionFunc) (map[string]interface{}, *Response, error) {
+func (g *GroupsService) memberAction(ctx context.Context, group Group, action string, opt interface{}, options []OptionFunc) (map[string]interface{}, *Response, error) {
 	req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, options)
 	if err != nil {
 		return nil, nil, err
@@ -232,8 +233,15 @@ func (g *GroupsService) memberAction(group Group, action string, opt interface{}
 	req.Header.Set("Content-Type", "application/json")
 
 	var memberResponse map[string]interface{}
+	var resp *Response
 
-	resp, err := g.client.do(req, &memberResponse)
+	internal.TryHTTPCall(ctx, 6, func() (*http.Response, error) {
+		resp, err = g.client.do(req, &memberResponse)
+		if resp == nil {
+			return nil, err
+		}
+		return resp.Response, err
+	})
 
 	if err != nil && err != io.EOF { // EOF is valid
 		return memberResponse, resp, err
@@ -268,16 +276,16 @@ func groupRequestBody(users ...string) groupRequest {
 type MemberResponse map[string]interface{}
 
 // AddMembers adds users to the given Group
-func (g *GroupsService) AddMembers(group Group, users ...string) (MemberResponse, *Response, error) {
+func (g *GroupsService) AddMembers(ctx context.Context, group Group, users ...string) (MemberResponse, *Response, error) {
 	return perSlice(users, 10, func(chunk []string) (MemberResponse, *Response, error) {
-		return g.memberAction(group, "$add-members", groupRequestBody(chunk...), nil)
+		return g.memberAction(ctx, group, "$add-members", groupRequestBody(chunk...), nil)
 	})
 }
 
 // RemoveMembers removes users from the given Group
-func (g *GroupsService) RemoveMembers(group Group, users ...string) (MemberResponse, *Response, error) {
+func (g *GroupsService) RemoveMembers(ctx context.Context, group Group, users ...string) (MemberResponse, *Response, error) {
 	return perSlice(users, 10, func(chunk []string) (MemberResponse, *Response, error) {
-		return g.memberAction(group, "$remove-members", groupRequestBody(chunk...), nil)
+		return g.memberAction(ctx, group, "$remove-members", groupRequestBody(chunk...), nil)
 	})
 }
 
@@ -306,54 +314,54 @@ func addIfMatchHeader(version string) OptionFunc {
 }
 
 // AddIdentities adds services to the given Group
-func (g *GroupsService) AddIdentities(group Group, memberType string, identities ...string) (MemberResponse, *Response, error) {
+func (g *GroupsService) AddIdentities(ctx context.Context, group Group, memberType string, identities ...string) (MemberResponse, *Response, error) {
 	_, resp, err := g.GetGroupByID(group.ID)
 	if err != nil {
 		return nil, resp, err
 	}
 	version := resp.Header.Get("ETag")
 	return perSlice(identities, 10, func(chunk []string) (MemberResponse, *Response, error) {
-		return g.memberAction(group, "$assign", memberRequestBody(memberType, chunk...), []OptionFunc{addIfMatchHeader(version)})
+		return g.memberAction(ctx, group, "$assign", memberRequestBody(memberType, chunk...), []OptionFunc{addIfMatchHeader(version)})
 	})
 }
 
 // RemoveIdentities removes services from the given Group
-func (g *GroupsService) RemoveIdentities(group Group, memberType string, identities ...string) (MemberResponse, *Response, error) {
+func (g *GroupsService) RemoveIdentities(ctx context.Context, group Group, memberType string, identities ...string) (MemberResponse, *Response, error) {
 	_, resp, err := g.GetGroupByID(group.ID)
 	if err != nil {
 		return nil, resp, err
 	}
 	version := resp.Header.Get("ETag")
 	return perSlice(identities, 10, func(slice []string) (MemberResponse, *Response, error) {
-		return g.memberAction(group, "$remove", memberRequestBody(memberType, slice...), []OptionFunc{addIfMatchHeader(version)})
+		return g.memberAction(ctx, group, "$remove", memberRequestBody(memberType, slice...), []OptionFunc{addIfMatchHeader(version)})
 	})
 }
 
 // AddDevices adds services to the given Group
-func (g *GroupsService) AddDevices(group Group, devices ...string) (MemberResponse, *Response, error) {
+func (g *GroupsService) AddDevices(ctx context.Context, group Group, devices ...string) (MemberResponse, *Response, error) {
 	return perSlice(devices, 10, func(chunk []string) (MemberResponse, *Response, error) {
-		return g.AddIdentities(group, "DEVICE", chunk...)
+		return g.AddIdentities(ctx, group, "DEVICE", chunk...)
 	})
 }
 
 // RemoveDevices removes services from the given Group
-func (g *GroupsService) RemoveDevices(group Group, devices ...string) (MemberResponse, *Response, error) {
+func (g *GroupsService) RemoveDevices(ctx context.Context, group Group, devices ...string) (MemberResponse, *Response, error) {
 	return perSlice(devices, 10, func(chunk []string) (MemberResponse, *Response, error) {
-		return g.RemoveIdentities(group, "DEVICE", chunk...)
+		return g.RemoveIdentities(ctx, group, "DEVICE", chunk...)
 	})
 }
 
 // AddServices adds services to the given Group
-func (g *GroupsService) AddServices(group Group, services ...string) (MemberResponse, *Response, error) {
+func (g *GroupsService) AddServices(ctx context.Context, group Group, services ...string) (MemberResponse, *Response, error) {
 	return perSlice(services, 10, func(chunk []string) (MemberResponse, *Response, error) {
-		return g.AddIdentities(group, "SERVICE", chunk...)
+		return g.AddIdentities(ctx, group, "SERVICE", chunk...)
 	})
 }
 
 // RemoveServices removes services from the given Group
-func (g *GroupsService) RemoveServices(group Group, services ...string) (MemberResponse, *Response, error) {
+func (g *GroupsService) RemoveServices(ctx context.Context, group Group, services ...string) (MemberResponse, *Response, error) {
 	return perSlice(services, 10, func(chunk []string) (MemberResponse, *Response, error) {
-		return g.RemoveIdentities(group, "SERVICE", chunk...)
+		return g.RemoveIdentities(ctx, group, "SERVICE", chunk...)
 	})
 }
 
