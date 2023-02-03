@@ -250,5 +250,5 @@ func TestErrorResponse(t *testing.T) {
 		return
 	}
 	assert.Equal(t, http.StatusConflict, resp.StatusCode())
-	assert.Equal(t, err.Error(), `POST : StatusCode 409, Body: {"error":"something unexpected happened"}`)
+	assert.Equal(t, err.Error(), `POST /store/dicom/config/dicom/production/remoteNodes: StatusCode 409, Body: {"error":"something unexpected happened"}`)
 }

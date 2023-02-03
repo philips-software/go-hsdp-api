@@ -22,5 +22,9 @@ func CheckResponse(r *http.Response) error {
 		data = []byte("empty")
 	}
 	r.Body = io.NopCloser(bytes.NewBuffer(data)) // Preserve body
-	return fmt.Errorf("%s %s: StatusCode %d, Body: %s", r.Request.Method, r.Request.RequestURI, r.StatusCode, string(data))
+	requestURI := ""
+	if r.Request.URL != nil {
+		requestURI = r.Request.URL.RequestURI()
+	}
+	return fmt.Errorf("%s %s: StatusCode %d, Body: %s", r.Request.Method, requestURI, r.StatusCode, string(data))
 }
