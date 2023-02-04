@@ -251,9 +251,11 @@ func TestAddMembers(t *testing.T) {
 	if resp != nil {
 		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
+	if !assert.Nil(t, err) {
+		return
+	}
 	assert.Len(t, assignedTotal, 28)
 	assert.Nil(t, ok)
-	assert.Nil(t, err)
 }
 
 func TestRemoveMembers(t *testing.T) {
@@ -333,9 +335,11 @@ func TestRemoveMembers(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode())
 
 	ok, resp, err = client.Groups.RemoveMembers(context.Background(), group, "foo")
+	if !assert.NotNil(t, err) {
+		return
+	}
 	assert.NotNil(t, resp)
 	assert.Nil(t, ok)
-	assert.NotNil(t, err)
 }
 
 func TestRemoveRole(t *testing.T) {
@@ -393,9 +397,10 @@ func TestRemoveRole(t *testing.T) {
 	group.ID = groupID
 	role.ID = roleID
 	ok, resp, err := client.Groups.RemoveRole(group, role)
+	if !assert.Nil(t, err) {
+	}
 	assert.NotNil(t, resp)
 	assert.True(t, ok)
-	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode())
 }
 

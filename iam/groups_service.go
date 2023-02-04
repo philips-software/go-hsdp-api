@@ -235,15 +235,17 @@ func (g *GroupsService) memberAction(ctx context.Context, group Group, action st
 	var memberResponse map[string]interface{}
 	var resp *Response
 
-	internal.TryHTTPCall(ctx, 6, func() (*http.Response, error) {
+	err = internal.TryHTTPCall(ctx, 6, func() (*http.Response, error) {
 		resp, err = g.client.do(req, &memberResponse)
 		if resp == nil {
 			return nil, err
 		}
+		if err != nil && err == io.EOF { // EOF is valid
+			err = nil
+		}
 		return resp.Response, err
 	})
-
-	if err != nil && err != io.EOF { // EOF is valid
+	if err != nil {
 		return memberResponse, resp, err
 	}
 	return memberResponse, resp, nil
