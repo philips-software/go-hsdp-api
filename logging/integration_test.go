@@ -31,6 +31,19 @@ func TestIntegration(t *testing.T) {
 	productKey := os.Getenv("INT_LOGGING_PRODUCT_KEY")
 	ingestorURL := os.Getenv("INT_LOGGING_INGESTOR_URL")
 
+	if !assert.NotEmpty(t, key) {
+		return
+	}
+	if !assert.NotEmpty(t, secret) {
+		return
+	}
+	if !assert.NotEmpty(t, productKey) {
+		return
+	}
+	if !assert.NotEmpty(t, ingestorURL) {
+		return
+	}
+
 	intClient, err := NewClient(nil, &Config{
 		SharedKey:    key,
 		SharedSecret: secret,
@@ -53,7 +66,7 @@ func TestIntegration(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode())
 
 	// Local validation test
 	resp, err = intClient.StoreResources([]Resource{
@@ -67,10 +80,11 @@ func TestIntegration(t *testing.T) {
 	if !assert.NotNil(t, err) {
 		return
 	}
-	assert.Equal(t, ErrBatchErrors, err)
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, ErrBatchErrors, err)
+
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode())
 	assert.Equal(t, 3, len(resp.Failed))
 }

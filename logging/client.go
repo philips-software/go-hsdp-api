@@ -130,6 +130,13 @@ type CustomIndexBody []struct {
 	Fieldtype string `json:"fieldtype"`
 }
 
+func (r *StoreResponse) StatusCode() int {
+	if r.Response != nil {
+		return r.Response.StatusCode
+	}
+	return 0
+}
+
 // NewClient returns an instance of the logger client with the given Config
 func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	var logger Client

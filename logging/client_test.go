@@ -175,8 +175,8 @@ func TestStoreResources(t *testing.T) {
 		t.Errorf("Unexpected nil value for response")
 		return
 	}
-	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("Expected HTTP 201, Got: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusCreated {
+		t.Errorf("Expected HTTP 201, Got: %d", resp.StatusCode())
 	}
 }
 
@@ -207,8 +207,8 @@ func TestStoreResourcesWithInvalidKey(t *testing.T) {
 		t.Errorf("Unexpected nil value for response")
 		return
 	}
-	if resp.StatusCode != http.StatusUnprocessableEntity {
-		t.Errorf("Expected HTTP %d, Got: %d", http.StatusUnprocessableEntity, resp.StatusCode)
+	if resp.StatusCode() != http.StatusUnprocessableEntity {
+		t.Errorf("Expected HTTP %d, Got: %d", http.StatusUnprocessableEntity, resp.StatusCode())
 	}
 }
 
@@ -237,7 +237,7 @@ func TestStoreResourcesWithInvalidKeypair(t *testing.T) {
 	}
 	assert.NotNil(t, resp)
 	_ = err.Error() // Just to up coverage
-	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode())
 	assert.NotNil(t, err)
 }
 
@@ -346,7 +346,7 @@ func TestStoreResourcesWithBadResources(t *testing.T) {
 	if !assert.NotNil(t, resp) {
 		return
 	}
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode())
 	assert.Equal(t, ErrBatchErrors, err)
 }
 
@@ -448,8 +448,8 @@ func TestStoreResourceWithBearerToken(t *testing.T) {
 		t.Errorf("Unexpected nil value for response")
 		return
 	}
-	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("Expected HTTP 201, Got: %d", resp.StatusCode)
+	if resp.StatusCode() != http.StatusCreated {
+		t.Errorf("Expected HTTP 201, Got: %d", resp.StatusCode())
 	}
 }
 

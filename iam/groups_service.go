@@ -173,17 +173,16 @@ func (g *GroupsService) roleAction(ctx context.Context, group Group, role Role, 
 	var assignRequest = groupRequest{
 		Roles: []string{role.ID},
 	}
-	req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, assignRequest, nil)
-	if err != nil {
-		return false, nil, err
-	}
-	req.Header.Set("api-version", groupAPIVersion)
-	req.Header.Set("Content-Type", "application/json")
-
 	var assignResponse interface{}
 	var resp *Response
 
-	err = internal.TryHTTPCall(ctx, 6, func() (*http.Response, error) {
+	err := internal.TryHTTPCall(ctx, 6, func() (*http.Response, error) {
+		req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, assignRequest, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("api-version", groupAPIVersion)
+		req.Header.Set("Content-Type", "application/json")
 		resp, err = g.client.do(req, &assignResponse)
 		if resp == nil {
 			return nil, err
@@ -233,17 +232,17 @@ type groupRequest struct {
 }
 
 func (g *GroupsService) memberAction(ctx context.Context, group Group, action string, opt interface{}, options []OptionFunc) (map[string]interface{}, *Response, error) {
-	req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, options)
-	if err != nil {
-		return nil, nil, err
-	}
-	req.Header.Set("api-version", groupAPIVersion)
-	req.Header.Set("Content-Type", "application/json")
-
 	var memberResponse map[string]interface{}
 	var resp *Response
 
-	err = internal.TryHTTPCall(ctx, 6, func() (*http.Response, error) {
+	err := internal.TryHTTPCall(ctx, 6, func() (*http.Response, error) {
+		req, err := g.client.newRequest(IDM, "POST", "authorize/identity/Group/"+group.ID+"/"+action, opt, options)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("api-version", groupAPIVersion)
+		req.Header.Set("Content-Type", "application/json")
+
 		resp, err = g.client.do(req, &memberResponse)
 		if resp == nil {
 			return nil, err
