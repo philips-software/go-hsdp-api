@@ -18,7 +18,7 @@ const (
 	keyFooter = "-----END PUBLIC KEY-----"
 )
 
-//EncryptPayload encrypts pbytes using publicKey
+// EncryptPayload encrypts pbytes using publicKey
 func EncryptPayload(publicKey []byte, pbytes []byte) (string, error) {
 	rsaPublicKey, err := parsePublicKey(publicKey)
 	if err != nil {

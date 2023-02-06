@@ -398,6 +398,7 @@ func TestRemoveRole(t *testing.T) {
 	role.ID = roleID
 	ok, resp, err := client.Groups.RemoveRole(group, role)
 	if !assert.Nil(t, err) {
+		return
 	}
 	assert.NotNil(t, resp)
 	assert.True(t, ok)

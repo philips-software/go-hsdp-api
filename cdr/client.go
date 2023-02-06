@@ -245,7 +245,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	response := newResponse(resp)
-	
+
 	err = internal.CheckResponse(resp)
 	if err != nil {
 		// even though there was an error, we still return the response
