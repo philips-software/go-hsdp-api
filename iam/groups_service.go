@@ -169,7 +169,7 @@ func (g *GroupsService) GetRoles(group Group) (*[]Role, *Response, error) {
 	return &responseStruct.Entry, resp, err
 }
 
-func (g *GroupsService) roleAction(group Group, role Role, action string) (bool, *Response, error) {
+func (g *GroupsService) roleAction(ctx context.Context, group Group, role Role, action string) (bool, *Response, error) {
 	var assignRequest = groupRequest{
 		Roles: []string{role.ID},
 	}
@@ -181,8 +181,16 @@ func (g *GroupsService) roleAction(group Group, role Role, action string) (bool,
 	req.Header.Set("Content-Type", "application/json")
 
 	var assignResponse interface{}
+	var resp *Response
 
-	resp, err := g.client.do(req, &assignResponse)
+	err = internal.TryHTTPCall(ctx, 6, func() (*http.Response, error) {
+		resp, err = g.client.do(req, &assignResponse)
+		if resp == nil {
+			return nil, err
+		}
+		return resp.Response, err
+	})
+
 	if err != nil {
 		return false, resp, err
 	}
@@ -193,13 +201,13 @@ func (g *GroupsService) roleAction(group Group, role Role, action string) (bool,
 }
 
 // AssignRole adds a role to a group
-func (g *GroupsService) AssignRole(group Group, role Role) (bool, *Response, error) {
-	return g.roleAction(group, role, "$assign-role")
+func (g *GroupsService) AssignRole(ctx context.Context, group Group, role Role) (bool, *Response, error) {
+	return g.roleAction(ctx, group, role, "$assign-role")
 }
 
 // RemoveRole removes a role from a group
-func (g *GroupsService) RemoveRole(group Group, role Role) (bool, *Response, error) {
-	return g.roleAction(group, role, "$remove-role")
+func (g *GroupsService) RemoveRole(ctx context.Context, group Group, role Role) (bool, *Response, error) {
+	return g.roleAction(ctx, group, role, "$remove-role")
 }
 
 // Reference holds a reference

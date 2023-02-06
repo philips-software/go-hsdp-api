@@ -175,12 +175,14 @@ func TestAssignRole(t *testing.T) {
 	var role Role
 	group.ID = groupID
 	role.ID = roleID
-	ok, resp, err := client.Groups.AssignRole(group, role)
-	assert.True(t, ok)
-	assert.Nil(t, err)
+	ok, resp, err := client.Groups.AssignRole(context.Background(), group, role)
+	if !assert.Nil(t, err) {
+		return
+	}
 	if ok := assert.NotNil(t, resp); ok {
 		assert.Equal(t, http.StatusOK, resp.StatusCode())
 	}
+	assert.True(t, ok)
 	assert.Len(t, assignedTotal, 1)
 }
 
@@ -396,11 +398,13 @@ func TestRemoveRole(t *testing.T) {
 	var role Role
 	group.ID = groupID
 	role.ID = roleID
-	ok, resp, err := client.Groups.RemoveRole(group, role)
+	ok, resp, err := client.Groups.RemoveRole(context.Background(), group, role)
 	if !assert.Nil(t, err) {
 		return
 	}
-	assert.NotNil(t, resp)
+	if !assert.NotNil(t, resp) {
+		return
+	}
 	assert.True(t, ok)
 	assert.Equal(t, http.StatusOK, resp.StatusCode())
 }
