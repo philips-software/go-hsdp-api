@@ -30,6 +30,7 @@ func TryHTTPCall(ctx context.Context, numberOfTries uint64, operation func() (*h
 		shouldRetry := false
 		if resp == nil {
 			err = fmt.Errorf("response was nil in go-hsdp-api: %w", err)
+			shouldRetry = true
 		}
 		if resp != nil {
 			for _, c := range retryOnCodes {
