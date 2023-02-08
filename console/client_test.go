@@ -136,7 +136,7 @@ func TestDebug(t *testing.T) {
 		UAAURL:         serverUAA.URL,
 		BaseConsoleURL: serverCONSOLE.URL,
 		Debug:          true,
-		DebugLog:       tmpfile.Name(),
+		DebugLog:       tmpfile,
 	})
 
 	if err != nil {

@@ -443,8 +443,7 @@ func TestDebug(t *testing.T) {
 		SecretKey:      secretKey,
 		IAMURL:         serverIAM.URL,
 		IDMURL:         serverIDM.URL,
-		Debug:          true,
-		DebugLog:       tmpfile.Name(),
+		DebugLog:       tmpfile,
 	})
 
 	if err != nil {

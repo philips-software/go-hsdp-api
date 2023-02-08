@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"path"
 	"strings"
 
@@ -31,7 +30,7 @@ type Config struct {
 	Region      string
 	Environment string
 	BaseURL     string
-	DebugLog    string
+	DebugLog    io.Writer
 	Retry       int
 }
 
@@ -48,8 +47,7 @@ type Client struct {
 	systemIDM string
 	systemIAM string
 
-	debugFile *os.File
-	validate  *validator.Validate
+	validate *validator.Validate
 
 	Propositions                 *PropositionsService
 	Applications                 *ApplicationsService
@@ -142,10 +140,6 @@ func doAutoconf(config *Config) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // GetBaseURL returns the base URL as configured

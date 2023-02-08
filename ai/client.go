@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"path"
 	"strings"
 
@@ -33,7 +32,7 @@ type Config struct {
 	OrganizationID string `Validate:"required"`
 	BaseURL        string
 	Service        string `Validate:"required"`
-	DebugLog       string
+	DebugLog       io.Writer
 	Retry          int
 }
 
@@ -47,8 +46,7 @@ type Client struct {
 	// User agent used when communicating with the HSDP Notification API
 	UserAgent string
 
-	debugFile *os.File
-	validate  *validator.Validate
+	validate *validator.Validate
 
 	ComputeTarget   *ComputeTargetService
 	ComputeProvider *ComputeProviderService
@@ -89,10 +87,6 @@ func doAutoconf(config *Config) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // GetBaseURL returns the base URL as configured

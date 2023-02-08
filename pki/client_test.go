@@ -221,7 +221,7 @@ func TestDebug(t *testing.T) {
 	pkiClient, err = pki.NewClient(nil, iamClient, &pki.Config{
 		PKIURL:   serverPKI.URL,
 		UAAURL:   serverUAA.URL,
-		DebugLog: tmpFile.Name(),
+		DebugLog: tmpFile,
 	})
 	if !assert.Nil(t, err) {
 		return

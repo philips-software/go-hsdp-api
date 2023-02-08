@@ -205,7 +205,7 @@ func TestDebug(t *testing.T) {
 
 	workspaceClient, err = workspace.NewClient(iamClient, &ai.Config{
 		BaseURL:        serverWorkspace.URL,
-		DebugLog:       tmpfile.Name(),
+		DebugLog:       tmpfile,
 		OrganizationID: "xxx",
 	})
 	if !assert.Nil(t, err) {

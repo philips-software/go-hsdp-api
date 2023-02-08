@@ -3,8 +3,8 @@ package stl
 
 import (
 	"context"
+	"io"
 	"net/http"
-	"os"
 
 	"github.com/hasura/go-graphql-client"
 	autoconf "github.com/philips-software/go-hsdp-api/config"
@@ -25,7 +25,7 @@ type Config struct {
 	Region      string
 	Environment string
 	STLAPIURL   string
-	DebugLog    string
+	DebugLog    io.Writer
 }
 
 // A Client manages communication with HSDP Edge API
@@ -39,8 +39,6 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP Edge API.
 	UserAgent string
-
-	debugFile *os.File
 
 	Devices *DevicesService
 	Apps    *AppsService
@@ -59,12 +57,8 @@ func newClient(consoleClient *console.Client, config *Config) (*Client, error) {
 	c := &Client{consoleClient: consoleClient, config: config, UserAgent: userAgent}
 	httpClient := oauth2.NewClient(context.Background(), consoleClient)
 
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
-		}
+	if config.DebugLog != nil {
+		httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, config.DebugLog)
 	}
 	header := make(http.Header)
 	header.Set("User-Agent", userAgent)
@@ -99,8 +93,4 @@ func (c *Client) Query(ctx context.Context, q interface{}, variables map[string]
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }

@@ -174,7 +174,7 @@ func TestDebug(t *testing.T) {
 		HASURL:   serverHAS.URL,
 		Debug:    true,
 		OrgID:    orgID,
-		DebugLog: tmpfile.Name(),
+		DebugLog: tmpfile,
 	})
 	if !assert.Nil(t, err) {
 		return

@@ -1,5 +1,7 @@
 package console
 
+import "io"
+
 // Config contains the configuration of a client
 type Config struct {
 	Region         string
@@ -8,5 +10,5 @@ type Config struct {
 	MetricsAPIURL  string
 	Scopes         []string
 	Debug          bool
-	DebugLog       string
+	DebugLog       io.Writer
 }

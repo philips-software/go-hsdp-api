@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"sort"
 	"strings"
 
@@ -39,7 +38,7 @@ type Config struct {
 	Environment string
 	PKIURL      string
 	UAAURL      string
-	DebugLog    string
+	DebugLog    io.Writer
 }
 
 // A Client manages communication with HSDP PKI API
@@ -55,8 +54,6 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
-
-	debugFile *os.File
 
 	Tenants  *TenantService
 	Services *ServicesService // Sounds like something from Java!
@@ -75,13 +72,6 @@ func newClient(consoleClient *console.Client, iamClient *iam.Client, config *Con
 		return nil, err
 	}
 
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err != nil {
-			c.debugFile = nil
-		}
-	}
 	c.Tenants = &TenantService{client: c, validate: validator.New()}
 	c.Services = &ServicesService{client: c, validate: validator.New()}
 	return c, nil
@@ -108,10 +98,6 @@ func doAutoconf(config *Config) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // SetBasePKIURL sets the base URL for API requests to a custom endpoint. urlStr

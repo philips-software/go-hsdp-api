@@ -105,7 +105,7 @@ func TestDebug(t *testing.T) {
 
 	client, err = stl.NewClient(consoleClient, &stl.Config{
 		STLAPIURL: serverSTL.URL,
-		DebugLog:  tmpfile.Name(),
+		DebugLog:  tmpfile,
 	})
 
 	if err != nil {

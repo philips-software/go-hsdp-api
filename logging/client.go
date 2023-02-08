@@ -87,7 +87,7 @@ type Config struct {
 	BaseURL      string
 	ProductKey   string
 	Debug        bool
-	DebugLog     string
+	DebugLog     io.Writer
 }
 
 // Valid returns if all required config fields are present, false otherwise
@@ -114,7 +114,6 @@ type Client struct {
 	url        *url.URL
 	httpClient *http.Client
 	httpSigner *signer.Signer
-	debugFile  *os.File
 }
 
 // StoreResponse holds a LogEvent response
@@ -149,15 +148,8 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 		}
 		httpClient = c
 	}
-	if config.DebugLog != "" || config.Debug {
-		var err error
-		if config.DebugLog == "" { // Simulate original behaviour
-			config.DebugLog = "/dev/stderr"
-		}
-		logger.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, logger.debugFile)
-		}
+	if config.DebugLog != nil {
+		httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, config.DebugLog)
 	}
 	// Autoconfig
 	if config.Region != "" && config.Environment != "" {

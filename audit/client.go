@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/google/fhir/go/fhirversion"
@@ -38,7 +37,7 @@ type Config struct {
 	// SharedSecret is the IAM API signing secret
 	SharedSecret string
 	TimeZone     string
-	DebugLog     string
+	DebugLog     io.Writer
 }
 
 // Client holds state of a HSDP Audit client
@@ -53,8 +52,6 @@ type Client struct {
 	ma         *jsonformat.Marshaller
 	um         *jsonformat.Unmarshaller
 	httpSigner *signer.Signer
-
-	debugFile *os.File
 }
 
 // NewClient returns a new HSDP Audit API client. Configured console and IAM clients
@@ -76,12 +73,8 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	}
 
 	c := &Client{httpClient: httpClient, config: config, UserAgent: userAgent}
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
-		}
+	if config.DebugLog != nil {
+		httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, config.DebugLog)
 	}
 	c.httpSigner, err = signer.New(c.config.SharedKey, c.config.SharedSecret)
 	if err != nil {
@@ -104,10 +97,6 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 func (c *Client) setAuditBaseURL(urlStr string) error {

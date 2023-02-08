@@ -9,7 +9,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -76,8 +75,6 @@ type Client struct {
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
 
-	debugFile *os.File
-
 	Organizations    *OrganizationsService
 	Groups           *GroupsService
 	Permissions      *PermissionsService
@@ -129,12 +126,8 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	} else {
 		c.signer = config.Signer
 	}
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
-		}
+	if config.DebugLog != nil {
+		httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, config.DebugLog)
 	}
 
 	c.validate = validator.New()
@@ -184,10 +177,6 @@ func (c *Client) validSigner() bool {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // HttpClient returns the http Client used for connections

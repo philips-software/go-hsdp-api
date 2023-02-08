@@ -49,7 +49,6 @@ func TestIntegration(t *testing.T) {
 		SharedSecret: secret,
 		ProductKey:   productKey,
 		BaseURL:      ingestorURL,
-		DebugLog:     "/tmp/integration.log",
 	})
 	if !assert.Nil(t, err) {
 		return

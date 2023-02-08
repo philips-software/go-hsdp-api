@@ -91,7 +91,7 @@ func TestDebug(t *testing.T) {
 	tpnsClient, _ = NewClient(nil, &Config{
 		TPNSURL:  serverTPNS.URL,
 		Debug:    true,
-		DebugLog: tmpfile.Name(),
+		DebugLog: tmpfile,
 	})
 	defer func() {
 		tpnsClient.Close()

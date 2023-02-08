@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/philips-software/go-hsdp-api/internal"
@@ -30,7 +29,7 @@ type Config struct {
 	Username string
 	Password string
 	Debug    bool
-	DebugLog string
+	DebugLog io.Writer
 }
 
 // A Client manages communication with HSDP IAM API
@@ -44,8 +43,6 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
-
-	debugFile *os.File
 
 	Messages *MessagesService
 }
@@ -70,12 +67,8 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 		return nil, err
 	}
 
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
-		}
+	if config.DebugLog != nil {
+		httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, config.DebugLog)
 	}
 
 	c.Messages = &MessagesService{client: c}
@@ -84,10 +77,6 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // SetBaseTPNSURL sets the base URL for API requests to a custom endpoint. urlStr

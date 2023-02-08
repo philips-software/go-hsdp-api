@@ -3,8 +3,8 @@ package docker
 
 import (
 	"context"
+	"io"
 	"net/http"
-	"os"
 
 	"github.com/hasura/go-graphql-client"
 	autoconf "github.com/philips-software/go-hsdp-api/config"
@@ -23,7 +23,7 @@ type OptionFunc func(*http.Request) error
 type Config struct {
 	Region       string
 	DockerAPIURL string
-	DebugLog     string
+	DebugLog     io.Writer
 	host         string
 }
 
@@ -38,8 +38,6 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP DICOM API.
 	UserAgent string
-
-	debugFile *os.File
 
 	ServiceKeys  *ServiceKeysService
 	Namespaces   *NamespacesService
@@ -105,8 +103,4 @@ func (c *Client) Query(ctx context.Context, q interface{}, variables map[string]
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }

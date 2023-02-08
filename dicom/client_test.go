@@ -169,7 +169,7 @@ func TestDebug(t *testing.T) {
 
 	dicomClient, err = dicom.NewClient(iamClient, &dicom.Config{
 		DICOMConfigURL: serverDICOM.URL,
-		DebugLog:       tmpfile.Name(),
+		DebugLog:       tmpfile,
 	})
 	if !assert.Nil(t, err) {
 		return

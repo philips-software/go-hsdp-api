@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/philips-software/go-hsdp-api/internal"
@@ -27,7 +26,7 @@ type OptionFunc func(*http.Request) error
 type Config struct {
 	BaseURL     string        `cloud:"-" json:"base_url,omitempty"`
 	Debug       bool          `cloud:"-" json:"-"`
-	DebugLog    string        `cloud:"-" json:"-"`
+	DebugLog    io.Writer     `cloud:"-" json:"-"`
 	ClusterInfo []ClusterInfo `cloud:"cluster_info" json:"cluster_info"`
 	Email       string        `cloud:"email" json:"email"`
 	Password    string        `cloud:"password" json:"password"`
@@ -56,8 +55,6 @@ type Client struct {
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
 
-	debugFile *os.File
-
 	Tasks     *TasksServices
 	Codes     *CodesServices
 	Clusters  *ClustersServices
@@ -85,12 +82,8 @@ func newClient(config *Config) (*Client, error) {
 	if err := c.SetBaseIronURL(useURL); err != nil {
 		return nil, err
 	}
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
-		}
+	if config.DebugLog != nil {
+		httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, config.DebugLog)
 	}
 
 	c.Tasks = &TasksServices{client: c, projectID: config.ProjectID}
@@ -109,10 +102,6 @@ func (c ClusterInfo) Encrypt(payload []byte) (string, error) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // SetBaseIronURL sets the base URL for API requests to a custom endpoint. urlStr

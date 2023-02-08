@@ -28,8 +28,6 @@ func setup(t *testing.T) func() {
 		BaseURL:   serverIRON.URL,
 		ProjectID: projectID,
 		Token:     token,
-		Debug:     true,
-		DebugLog:  "/tmp/iron_test.log",
 	})
 	assert.Nil(t, err)
 	assert.NotNil(t, client)

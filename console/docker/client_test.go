@@ -46,7 +46,7 @@ func setup(t *testing.T) (func(), error) {
 	consoleClient, err = console.NewClient(nil, &console.Config{
 		UAAURL:         serverUAA.URL,
 		BaseConsoleURL: serverCONSOLE.URL,
-		DebugLog:       tmpFile.Name(),
+		DebugLog:       tmpFile,
 	})
 	if !assert.Nil(t, err) {
 		t.Fatalf("invalid consoleClient")

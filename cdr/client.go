@@ -36,7 +36,7 @@ type Config struct {
 	FHIRStore string
 	Type      string
 	TimeZone  string
-	DebugLog  string
+	DebugLog  io.Writer
 }
 
 // A Client manages communication with HSDP CDR API

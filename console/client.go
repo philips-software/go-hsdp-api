@@ -9,7 +9,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -131,7 +130,6 @@ type Client struct {
 
 	Metrics *MetricsService
 
-	debugFile  *os.File
 	consoleErr error
 
 	sync.Mutex
@@ -166,24 +164,16 @@ func newClient(httpClient *http.Client, config *Config) (*Client, error) {
 	if err := c.SetBaseConsoleURL(c.config.BaseConsoleURL); err != nil {
 		c.consoleErr = err
 	}
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, c.debugFile)
-		}
+	if config.DebugLog != nil {
+		httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, config.DebugLog)
 	}
 	header := make(http.Header)
 	header.Set("User-Agent", userAgent)
 	httpClient.Transport = internal.NewHeaderRoundTripper(httpClient.Transport, header)
 
 	authClient := oauth2.NewClient(context.Background(), c)
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			authClient.Transport = internal.NewLoggingRoundTripper(authClient.Transport, c.debugFile)
-		}
+	if config.DebugLog != nil {
+		authClient.Transport = internal.NewLoggingRoundTripper(authClient.Transport, config.DebugLog)
 	}
 	// Injecting these headers so we satisfy the proxies
 	authClient.Transport = internal.NewHeaderRoundTripper(authClient.Transport, header, func(req *http.Request) error {
@@ -221,10 +211,6 @@ func doAutoconf(config *Config) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // HttpClient returns the http Client used for connections

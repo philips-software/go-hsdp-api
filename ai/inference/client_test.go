@@ -206,7 +206,7 @@ func TestDebug(t *testing.T) {
 
 	inferenceClient, err = inference.NewClient(iamClient, &ai.Config{
 		BaseURL:        serverInference.URL,
-		DebugLog:       tempFile.Name(),
+		DebugLog:       tempFile,
 		OrganizationID: "xxx",
 	})
 	if !assert.Nil(t, err) {
