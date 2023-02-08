@@ -1,6 +1,8 @@
 package iam
 
-import "net/http"
+import (
+	"net/http"
+)
 
 var (
 	roleAPIVersion = "1"
