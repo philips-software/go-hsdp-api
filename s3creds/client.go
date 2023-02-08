@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"sort"
 	"strings"
 
@@ -32,8 +31,7 @@ type Config struct {
 	BaseURL     string
 	Region      string
 	Environment string
-	Debug       bool
-	DebugLog    string
+	DebugLog    io.Writer
 }
 
 // A Client manages communication with HSDP IAM API
@@ -47,8 +45,6 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
-
-	debugFile *os.File
 
 	Policy *PolicyService
 	Access *AccessService
@@ -83,13 +79,6 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	if err := c.SetBaseURL(c.config.BaseURL); err != nil {
 		return nil, err
 	}
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err != nil {
-			c.debugFile = nil
-		}
-	}
 	c.Policy = &PolicyService{client: c, validate: validator.New()}
 	_ = c.Policy.validate.RegisterValidation("policyActions", validateActions)
 
@@ -100,10 +89,6 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // SetBaseURL sets the base URL for API requests to a custom endpoint. urlStr

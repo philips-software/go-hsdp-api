@@ -167,7 +167,7 @@ func TestDebug(t *testing.T) {
 
 	cdlClient, err = cdl.NewClient(iamClient, &cdl.Config{
 		CDLStore: serverCDL.URL,
-		DebugLog: tmpfile.Name(),
+		DebugLog: tmpfile,
 	})
 	if !assert.Nil(t, err) {
 		return

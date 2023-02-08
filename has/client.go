@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"sort"
 	"strings"
 
@@ -30,7 +29,7 @@ type Config struct {
 	HASURL   string
 	OrgID    string
 	Debug    bool
-	DebugLog string
+	DebugLog io.Writer
 }
 
 // A Client manages communication with HSDP IAM API
@@ -44,8 +43,6 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP IAM API.
 	UserAgent string
-
-	debugFile *os.File
 
 	Resources *ResourcesService
 	Sessions  *SessionsService
@@ -68,13 +65,6 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 		"HAS_SESSION.ALL", "HAS_RESOURCE.ALL") {
 		return nil, ErrMissingHASPermissions
 	}
-	if config.DebugLog != "" {
-		var err error
-		c.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err != nil {
-			c.debugFile = nil
-		}
-	}
 
 	c.Resources = &ResourcesService{client: c, orgID: config.OrgID}
 	c.Sessions = &SessionsService{client: c, orgID: config.OrgID}
@@ -84,10 +74,6 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // SetBaseHASURL sets the base URL for API requests to a custom endpoint. urlStr

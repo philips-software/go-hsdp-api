@@ -206,7 +206,7 @@ func TestDebug(t *testing.T) {
 
 	trainingClient, err = training.NewClient(iamClient, &ai.Config{
 		BaseURL:        serverTraining.URL,
-		DebugLog:       tmpfile.Name(),
+		DebugLog:       tmpfile,
 		OrganizationID: "xxx",
 	})
 	if !assert.Nil(t, err) {

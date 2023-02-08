@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -34,7 +33,7 @@ type Config struct {
 	NotificationURL string
 	Type            string
 	TimeZone        string
-	DebugLog        string
+	DebugLog        io.Writer
 	Retry           int
 }
 
@@ -50,8 +49,7 @@ type Client struct {
 	// User agent used when communicating with the HSDP Notification API
 	UserAgent string
 
-	debugFile *os.File
-	validate  *validator.Validate
+	validate *validator.Validate
 
 	Producer     *ProducerService
 	Subscription *SubscriptionService
@@ -97,10 +95,6 @@ func doAutoconf(config *Config) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // SetNotificationURL sets the Notification URL for API requests

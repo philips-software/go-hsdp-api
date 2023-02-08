@@ -166,7 +166,7 @@ func TestDebug(t *testing.T) {
 
 	notificationClient, err = notification.NewClient(iamClient, &notification.Config{
 		NotificationURL: serverNotification.URL,
-		DebugLog:        tmpfile.Name(),
+		DebugLog:        tmpfile,
 	})
 	if !assert.Nil(t, err) {
 		return

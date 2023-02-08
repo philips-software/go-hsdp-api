@@ -1,6 +1,8 @@
 package iam
 
 import (
+	"io"
+
 	hsdpsigner "github.com/philips-software/go-hsdp-signer"
 )
 
@@ -20,7 +22,6 @@ type Config struct {
 	IDMURL           string
 	Scopes           []string
 	RootOrgID        string
-	Debug            bool
-	DebugLog         string
+	DebugLog         io.Writer
 	Signer           *hsdpsigner.Signer
 }

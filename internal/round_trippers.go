@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -69,22 +70,22 @@ func (rt *HeaderRoundTripper) RoundTrip(req *http.Request) (resp *http.Response,
 }
 
 type LoggingRoundTripper struct {
-	next    http.RoundTripper
-	logFile *os.File
-	id      int64
-	prefix  string
-	debug   bool
+	next   http.RoundTripper
+	w      io.Writer
+	id     int64
+	prefix string
+	debug  bool
 }
 
-func NewLoggingRoundTripper(next http.RoundTripper, logFile *os.File) *LoggingRoundTripper {
+func NewLoggingRoundTripper(next http.RoundTripper, w io.Writer) *LoggingRoundTripper {
 	if next == nil {
 		next = http.DefaultTransport
 	}
 	return &LoggingRoundTripper{
-		next:    next,
-		logFile: logFile,
-		prefix:  uuid.New().String(),
-		debug:   os.Getenv(Amos) == "true",
+		next:   next,
+		w:      w,
+		prefix: uuid.New().String(),
+		debug:  os.Getenv(Amos) == "true",
 	}
 }
 
@@ -94,7 +95,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 	rt.id++
 
 	id := fmt.Sprintf("%s-%05d", rt.prefix, localID)
-	if rt.logFile != nil {
+	if rt.w != nil {
 		now := time.Now().UTC().Format(time.RFC3339Nano)
 		out := ""
 		dumped, err := httputil.DumpRequest(req, true)
@@ -109,7 +110,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 		} else {
 			out = fmt.Sprintf("[go-hsdp-api %s %s] --- request start ---\n%s\n[go-hsdp-api %s %s] --- request end ---\n", id, now, filtered, id, now)
 		}
-		_, _ = rt.logFile.WriteString(out)
+		_, _ = io.WriteString(rt.w, out)
 	}
 
 	resp, err = rt.next.RoundTrip(req)
@@ -117,7 +118,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 		return resp, err
 	}
 
-	if rt.logFile != nil {
+	if rt.w != nil {
 		now := time.Now().UTC().Format(time.RFC3339Nano)
 		out := ""
 		dumped, err := httputil.DumpResponse(resp, true)
@@ -132,7 +133,7 @@ func (rt *LoggingRoundTripper) RoundTrip(req *http.Request) (resp *http.Response
 		} else {
 			out = fmt.Sprintf("[go-hsdp-api %s %s] --- response start ---\n%s\n[go-hsdp-api %s %s] --- response end ---\n", id, now, filtered, id, now)
 		}
-		_, _ = rt.logFile.WriteString(out)
+		_, _ = io.WriteString(rt.w, out)
 	}
 
 	return resp, err

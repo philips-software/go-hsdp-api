@@ -77,8 +77,7 @@ func TestDebug(t *testing.T) {
 		Token:      sharedToken,
 		Secret:     sharedSecret,
 		Host:       "foo",
-		Debug:      true,
-		DebugLog:   tmpfile.Name(),
+		DebugLog:   tmpfile,
 	})
 	if !assert.Nil(t, err) {
 		return

@@ -12,7 +12,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/philips-software/go-hsdp-api/internal"
@@ -28,14 +27,13 @@ const (
 
 // Config the client
 type Config struct {
-	Region     string `cloud:"-" json:"-"`
-	Token      string `cloud:"token" json:"token"`
-	Secret     string `cloud:"secret" json:"secret"`
-	SkipVerify bool   `cloud:"skip_verify" json:"skip_verify"`
-	NoTLS      bool   `cloud:"no_tls" json:"no_tls"`
-	Host       string `cloud:"host" json:"host"`
-	Debug      bool   `cloud:"-" json:"debug,omitempty"`
-	DebugLog   string `cloud:"-" json:"debug_log,omitempty"`
+	Region     string    `cloud:"-" json:"-"`
+	Token      string    `cloud:"token" json:"token"`
+	Secret     string    `cloud:"secret" json:"secret"`
+	SkipVerify bool      `cloud:"skip_verify" json:"skip_verify"`
+	NoTLS      bool      `cloud:"no_tls" json:"no_tls"`
+	Host       string    `cloud:"host" json:"host"`
+	DebugLog   io.Writer `cloud:"-" json:"-"`
 }
 
 // Valid returns if all required config fields are present, false otherwise
@@ -58,8 +56,6 @@ type Client struct {
 	httpClient *http.Client
 	baseURL    *url.URL
 	userAgent  string
-
-	debugFile *os.File
 }
 
 // Response holds a Cartel response
@@ -121,12 +117,8 @@ func NewClient(httpClient *http.Client, config *Config) (*Client, error) {
 	cartel.httpClient = httpClient
 	cartel.userAgent = userAgent
 
-	if config.DebugLog != "" {
-		var err error
-		cartel.debugFile, err = os.OpenFile(config.DebugLog, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-		if err == nil {
-			httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, cartel.debugFile)
-		}
+	if config.DebugLog != nil {
+		httpClient.Transport = internal.NewLoggingRoundTripper(httpClient.Transport, config.DebugLog)
 	}
 
 	// Make sure the given URL ends with a slash

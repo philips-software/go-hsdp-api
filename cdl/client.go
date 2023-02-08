@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -33,7 +32,7 @@ type Config struct {
 	OrganizationID string `validate:"required"`
 	CDLURL         string
 	CDLStore       string
-	DebugLog       string
+	DebugLog       io.Writer
 	Retry          int
 }
 
@@ -51,8 +50,7 @@ type Client struct {
 	// User agent used when communicating with the HSDP Notification API
 	UserAgent string
 
-	debugFile *os.File
-	validate  *validator.Validate
+	validate *validator.Validate
 
 	Study              *StudyService
 	DataTypeDefinition *DatatypeDefinitionService
@@ -128,10 +126,6 @@ func doAutoconf(config *Config) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 // GetCDLURL returns the base CDL Store base URL as configured

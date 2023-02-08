@@ -107,7 +107,7 @@ func TestDebug(t *testing.T) {
 	tdrClient, err = NewClient(iamClient, &Config{
 		TDRURL:   serverTDR.URL,
 		Debug:    true,
-		DebugLog: tmpfile.Name(),
+		DebugLog: tmpfile,
 	})
 	if err != nil {
 		t.Fatalf("Error: %v", err)

@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/google/fhir/go/fhirversion"
@@ -36,7 +35,7 @@ type Config struct {
 	DICOMConfigURL string
 	Type           string
 	TimeZone       string
-	DebugLog       string
+	DebugLog       io.Writer
 }
 
 // A Client manages communication with HSDP DICOM API
@@ -50,8 +49,6 @@ type Client struct {
 
 	// User agent used when communicating with the HSDP DICOM API.
 	UserAgent string
-
-	debugFile *os.File
 
 	Config *ConfigService
 }
@@ -85,10 +82,6 @@ func newClient(iamClient *iam.Client, config *Config) (*Client, error) {
 
 // Close releases allocated resources of clients
 func (c *Client) Close() {
-	if c.debugFile != nil {
-		_ = c.debugFile.Close()
-		c.debugFile = nil
-	}
 }
 
 func (c *Client) GetSTOWURL() string {

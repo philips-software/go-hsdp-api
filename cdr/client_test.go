@@ -185,7 +185,7 @@ func TestDebug(t *testing.T) {
 
 	cdrClient, err = cdr.NewClient(iamClient, &cdr.Config{
 		CDRURL:   serverCDR.URL,
-		DebugLog: tmpfile.Name(),
+		DebugLog: tmpfile,
 	})
 	if !assert.Nil(t, err) {
 		return

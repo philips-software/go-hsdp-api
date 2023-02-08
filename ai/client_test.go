@@ -171,7 +171,7 @@ func TestDebug(t *testing.T) {
 
 	aiClient, err = ai.NewClient(iamClient, &ai.Config{
 		BaseURL:        serverAI.URL,
-		DebugLog:       tempFile.Name(),
+		DebugLog:       tempFile,
 		Service:        "inference",
 		OrganizationID: "xxx",
 	})

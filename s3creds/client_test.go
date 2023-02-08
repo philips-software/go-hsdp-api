@@ -104,8 +104,7 @@ func TestDebug(t *testing.T) {
 
 	credsClient, err = NewClient(iamClient, &Config{
 		BaseURL:  serverCreds.URL,
-		Debug:    true,
-		DebugLog: tmpfile.Name(),
+		DebugLog: tmpfile,
 	})
 	if err != nil {
 		t.Fatalf("Error: %v", err)
