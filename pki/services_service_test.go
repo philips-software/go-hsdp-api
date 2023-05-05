@@ -136,7 +136,7 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	muxPKI.HandleFunc("/core/pki/api/root/crl/pem", getCrl)
 	muxPKI.HandleFunc("/core/pki/api/policy/crl/pem", getCrl)
 
-	crl, block, resp, err := pkiClient.Services.GetRootCRL()
+	crl, block, resp, err := pkiClient.Services.GetRootRevocationList()
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -149,7 +149,7 @@ kljJ1cnVriYSyGoStCTCep8b4zDjl3KTdu2cGU4tUZIif6E2DruBZJ8=
 	if !assert.NotNil(t, crl) {
 		return
 	}
-	crl, block, resp, err = pkiClient.Services.GetPolicyCRL()
+	crl, block, resp, err = pkiClient.Services.GetPolicyRevocationList()
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -320,9 +320,9 @@ func TestServicesErrors(t *testing.T) {
 	assert.NotNil(t, err)
 	_, _, err = pkiClient.Services.IssueCertificate("logicalPath", "role", pki.CertificateRequest{})
 	assert.NotNil(t, err)
-	_, _, _, err = pkiClient.Services.GetPolicyCRL()
+	_, _, _, err = pkiClient.Services.GetPolicyRevocationList()
 	assert.NotNil(t, err)
-	_, _, _, err = pkiClient.Services.GetRootCRL()
+	_, _, _, err = pkiClient.Services.GetRootRevocationList()
 	assert.NotNil(t, err)
 	_, _, _, err = pkiClient.Services.GetRootCA()
 	assert.NotNil(t, err)

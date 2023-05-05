@@ -2,7 +2,6 @@ package pki
 
 import (
 	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
 	"io"
@@ -128,25 +127,25 @@ func (c *ServicesService) getCA(path string, options ...OptionFunc) (*x509.Certi
 	return pub, block, resp, err
 }
 
-// GetRootCRL
-func (c *ServicesService) GetRootCRL(options ...OptionFunc) (*pkix.CertificateList, *pem.Block, *Response, error) {
+// GetRootRevocationList
+func (c *ServicesService) GetRootRevocationList(options ...OptionFunc) (*x509.RevocationList, *pem.Block, *Response, error) {
 	options = append(options, func(req *http.Request) error {
 		req.Header.Del("Authorization") // Remove authorization header
 		return nil
 	})
-	return c.getCRL("core/pki/api/root/crl/pem", options...)
+	return c.getRevocationList("core/pki/api/root/crl/pem", options...)
 }
 
-// GetPolicyCRL
-func (c *ServicesService) GetPolicyCRL(options ...OptionFunc) (*pkix.CertificateList, *pem.Block, *Response, error) {
+// GetPolicyRevocationList
+func (c *ServicesService) GetPolicyRevocationList(options ...OptionFunc) (*x509.RevocationList, *pem.Block, *Response, error) {
 	options = append(options, func(req *http.Request) error {
 		req.Header.Del("Authorization") // Remove authorization header
 		return nil
 	})
-	return c.getCRL("core/pki/api/policy/crl/pem", options...)
+	return c.getRevocationList("core/pki/api/policy/crl/pem", options...)
 }
 
-func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.CertificateList, *pem.Block, *Response, error) {
+func (c *ServicesService) getRevocationList(path string, options ...OptionFunc) (*x509.RevocationList, *pem.Block, *Response, error) {
 	req, err := c.client.newServiceRequest(http.MethodGet, path, nil, options)
 	if err != nil {
 		return nil, nil, nil, err
@@ -156,7 +155,7 @@ func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.Cert
 		return nil, nil, resp, err
 	}
 	if resp == nil {
-		return nil, nil, resp, fmt.Errorf("getCRL: %w", ErrEmptyResult)
+		return nil, nil, resp, fmt.Errorf("getRevocationList: %w", ErrEmptyResult)
 	}
 	defer func() {
 		_ = resp.Body.Close()
@@ -169,7 +168,7 @@ func (c *ServicesService) getCRL(path string, options ...OptionFunc) (*pkix.Cert
 	if block == nil || block.Type != "X509 CRL" {
 		return nil, nil, resp, ErrCRLExpected
 	}
-	pub, err := x509.ParseCRL(block.Bytes)
+	pub, err := x509.ParseRevocationList(block.Bytes)
 	return pub, block, resp, err
 }
 
