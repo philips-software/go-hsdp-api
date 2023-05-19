@@ -29,10 +29,10 @@ type ServiceAction struct {
 
 // GetServiceActionOptions struct describes search criteria for looking up service actions
 type GetServiceActionOptions struct {
-	ID                *string `url:"_id,omitempty"`
-	Name              *string `url:"name,omitempty"`
-	GlobalReferenceID *string `url:"globalReferenceId,omitempty"`
-	ApplicationID     *string `url:"applicationId,omitempty"`
+	ID                    *string `url:"_id,omitempty"`
+	Name                  *string `url:"name,omitempty"`
+	StandardServiceID     *string `url:"standardServiceId,omitempty"`
+	OrganizationGuidValue *string `url:"organizationGuid:value,omitempty"`
 }
 
 // Create creates a ServiceAction
