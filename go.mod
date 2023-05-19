@@ -12,7 +12,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/hasura/go-graphql-client v0.9.3
 	github.com/philips-software/go-hsdp-signer v1.4.0
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.3
 	golang.org/x/oauth2 v0.8.0
 )
 
