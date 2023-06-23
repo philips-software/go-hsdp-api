@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -69,12 +70,15 @@ func (c *CodesServices) CreateOrUpdateCode(code Code) (*Code, *Response, error) 
 	req.Header.Set("Authorization", "OAuth "+c.token)
 
 	var createResponse struct {
-		Message string `json:"msg,omitempty"`
+		Message string `json:"msg"`
 		ID      string `json:"id,omitempty"`
 	}
 	resp, err := c.client.do(req, &createResponse)
 	if err != nil {
 		return nil, resp, err
+	}
+	if createResponse.ID == "" {
+		return nil, resp, fmt.Errorf("empty code value: '%s'", createResponse.Message)
 	}
 	return c.GetCode(createResponse.ID)
 }

@@ -17,7 +17,7 @@ var (
 	ErrNotImplementedByHSDP           = errors.New("method not implemented by HSDP")
 	ErrCouldNoReadResourceAfterCreate = errors.New("could not read resource after create")
 	ErrBaseIDMCannotBeEmpty           = errors.New("base IDM URL cannot be empty")
-	ErrBaseIAMCannotBeEmpty           = errors.New("base IDM URL cannot be empty")
+	ErrBaseIAMCannotBeEmpty           = errors.New("base IAM URL cannot be empty")
 	ErrEmptyResults                   = errors.New("empty results")
 	ErrOperationFailed                = errors.New("operation failed")
 	ErrMissingEtagInformation         = errors.New("missing etag information")
