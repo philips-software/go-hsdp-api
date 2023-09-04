@@ -93,4 +93,18 @@ func TestBlobStorePolicyCRUD(t *testing.T) {
 	}
 	assert.True(t, res)
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
+
+	found, resp, err := blrClient.Configurations.GetBlobStorePolicyByID(blobStorePolicyID)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, found) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
+	assert.Equal(t, blobStorePolicyID, found.ID)
+
 }

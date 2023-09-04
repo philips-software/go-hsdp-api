@@ -57,7 +57,7 @@ func (b *ConfigurationsService) CreateBlobStorePolicy(policy BlobStorePolicy) (*
 	return &created, resp, nil
 }
 
-func (b *ConfigurationsService) GetBlobStorePolicyByID(id string) (*Blob, *Response, error) {
+func (b *ConfigurationsService) GetBlobStorePolicyByID(id string) (*BlobStorePolicy, *Response, error) {
 	req, err := b.NewRequest(http.MethodGet, "/configuration/BlobStorePolicy/"+id, nil)
 	if err != nil {
 		return nil, nil, err
@@ -65,7 +65,7 @@ func (b *ConfigurationsService) GetBlobStorePolicyByID(id string) (*Blob, *Respo
 	req.Header.Set("api-version", blobAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
-	var resource Blob
+	var resource BlobStorePolicy
 
 	resp, err := b.Do(req, &resource)
 	if err != nil {
