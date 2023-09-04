@@ -47,7 +47,8 @@ type Client struct {
 
 	validate *validator.Validate
 
-	Blobs *BlobsService
+	Blobs          *BlobsService
+	Configurations *ConfigurationsService
 }
 
 // NewClient returns a new BLR client
@@ -67,6 +68,7 @@ func NewClient(iamClient *iam.Client, config *Config) (*Client, error) {
 	}
 
 	c.Blobs = &BlobsService{Client: c, validate: validator.New()}
+	c.Configurations = &ConfigurationsService{Client: c, validate: validator.New()}
 
 	return c, nil
 }
