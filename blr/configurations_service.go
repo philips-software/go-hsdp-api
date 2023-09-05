@@ -18,8 +18,8 @@ type Bucket struct {
 	Name                         string            `json:"name" validate:"required"`
 	EnableHSDPDomain             bool              `json:"enableHSDPDomain"`
 	EnableCDN                    bool              `json:"enableCDN"`
-	PriceClass                   string            `json:"priceClass"`
-	CacheControlAge              int               `json:"cacheControlAge"`
+	PriceClass                   string            `json:"priceClass,omitempty"`
+	CacheControlAge              int               `json:"cacheControlAge,omitempty"`
 	PropositionID                Reference         `json:"propositionId" validate:"required"`
 	CorsConfiguration            CorsConfiguration `json:"corsConfiguration"`
 	EnableCreateOrDeleteBlobMeta bool              `json:"enableCreateOrDeleteBlobMeta"`
