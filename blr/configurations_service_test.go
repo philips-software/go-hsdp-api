@@ -9,6 +9,38 @@ import (
 	"testing"
 )
 
+func bucketBody(id, name string) string {
+	return fmt.Sprintf(`{
+  "resourceType": "Bucket",
+  "id": "%s",
+  "name": "%s",
+  "enableHSDPDomain": false,
+  "enableCDN": false,
+  "priceClass": "ALL",
+  "cacheControlAge": 0,
+  "propositionId": {
+    "reference": "string",
+    "display": "string"
+  },
+  "corsConfiguration": {
+    "allowedOrigins": [
+      "string"
+    ],
+    "allowedMethods": [
+      "PUT"
+    ],
+    "allowedHeaders": [
+      "string"
+    ],
+    "exposeHeaders": [
+      "string"
+    ],
+    "maxAgeSeconds": 1
+  },
+  "enableCreateOrDeleteBlobMeta": true
+}`, id, name)
+}
+
 func blobStorePolicyBody(id, effect, action, principal, resource string) string {
 	return fmt.Sprintf(`{
   "resourceType": "BlobStorePolicy",
@@ -106,5 +138,77 @@ func TestBlobStorePolicyCRUD(t *testing.T) {
 	}
 	assert.Equal(t, http.StatusOK, resp.StatusCode())
 	assert.Equal(t, blobStorePolicyID, found.ID)
+
+}
+
+func TestBucketCRUD(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	bucketID := "d3898a8e-8ef7-48db-9eb6-3f423e85a853"
+	propositionID := "f6022cce-afd9-456f-bc02-1a423fe1e16a"
+	name := "expanse"
+	muxBLR.HandleFunc("/connect/blobrepository/configuration/Bucket", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "POST":
+			w.Header().Set("Etag", "1")
+			w.WriteHeader(http.StatusCreated)
+			_, _ = io.WriteString(w, bucketBody(bucketID, name))
+		}
+	})
+	muxBLR.HandleFunc("/connect/blobrepository/configuration/Bucket/"+bucketID, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case "GET":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, bucketBody(bucketID, name))
+		case "PUT":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, bucketBody(bucketID, name))
+		case "DELETE":
+			w.WriteHeader(http.StatusNoContent)
+		}
+	})
+
+	created, resp, err := blrClient.Configurations.CreateBucket(blr.Bucket{
+		Name: name,
+		PropositionID: blr.Reference{
+			Reference: propositionID,
+		},
+	})
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, created) {
+		return
+	}
+	assert.Equal(t, bucketID, created.ID)
+
+	res, resp, err := blrClient.Configurations.DeleteBucket(*created)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	assert.True(t, res)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode())
+
+	found, resp, err := blrClient.Configurations.GetBucketByID(bucketID)
+	if !assert.Nil(t, err) {
+		return
+	}
+	if !assert.NotNil(t, resp) {
+		return
+	}
+	if !assert.NotNil(t, found) {
+		return
+	}
+	assert.Equal(t, http.StatusOK, resp.StatusCode())
+	assert.Equal(t, bucketID, found.ID)
 
 }
