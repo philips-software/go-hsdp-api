@@ -93,27 +93,16 @@ func (b *ConfigurationsService) CreateBlobStorePolicy(policy BlobStorePolicy) (*
 }
 
 func (b *ConfigurationsService) GetBlobStorePolicyByID(id string) (*BlobStorePolicy, *Response, error) {
-	req, err := b.NewRequest(http.MethodGet, "/configuration/BlobStorePolicy/"+id, nil)
+	policies, resp, err := b.FindBlobStorePolicy(&GetBlobStorePolicyOptions{
+		ID: &id,
+	})
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("api-version", blobAPIVersion)
-	req.Header.Set("Content-Type", "application/json")
-
-	var resource BlobStorePolicy
-
-	resp, err := b.Do(req, &resource)
-	if err != nil {
-		return nil, resp, err
+	if len(*policies) == 0 {
+		return nil, nil, fmt.Errorf("policy with id '%s' not found", id)
 	}
-	err = internal.CheckResponse(resp.Response)
-	if err != nil {
-		return nil, resp, fmt.Errorf("GetByID: %w", err)
-	}
-	if resource.ID != id {
-		return nil, nil, fmt.Errorf("returned resource does not match")
-	}
-	return &resource, resp, nil
+	return &(*policies)[0], resp, nil
 }
 
 func (b *ConfigurationsService) FindBlobStorePolicy(opt *GetBlobStorePolicyOptions, options ...OptionFunc) (*[]BlobStorePolicy, *Response, error) {
@@ -182,18 +171,18 @@ func (b *ConfigurationsService) CreateBucket(bucket Bucket) (*Bucket, *Response,
 }
 
 // UpdateBucket updates a bucket
-func (c *ConfigurationsService) UpdateBucket(bucket Bucket) (*Bucket, *Response, error) {
+func (b *ConfigurationsService) UpdateBucket(bucket Bucket) (*Bucket, *Response, error) {
 	bucket.ResourceType = "Bucket"
-	if err := c.validate.Struct(bucket); err != nil {
+	if err := b.validate.Struct(bucket); err != nil {
 		return nil, nil, err
 	}
-	req, _ := c.NewRequest(http.MethodPut, "/configuration/Bucket/"+bucket.ID, bucket, nil)
+	req, _ := b.NewRequest(http.MethodPut, "/configuration/Bucket/"+bucket.ID, bucket, nil)
 	req.Header.Set("api-version", blobConfigurationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
 	var updated Bucket
 
-	resp, err := c.Do(req, &updated)
+	resp, err := b.Do(req, &updated)
 	if err != nil {
 		return nil, resp, err
 	}

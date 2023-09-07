@@ -41,6 +41,42 @@ func bucketBody(id, name string) string {
 }`, id, name)
 }
 
+func bundleResponseBody(id, effect, action, principal, resource string) string {
+	return fmt.Sprintf(`{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "link": [
+    {
+      "relation": "self",
+      "url": "BlobStorePolicy?_id=%s&_count=100"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "BlobStorePolicy",
+        "id": "%s",
+        "statement": [
+          {
+            "principal": [
+              "%s"
+            ],
+            "action": [
+              "%s"
+            ],
+            "resource": [
+              "%s"
+            ],
+            "effect": "%s"
+          }
+        ]
+      },
+      "fullUrl": "https://foo.bar.com/connect/blobrepository/configuration/BlobStorePolicy/%s"
+    }
+  ]
+}`, id, id, principal, action, effect, resource, id)
+}
+
 func blobStorePolicyBody(id, effect, action, principal, resource string) string {
 	return fmt.Sprintf(`{
   "resourceType": "BlobStorePolicy",
@@ -78,17 +114,20 @@ func TestBlobStorePolicyCRUD(t *testing.T) {
 			w.Header().Set("Etag", "1")
 			w.WriteHeader(http.StatusCreated)
 			_, _ = io.WriteString(w, blobStorePolicyBody(blobStorePolicyID, "effect", "action", "principal", "resource"))
+		case "GET":
+			w.WriteHeader(http.StatusOK)
+			_, _ = io.WriteString(w, bundleResponseBody(blobStorePolicyID, "effect", "action", "principal", "resource"))
+		case "DELETE", "PUT":
+			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
 	muxBLR.HandleFunc("/connect/blobrepository/configuration/BlobStorePolicy/"+blobStorePolicyID, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case "GET":
-			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, blobStorePolicyBody(blobStorePolicyID, "effect", "action", "principal", "resource"))
+			w.WriteHeader(http.StatusMethodNotAllowed)
 		case "PUT":
-			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, blobStorePolicyBody(blobStorePolicyID, "effect", "action", "principal", "resource"))
+			w.WriteHeader(http.StatusMethodNotAllowed)
 		case "DELETE":
 			w.WriteHeader(http.StatusNoContent)
 		}
