@@ -388,10 +388,14 @@ url = "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/disco
 # Service BLR
 [region.us-east.env.client-test.service.blr]
 url = "https://blobrepository-client-test.us01.connect.hsdp.io/connect/blobrepository"
-[region.eu-west.env.prod.service.blr]
+[region.eu-west.env.client-test.service.blr]
 url = "https://blobrepository-client-test.eu01.connect.hsdp.io/connect/blobrepository"
 [region.cn1.prod.service.blr]
 url = "https://blobrepository.cn1.iot.philips-healthsuite.com.cn/connect/blobrepository"
+[region.eu-west.env.prod.service.blr]
+url = "https://blobrepository.eu01.iot.hsdp.io/connect/blobrepository"
+[region.us-east.env.prod.service.blr]
+url = "https://blobrepository.us01.iot.hsdp.io/connect/blobrepository"
 
 # Service IOT
 [region.us-east.env.client-test.service.iot]
