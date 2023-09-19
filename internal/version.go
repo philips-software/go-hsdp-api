@@ -1,5 +1,5 @@
 package internal
 
 const (
-	LibraryVersion = "0.82.5"
+	LibraryVersion = "0.83.0"
 )

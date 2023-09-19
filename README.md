@@ -84,7 +84,6 @@ The current implement covers only a subset of HSDP APIs. Basically, we implement
 - [x] DICOM Store
   - [x] Config management
 - [x] Notification service
-- [x] Hosted Application Streaming (HAS) management
 - [x] Service Discovery
 - [x] Console settings
   - [ ] Metrics Alerts
