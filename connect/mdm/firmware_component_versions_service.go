@@ -39,7 +39,7 @@ type FirmwareComponentVersion struct {
 	ComponentRequired          bool            `json:"componentRequired"`
 	FingerPrint                *Fingerprint    `json:"fingerPrint,omitempty" validate:"omitempty,dive"`
 	EncryptionInfo             *EncryptionInfo `json:"encryptionInfo,omitempty" validate:"omitempty,dive"`
-	FirmwareComponentId        Reference       `json:"firmwareComponentId" validate:"required,dive"`
+	FirmwareComponentId        Reference       `json:"firmwareComponentId" validate:"required"`
 	PreviousComponentVersionId *Reference      `json:"previousComponentVersionId,omitempty" validate:"omitempty,dive"`
 	EffectiveDate              string          `json:"effectiveDate" validate:"required"`
 	DeprecatedDate             string          `json:"deprecatedDate,omitempty"`

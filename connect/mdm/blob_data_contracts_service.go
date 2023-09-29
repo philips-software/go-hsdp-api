@@ -22,9 +22,9 @@ type BlobDataContract struct {
 	ResourceType                  string    `json:"resourceType" validate:"required"`
 	ID                            string    `json:"id,omitempty"`
 	Name                          string    `json:"name" validate:"required,min=1,max=20"`
-	DataTypeID                    Reference `json:"dataTypeId" validate:"required,dive"`
-	BucketID                      Reference `json:"bucketId" validate:"required,dive"`
-	StorageClassID                Reference `json:"storageClassId" validate:"required,dive"`
+	DataTypeID                    Reference `json:"dataTypeId" validate:"required"`
+	BucketID                      Reference `json:"bucketId" validate:"required"`
+	StorageClassID                Reference `json:"storageClassId" validate:"required"`
 	RootPathInBucket              string    `json:"rootPathInBucket" validate:"required,max=256"`
 	LoggingEnabled                bool      `json:"loggingEnabled"`
 	CrossRegionReplicationEnabled bool      `json:"crossRegionReplicationEnabled"`
