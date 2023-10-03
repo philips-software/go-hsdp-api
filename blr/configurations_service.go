@@ -173,10 +173,12 @@ func (b *ConfigurationsService) CreateBucket(bucket Bucket) (*Bucket, *Response,
 // UpdateBucket updates a bucket
 func (b *ConfigurationsService) UpdateBucket(bucket Bucket) (*Bucket, *Response, error) {
 	bucket.ResourceType = "Bucket"
+	id := bucket.ID
+	bucket.ID = "" // Server does not like a value here
 	if err := b.validate.Struct(bucket); err != nil {
 		return nil, nil, err
 	}
-	req, _ := b.NewRequest(http.MethodPut, "/configuration/Bucket/"+bucket.ID, bucket, nil)
+	req, _ := b.NewRequest(http.MethodPut, "/configuration/Bucket/"+id, bucket, nil)
 	req.Header.Set("api-version", blobConfigurationAPIVersion)
 	req.Header.Set("Content-Type", "application/json")
 
