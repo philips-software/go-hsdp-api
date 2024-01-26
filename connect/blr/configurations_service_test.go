@@ -2,7 +2,7 @@ package blr_test
 
 import (
 	"fmt"
-	"github.com/philips-software/go-hsdp-api/blr"
+	"github.com/philips-software/go-hsdp-api/connect/blr"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
