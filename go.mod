@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/cenkalti/backoff/v4 v4.2.1
-	github.com/evanphx/json-patch/v5 v5.7.0
+	github.com/evanphx/json-patch/v5 v5.8.1
 	github.com/go-playground/validator/v10 v10.17.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/fhir/go v0.7.4
