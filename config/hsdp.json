@@ -198,14 +198,11 @@
             "connect-mdm": {
               "url": "https://connect-mdm-client-test.eu-west.philips-healthsuite.com/connect/mdm"
             },
-            "discovery": {
-              "url": "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/discovery"
-            },
             "dbs": {
               "url": "https://databroker-client-test.eu01.connect.hsdp.io/client-test/connect/databroker"
             },
-            "has": {
-              "url": "https://has-client-test.eu-west.philips-healthsuite.com"
+            "discovery": {
+              "url": "https://discovery-client-test.eu01.connect.hsdp.io/client-test/core/discovery"
             },
             "iam": {
               "url": "https://iam-client-test.eu-west.philips-healthsuite.com"
