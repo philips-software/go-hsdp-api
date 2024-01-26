@@ -9,17 +9,7 @@ A HSDP API client library enabling Go programs to interact with various HSDP API
 
 The current implement covers only a subset of HSDP APIs. Basically, we implement functionality as needed.
 
-- [x] Blob Repository
-  - [x] Blob Metadata
-  - [x] Access Policy
-  - [x] Access URL
-  - [x] Multipart Upload
-  - [x] BlobStore Policy management
-  - [ ] Topic management
-  - [ ] Store Access
-  - [ ] Bucket management
-  - [ ] Contract management
-  - [ ] Subscription management
+
 - [x] Cartel c.q. Container Host management ([examples](cartel/README.md))
 - [x] Clinical Data Repository (CDR)
   - [x] Tenant Onboarding
@@ -53,6 +43,24 @@ The current implement covers only a subset of HSDP APIs. Basically, we implement
     - [x] Subscriber Types
     - [x] Resources Limits
     - [x] Authentication Methods
+  - [x] Data Broker
+    - [ ] Data Items
+    - [x] Subscribers
+      - [x] SQS
+      - [ ] Kinesis
+    - [x] Subscriptions
+    - [ ] Access Details
+  - [x] Blob Repository
+    - [x] Blob Metadata
+    - [x] Access Policy
+    - [x] Access URL
+    - [x] Multipart Upload
+    - [x] BlobStore Policy management
+    - [ ] Topic management
+    - [ ] Store Access
+    - [ ] Bucket management
+    - [ ] Contract management
+    - [ ] Subscription management
 - [x] Secure Transport Layer (STL) / Edge 
   - [x] Device queries
   - [x] Application Resources management

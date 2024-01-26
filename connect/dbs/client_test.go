@@ -1,13 +1,13 @@
-package blr_test
+package dbs_test
 
 import (
+	"github.com/philips-software/go-hsdp-api/connect/dbs"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	_ "os"
 	"testing"
 
-	"github.com/philips-software/go-hsdp-api/blr"
 	"github.com/philips-software/go-hsdp-api/iam"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,18 +15,18 @@ import (
 var (
 	muxIAM    *http.ServeMux
 	serverIAM *httptest.Server
-	muxBLR    *http.ServeMux
-	serverBLR *httptest.Server
+	muxDBS    *http.ServeMux
+	serverDBS *httptest.Server
 
 	iamClient *iam.Client
-	blrClient *blr.Client
+	dbsClient *dbs.Client
 )
 
 func setup(t *testing.T) func() {
 	muxIAM = http.NewServeMux()
 	serverIAM = httptest.NewServer(muxIAM)
-	muxBLR = http.NewServeMux()
-	serverBLR = httptest.NewServer(muxBLR)
+	muxDBS = http.NewServeMux()
+	serverDBS = httptest.NewServer(muxDBS)
 
 	var err error
 
@@ -36,16 +36,16 @@ func setup(t *testing.T) func() {
 		SharedKey:      "SharedKey",
 		SecretKey:      "SecretKey",
 		IAMURL:         serverIAM.URL,
-		IDMURL:         serverBLR.URL,
+		IDMURL:         serverDBS.URL,
 	})
 	if err != nil {
 		t.Fatalf("Failed to create iamClient: %v", err)
 	}
-	blrClient, err = blr.NewClient(iamClient, &blr.Config{
-		BaseURL: serverBLR.URL + "/connect/blobrepository",
+	dbsClient, err = dbs.NewClient(iamClient, &dbs.Config{
+		BaseURL: serverDBS.URL + "/client-test/connect/databroker",
 	})
 	if err != nil {
-		t.Fatalf("Failed to create mdmClient: %v", err)
+		t.Fatalf("Failed to create dbsClient: %v", err)
 	}
 
 	token := "44d20214-7879-4e35-923d-f9d4e01c9746"
@@ -131,7 +131,7 @@ func setup(t *testing.T) func() {
 
 	return func() {
 		serverIAM.Close()
-		serverBLR.Close()
+		serverDBS.Close()
 	}
 }
 
