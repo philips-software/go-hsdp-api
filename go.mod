@@ -10,7 +10,7 @@ require (
 	github.com/google/fhir/go v0.7.4
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
-	github.com/hasura/go-graphql-client v0.10.2
+	github.com/hasura/go-graphql-client v0.12.0
 	github.com/philips-software/go-hsdp-signer v1.4.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/oauth2 v0.16.0
