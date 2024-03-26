@@ -5,6 +5,10 @@
 
 A HSDP API client library enabling Go programs to interact with various HSDP APIs in a simple and uniform way
 
+> [!Important]
+> This library is not endorsed, supported or approved by HSDP. It is a Philips Open Source community managed project. Please do not raise
+> SNOW tickets, instead open a issue on the [Github project](https://github.com/philips-software/go-hsdp-api/issues).
+
 ## Supported APIs
 
 The current implement covers only a subset of HSDP APIs. Basically, we implement functionality as needed.
