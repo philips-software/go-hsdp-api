@@ -13,7 +13,7 @@ import (
 	"github.com/google/fhir/go/fhirversion"
 	"github.com/philips-software/go-hsdp-api/internal"
 
-	signer "github.com/philips-software/go-hsdp-signer"
+	signer "github.com/philips-software/go-nih-signer"
 
 	"github.com/google/fhir/go/jsonformat"
 )

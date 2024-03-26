@@ -12,7 +12,7 @@ import (
 
 	"errors"
 
-	signer "github.com/philips-software/go-hsdp-signer"
+	signer "github.com/philips-software/go-nih-signer"
 	"github.com/stretchr/testify/assert"
 )
 

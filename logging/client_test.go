@@ -13,7 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	signer "github.com/philips-software/go-hsdp-signer"
+	signer "github.com/philips-software/go-nih-signer"
 )
 
 var (
