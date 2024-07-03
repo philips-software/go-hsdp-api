@@ -10,7 +10,7 @@ require (
 	github.com/google/fhir/go v0.7.4
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
-	github.com/hasura/go-graphql-client v0.12.1
+	github.com/hasura/go-graphql-client v0.12.2
 	github.com/philips-software/go-nih-signer v1.5.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/oauth2 v0.20.0
@@ -36,5 +36,5 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	nhooyr.io/websocket v1.8.10 // indirect
+	nhooyr.io/websocket v1.8.11 // indirect
 )
