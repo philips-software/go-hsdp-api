@@ -83,10 +83,12 @@ func (c *Client) SetBaseTDRURL(urlStr string) error {
 	if !strings.HasSuffix(urlStr, "/") {
 		urlStr += "/"
 	}
-
-	var err error
-	c.baseTDRURL, err = url.Parse(urlStr)
-	return err
+	tdrURL, err := url.Parse(urlStr)
+	if err != nil {
+		return err
+	}
+	c.baseTDRURL = tdrURL
+	return nil
 }
 
 // newTDRRequest creates an new TDR API request. A relative URL path can be provided in
@@ -159,7 +161,7 @@ type Response struct {
 }
 
 func (r *Response) StatusCode() int {
-	if r.Response != nil {
+	if r != nil && r.Response != nil {
 		return r.Response.StatusCode
 	}
 	return 0
@@ -179,6 +181,9 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	if resp == nil {
+		return nil, fmt.Errorf("response is nil")
+	}
 	defer func() {
 		_ = resp.Body.Close()
 	}()
@@ -192,7 +197,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 		return response, err
 	}
 
-	if v != nil {
+	if v != nil && resp.Body != nil {
 		if w, ok := v.(io.Writer); ok {
 			_, err = io.Copy(w, resp.Body)
 		} else {

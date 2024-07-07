@@ -13,6 +13,10 @@ func TestGetContract(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	if tdrClient == nil {
+		t.Fatal("Expected tdrClient to be set")
+	}
+
 	muxTDR.HandleFunc("/store/tdr/Contract", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("dataType") == "" {
 			w.WriteHeader(http.StatusBadRequest)
@@ -125,6 +129,10 @@ func TestGetContract(t *testing.T) {
 func TestCreateContract(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
+
+	if tdrClient == nil {
+		t.Fatal("Expected tdrClient to be set")
+	}
 
 	muxTDR.HandleFunc("/store/tdr/Contract", func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)

@@ -12,6 +12,10 @@ func TestGetDataItem(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
+	if tdrClient == nil {
+		t.Fatal("Expected tdrClient to be set")
+	}
+
 	muxTDR.HandleFunc("/store/tdr/DataItem", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("organization") == "" {
 			w.WriteHeader(http.StatusBadRequest)

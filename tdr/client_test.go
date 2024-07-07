@@ -103,6 +103,9 @@ func TestDebug(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
+	if serverTDR == nil {
+		t.Fatal("No serverTDR")
+	}
 
 	tdrClient, err = NewClient(iamClient, &Config{
 		TDRURL:   serverTDR.URL,
