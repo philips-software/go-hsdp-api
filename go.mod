@@ -13,7 +13,7 @@ require (
 	github.com/hasura/go-graphql-client v0.12.2
 	github.com/philips-software/go-nih-signer v1.5.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/oauth2 v0.21.0
+	golang.org/x/oauth2 v0.22.0
 )
 
 require (
