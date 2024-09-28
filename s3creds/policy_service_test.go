@@ -39,7 +39,7 @@ func TestCreatePolicy(t *testing.T) {
 
 	muxCreds.HandleFunc("/core/credentials/Policy", func(w http.ResponseWriter, r *http.Request) {
 		if k := r.Header.Get("X-Product-Key"); k != productKey {
-			t.Errorf(ErrMissingProductKey.Error())
+			t.Error(ErrMissingProductKey.Error())
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
@@ -90,7 +90,7 @@ func TestDeletePolicy(t *testing.T) {
 
 	muxCreds.HandleFunc("/core/credentials/Policy/"+id, func(w http.ResponseWriter, r *http.Request) {
 		if k := r.Header.Get("X-Product-Key"); k != productKey {
-			t.Errorf(ErrMissingProductKey.Error())
+			t.Error(ErrMissingProductKey.Error())
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
@@ -117,7 +117,7 @@ func TestGetPolicy(t *testing.T) {
 	id := "1"
 	muxCreds.HandleFunc("/core/credentials/Policy", func(w http.ResponseWriter, r *http.Request) {
 		if k := r.Header.Get("X-Product-Key"); k != productKey {
-			t.Errorf(ErrMissingProductKey.Error())
+			t.Error(ErrMissingProductKey.Error())
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}

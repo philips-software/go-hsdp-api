@@ -16,7 +16,7 @@ func TestGetAccess(t *testing.T) {
 
 	muxCreds.HandleFunc("/core/credentials/Access", func(w http.ResponseWriter, r *http.Request) {
 		if k := r.Header.Get("X-Product-Key"); k != productKey {
-			t.Errorf(ErrMissingProductKey.Error())
+			t.Error(ErrMissingProductKey.Error())
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
