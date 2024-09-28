@@ -2,7 +2,6 @@ package dicom_test
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"testing"
 
@@ -42,7 +41,7 @@ func TestRemoteNodesCRUD(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		case "GET":
 			repos := []dicom.RemoteNode{
 				{
@@ -60,7 +59,7 @@ func TestRemoteNodesCRUD(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -80,7 +79,7 @@ func TestRemoteNodesCRUD(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		case "DELETE":
 			w.WriteHeader(http.StatusNoContent)
 		default:

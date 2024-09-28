@@ -182,7 +182,7 @@ func TestUpdateAndDeleteOrganization(t *testing.T) {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, string(responseBody))
+			_, _ = w.Write(responseBody)
 		case "DELETE":
 			if r.Header.Get("If-Method") != "DELETE" {
 				w.WriteHeader(http.StatusForbidden)

@@ -2,7 +2,6 @@ package inference_test
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"testing"
 
@@ -62,7 +61,7 @@ func TestComputeTargetCRD(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusCreated)
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		default:
 			w.WriteHeader(http.StatusNotImplemented)
 		}

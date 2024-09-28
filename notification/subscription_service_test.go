@@ -47,7 +47,7 @@ func TestSubscriptionCRD(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
 			_, _ = io.WriteString(w, `{
@@ -116,7 +116,7 @@ func TestSubscriptionCRD(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusCreated)
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}

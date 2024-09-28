@@ -30,7 +30,7 @@ func TestR4TenantService(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusCreated)
-			_, _ = io.WriteString(w, string(body))
+			_, _ = w.Write(body)
 		case "GET":
 			w.WriteHeader(http.StatusOK)
 			_, _ = io.WriteString(w, `{

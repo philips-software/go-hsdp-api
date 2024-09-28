@@ -112,7 +112,7 @@ func TestPostOperation(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusCreated)
-			_, _ = io.WriteString(w, string(jsonOrg))
+			_, _ = w.Write(jsonOrg)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}

@@ -2,7 +2,6 @@ package dicom_test
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"testing"
 
@@ -41,7 +40,7 @@ func TestImportServiceGetSet(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		case "GET":
 			store := dicom.ImportService{
 				ID: serviceID,
@@ -52,7 +51,7 @@ func TestImportServiceGetSet(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}

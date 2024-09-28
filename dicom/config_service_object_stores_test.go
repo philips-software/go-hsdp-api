@@ -2,7 +2,6 @@ package dicom_test
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"testing"
 
@@ -41,7 +40,7 @@ func TestObjectStoreCRUD(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -66,7 +65,7 @@ func TestObjectStoreCRUD(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		case "DELETE":
 			w.WriteHeader(http.StatusNoContent)
 		default:
