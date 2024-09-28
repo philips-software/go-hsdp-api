@@ -2,7 +2,6 @@ package inference_test
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"testing"
 
@@ -35,7 +34,7 @@ func TestComputeEnvironmentCRD(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusOK)
 		default:
@@ -61,7 +60,7 @@ func TestComputeEnvironmentCRD(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusCreated)
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		default:
 			w.WriteHeader(http.StatusNotImplemented)
 		}

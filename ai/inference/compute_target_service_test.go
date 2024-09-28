@@ -36,7 +36,7 @@ func TestComputeTargetCRD(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			_, _ = io.WriteString(w, string(resp))
+			_, _ = w.Write(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusOK)
 		default:
