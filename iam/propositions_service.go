@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,6 +18,15 @@ type Proposition struct {
 	Description       string `json:"description"`
 	OrganizationID    string `json:"organizationId"`
 	GlobalReferenceID string `json:"globalReferenceId"`
+}
+
+// PropositionStatus holds the status of a delete Proposition operation
+type PropositionStatus struct {
+	Schemas        []string `json:"schemas"`
+	ID             string   `json:"id"`
+	Status         string   `json:"status"`
+	TotalResources int      `json:"totalResources"`
+	Meta           *Meta    `json:"meta"`
 }
 
 func (p *Proposition) validate() error {
@@ -118,4 +128,37 @@ func (p *PropositionsService) CreateProposition(prop Proposition) (*Proposition,
 		return nil, resp, fmt.Errorf("CreateProposition: %w", ErrCouldNoReadResourceAfterCreate)
 	}
 	return p.GetPropositionByID(id)
+}
+
+func (p *PropositionsService) DeleteProposition(prop Proposition) (bool, *Response, error) {
+	req, err := p.client.newRequest(IDM, "DELETE", "authorize/scim/v2/Propositions/"+prop.ID, nil, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("api-version", propositionAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("If-Method", "DELETE")
+
+	var deleteResponse bytes.Buffer
+
+	resp, err := p.client.do(req, &deleteResponse)
+	if err != nil {
+		return false, resp, err
+	}
+	return resp.StatusCode() == http.StatusAccepted, resp, nil
+}
+
+// DeleteStatus returns the status of a delete operation on an organization
+func (p *PropositionsService) DeleteStatus(id string) (*PropositionStatus, *Response, error) {
+	req, err := p.client.newRequest(IDM, "GET", "authorize/scim/v2/Propositions/"+id+"/deleteStatus", nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Set("api-version", propositionAPIVersion)
+	req.Header.Set("Content-Type", "application/json")
+
+	var deleteResponse PropositionStatus
+
+	resp, err := p.client.do(req, &deleteResponse)
+	return &deleteResponse, resp, err
 }
