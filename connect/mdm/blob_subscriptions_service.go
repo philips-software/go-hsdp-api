@@ -24,7 +24,7 @@ type BlobSubscription struct {
 	Name                  string     `json:"name" validate:"required,max=64"`
 	Description           string     `json:"description" validate:"omitempty,max=250"`
 	DataTypeId            Reference  `json:"dataTypeId" validate:"required"`
-	NotificationTopicGuid Identifier `json:"notificationTopicGuid" validate:"required,dive"`
+	NotificationTopicGuid Identifier `json:"notificationTopicGuid" validate:"required"`
 	Meta                  *Meta      `json:"meta,omitempty"`
 }
 

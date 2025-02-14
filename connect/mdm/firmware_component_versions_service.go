@@ -37,10 +37,10 @@ type FirmwareComponentVersion struct {
 	Size                       int             `json:"size"`
 	BlobURL                    string          `json:"blobUrl" validate:"omitempty,max=1024"`
 	ComponentRequired          bool            `json:"componentRequired"`
-	FingerPrint                *Fingerprint    `json:"fingerPrint,omitempty" validate:"omitempty,dive"`
-	EncryptionInfo             *EncryptionInfo `json:"encryptionInfo,omitempty" validate:"omitempty,dive"`
+	FingerPrint                *Fingerprint    `json:"fingerPrint,omitempty" validate:"omitempty"`
+	EncryptionInfo             *EncryptionInfo `json:"encryptionInfo,omitempty" validate:"omitempty"`
 	FirmwareComponentId        Reference       `json:"firmwareComponentId" validate:"required"`
-	PreviousComponentVersionId *Reference      `json:"previousComponentVersionId,omitempty" validate:"omitempty,dive"`
+	PreviousComponentVersionId *Reference      `json:"previousComponentVersionId,omitempty" validate:"omitempty"`
 	EffectiveDate              string          `json:"effectiveDate" validate:"required"`
 	DeprecatedDate             string          `json:"deprecatedDate,omitempty"`
 	CustomResource             json.RawMessage `json:"customResource,omitempty" validate:"omitempty,max=2048"`

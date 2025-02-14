@@ -37,7 +37,7 @@ type Bucket struct {
 	Description                   string              `json:"description"`
 	PropositionID                 Reference           `json:"propositionId" validate:"required"`
 	DefaultRegionID               Reference           `json:"defaultRegionId" validate:"required"`
-	ReplicationRegionID           *Reference          `json:"replicationRegionId,omitempty" validate:"omitempty,dive"`
+	ReplicationRegionID           *Reference          `json:"replicationRegionId,omitempty" validate:"omitempty"`
 	VersioningEnabled             bool                `json:"versioningEnabled"`
 	LoggingEnabled                bool                `json:"loggingEnabled"`
 	CrossRegionReplicationEnabled bool                `json:"crossRegionReplicationEnabled"`

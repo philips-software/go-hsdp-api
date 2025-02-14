@@ -21,16 +21,16 @@ type Proposition struct {
 	Name                                  string      `json:"name" validate:"required"`
 	Description                           string      `json:"description"`
 	OrganizationGuid                      Identifier  `json:"organizationGuid"`
-	PropositionGuid                       *Identifier `json:"propositionGuid,omitempty" validate:"omitempty,dive"`
+	PropositionGuid                       *Identifier `json:"propositionGuid,omitempty" validate:"omitempty"`
 	GlobalReferenceID                     string      `json:"globalReferenceId"`
 	Status                                string      `json:"status,omitempty" validate:"omitempty,oneof=DRAFT ACTIVE"`
-	DefaultCustomerOrganizationGuid       *Identifier `json:"defaultCustomerOrganizationGuid,omitempty" validate:"omitempty,dive"`
+	DefaultCustomerOrganizationGuid       *Identifier `json:"defaultCustomerOrganizationGuid,omitempty" validate:"omitempty"`
 	ValidationEnabled                     bool        `json:"validationEnabled"`
 	ExternalProvisionValidationURL        string      `json:"externalProvisionValidationUrl,omitempty"`
 	ExternalProvisionValidationApiVersion string      `json:"externalProvisionValidationApiVersion,omitempty"`
 	AuthenticationMethodID                *Reference  `json:"authenticationMethodId,omitempty"`
 	NotificationEnabled                   bool        `json:"notificationEnabled"`
-	TopicGuid                             *Identifier `json:"topicGuid,omitempty" validate:"omitempty,dive"`
+	TopicGuid                             *Identifier `json:"topicGuid,omitempty" validate:"omitempty"`
 	Meta                                  *Meta       `json:"meta,omitempty"`
 }
 

@@ -24,7 +24,7 @@ type FirmwareComponent struct {
 	Name          string    `json:"name" validate:"required,max=255"`
 	Description   string    `json:"description" validate:"omitempty,max=250"`
 	MainComponent bool      `json:"mainComponent"`
-	DeviceTypeId  Reference `json:"deviceTypeId" validate:"required,dive"`
+	DeviceTypeId  Reference `json:"deviceTypeId" validate:"required"`
 	Meta          *Meta     `json:"meta,omitempty"`
 }
 
